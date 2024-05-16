@@ -37,7 +37,7 @@ instancing of objects.
 
 #include "../Game_local.h"
 
-#include "TypeInfo.h"
+#include "NoGameTypeInfo.h"
 
 
 /***********************************************************************

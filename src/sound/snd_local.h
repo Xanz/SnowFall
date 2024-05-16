@@ -31,9 +31,9 @@ If you have questions concerning this license or the applicable additional terms
 
 // you need the OpenAL headers for build, even if AL is not enabled - http://www.openal.org/
 #ifdef _WIN32
-#include "../openal/include/al.h"
-#include "../openal/include/alc.h"
-#include "../openal/idal.h"
+#include "al.h"
+#include "alc.h"
+#include "idal.h"
 // broken OpenAL SDK ?
 #define ID_ALCHAR (ALubyte *)
 #elif defined( MACOS_X )
@@ -45,7 +45,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <AL/alc.h>
 #define ID_ALCHAR
 #endif
-#include "../openal/include/efxlib.h"
+#include "efxlib.h"
 
 // demo sound commands
 typedef enum {
