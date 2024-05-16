@@ -30,8 +30,8 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "snd_local.h"
-#include "OggVorbis/vorbis/codec.h"
-#include "OggVorbis/vorbis/vorbisfile.h"
+#include "../../external/OggVorbis/vorbis/codec.h"
+#include "../../external/OggVorbis/vorbis/vorbisfile.h"
 
 
 /*

@@ -17,10 +17,10 @@ file(GLOB SYS src/sys/*.cpp src/sys/*.h)
 file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE TOOLS src/tools/*.cpp src/tools/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
-file(GLOB_RECURSE OGG_SRC src/sound/OggVorbis/oggsrc/*.c src/sound/OggVorbis/oggsrc/*.cpp src/sound/OggVorbis/oggsrc/*.h)
-file(GLOB_RECURSE OGG src/sound/OggVorbis/ogg/*.c src/sound/OggVorbis/ogg/*.cpp src/sound/OggVorbis/ogg/*.h)
-file(GLOB_RECURSE VORBIS src/sound/OggVorbis/vorbis/*.c src/sound/OggVorbis/vorbis/*.cpp src/sound/OggVorbis/vorbis/*.h)
-file(GLOB_RECURSE VORBIS_SRC src/sound/OggVorbis/vorbissrc/*.c src/sound/OggVorbis/vorbissrc/*.cpp src/sound/OggVorbis/vorbissrc/*.h)
+file(GLOB_RECURSE OGG_SRC external/OggVorbis/oggsrc/*.c external/OggVorbis/oggsrc/*.cpp external/OggVorbis/oggsrc/*.h)
+file(GLOB_RECURSE OGG external/OggVorbis/ogg/*.c external/OggVorbis/ogg/*.cpp external/OggVorbis/ogg/*.h)
+file(GLOB_RECURSE VORBIS external/OggVorbis/vorbis/*.c external/OggVorbis/vorbis/*.cpp external/OggVorbis/vorbis/*.h)
+file(GLOB_RECURSE VORBIS_SRC external/OggVorbis/vorbissrc/*.c external/OggVorbis/vorbissrc/*.cpp external/OggVorbis/vorbissrc/*.h)
 
 set(D3Source
     ${D3GAME}
@@ -52,8 +52,8 @@ add_compile_definitions(_MBCS)
 add_compile_definitions(_XKEYCHECK_H)
 
 # Needed so that VSCode can syntax check correctly.
-include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC src/openal/include src/openal)
-link_directories(${CMAKE_SOURCE_DIR}/src/openal/lib)
+include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/openal)
+link_directories(${CMAKE_SOURCE_DIR}/external/openal/lib)
 
 set(LIBS dbghelp dinput8 dsound dxguid glu32 iphlpapi opengl32 winmm ws2_32 eaxguid odbc32 odbccp32)
 
