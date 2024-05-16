@@ -1,0 +1,130 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+
+	windowDef Bglow
+	{
+		rect	0, 0, 640, 480
+		background	"gui/commstation"
+		visible	1
+		matcolor	1, 1, 1, 1
+	}
+	windowDef Logo
+	{
+		rect	190, 145, 260, 100
+		background	"gui/commSpin"
+		visible	1
+		matcolor	1, 1, 1, 1
+	}
+	windowDef Movie
+	{
+		rect	27,19,588,368
+		background	"gui/admin/betruger"
+		matcolor	1, 1, 1, 1
+		visible	1
+
+		onTrigger {
+			resetTime "Anim" "0" ;		
+			resetCinematics ;
+		}
+
+	}
+	windowDef Black
+	{
+		rect	20, 15, 600, 373
+		visible	0
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	1, 1, 1, 0
+	}
+	windowDef Text3
+	{
+		rect	300,331,300,50
+		text	"#str_00047"
+		textscale	0.8
+		textalign	2
+		forecolor	0.4, 0.9, 0.7, 0.6
+		visible	1
+		nowrap	1
+
+		onTime 0 {
+			transition "forecolor" "0.4 0.9 0.7 0.6" "0.4 0.9 0.7 0.2" "1000" ;
+		}
+
+		onTime 1000 {
+			transition "forecolor" "0.4 0.9 0.7 0.2" "0.4 0.9 0.7 0.6" "1000" ;
+		}
+
+		onTime 2000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Big1
+	{
+		rect	27, 188, 586, 14
+		visible	0
+		background	"guis/assets/efc/button"
+		matcolor	1, 0.8, 0.4 ,0
+	}
+	windowDef Big2
+	{
+		rect	25, 10, 588, 387
+		visible	0
+		background	"guis/assets/efc/button"
+		matcolor	0.6, 0, 0, 1
+		text	"#str_00048"
+		font	"fonts/bank"
+		textscale	2.8
+		textalign	1
+		textaligny	5
+		forecolor	1, 1, 1, 1
+
+		onTime 0 {
+			transition "forecolor" "1 1 1 1" "1 1 1 0.2" "1000" ;
+			transition "matcolor" "0.6 0 0 1" "0.2 0 0 1" "500" ;
+		}
+
+		onTime 500 {
+			transition "matcolor" "0.2 0 0 1" "0.6 0 0 1" "500" ;
+		}
+
+		onTime 1000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef bgScroll
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"gui/scroll3"
+		matcolor	1, 1,  1, flickertable [ time * 5 ] / 6
+	}
+	windowDef bgScroll2
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"gui/scrollbig"
+		matcolor	1, 1,  1, 0.1
+	}
+	windowDef Reflect
+	{
+		rect	10 ,5 ,620 ,470
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef anim
+	{
+		rect	0,0,100,100
+		visible	1
+
+		onTime 37000 {
+			set "Movie::visible" "0" ;
+			set "Big2::visible" "1" ;
+			set "Text3::text" "#str_00049" ;
+		}
+
+	}
+}

@@ -1,0 +1,291 @@
+windowDef Desktop
+{
+	comment	"click fires a trigger"
+	rect	0 ,0 ,640 ,480
+	windowDef TabletClip
+	{
+		rect	20,31,426,412
+		visible	1
+
+		onTime 0 {
+			transition "TabletBG::rect" "-8 94 913 692" "-8 -391 913 692" "10000" "0.5" "0.5" ;
+			transition "TabletScan::rect" "-8 -27 913 692" "-8 -513 913 692" "10000" "0.5" "0.5" ;
+		}
+
+		onTime 10000 {
+			transition "TabletBG::rect" "-8 -391 913 692" "-8 94 913 692" "10000" "0.5" "0.5" ;
+			transition "TabletScan::rect" "-8 -513 913 692" "-8 -27 913 692" "10000" "0.5" "0.5" ;
+		}
+
+		onTime 20000 {
+			resetTime "0" ;
+		}
+
+		windowDef TabletBG
+		{
+			rect	-8,94,913,692
+			visible	1
+			background	"guis/assets/site3/tablet2"
+			matcolor	1,1,1,1
+		}
+	}
+	windowDef MapGrid
+	{
+		rect	17,15,439,441
+		visible	1
+		background	"gui/grid2"
+		matcolor	0.6,1,1,0.2
+		matscalex	5
+		matscaley	6
+	}
+	windowDef ScanClip
+	{
+		rect	20,153,432,143
+		visible	1
+		windowDef TabletScan
+		{
+			rect	-8,-27,913,692
+			visible	1
+			background	"guis/assets/site3/tablet2scan"
+			matcolor	1,1,1,0.9
+		}
+	}
+	windowDef BootBlackBG
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/site3/scanbg"
+		matcolor	1,1,1,1
+	}
+	windowDef ScannerClip
+	{
+		rect	488,96,119,31
+		visible	1
+		windowDef Scanner
+		{
+			rect	-66,0,191,31
+			visible	1
+			background	"gui/test/gui_scanpulse4"
+			matcolor	1,1,1,1
+		}
+	}
+	windowDef MeterMark
+	{
+		rect	474,84,146,61
+		visible	1
+		background	"guis/assets/generic/meter"
+		matcolor	0.9,0.95,1,0.3
+	}
+	windowDef TextAnim1
+	{
+		rect	505,202,115,34
+		visible	1
+		text	"12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6"
+		forecolor	1,1,1,0.40000004
+		textscale	0.5
+
+		onTime 600 {
+			set "text" "12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6" ;
+		}
+
+		onTime 550 {
+			set "text" "1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1" ;
+		}
+
+		onTime 500 {
+			set "text" "18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71" ;
+		}
+
+		onTime 450 {
+			set "text" "12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2" ;
+		}
+
+		onTime 400 {
+			set "text" "8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8" ;
+		}
+
+		onTime 350 {
+			set "text" "7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82" ;
+		}
+
+		onTime 300 {
+			set "text" "0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69" ;
+		}
+
+		onTime 250 {
+			set "text" "0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29" ;
+		}
+
+		onTime 200 {
+			set "text" "1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3" ;
+		}
+
+		onTime 150 {
+			set "text" "20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56" ;
+		}
+
+		onTime 100 {
+			set "text" "18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2" ;
+		}
+
+		onTime 50 {
+			set "text" "19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1" ;
+		}
+
+		onTime 0 {
+			set "text" "14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9" ;
+		}
+
+		onTime 650 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef TitleText
+	{
+		rect	479,8,137,94
+		visible	1
+		forecolor	1,1,1,0.60000002
+		text	"#str_04000"
+		textscale	0.61000001
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef TextLvl
+	{
+		rect	476,133,140,57
+		visible	1
+		text	"#str_04001"
+		forecolor	1,1,1,0.40000004
+		textscale	0.44999999
+		textalign	2
+	}
+	windowDef Spikes1
+	{
+		rect	481,353,134,69
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/spike5"
+	}
+	windowDef ScanAdd
+	{
+		rect	2,122,472,205
+		visible	1
+		background	"gui/site3/scanadd"
+		matcolor	1,1,1,1
+	}
+	windowDef DataSpin1
+	{
+		rect	556,259,66,54
+		visible	1
+		background	"gui/dataspin"
+		matcolor	1,1,1,0.3
+	}
+	windowDef DataSpin2
+	{
+		rect	493,259,66,54
+		visible	1
+		background	"gui/dataspin"
+		matcolor	1,1,1,0.7
+	}
+	windowDef Static
+	{
+		rect	-9,-9,660,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+		noevents	1
+	}
+	windowDef Mask
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.2
+		noevents	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.6,1,1,0.1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		noevents	1
+	}
+	windowDef scanlinesAlt
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Dirt21
+	{
+		rect	0,0,-640,480
+		matcolor	0.3, 0.1, 0 ,0.2
+		visible	1
+		background	"guis/assets/common/dirt5"
+		noevents	1
+	}
+	windowDef Reflect
+	{
+		rect	0,-8,-640,480
+		matcolor	1 ,1 ,1 ,0.08
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef Addhighlight1
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.3 ,0.4 ,0.6 ,1
+		visible	1
+	}
+	windowDef Addhighlight2
+	{
+		rect	0,200,640,-280
+		background	"gui/addhighlight"
+		matcolor	0.3 ,0.4 ,0.6 ,1
+		visible	1
+	}
+	windowDef Mask1
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.3
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+}

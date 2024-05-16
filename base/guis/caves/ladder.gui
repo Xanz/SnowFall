@@ -1,0 +1,508 @@
+windowDef Desktop
+{
+	comment "click runs script defined in gui_parm6"
+	rect	0 ,0 ,640 ,480
+	windowDef Background
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		windowDef BgFill
+		{
+			rect	32,32,576,416
+			backcolor	0.59, 0.67, 0.59, 1
+			visible	1
+		}
+		windowDef Top
+		{
+			rect	32, 0, 576, -32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Bottom
+		{
+			rect	32, 448, 576, 32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Left
+		{
+			rect	0,32,-32,62
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Right
+		{
+			rect	608, 32, 32, 416
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Corner1
+		{
+			rect	0, 0 ,-32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Corner2
+		{
+			rect	608, 0 ,32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Corner3
+		{
+			rect	0,448,-64,32
+			background	"gui/caves/corner2"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Corner4
+		{
+			rect	608, 448 ,32 ,32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef InsetLineLeft
+		{
+			rect	0,71,-32,377
+			background	"gui/caves/vertl"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef InsetLineRight
+		{
+			rect	608,71,32,255
+			background	"gui/caves/vertl"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Inset1
+		{
+			rect	0, 70 ,-32 ,-32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Inset3
+		{
+			rect	608, 70 ,32 ,-32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Inset4
+		{
+			rect	608,325,32,32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Title1
+		{
+			rect	15, 20 ,40 ,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.8
+		}
+		windowDef Title2
+		{
+			rect	55, 20 ,530 ,80
+			background	"gui/caves/title2"
+			matcolor	1, 1, 1, 0.8
+		}
+		windowDef Title3
+		{
+			rect	585, 20 ,-40 ,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.8
+		}
+	}
+	windowDef LineBox
+	{
+		rect	32,78,137,381
+		visible	1
+		windowDef LBCornerTL
+		{
+			rect	0,0,-32,-32
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef LBCornerTR
+		{
+			rect	108,0,32,-32
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef LBTop
+		{
+			rect	32,0,-76,-32
+			background	"guis/assets/caverns/box2h"
+			matcolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef LBSideL
+		{
+			rect	0,32,-32,347
+			background	"guis/assets/caverns/box2v"
+			matcolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef LBSideR
+		{
+			rect	108,32,32,347
+			background	"guis/assets/caverns/box2v"
+			matcolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef LBFill
+		{
+			rect	32,32,76,347
+			visible	1
+			backcolor	0.517,0.615,0.517,0.5
+		}
+	}
+	windowDef UACLogo1
+	{
+		rect	42,407,118,45
+		background	"guis/assets/cpuserver/logo.tga"
+		visible	1
+		matcolor	0.33, 0.4, 0.35, pdinout[ time * 0.001 ]/1.5
+	}
+	windowDef UACLogo2
+	{
+		rect	42,407,118,45
+		background	"guis/assets/cpuserver/logo2.tga"
+		visible	1
+		matcolor	0.33, 0.4, 0.35, 1
+	}
+	windowDef GreenBox
+	{
+		rect	173,96,432,240
+		visible	1
+		windowDef GBCornerTL
+		{
+			rect	0,0,-16,-16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBCornerTR
+		{
+			rect	414,0,16,-16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBCornerBL
+		{
+			rect	0,222,-16,16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBCornerBR
+		{
+			rect	414,222,16,16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideT
+		{
+			rect	16,0,398,-16
+			background	"guis/assets/caverns/boxh"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideB
+		{
+			rect	16,222,398,16
+			background	"guis/assets/caverns/boxh"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideL
+		{
+			rect	0,16,-16,206
+			background	"guis/assets/caverns/boxv"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideR
+		{
+			rect	414,16,16,206
+			background	"guis/assets/caverns/boxv"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBBgFill
+		{
+			rect	16,16,398,206
+			backcolor	0.68, 0.75, 0.53, 0.7
+			visible	1
+		}
+	}
+	windowDef TitleText
+	{
+		rect	24,31,592,55
+		visible	1
+		forecolor	1,1,1,0.6
+		text	"#str_00107"
+		textscale	1
+		textalign	1
+		textaligny	-2
+	}
+	windowDef HatchText
+	{
+		rect	67,112,65,291
+		visible	1
+		forecolor	0.352,0.4,0.364,0.6
+		text	"#str_00090"
+		textscale	0.95
+		textaligny	-2
+		textalign	1
+	}
+	windowDef WarningText1
+	{
+		rect	185,329,418,56
+		visible	1
+		forecolor	0.25,0.15,0.1,0.6
+		text	"#str_00092"
+		textscale	1
+		textaligny	-2
+		textalign	1
+	}
+	windowDef WarningText2
+	{
+		rect	178,379,430,71
+		visible	1
+		forecolor	0.25,0.15,0.1,0.4
+		text	"#str_00324"
+		textscale	0.72
+		textaligny	-2
+		textalign	1
+	}
+	windowDef TriggerButton
+	{
+		rect	185,95,421,233
+		text	"#str_00325"
+		textscale	1.5
+		textalign	1
+		forecolor	1,1,1,0.3
+		cursor	1
+		textaligny	0
+		visible	1
+		notime	1
+	}
+	windowDef Flicker1
+	{
+		rect	0 ,0 ,640 ,-480
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0.6, 0.9, 1, 0.1
+		visible	1
+		noevents	1
+
+		onTime 0 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "400" ;
+		}
+
+		onTime 800 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 1500 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "300" ;
+		}
+
+		onTime 2000 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 3500 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Flicker2
+	{
+		rect	0, 0 ,-640 ,480
+		visible	1
+		background	"gui/testmat"
+		matcolor	1, 1, 1, 0.1
+		noevents	1
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,660 ,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 6
+		noevents	1
+	}
+	windowDef Mask
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+		noevents	1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		noevents	1
+	}
+	windowDef Addhighlight
+	{
+		rect	5,5,-630,470
+		background	"gui/addhighlight"
+		matcolor	1 ,0.4 ,0.1 ,1
+		visible	1
+		noevents	1
+	}
+	windowDef scanlinesAlt
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	0 ,0 ,-640 ,-480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Dirt3
+	{
+		rect	-5 ,-5 ,-650 ,490
+		matcolor	0.25, 0.13, 0.05 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt7"
+		noevents	1
+	}
+	windowDef AngledReflect
+	{
+		rect	-146,16,-770,450
+		matcolor	1 ,0.3 ,0 ,0.3
+		visible	1
+		background	"gui/reflect4"
+		noevents	1
+	}
+	windowDef TriggerButton1
+	{
+		rect	197,98,382,233
+		cursor	1
+		visible	1
+		notime	1
+		float	"open"	0
+
+		onMouseEnter {
+			transition "TriggerButton::forecolor" "1 1 1 0.4" "1 1 1 0.6" "200" ;
+			transition "GBCornerTL::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBCornerTR::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBCornerBL::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBCornerBR::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBSideT::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBSideB::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBSideL::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBSideR::matcolor" "1 1 1 0.7" "1 1 1 1" "200" ;
+			transition "GBBgFill::backcolor" "0.68 0.75 0.53 0.7" "0.68 0.75 0.53 1" "200" ;
+		}
+
+		onMouseExit {
+			transition "TriggerButton::forecolor" "1 1 1 0.6" "1 1 1 0.4" "200" ;
+			transition "GBCornerTL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerTR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerBL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerBR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideT::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideB::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBBgFill::backcolor" "0.68 0.75 0.53 1" "0.68 0.75 0.53 0.7" "200" ;
+		}
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm6" ;
+			resetTime "0" ;
+			set "noevents" "1" ;
+			transition "TriggerButton::forecolor" "1 1 1 0.6" "1 1 1 0.4" "200" ;
+			transition "GBCornerTL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerTR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerBL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBCornerBR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideT::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideB::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideL::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBSideR::matcolor" "1 1 1 1" "1 1 1 0.7" "200" ;
+			transition "GBBgFill::backcolor" "0.68 0.75 0.53 1" "0.68 0.75 0.53 0.7" "200" ;
+		}
+
+		onTime 0 {
+			transition "TriggerButton::forecolor" "1 1 1 0.4" "1 1 1 0" "300" ;
+			set "HatchText::text" "-" ;
+		}
+
+		onTime 300 {
+			if ("open" == 0)
+			{
+				set "TriggerButton::text" "#str_00326" ;
+				set "open" "1" ;
+			} else {
+				set "TriggerButton::text" "#str_00325" ;
+				set "open" "0" ;
+			}
+		}
+
+		onTime 200 {
+			set "HatchText::text" "-\n-" ;
+		}
+
+		onTime 400 {
+			set "HatchText::text" "-\n-\n-" ;
+		}
+
+		onTime 600 {
+			set "HatchText::text" "-\n-\n-\n-" ;
+		}
+
+		onTime 800 {
+			set "HatchText::text" "-\n-\n-\n-\n-" ;
+		}
+
+		onTime 1000 {
+			set "HatchText::text" "-\n-\n-\n-\n-\n-" ;
+		}
+
+		onTime 1200 {
+			transition "TriggerButton::forecolor" "1 1 1 0" "1 1 1 0.4" "300" ;
+			if ("open" == 0)
+			{
+				set "HatchText::text" "#str_00090" ;
+			} else {
+				set "HatchText::text" "#str_00091" ;
+			}
+		}
+
+		onTime 1500 {
+			set "noevents" "0" ;
+		}
+
+	}
+}

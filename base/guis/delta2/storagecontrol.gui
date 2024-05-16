@@ -1,0 +1,1090 @@
+windowDef Desktop
+{
+	comment	"gui_parms 1-9 correspond to the same # on the number selection area.\n\nset gui_parm10 to 0 to allow button clicks, set to 1 to disable clicks. Set parm11-19 to 1 if a container slot can be selected, 0 if it can't. parm11 = slot 1, parm 12 = slot 2, parm13 = slot 3, etc."
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,1
+	visible	1
+	float	"textswitch"	0
+	float	"runonce"	1
+	float	"tracker"	0
+
+	onEvent {
+		if ("gui::gui_parm10" == 1) {
+			set "Clickcatch::rect" "0 0 640 480" ;
+			set "BGWarn::matcolor" "1 0 0 0.5" ;
+			set "Title2::text" "#str_03314" ;
+			set "Title4::text" "#str_03315" ;
+			
+			set "runonce" "0" ;
+			if ("textswitch" == 1) { 
+				set "Title3::text" "#str_03316" ;
+			} else {
+				set "Title3::text" "#str_03317" ;			
+			}
+			
+		} else  {
+			set "Clickcatch::rect" "0 0 0 0" ;
+			set "BGWarn::matcolor" "0.4 1 0.5 0.5" ;
+			set "Title4::text" "#str_03318" ;
+			
+			if ("runonce" == 0) { 
+				set "runonce" "1" ;
+				set "binarrow1::matcolor" "0 0 0 0" ;
+				set "binarrow2::matcolor" "0 0 0 0" ;
+				set "binarrow3::matcolor" "0 0 0 0" ;
+				set "binarrow4::matcolor" "0 0 0 0" ;
+				set "binarrow5::matcolor" "0 0 0 0" ;
+				set "binarrow6::matcolor" "0 0 0 0" ;
+				set "binarrow7::matcolor" "0 0 0 0" ;
+				set "binarrow8::matcolor" "0 0 0 0" ;
+				set "binarrow9::matcolor" "0 0 0 0" ;
+				
+				set "binsel1::matcolor" "0 0 0 0" ;
+				set "binsel2::matcolor" "0 0 0 0" ;
+				set "binsel3::matcolor" "0 0 0 0" ;
+				set "binsel4::matcolor" "0 0 0 0" ;
+				set "binsel5::matcolor" "0 0 0 0" ;
+				set "binsel6::matcolor" "0 0 0 0" ;
+				set "binsel7::matcolor" "0 0 0 0" ;
+				set "binsel8::matcolor" "0 0 0 0" ;
+				set "binsel9::matcolor" "0 0 0 0" ;
+				
+				if ("textswitch" == 0) { 
+					set "tracker" "0" ;
+					set "Title3::text" "#str_03319" ;
+					set "Title2::text" "#str_03320" ;
+					set "textswitch" "1" ;
+					
+					set "binarrow1::rect" "129 55 42 -32" ;
+					set "binarrow2::rect" "325 55 42 -32" ;
+					set "binarrow3::rect" "520 55 42 -32" ;
+					
+					set "binarrow4::rect" "129 154 42 -32" ;
+					set "binarrow5::rect" "325 154 42 -32" ;
+					set "binarrow6::rect" "520 154 42 -32" ;
+					
+					set "binarrow7::rect" "129 253 42 -32" ;
+					set "binarrow8::rect" "325 253 42 -32" ;
+					set "binarrow9::rect" "520 253 42 -32" ;						
+				} else {
+					set "tracker" "1" ;
+					set "Title3::text" "#str_03321" ;
+					set "Title2::text" "#str_03322" ;
+					set "textswitch" "0" ;
+					
+					set "binarrow1::rect" "129 52 42 32" ;
+					set "binarrow2::rect" "325 52 42 32" ;
+					set "binarrow3::rect" "520 52 42 32" ;
+					
+					set "binarrow4::rect" "129 151 42 32" ;
+					set "binarrow5::rect" "325 151 42 32" ;
+					set "binarrow6::rect" "520 151 42 32" ;
+					
+					set "binarrow7::rect" "129 250 42 32" ;
+					set "binarrow8::rect" "325 250 42 32" ;
+					set "binarrow9::rect" "520 250 42 32" ;					
+				}
+			}			
+		}
+	}
+
+	windowDef CircClip
+	{
+		rect	5,5,630,470
+		visible	1
+		windowDef Circle01
+		{
+			rect	-141,-175,878,820
+			visible	1
+			background	"gui/spin1alt"
+			matcolor	1, 0.4, 0, 0.05
+		}
+		windowDef Circle11
+		{
+			rect	-98,-135,-792,740
+			visible	1
+			background	"gui/spin2alt"
+			matcolor	1, 0.4, 0, 0.1
+		}
+		windowDef Circle21
+		{
+			rect	-48,-95,685,640
+			visible	1
+			background	"gui/spin3alt"
+			matcolor	1, 0.4, 0, 0.15
+		}
+		windowDef Circle31
+		{
+			rect	-18,-60,-621,580
+			visible	1
+			background	"gui/spin4alt"
+			matcolor	1, 0.4, 0, 0.2
+		}
+		windowDef Circle41
+		{
+			rect	19,-21,546,510
+			visible	1
+			background	"gui/spin5alt"
+			matcolor	1, 0.4, 0, 0.25
+		}
+		windowDef Circle51
+		{
+			rect	56,11,-471,440
+			visible	0
+			background	"gui/spin6"
+			matcolor	0.5, 0.6, 0.6, 0.3
+		}
+	}
+	windowDef CircCropBlack1
+	{
+		rect	-22,0,683,82
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0,0,0.9
+	}
+	windowDef CircCropBlack2
+	{
+		rect	-21,376,681,111
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0,0,0.9
+	}
+	windowDef CircCropBlack3
+	{
+		rect	597,66,56,327
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0,0,0.9
+	}
+	windowDef BGWarn
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/delta2/warn"
+		matcolor	0.4,1,0.5,0.4
+	}
+	windowDef BgImage
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/delta2/bglow3"
+		matcolor	1, 0.8, 0.3, 0.7
+	}
+	windowDef SelectWins
+	{
+		rect	9,80,593,303
+		visible	1
+		windowDef bin1
+		{
+			rect	-10,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel1
+		{
+			rect	-10,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall1
+		{
+			rect	114,40,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow1
+		{
+			rect	129,52,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin2
+		{
+			rect	184,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel2
+		{
+			rect	184,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall2
+		{
+			rect	310,40,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow2
+		{
+			rect	325,52,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin3
+		{
+			rect	379,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel3
+		{
+			rect	379,-9,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall3
+		{
+			rect	505,40,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow3
+		{
+			rect	520,52,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin4
+		{
+			rect	-10,88,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel4
+		{
+			rect	-10,88,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall4
+		{
+			rect	114,139,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow4
+		{
+			rect	129,151,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin5
+		{
+			rect	184,88,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel5
+		{
+			rect	184,88,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall5
+		{
+			rect	310,139,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow5
+		{
+			rect	325,151,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin6
+		{
+			rect	379,88,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel6
+		{
+			rect	379,88,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall6
+		{
+			rect	505,139,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow6
+		{
+			rect	520,151,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin7
+		{
+			rect	-11,187,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel7
+		{
+			rect	-11,187,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall7
+		{
+			rect	114,238,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow7
+		{
+			rect	129,250,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin8
+		{
+			rect	184,187,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel8
+		{
+			rect	184,187,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall8
+		{
+			rect	310,238,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow8
+		{
+			rect	325,250,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+		windowDef bin9
+		{
+			rect	379,187,159,119
+			visible	1
+			background	"guis/assets/delta2/bin"
+			matcolor	1, 0.7, 0.3, 0.75
+		}
+		windowDef binsel9
+		{
+			rect	379,187,159,119
+			visible	1
+			background	"guis/assets/delta2/binsel"
+			matcolor	1,0,0,0
+		}
+		windowDef bincall9
+		{
+			rect	505,238,79,59
+			visible	1
+			background	"guis/assets/delta2/callout"
+			matcolor	1, 0.7, 0.4, 0.25
+		}
+		windowDef binarrow9
+		{
+			rect	520,250,42,32
+			visible	1
+			background	"guis/assets/delta2/arrow"
+			matcolor	0,0,0,0
+		}
+	}
+	windowDef Addhighlight11
+	{
+		rect	7,7,-627,464
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.6 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight2
+	{
+		rect	7,200,627,-271
+		background	"gui/addhighlight"
+		matcolor	0.8 ,0.6 ,0.4 ,1
+		visible	1
+	}
+	windowDef Logo1
+	{
+		rect	20,23,600,440
+		visible	0
+		background	"guis/assets/common/mlogo"
+		matcolor	1, 1, 0.6, 0.2
+	}
+	windowDef Access
+	{
+		rect	0 ,0 ,640 ,480
+		visible	0
+		background	"guis/assets/keypad/access"
+		matcolor	1, 0.5, 0, 1
+	}
+	windowDef Overlay1
+	{
+		rect	0 ,0 ,640 ,480
+		visible	0
+		background	"gui/pdadoor/overlay"
+		matcolor	1 ,1 ,1 ,1
+	}
+	windowDef Background
+	{
+		rect	0 ,0 ,640 ,480
+		visible	0
+		background	"guis/assets/doors/pdabg"
+		matcolor	1, 0.45, 0, 0.5
+	}
+	windowDef Background2
+	{
+		rect	42,14,555,477
+		visible	0
+		background	"guis/assets/doors/pdabg3"
+		matcolor	1, 0.7, 0.4, 0.5
+	}
+	windowDef KeypadParent
+	{
+		rect	5,2,640,480
+		visible	1
+		windowDef One
+		{
+			rect	12,88,124,83
+			text	"1"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm11" == 1) { 
+						transition "binsel1::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel1::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm11" == 1) { 
+						transition "binsel1::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel1::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel1::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm11" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm1" ;
+						set "binsel1::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow1::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm11" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm1" ;
+						set "binsel1::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow1::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Two
+		{
+			rect	204,88,124,83
+			text	"2"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm12" == 1) { 
+						transition "binsel2::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel2::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm12" == 1) { 
+						transition "binsel2::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel2::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel2::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm12" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm2" ;
+						set "binsel2::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow2::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm12" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm2" ;
+						set "binsel2::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow2::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Three
+		{
+			rect	400,88,124,83
+			text	"3"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm13" == 1) { 
+						transition "binsel3::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel3::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm13" == 1) { 
+						transition "binsel3::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel3::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel3::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm13" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm3" ;
+						set "binsel3::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow3::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm13" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm3" ;
+						set "binsel3::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow3::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Four
+		{
+			rect	9,183,124,86
+			text	"4"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm14" == 1) { 
+						transition "binsel4::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel4::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm14" == 1) { 
+						transition "binsel4::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel4::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel4::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm14" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm4" ;
+						set "binsel4::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow4::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm14" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm4" ;
+						set "binsel4::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow4::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Five
+		{
+			rect	204,183,124,86
+			text	"5"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm15" == 1) { 
+						transition "binsel5::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel5::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm15" == 1) { 
+						transition "binsel5::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel5::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel5::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm15" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm5" ;
+						set "binsel5::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow5::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm15" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm5" ;
+						set "binsel5::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow5::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Six
+		{
+			rect	400,183,124,86
+			text	"6"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm16" == 1) { 
+						transition "binsel6::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel6::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm16" == 1) { 
+						transition "binsel6::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel6::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel6::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm16" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm6" ;
+						set "binsel6::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow6::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm16" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm6" ;
+						set "binsel6::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow6::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Seven
+		{
+			rect	12,282,124,86
+			text	"7"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm17" == 1) { 
+						transition "binsel7::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel7::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm17" == 1) { 
+						transition "binsel7::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel7::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel7::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm17" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm7" ;
+						set "binsel7::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow7::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm17" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm7" ;
+						set "binsel7::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow7::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+		windowDef Eight
+		{
+			rect	206,282,124,86
+			text	"8"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm18" == 1) { 
+						transition "binsel8::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel8::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm18" == 1) { 
+						transition "binsel8::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel8::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel8::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm18" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm8" ;
+						set "binsel8::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow8::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm18" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm8" ;
+						set "binsel8::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow8::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+/*
+			onMouseEnter {
+				transition "binsel8::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+			}
+
+			onMouseExit {
+				transition "binsel8::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				set	"cmd" "play guisounds_error" ; 
+			}
+*/
+		}
+		windowDef Nine
+		{
+			rect	401,282,124,86
+			text	"9"
+			textscale	1
+			textalign	1
+			textaligny	5
+			forecolor	1,1,1,0.8
+			visible	1
+			font	"fonts/micro"
+
+			onMouseEnter {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm19" == 1) { 
+						transition "binsel9::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					} else {
+						transition "binsel9::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					}					
+				} else {
+					if ("gui::gui_parm19" == 1) { 
+						transition "binsel9::matcolor" "1 0 0 0" "1 0 0 0.15" "250" ;
+					} else {
+						transition "binsel9::matcolor" "0 1 0 0" "0 1 0 0.15" "250" ;
+					}				
+				}
+			}
+
+			onMouseExit {
+				transition "binsel9::matcolor" "1 0 0 0" "1 0 0 0" "250" ;
+			}
+
+			onAction {
+				if ("desktop::tracker" == 0) { 
+					if ("gui::gui_parm19" == 1) { 			
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm9" ;
+						set "binsel9::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow9::matcolor" "0 0 0 0.8" ;
+					} else {
+						set	"cmd" "play guisounds_error" ; 
+					}	
+				} else {
+					if ("gui::gui_parm19" == 1) { 			
+						set	"cmd" "play guisounds_error" ; 
+					} else {
+						set	"cmd" "play guisounds_click" ; 
+						runScript	"gui::gui_parm9" ;
+						set "binsel9::matcolor" "1 0.7 0.3 0.5" ;
+						set "Binarrow9::matcolor" "0 0 0 0.8" ;
+					}				
+				}					
+			}
+
+		}
+	}
+	windowDef Title1
+	{
+		rect	210,-1,421,43
+		visible	1
+		forecolor	1,0.8,0.5,0.8
+		text	"#str_03323"
+		textscale	0.61
+		font	"fonts/micro"
+	}
+	windowDef Title2
+	{
+		rect	11,378,612,43
+		visible	1
+		forecolor	1,0.698,0.2,0.8
+		text	"#str_03320"
+		textscale	0.61
+		font	"fonts/micro"
+		textalign	2
+	}
+	windowDef Title3
+	{
+		rect	9,417,612,57
+		visible	1
+		forecolor	1,1,1,0.6
+		text	"#str_03319"
+		textscale	0.81
+		font	"fonts/micro"
+		textalign	2
+	}
+	windowDef Title4
+	{
+		rect	210,35,382,43
+		visible	1
+		forecolor	1,1,1,0.4
+		text	"#str_03318"
+		textscale	0.61
+		font	"fonts/micro"
+	}
+	windowDef Reflect
+	{
+		rect	0 ,-10 ,-640 ,480
+		matcolor	1 ,1 ,1 ,0.12
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef ClickCatch
+	{
+		rect	0,0,0,0
+		visible	1
+
+		onAction {
+			set	"cmd" "play guisounds_error" ; 
+		}
+
+	}
+	windowDef Static1
+	{
+		rect	-9,-9,-660,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+	}
+	windowDef Outerglow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 6
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight1
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.5 ,0.4 ,0.15 ,1
+		visible	1
+	}
+	windowDef Scanlines1
+	{
+		rect	0,0,-640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+		matscaley	1.5
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt3"
+		noevents	1
+	}
+	windowDef Reflect1
+	{
+		rect	0,-9,-640,480
+		matcolor	1 ,1 ,1 ,0.05
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+}

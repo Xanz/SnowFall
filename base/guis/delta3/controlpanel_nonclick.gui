@@ -1,0 +1,368 @@
+windowDef Desktop
+{
+	comment	"This GUI activates a script command once. Set the script name as a keyval, KEY Gui_Parm6 value script_name"
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+	windowDef BgBlack
+	{
+		rect	-1,0,646,481
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0,0,0.9
+	}
+	windowDef TriggerButton
+	{
+		rect	73,75,505,289
+		background	"guis/assets/elevator/highlight"
+		matcolor	1, 1, 1, 0.1
+		text	"#str_03421"
+		textscale	1
+		textalign	1
+		forecolor	1, 1, 1, 0.4
+		cursor	1
+		textaligny	60
+		visible	0
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0.1" "1 1 1 0.3" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.3" "1 1 1 0.1" "200" ; 
+		}
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm6" ;
+			transition 	"forecolor" "1 1 1 0.4" "1 1 1 0" "300" ;
+			transition	"matcolor" "1 1 1 0.5" "1 1 1 0" "300" ; 
+			set 		"noevents" "1" ;
+			set		"cursor" "0" ;
+			set 		"Text2::visible" "1"
+		}
+
+	}
+	windowDef BGHexGrid
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.07
+		matscalex	8
+		matscaley	7
+	}
+	windowDef BGTicks
+	{
+		rect	0,0,640,336
+		visible	1
+		windowDef TickLines11
+		{
+			rect	17,34,20,260
+			visible	1
+			background	"gui/tickline"
+			matcolor	0.3,0.8,1,0.5
+		}
+		windowDef TickLinesMask11
+		{
+			rect	17,43,41,-123
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLinesMask21
+		{
+			rect	17,165,41,121
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLines41
+		{
+			rect	604,34,20,262
+			visible	1
+			background	"gui/tickline"
+			matcolor	0.3,0.8,1,0.5
+		}
+		windowDef TickLinesMask31
+		{
+			rect	584,40,41,-125
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLinesMask41
+		{
+			rect	584,164,41,122
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+	}
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,1,1,0.5
+	}
+	windowDef BottomArea
+	{
+		rect	0,280,640,200
+		visible	1
+		windowDef BGFill4
+		{
+			rect	80,34,478,16
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.8,1,1,0.1
+			notime	1
+		}
+		windowDef BGFill5
+		{
+			rect	7,18,625,13
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.8,1,1,0.1
+			notime	1
+		}
+		windowDef ButtonAreaBG
+		{
+			rect	16,45,616,143
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.8,1,1,0.1
+			notime	1
+		}
+		windowDef ButtonAreaBG1
+		{
+			rect	35,59,574,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0.7
+			notime	1
+		}
+		windowDef ButtonAreaBG2
+		{
+			rect	35,88,574,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0.7
+			notime	1
+		}
+		windowDef ButtonAreaBG3
+		{
+			rect	35,117,574,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0.7
+			notime	1
+		}
+		windowDef ButtonAreaBG4
+		{
+			rect	35,145,574,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0.7
+			notime	1
+		}
+		windowDef TextBtnBG1
+		{
+			rect	67,59,523,24
+			text	"#str_03344"
+			font	"fonts/micro"
+			textscale	0.31
+			forecolor	0.8,1,1,0.5
+			visible	1
+		}
+		windowDef TextBtnBG2
+		{
+			rect	67,88,523,24
+			text	"#str_03345"
+			font	"fonts/micro"
+			textscale	0.31
+			forecolor	0.8,1,1,0.5
+			visible	1
+		}
+		windowDef TextBtnBG3
+		{
+			rect	67,117,523,24
+			text	"#str_03346"
+			font	"fonts/micro"
+			textscale	0.31
+			forecolor	0.8,1,1,0.5
+			visible	1
+		}
+		windowDef TextBtnBG4
+		{
+			rect	67,144,523,24
+			text	"#str_03347"
+			font	"fonts/micro"
+			textscale	0.31
+			forecolor	0.8,1,1,0.5
+			visible	1
+		}
+	}
+	windowDef BGFrame
+	{
+		rect	3,4,637,479
+		visible	1
+		windowDef TLCorner
+		{
+			rect	0,0,-84,-44
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TRCorner
+		{
+			rect	550,0,84,-44
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top
+		{
+			rect	84,0,466,44
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BLCorner
+		{
+			rect	0,431,-84,44
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall1"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom
+		{
+			rect	84,431,466,-44
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BRCorner
+		{
+			rect	550,431,84,44
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall1"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right
+		{
+			rect	592,44,42,253
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Left1
+		{
+			rect	0,44,-42,253
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef RightSpacer
+		{
+			rect	550,297,84,44
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef LeftSpacer
+		{
+			rect	0,297,-84,44
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right1
+		{
+			rect	592,341,42,90
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Left11
+		{
+			rect	0,341,-42,90
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+	}
+	windowDef TextControlstation
+	{
+		rect	19,126,599,132
+		text	"#str_03424"
+		font	"fonts/micro"
+		textscale	0.7
+		forecolor	1,1,1,0.6
+		visible	1
+		textalign	1
+	}
+	windowDef IDTypeText
+	{
+		rect	20,5,599,73
+		text	"#str_03339"
+		font	"fonts/micro"
+		textscale	1.20000005
+		forecolor	1,1,1,0.69803923
+		visible	1
+		textalign	1
+	}
+	windowDef IDCheckText
+	{
+		rect	20,65,599,36
+		text	"#str_03340"
+		font	"fonts/micro"
+		textscale	0.58
+		forecolor	1,1,1,0.4
+		visible	1
+		textalign	1
+	}
+	windowDef Reflect
+	{
+		rect	0,-9,-646,496
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Addhighlight1
+	{
+		rect	0,7,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.6 ,0.6 ,1
+		visible	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.05
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+	windowDef Static1
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+}

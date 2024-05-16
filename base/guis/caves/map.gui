@@ -1,0 +1,490 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	windowDef Background
+	{
+		rect	2,3,635,475
+		visible	1
+		windowDef BgFill
+		{
+			rect	32, 32, 571, 411
+			backcolor	0.59, 0.67, 0.59, 0.6
+		}
+		windowDef Top
+		{
+			rect	32, 0, 571, -32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Bottom
+		{
+			rect	32, 443, 571, 32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Left
+		{
+			rect	0, 32, -32, 411
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Right
+		{
+			rect	603, 32, 32, 411
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Corner1
+		{
+			rect	0, 0 ,-32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Corner2
+		{
+			rect	603, 0 ,32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Corner3
+		{
+			rect	0, 443 ,-32 ,32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 0.6
+		}
+		windowDef Corner4
+		{
+			rect	603, 443 ,32 ,32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 0.6
+		}
+	}
+	windowDef UACLogo1
+	{
+		rect	21,419,57,33
+		background	"guis/assets/cpuserver/logo.tga"
+		visible	1
+		matcolor	0.33, 0.4, 0.35, pdinout[ time * 0.001 ]/1.5
+	}
+	windowDef UACLogo2
+	{
+		rect	21,419,57,33
+		background	"guis/assets/cpuserver/logo2.tga"
+		visible	1
+		matcolor	0.53, 0.6, 0.55, 1
+	}
+	windowDef GreenBoxUp
+	{
+		rect	250,44,372,380
+		visible	1
+		windowDef GBCornerTL
+		{
+			rect	2,-2,-12,-20
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBCornerTR
+		{
+			rect	358,-2,12,-20
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBCornerBL
+		{
+			rect	2,364,-12,20
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 11, 1, 0.4
+			visible	1
+		}
+		windowDef GBCornerBR
+		{
+			rect	358,364,12,20
+			background	"guis/assets/caverns/box2c"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBSideT
+		{
+			rect	14,-2,344,-20
+			background	"guis/assets/caverns/box2h"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBSideB
+		{
+			rect	14,364,344,20
+			background	"guis/assets/caverns/box2h"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBSideL
+		{
+			rect	2,18,-12,346
+			background	"guis/assets/caverns/box2v"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBSideR
+		{
+			rect	358,18,12,346
+			background	"guis/assets/caverns/box2v"
+			matcolor	1, 1, 1, 0.4
+			visible	1
+		}
+		windowDef GBBgFill
+		{
+			rect	14,18,344,346
+			backcolor	0.517,0.615,0.517,0.4
+			visible	1
+		}
+		windowDef Grid
+		{
+			rect	9,13,355,355
+			visible	1
+			background	"gui/grid2"
+			matscalex	18
+			matscaley	8
+			matcolor	0, 0, 0, 0.1
+		}
+	}
+	windowDef Map
+	{
+		rect	259,59,354,353
+		visible	1
+		windowDef MapBottom
+		{
+			rect	248, -237, 409, 455
+			visible	1
+			background	"guis/assets/caverns/map2"
+			matcolor	0, 0, 0, 0.1
+		}
+		windowDef MapTop
+		{
+			rect	5, -250, 474, 611
+			visible	1
+			background	"guis/assets/caverns/map1"
+			matcolor	1, 1, 1, 0.3
+		}
+		windowDef MapSquare1
+		{
+			rect	270,105,60,70
+			background	"guis/assets/caverns/highlightboxsq"
+			matcolor	0, 0.05, 0.05, 0
+		}
+		windowDef MapSquare2
+		{
+			rect	95,185,32,60
+			background	"guis/assets/caverns/highlightboxsq"
+			matcolor	0, 0.05, 0.05, 0
+		}
+		windowDef MapAnim
+		{
+			rect	0, 0, 0, 0
+			visible	0
+//notime 1
+			onTime 0 {
+				set "MapText1::text" "#str_00341" ;
+				set "MapSquare1::rect" "40 125 55 60" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.5" "0 0.05 0.05 0" "2000" ;
+			}
+			onTime 1500 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+			}
+			onTime 2000 {
+				set "MapText2::text" "#str_00342" ;
+				set "MapSquare2::rect" "40 35 20 35" ;
+				transition "MapText2::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare2::matcolor" "0 0.05 0.05 0.6" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 3500 {
+				transition "MapText2::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "5 -250 474 611" "5 -150 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "248 -237 409 455" "248 -130 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 5500 {
+				set "MapText1::text" "#str_00343" ;
+				set "MapSquare1::rect" "70 115 58 70" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.4" "0 0.05 0.05 0" "2000" ;
+			}
+			onTime 7000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+			}
+			onTime 7500 {
+				set "MapText2::text" "#str_00344" ;
+				set "MapSquare2::rect" "95 185 32 60" ;
+				transition "MapText2::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare2::matcolor" "0 0.05 0.05 0.5" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 9000 {
+				transition "MapText2::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "5 -150 474 611" "-50 -130 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "248 -130 409 455" "195 -107 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 11000 {
+				set "MapText1::text" "#str_00345" ;
+				set "MapSquare1::rect" "75 175 32 70" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.5" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 12500 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "-50 -130 474 611" "-150 -170 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "195 -107 409 455" "100 -147 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 14500 {
+				set "MapText1::text" "#str_00346" ;
+				set "MapSquare1::rect" "60 120 55 110" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.3" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 16000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "-150 -170 474 611" "-300 -130 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "100 -147 409 455" "-40 -107 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 18000 {
+				set "MapText1::text" "#str_00347" ;
+				set "MapSquare1::rect" "80 170 60 100" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.3" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 19500 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "-300 -130 474 611" "-300 -50 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "-40 -107 409 455" "-40 -27 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 21500 {
+				set "MapText1::text" "#str_00348" ;
+				set "MapSquare1::rect" "100 140 35 60" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.5" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 23000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "400" ;
+				transition "MapTop::rect" "-300 -50 474 611" "-200 10 474 611" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "-40 -27 409 455" "49 33 409 455" "2000" "0.4" "0.6" ;
+			}
+			onTime 25000 {
+				set "MapText1::text" "#str_00349" ;
+				set "MapSquare1::rect" "85 140 45 60" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0 0.05 0.05 0.5" "0 0.05 0.05 0" "2000" ;
+			}
+
+			onTime 26500 {
+				transition "MapTop::rect" "-200 10 474 611" "-233 -5 514 651" "1500" "0.4" "0.1" ;
+				transition "MapBottom::rect" "49 33 409 455" "41 23 429 475" "1500" "0.4" "0.1" ;
+				transition "MapTop::matcolor" "1 1 1 0.3" "1 1 1 0.1" "1500" ;
+				transition "MapBottom::matcolor" "0 0 0 0.1" "0 0 0 0.2" "1500" ;
+			}
+
+			onTime 28000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+				transition "MapTop::rect" "-233 -5 514 651" "-237 55 514 651" "1500" "0.2" "0.6" ;
+				transition "MapBottom::rect" "41 23 429 475" "37 73 429 475" "1500" "0.2" "0.6" ;
+			}
+			onTime 29500 {
+				set "MapText1::text" "#str_00350" ;
+				set "MapSquare1::rect" "68 75 57 78" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0.8 0.85 0.85 0.5" "0.8 0.85 0.85 0" "2000" ;
+			}
+
+			onTime 31000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+				transition "MapTop::rect" "-237 55 514 651" "-288 -190 514 651" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "37 73 429 475" "-13 -157 429 475" "2000" "0.4" "0.6" ;
+			}
+			onTime 33000 {
+				set "MapText1::text" "#str_00351" ;
+				set "MapSquare1::rect" "140 140 60 90" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0.8 0.85 0.85 0.5" "0.8 0.85 0.85 0" "2000" ;
+			}
+
+			onTime 34500 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+				transition "MapTop::rect" "-288 -190 514 651" "-335 -190 514 651" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "-13 -157 429 475" "-53 -157 429 475" "2000" "0.4" "0.6" ;
+			}
+			onTime 36500 {
+				set "MapText1::text" "#str_00352" ;
+				set "MapSquare1::rect" "222 155 80 100" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0.8 0.85 0.85 0.5" "0.8 0.85 0.85 0" "2000" ;
+			}
+
+			onTime 38000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+				transition "MapTop::rect" "-335 -190 514 651" "-355 -60 514 651" "2000" "0.4" "0.6" ;
+				transition "MapBottom::rect" "-53 -157 429 475" "-73 -37 429 475" "2000" "0.4" "0.6" ;
+			}
+			onTime 40500 {
+				set "MapText1::text" "#str_00353" ;
+				set "MapSquare1::rect" "290 100 40 70" ;
+				transition "MapText1::forecolor" "0.15 0.2 0.2 0" "0.15 0.2 0.2 1" "500" ;
+				transition "MapSquare1::matcolor" "0.8 0.85 0.85 0.5" "0.8 0.85 0.85 0" "2000" ;
+			}
+
+			onTime 42000 {
+				transition "MapText1::forecolor" "0.15 0.2 0.2 1" "0.15 0.2 0.2 0" "500" ;
+
+				transition "MapTop::rect" "-355 -60 514 651" "5 -250 474 611" "4500" "0.5" "0.5" ;
+				transition "MapBottom::rect" "-73 -37 429 475" "248 -237 409 455" "4500" "0.5" "0.5" ;
+				transition "MapTop::matcolor" "1 1 1 0.1" "1 1 1 0.3" "4500" ;
+				transition "MapBottom::matcolor" "0 0 0 0.25" "0 0 0 0.1" "4500" ;
+			}
+
+			onTime 46500 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+		windowDef MapText1
+		{
+			rect	300,60,250,100
+			text	"#str_00354"
+			textscale	0.31
+			font	"fonts/bank"
+			forecolor	0.2,0.25,0.25,0
+		}
+		windowDef MapText2
+		{
+			rect	300,60,250,100
+			text	""
+			textscale	0.31
+			font	"fonts/bank"
+			forecolor	0.2,0.25,0.25,0
+		}
+	windowDef TextTitle1
+	{
+		rect	300,22,356,31
+		text	"#str_00355"
+		textscale	0.45
+		font	"fonts/bank"
+		forecolor	1,1,1,0.298
+		visible	1
+	//	textalign	2
+	}
+	windowDef TextTitle2
+	{
+		rect	23,22,225,31
+		text	"#str_00356"
+		textscale	0.45
+		font	"fonts/bank"
+		forecolor	1,1,1,0.3
+		textaligny	0
+		visible	1
+	}
+	windowDef TextDetailParent
+	{
+		rect	50,59,555,399
+		visible	1
+		windowDef TextDetail
+		{
+			rect	0,0,412,399
+			text	"#str_00357"
+			textscale	0.28
+			forceaspectwidth	1200
+			forecolor	0,0,0,0.55
+			cursor	1
+			visible	1
+			windowDef TextDetailComplex
+			{
+			}
+		}
+	}
+	windowDef Flicker1
+	{
+		rect	0 ,0 ,640 ,-480
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0.6, 0.9, 1, 0.1
+		visible	1
+
+		onTime 0 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "400" ;
+		}
+
+		onTime 800 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 1500 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "300" ;
+		}
+
+		onTime 2000 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 3500 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Flicker2
+	{
+		rect	5 ,5 ,-630 ,470
+		visible	1
+		background	"gui/testmat"
+		matcolor	1, 1, 1, 0.03
+	}
+	windowDef Mask
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+		noevents	1
+	}
+	windowDef Outerglow
+	{
+		rect	5 ,5 ,-630 ,470
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 2.8
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.6
+		visible	1
+	}
+	windowDef scanlinesAlt
+	{
+		rect	5 ,5 ,-630 ,470
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	3
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef AngledReflect
+	{
+		rect	-146,16,-770,450
+		matcolor	0.8 ,0.85 ,0.8 ,0.2
+		visible	1
+		background	"gui/reflect4"
+	}
+}

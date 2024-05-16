@@ -1,0 +1,253 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	windowDef CamView
+	{
+		rect	21,60,596,378
+		matcolor	1, 1, 1, 1
+		forecolor	1, 1, 1, 1
+		backcolor	0, 0, 0, 1
+		visible	1
+		background	"guis/assets/admin/cam1"
+
+		onTime 0 {
+			set "background" "guis/assets/admin/cam1" ;
+		}
+
+		onTime 50 {
+			set "background" "guis/assets/admin/cam2" ;
+		}
+
+		onTime 100 {
+			set "background" "guis/assets/admin/cam1" ;
+		}
+
+		onTime 250 {
+			set "background" "guis/assets/admin/cam2" ;
+		}
+
+		onTime 300 {
+			set "background" "guis/assets/admin/cam1" ;
+		}
+
+		onTime 800 {
+			set "background" "guis/assets/admin/cam2" ;
+		}
+
+		onTime 850 {
+			set "background" "guis/assets/admin/cam1" ;
+		}
+
+		onTime 2000 {
+			set "background" "guis/assets/admin/cam2" ;
+		}
+
+		onTime 2050 {
+			set "background" "guis/assets/admin/cam1" ;
+		}
+
+		onTime 3000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Black
+	{
+		rect	10,12,620,460
+		backcolor	0 ,0 ,0 ,1
+		visible	0
+	}
+	windowDef Static1
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdinout[ time * 0.0001 ] / 10
+	}
+	windowDef BgClip
+	{
+		rect	10,10,620,460
+		forecolor	1, 1, 1, 1
+		visible	1
+		windowDef SecondCenter
+		{
+			rect	11,389,595,-100
+			matcolor	0.4 ,0.5 ,0.45 ,1
+			background	"gui/yellowa/horiz"
+			visible	1
+		}
+		windowDef TopCenter
+		{
+			rect	11,-22,595,95
+			matcolor	0 ,0 ,0 ,1
+			background	"gui/yellowa/horiz"
+			visible	1
+		}
+	}
+	windowDef LocationText
+	{
+		rect	8,397,621,65
+		text	"#str_00011"
+		textscale	0.96
+		textalign	1
+		forecolor	1,1,1,0.7
+		visible	1
+		font	"fonts/micro"
+	}
+	windowDef StatusText
+	{
+		rect	60,18,227,50
+		text	"#str_00012"
+		textscale	0.65
+		forecolor	0.73 ,0.67 ,0.54 ,1
+		visible	1
+		font	"fonts/micro"
+		shadow	1
+	}
+	windowDef Statusbox
+	{
+		rect	35,34,20,16
+		matcolor	0.73 ,0.67 ,0.54 ,1
+		background	"guis/assets/camera/square_glow.tga"
+		visible	1
+
+		onTime 0 {
+			transition	"matcolor" "0.73 0.67 0.54 1" "0.73 0.67 0.54 0" "1000" ; 
+			transition	"StatusText::forecolor" "0.73 0.67 0.54 1" "0.73 0.67 0.54 0" "1000" ; 
+		}
+
+		onTime 1001 {
+			resetTime "0" ; 
+		}
+
+	}
+	windowDef LocationText2
+	{
+		rect	295,18,317,51
+		text	"#str_00013"
+		textscale	0.65
+		textalign	1
+		forecolor	1,1,1,0.6
+		visible	1
+		font	"fonts/micro"
+	}
+	windowDef BGFrame1
+	{
+		rect	5,5,630,470
+		visible	1
+		windowDef TLCorner1
+		{
+			rect	0,0,114,114
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef TLCornerCap
+		{
+			rect	114,54,401,55
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef TRCorner1
+		{
+			rect	515,0,-114,114
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef Top
+		{
+			rect	114,0,401,57
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef BLCorner1
+		{
+			rect	0,413,-114,57
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall1"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef Bottom
+		{
+			rect	114,413,401,-57
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef BRCorner1
+		{
+			rect	515,413,114,57
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall1"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef Right
+		{
+			rect	572,114,57,299
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+		windowDef Left11
+		{
+			rect	0,114,-57,299
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.7, 0.85, 0.8, 0.7
+		}
+	}
+	windowDef Reflect
+	{
+		rect	0 ,-20 ,-640 ,470
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Bglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.07
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,0,-640,479
+		background	"gui/addhighlight"
+		matcolor	0.3,0.4,0.4,0.8
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.6
+		visible	1
+	}
+	windowDef Dirt
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt4"
+	}
+}

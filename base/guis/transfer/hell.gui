@@ -1,0 +1,851 @@
+windowDef Desktop
+{
+	comment	"gui will be inactive until triggered"
+	rect	0 ,0 ,640 ,480
+	visible	1
+	background	"guis/assets/common/bg_rc.tga"
+	matcolor	0,0,0,0
+	float	"triggered"	0
+
+	onTrigger {
+		set "triggered" "1" ;
+		set "NoTriggerButton::visible" "0" ;
+		set "NoTriggerButton1::text" "#str_04042" ;
+		set "TriggerButton1::visible" "1" ;
+		set "TriggerButton::visible" "1" ;
+		set "Button::visible" "1" ;
+		set "TextDControl::forecolor" "0.6 0.8 1 0.7" ;
+		resetTime "spin" "0" ;
+		resetTime "bgframe" "0" ;
+		set "Spin7::visible" "0" ;
+		set "BackgroundH1::visible" "0" ;
+		set "BackgroundH22::visible" "0" ;
+		set "BackgroundH2::visible" "0" ;
+		set "Faces1::visible" "0" ;
+		set "BackgroundH4::visible" "0" ;
+		set "LinesClip::visible" "0" ;
+	}
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,0,0,1
+	}
+	windowDef BackgroundH1
+	{
+		rect	19,-1,593,-386
+		visible	1
+		background	"guis/assets/common/pentagramfx"
+		matcolor	1, 1, 1, 0.3
+	}
+	windowDef BackgroundH22
+	{
+		rect	5,5,-630,470
+		visible	1
+		background	"gui/bloodtest1"
+		matcolor	0.2, 0, 0, 0.3
+	}
+	windowDef BackgroundH2
+	{
+		rect	5,5,-630,-470
+		visible	1
+		background	"gui/bloodtest1"
+		matcolor	0.2, 0, 0, 0.4
+	}
+	windowDef Faces1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/faces1"
+		matcolor	0.1, 0.05, 0.05, pdscaleTable[ time * 0.0003 ] /6
+	}
+	windowDef BackgroundH4
+	{
+		rect	5,5,-630,470
+		visible	1
+		background	"gui/bloodtest2"
+		matcolor	1, 1, 1, 0.2
+	}
+	windowDef DesktopClip
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef BGHexGrid
+		{
+			rect	5,5,630,470
+			visible	1
+			background	"gui/common/hexgrid"
+			matcolor	1,1,1,0.05
+			matscalex	10
+			matscaley	9
+		}
+		windowDef leftFlair1a
+		{
+			rect	8,165,99,135
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.05
+		}
+		windowDef leftFlair1b
+		{
+			rect	18,418,95,-38
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.2
+		}
+		windowDef leftFlair
+		{
+			rect	18,249,99,83
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.2
+		}
+		windowDef rightFlair1a
+		{
+			rect	534,165,-99,135
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.05
+		}
+		windowDef rightFlair1b
+		{
+			rect	528,418,-95,-38
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.2
+		}
+		windowDef rightFlair
+		{
+			rect	524,249,-99,83
+			visible	1
+			background	"guis/assets/teleporter/stationflair"
+			matcolor	1,1,1,0.2
+		}
+		windowDef Spin7
+		{
+			rect	12,72,608,379
+			visible	1
+
+			onTime 0 {
+				transition "Spin3Top::matcolor" "1 0.2 0.2 0.5" "1 0.2 0.2 0.1" "500" ;
+			}
+
+			onTime 250 {
+				transition "Spin2Top::matcolor" "1 0.2 0.2 0.5" "1 0.2 0.2 0.1" "500" ;
+			}
+
+			onTime 500 {
+				transition "Spin1Top::matcolor" "1 0 0 0.5" "1 0.2 0.2 0.1" "500" ;
+			}
+
+			onTime 1000 {
+				transition "Spin3Top::matcolor" "1 0.2 0.2 0.1" "1 0.2 0.2 0.5" "500" ;
+			}
+
+			onTime 1250 {
+				transition "Spin2Top::matcolor" "1 0.2 0.2 0.1" "1 0.2 0.2 0.5" "500" ;
+			}
+
+			onTime 1500 {
+				transition "Spin1Top::matcolor" "1 0.2 0.2 0.1" "1 0 0 0.5" "500" ;
+				resetTime "0" ;
+			}
+
+			windowDef MatBox2
+			{
+				rect	33,-68,545,-369
+				visible	1
+				background	"guis/assets/efc/scroll2"
+				matcolor	1 ,0 ,0,0.3
+			}
+			windowDef Spin31
+			{
+				rect	220,71,172,116
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	0,0,0,1
+			}
+			windowDef Spin21
+			{
+				rect	185,46,-243,165
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	0,0,0,1
+			}
+			windowDef Spin11
+			{
+				rect	135,12,342,235
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	0,0,0,1
+			}
+			windowDef Spin1Top
+			{
+				rect	132,10,350,238
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	1,0.2,0.2,0.5
+			}
+			windowDef Spin2Top
+			{
+				rect	181,46,-250,168
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	1,0.2,0.2,0.5
+			}
+			windowDef Spin3Top
+			{
+				rect	219,70,176,118
+				visible	1
+				background	"gui/thermal/spin"
+				matcolor	1,0,0,0.5
+			}
+		}
+		windowDef Spin
+		{
+			rect	19,75,603,346
+			visible	1
+			notime	1
+
+			onTime 0 {
+				transition "Spin6::rect" "272 175 53 27" "255 164 88 49" "500" ;
+				transition "Spin6::matcolor" "1 1 1 0" "1 1 1 0.01" "500" ;
+				transition "Spin5::rect" "255 164 88 49" "224 146 150 84" "500" ;
+				transition "Spin5::matcolor" "1 1 1 0.01" "1 1 1 0.02" "500" ;
+				transition "Spin4::rect" "224 146 150 84" "177 119 244 140" "500" ;
+				transition "Spin4::matcolor" "1 1 1 0.02" "1 1 1 0.03" "500" ;
+				transition "Spin3::rect" "177 119 244 140" "108 74 384 229" "500" ;
+				transition "Spin3::matcolor" "1 1 1 0.03" "1 1 1 0.04" "500" ;
+				transition "Spin2::rect" "108 74 384 229" "0 0 604 378" "500" ;
+				transition "Spin2::matcolor" "1 1 1 0.04" "1 1 1 0.05" "500" ;
+				transition "Spin1::rect" "0 0 604 378" "-176 -114 963 615" "500" ;
+				transition "Spin1::matcolor" "1 1 1 0.05" "1 1 1 0.06" "500" ;
+				transition "Spin0::rect" "-176 -114 963 615" "-297 -300 1234 921" "500" ;
+				transition "Spin0::matcolor" "1 1 1 0.06" "1 1 1 0.07" "500" ;
+			}
+
+			onTime 488 {
+				resetTime "0" ;
+			}
+
+			windowDef Spin0
+			{
+				rect	-176,-114,963,615
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.06
+			}
+			windowDef Spin1
+			{
+				rect	0,0,604,378
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.05
+			}
+			windowDef Spin2
+			{
+				rect	108,74,384,229
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.04
+			}
+			windowDef Spin3
+			{
+				rect	177,119,244,140
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.03
+			}
+			windowDef Spin4
+			{
+				rect	224,146,150,84
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.02
+			}
+			windowDef Spin5
+			{
+				rect	255,164,88,49
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0.01
+			}
+			windowDef Spin6
+			{
+				rect	272,175,53,27
+				visible	1
+				background	"gui/teleporter/spin"
+				matcolor	1,1,1,0
+			}
+		}
+		windowDef LinesClip
+		{
+			rect	0,71,624,409
+			visible	1
+			windowDef LinesClipSub
+			{
+				rect	10,-83,640,565
+				visible	1
+				windowDef vertLine
+				{
+					rect	168,30,3,404
+					bordersize	0
+					background	"guis/assets/dot"
+					matcolor	1 ,0.8 ,0.5 ,0.3
+					visible	1
+				}
+				windowDef horizLine
+				{
+					rect	11,144,618,5
+					bordersize	0
+					background	"guis/assets/dot"
+					matcolor	1 ,0.8 ,0.5 ,0.3
+					visible	1
+				}
+				windowDef flashBox
+				{
+					rect	431,93,24,35
+					visible	1
+					bordersize	2
+					bordercolor	0.77 ,0.88 ,0.61 ,0
+				}
+			}
+		}
+		windowDef NoTriggerButton
+		{
+			rect	25,50,590,261
+			visible	1
+			text	"#str_04043"
+			textscale	1.3
+			textalign	1
+			forecolor	1,0,0,0.6
+			cursor	1
+			textaligny	30
+			font	"fonts/bank"
+
+			onTime 0 {
+				transition "forecolor" "1 0 0 0.9" "1 0 0 0.6" "400" ;
+			}
+
+			onTime 400 {
+				transition "forecolor" "1 0 0 0.6" "1 0 0 0.9" "100" ;
+			}
+
+			onTime 500 {
+				resetTime "0" ;
+			}
+
+			onAction {
+				set "cmd" "play guisounds_error" ;
+			}
+
+		}
+		windowDef NoTriggerButton1
+		{
+			rect	22,336,599,78
+			visible	1
+			text	"#str_04044"
+			textscale	0.55
+			textalign	1
+			forecolor	1,1,1,0.8
+			cursor	1
+			font	"fonts/micro"
+		}
+		windowDef button
+		{
+			rect	60,68,525,269
+			visible	0
+			windowDef ButtonBGBlack
+			{
+				rect	49,28,422,-205
+				nocursor	1
+				background	"guis/assets/cpuserver/bg.tga"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef BtnMM
+			{
+				rect	-11,109,543,42
+				visible	0
+				background	"guis/assets/lightswitch/linebar"
+				matcolor	1, 1, 1, 0.2
+			}
+			windowDef BtnBM
+			{
+				rect	244,220,32,32
+				visible	1
+				background	"guis/assets/lightswitch/linemiddle"
+				matcolor	1, 1, 1, 0.4
+
+				onTime 0 {
+					transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+				}
+
+				onTime 500 {
+					transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+				}
+
+				onTime 1000 {
+					resetTime "0" ;
+				}
+
+			}
+			windowDef BtnBR
+			{
+				rect	260,124,-238,-133
+				visible	1
+				background	"guis/assets/lightswitch/linecorner"
+				matcolor	0.8,0.95,1,0.3
+			}
+			windowDef BtnBL
+			{
+				rect	22,124,238,-133
+				visible	1
+				background	"guis/assets/lightswitch/linecorner"
+				matcolor	0.8,0.95,1,0.3
+			}
+			windowDef BtnTM
+			{
+				rect	244,10,32,32
+				visible	1
+				background	"guis/assets/lightswitch/linemiddle"
+				matcolor	1, 1, 1, 0.4
+
+				onTime 0 {
+					transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+				}
+
+				onTime 500 {
+					transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+				}
+
+				onTime 1000 {
+					resetTime "0" ;
+				}
+
+			}
+			windowDef BtnTR
+			{
+				rect	260,0,-238,133
+				visible	1
+				background	"guis/assets/lightswitch/linecorner"
+				matcolor	0.8,0.95,1,0.3
+			}
+			windowDef BtnTL
+			{
+				rect	22,0,238,133
+				visible	1
+				background	"guis/assets/lightswitch/linecorner"
+				matcolor	0.8,0.95,1,0.3
+			}
+			windowDef BtnLeft
+			{
+				rect	34,112,20,39
+				visible	1
+				background	"guis/assets/lightswitch/linemiddle"
+				matcolor	1, 1, 1, 0.4
+
+				onTime 0 {
+					transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+				}
+
+				onTime 500 {
+					transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+				}
+
+				onTime 1000 {
+					resetTime "0" ;
+				}
+
+			}
+			windowDef BtnRight
+			{
+				rect	466,112,20,39
+				visible	1
+				background	"guis/assets/lightswitch/linemiddle"
+				matcolor	1, 1, 1, 0.4
+
+				onTime 0 {
+					transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+				}
+
+				onTime 500 {
+					transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+				}
+
+				onTime 1000 {
+					resetTime "0" ;
+				}
+
+			}
+		}
+		windowDef BGFrame
+		{
+			rect	3,3,634,474
+			visible	1
+			notime	1
+
+			onTime 0 {
+				transition "TRCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "Top2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "BRCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "RightSpacer::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "Right2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "LeftSpacer::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "Left2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "TLCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "BLCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "Bottom1::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+				transition "Bglow::matcolor" "1 0.2 0 0.1" "0.4 0.8 1 0.1" "500" ;
+				transition "BG1::matcolor" "1 0 0 0.5" "1 1 1 0.5" "500" ;
+			}
+
+			windowDef TRCorner
+			{
+				rect	589,0,-45,40
+				visible	1
+				background	"guis/assets/common/scibox/g_cornerRound2"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef Top2
+			{
+				rect	45,0,544,40
+				visible	1
+				background	"guis/assets/common/scibox/g_horiz"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef BRCorner
+			{
+				rect	544,435,90,40
+				visible	1
+				background	"guis/assets/common/scibox/g_cornerSmall"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef RightSpacer
+			{
+				rect	454,40,-180,49
+				visible	1
+				background	"guis/assets/common/scibox/g_spacerLarge"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef Right2
+			{
+				rect	588,89,46,346
+				visible	1
+				background	"guis/assets/common/scibox/g_vert"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef LeftSpacer
+			{
+				rect	0,40,180,49
+				visible	1
+				background	"guis/assets/common/scibox/g_spacerLarge"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef Left2
+			{
+				rect	0,89,-46,346
+				visible	1
+				background	"guis/assets/common/scibox/g_vert"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef TLCorner
+			{
+				rect	0,0,45,40
+				visible	1
+				background	"guis/assets/common/scibox/g_cornerRound2"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef BLCorner
+			{
+				rect	0,435,-90,40
+				visible	1
+				background	"guis/assets/common/scibox/g_cornerSmall"
+				matcolor	1,0.2,0,0.4
+			}
+			windowDef Bottom1
+			{
+				rect	90,435,454,-40
+				visible	1
+				background	"guis/assets/common/scibox/g_horiz"
+				matcolor	1,0.2,0,0.4
+			}
+		}
+		windowDef TriggerButton1
+		{
+			rect	83,92,479,226
+			visible	0
+			text	"#str_00902"
+			textscale	1.1
+			textalign	1
+			forecolor	1,1,1,0.8
+			font	"fonts/bank"
+
+		}
+		windowDef ButtonBG3
+		{
+			rect	25,401,591,-20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.4
+		}
+		windowDef ButtonBG2
+		{
+			rect	25,350,591,-51
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.4
+		}
+		windowDef ButtonBG1
+		{
+			rect	25,330,591,20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TextTitle1
+		{
+			rect	30,11,585,57
+			visible	1
+			text	"#str_04045"
+			forecolor	1,1,1,0.5
+			textscale	0.74
+			font	"fonts/micro"
+			textalign	1
+		}
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	1, 0.2, 0, 0.1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,7,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Reflect
+	{
+		rect	0,-8,-646,470
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Master
+	{
+		visible	1
+		rect	0,0,0,0
+
+		onTime 0 {
+			transition	"vertline::rect" "168 27 4 407" "442 27 4 407" "500" ;  
+			transition	"horizline::rect" "11 144 618 5" "11 110 618 5" "500" ;
+			set 		"flashbox::rect" "431 93 24 35" ; 
+		}
+
+		onTime 500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 1000 {
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 1500 {
+			transition	"vertline::rect" "442 27 4 407" "392 27 4 407" "500" ;  
+			transition	"horizline::rect" "11 110 618 5" "11 340 618 4" "500" ;
+			set 		"flashbox::rect" "382 318 24 35" ;
+		}
+
+		onTime 2000 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 2050 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 2100 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 2150 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 2200 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 2500 {
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 3000 {
+			transition	"vertline::rect" "392 27 4 407" "92 27 4 407" "500" ;  
+			transition	"horizline::rect" "11 340 618 5" "11 370 618 5" "500" ;
+			set 		"flashbox::rect" "81 354 24 35" ;
+		}
+
+		onTime 3500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 3550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 3600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 3650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 3700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 4000 {
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 4500 {
+			transition	"vertline::rect" "92 27 4 407" "168 27 4 407" "500" ;  
+			transition	"horizline::rect" "11 370 618 5" "11 145 618 5" "500" ;
+			set 		"flashbox::rect" "156 127 24 35" ; 
+		}
+
+		onTime 5000 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 5050 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 5100 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 5150 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 5200 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 5500 {
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 6000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Blackfade
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"guis/assets/common/bg_rc.tga"
+		matcolor	0,0,0,0
+
+		onTime 0 {
+			transition "matcolor" "0 0 0 0.2" "0 0 0 0.1" "200" ;
+		}
+
+		onTime 200 {
+			transition "matcolor" "0 0 0 0.1" "0 0 0 0.2" "200" ;
+		}
+
+		onTime 400 {
+			transition "matcolor" "0 0 0 0.2" "0 0 0 0.05" "300" ;
+		}
+
+		onTime 700 {
+			transition "matcolor" "0 0 0 0.05" "0 0 0 0.1" "200" ;
+		}
+
+		onTime 900 {
+			transition "matcolor" "0 0 0 0.1" "0 0 0 0.2" "200" ;
+		}
+
+		onTime 1100 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Twitch
+	{
+		rect	0,0,0,0
+		visible	1
+
+		onTime 0 {
+			set "desktopClip::rect" "1 0 638 480" ;	
+		}
+
+		onTime 50 {
+			set "desktopClip::rect" "0 0 640 480" ;
+		}
+
+		onTime 100 {
+			if ("desktop::triggered" == 0) { 
+				resetTime "0" ;
+			}
+		}
+
+	}
+	
+	
+	windowDef TriggerButton
+	{
+		rect	0,0,640,480
+		visible	0
+
+		onAction {
+			set "cmd" "play guisounds_chirpconnect" ;
+		}
+		onActionRelease {
+			set "cmd" "activate ; play guisounds_click" ;
+		}
+	}
+}

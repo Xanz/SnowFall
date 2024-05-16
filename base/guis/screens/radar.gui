@@ -1,0 +1,65 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	background	"guis/assets/cpuserver/bg.tga"
+	matcolor	0.5, 1, 0.9, 1
+	windowDef BgParent
+	{
+		rect	20, 20, 600, 440
+		windowDef Bg2
+		{
+			rect	-6,-6,600,440
+			background	"guis/assets/cpuserver/mars3a.tga"
+			visible	1
+			matcolor	1, 1, 1, 1
+		}
+	}
+	windowDef Scan
+	{
+		rect	-72,-37,781,567
+		background	"gui/marsspin"
+		visible	1
+		matcolor	0.2, 0.8, 0.4, 1
+	}
+	windowDef Pop3Sub
+	{
+		rect	430, 300, 160, 140
+		background	"guis/assets/cpuserver/pop3.tga"
+		visible	1
+		matcolor	0.4, 1, 0.8, 1
+	}
+	windowDef Bglow
+	{
+		rect	0, 0, 640, 480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.6, 0.8, 0.7, 0.2
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,660 ,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 5
+	}
+	windowDef scanpulse
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,640,3000
+			matcolor	1,1,1,0.03
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+	windowDef Reflect
+	{
+		rect	5 ,0 ,630 ,470
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+}

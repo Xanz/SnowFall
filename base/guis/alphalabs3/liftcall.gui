@@ -1,0 +1,384 @@
+windowDef Desktop
+{
+	comment	"gui_parm6 = script name to run onclick"
+	rect	0 ,0 ,640 ,480
+	windowDef bgTop
+	{
+		rect	7,0,626,240
+		visible	1
+		windowDef bgTopClamped
+		{
+			rect	-160,0,547,240
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgTopClamped3
+		{
+			rect	231,0,-560,240
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+	}
+	windowDef bgBtm
+	{
+		rect	7,240,627,235
+		visible	1
+		windowDef bgBtmClamped
+		{
+			rect	-160,0,547,-241
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgBtmClamped3
+		{
+			rect	231,0,-560,-241
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+	}
+	windowDef Logo
+	{
+		rect	83,116,486,332
+		background	"gui/addlogo"
+		matcolor	0.15 ,0.1 ,0.05 ,1
+		visible	1
+	}
+	windowDef ArrowUpAnim
+	{
+		rect	-59,203,743,260
+		visible	1
+		notime	1
+
+		onTime 0 {
+			transition "btnArrowUp1::matcolor" "1 0.7 0.35 0" "1 0.7 0.35 0.2" "150" ;
+		}
+
+		onTime 150 {
+			transition "btnArrowUp1::matcolor" "1 0.7 0.35 0.2" "1 0.7 0.35 0" "1000" ;
+			
+			transition "btnArrowUp2::matcolor" "1 0.7 0.35 0" "1 0.7 0.35 0.2" "150" ;
+		}
+
+		onTime 300 {
+			transition "btnArrowUp2::matcolor" "1 0.7 0.35 0.2" "1 0.7 0.35 0" "1000" ;
+			
+			transition "btnArrowUp3::matcolor" "1 0.7 0.35 0" "1 0.7 0.35 0.2" "150" ;
+		}
+
+		onTime 450 {
+			transition "btnArrowUp3::matcolor" "1 0.7 0.35 0.2" "1 0.7 0.35 0" "1000" ;
+			
+			transition "btnArrowUp4::matcolor" "1 0.7 0.35 0" "1 0.7 0.35 0.2" "150" ;
+		}
+
+		onTime 600 {
+			transition "btnArrowUp4::matcolor" "1 0.7 0.35 0.2" "1 0.7 0.35 0" "1000" ;
+			
+			transition "btnArrowUp5::matcolor" "1 0.7 0.35 0" "1 0.7 0.35 0.2" "150" ;
+		}
+
+		onTime 750 {
+			transition "btnArrowUp5::matcolor" "1 0.7 0.35 0.2" "1 0.7 0.35 0" "1000" ;
+		}
+
+		windowDef btnArrowUp
+		{
+			rect	92,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide"
+			matcolor	1,0.6,0.1,0.25
+		}
+		windowDef btnArrowUp1
+		{
+			rect	93,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide1"
+			matcolor	1,0.7,0.2,0
+			notime	1
+		}
+		windowDef btnArrowUp2
+		{
+			rect	93,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide2"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowUp3
+		{
+			rect	93,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide3"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowUp4
+		{
+			rect	93,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide4"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowUp5
+		{
+			rect	93,72,584,182
+			visible	1
+			background	"guis/assets/caverns/arrowudwide5"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowFrameTL
+		{
+			rect	89,66,393,125
+			visible	1
+			background	"guis/assets/caverns/arrowudframe"
+			matcolor	1,0.65,0.2,0.1
+		}
+		windowDef btnArrowFrameTR
+		{
+			rect	287,66,-393,125
+			visible	1
+			background	"guis/assets/caverns/arrowudframe"
+			matcolor	1,0.65,0.2,0.1
+		}
+	}
+	windowDef StatusArea
+	{
+		rect	169,20,445,93
+		visible	1
+		windowDef SourceText
+		{
+			rect	11,17,427,62
+			visible	1
+			forecolor	0.8, 0.55, 0.2, 0.4
+			text	"#str_03105"
+			textScale	0.75
+			font	"fonts/micro"
+			textAlign	2
+		}
+		windowDef bar1Left
+		{
+			rect	6,5,32,26
+			visible	1
+			background	"guis/assets/common/titlebar_edge"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+		windowDef bar1Mid
+		{
+			rect	38,5,367,26
+			visible	1
+			background	"guis/assets/common/titlebar_mid"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+		windowDef bar1Right
+		{
+			rect	405,5,37,26
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+		windowDef bar2Left
+		{
+			rect	6,59,32,26
+			visible	1
+			background	"guis/assets/common/titlebar_edge"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+		windowDef bar2Mid
+		{
+			rect	38,59,368,26
+			visible	1
+			background	"guis/assets/common/titlebar_mid"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+		windowDef bar2Right
+		{
+			rect	406,59,37,-26
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.9, 0.55, 0.1, 0.35
+		}
+	}
+	windowDef TopBox
+	{
+		rect	-20,21,274,96
+		visible	1
+		windowDef Keypadbg
+		{
+			rect	47,8,167,74
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite"
+			matcolor	0.05,0.02,0,1
+		}
+		windowDef TBcorner1
+		{
+			rect	50,5,82,-30
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner2
+		{
+			rect	132,5,-82,-30
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner3
+		{
+			rect	50,54,82,30
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner4
+		{
+			rect	132,54,-82,30
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBRight
+		{
+			rect	132,35,-82,-19
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef TBLeft
+		{
+			rect	50,35,82,-19
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef IDTypeText
+		{
+			rect	52,-3,157,81
+			text	"#str_00548"
+			font	"fonts/micro"
+			textScale	1.05
+			forecolor	1,1,1,0.6
+			visible	1
+			textAlign	1
+		}
+		windowDef IDCheckText
+		{
+			rect	63,53,146,26
+			text	"#str_03106"
+			font	"fonts/micro"
+			textScale	0.31
+			forecolor	1,0.698,0.298,0.6
+			visible	1
+		}
+	}
+	windowDef TextCallLift
+	{
+		rect	30,95,591,209
+		text	"#str_03107"
+		textScale	1
+		textAlign	1
+		forecolor	1,0.95,0.9,0.6
+		font	"fonts/micro"
+		visible	1
+	}
+	windowDef TextCallLift1
+	{
+		rect	37,359,576,111
+		text	"#str_03108"
+		textScale	0.75
+		textAlign	1
+		forecolor	1,0.95,0.9,0
+		font	"fonts/micro"
+		visible	1
+	}
+	windowDef bgcallh
+	{
+		rect	0 ,0 ,640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 5
+		visible	1
+	}
+	windowDef bgcalld
+	{
+		rect	0 ,0 ,640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef bgcallo
+	{
+		rect	0 ,0 ,640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.6 ,0.3 ,1
+		visible	1
+	}
+	windowDef Button1
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		notime	1
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ;
+			runScript	"gui::gui_parm6" ;	
+			transition "TextCallLift::forecolor" "1 1 1 0.9" "1 0.95 0.9 0.6" "500" ;
+			resetTime "ArrowUpAnim" "0" ;
+			resetTime  "0" ; 
+			set "noevents" "1" ;
+		}
+
+		onTime 2500 {
+			transition "TextCallLift::forecolor" "1 0.95 0.9 0.6" "1 0.95 0.9 0" "500" ;
+		}
+
+		onTime 3000 {
+			set "TextCallLift::text" "#str_03109" ;
+		}
+
+		onTime 3500 {
+			transition "TextCallLift::forecolor" "1 0.95 0.9 0" "1 0.95 0.9 0.6" "500" ;			
+		}
+
+		onTime 4000 {
+			transition "TextCallLift1::forecolor" "1 0.95 0.9 0" "1 0.95 0.9 0.4" "500" ;			
+		}
+
+	}
+	windowDef scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+	}
+	windowDef scanpulse
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-640,3000
+			matcolor	1,1,1,0.03
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+	windowDef dirt
+	{
+		rect	0,0,-640,480
+		matcolor	1,1,1,0.5
+		background	"guis/assets/test/darkedge_noise"
+		visible	1
+	}
+	windowDef Reflect
+	{
+		rect	10,-7,-620,473
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+	}
+}

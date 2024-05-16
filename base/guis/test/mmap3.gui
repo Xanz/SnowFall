@@ -1,0 +1,681 @@
+windowDef Desktop
+{
+	text	""
+	rect	0 ,0 ,640 ,480
+	visible	1
+	textscale	4
+	nocursor	1
+	windowDef Map
+	{
+		rect	0 ,5 ,640 ,475
+		visible	1
+		background	"guis/assets/mmap/map6"
+		matcolor	1 ,1 ,1 ,0.5
+	}
+	windowDef Flicker
+	{
+		rect	0 ,5 ,640 ,475
+		visible	1
+		background	"gui/mmaplines2"
+		matcolor	1 ,1 ,1 ,0.20
+	}
+	windowDef vertLine
+	{
+		rect	168 ,30 ,3 ,404
+		bordersize	0
+		background	"guis/assets/dot"
+		matcolor	0.77 ,0.88 ,0.61 ,0.50
+		visible	1
+	}
+	windowDef horizLine
+	{
+		rect	11 ,144 ,618 ,5
+		bordersize	0
+		background	"guis/assets/dot"
+		matcolor	0.77 ,0.88 ,0.61 ,0.40
+		visible	1
+	}
+	windowDef flashBox
+	{
+		rect	431 ,93 ,24 ,35
+		visible	1
+		bordersize	2
+		bordercolor	0.77 ,0.88 ,0.61 ,0
+	}
+	windowDef Pic1
+	{
+		rect	429 ,80 ,28 ,60
+		background	"guis/assets/mmap/pic1"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef Text1
+	{
+		rect	310 ,145 ,1 ,130
+		textscale	0.30
+		textalign	0
+		text	"#str_01762"
+		visible	1
+		forecolor	1 ,0.9 ,0.5 ,0
+	}
+	windowDef Pic2
+	{
+		rect	380 ,303 ,28 ,60
+		background	"guis/assets/mmap/pic2"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef Text2
+	{
+		rect	205 ,225 ,1 ,130
+		textscale	0.30
+		textalign	0
+		text	"#str_01763"
+		visible	1
+		forecolor	1 ,0.9 ,0.5 ,0
+	}
+	windowDef Pic3
+	{
+		rect	80 ,340 ,28 ,60
+		bordersize	0
+		background	"guis/assets/mmap/pic3"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef Text3
+	{
+		rect	191 ,245 ,1 ,130
+		textscale	0.30
+		textalign	0
+		text	"#str_01764"
+		visible	1
+		forecolor	1 ,0.9 ,0.5 ,0
+	}
+	windowDef Pic4
+	{
+		rect	155 ,118 ,28 ,60
+		bordersize	0
+		background	"guis/assets/mmap/pic4"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef Text4
+	{
+		rect	265 ,165 ,1 ,130
+		textscale	0.30
+		textalign	0
+		text	"#str_01765"
+		visible	1
+		forecolor	1 ,0.9 ,0.5 ,0
+	}
+	windowDef bgScroll2
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"gui/scrollbig"
+		matcolor	1, 1,  1, 0.1
+	}
+	windowDef Master
+	{
+
+		onTime 0 {
+			resetTime "Anim1" "0" ;
+		}
+
+		onTime 3500 {
+			resetTime "Anim2" "0" ;
+		}
+
+		onTime 7000 {
+			resetTime "Anim3" "0" ;
+		}
+
+		onTime 10500 {
+			resetTime "Anim4" "0" ;
+		}
+
+		onTime 14000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Anim1
+	{
+		notime	1
+
+		onTime 0 {
+			transition	"vertline::rect" "168 27 3 407" "442 27 3 407" "500" ;  
+			transition	"horizline::rect" "11 144 618 5" "11 110 618 5" "500" ;
+			set 		"flashbox::rect" "431 93 24 35" ; 
+			set 		"Pic1::rect" "429 80 28 60" ; 
+			set 		"Text1::rect" "310 145 1 130" ;
+		}
+
+		onTime 500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 800 {
+			set	"Pic1::matcolor" "1 1 1 0.5" ;
+			transition	"Pic1::rect" "429 80 28 60" "220 110 90 140" "200" ; 
+			transition	"Pic1::matcolor" "1 1 1 0.5" "1 1 1 0.7" "200" ;
+		}
+
+		onTime 1000 {
+			transition	"Text1::forecolor" "1 0.9 0.5 0" "1 0.9 0.5 0.8" "400" ;
+			transition	"Text1::rect" "310 145 1 130" "300 145 120 130" "300" ; 
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 3200 {
+			transition	"Pic1::matcolor" "1 1 1 0.7"  "1 1 1 0" "400" ;
+			transition	"Text1::forecolor" "1 0.9 0.5 1"  "1 0.9 0.5 0" "400" ;
+		}
+
+	}
+	windowDef Anim2
+	{
+		notime	1
+
+		onTime 0 {
+			transition	"vertline::rect" "442 27 3 407" "392 27 3 407" "500" ;  
+			transition	"horizline::rect" "11 110 618 5" "11 340 618 4" "500" ;
+			set 		"flashbox::rect" "382 318 24 35" ;
+			set 		"Pic2::rect" "380 303 28 60" ; 
+			set 		"Text2::rect" "210 225 1 130" ; 
+		}
+
+		onTime 500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 800 {
+			set	"Pic2::matcolor" "1 1 1 0.5" ;
+			transition	"Pic2::rect" "380 303 28 60" "114 190 90 140" "200" ; 
+			transition	"Pic2::matcolor" "1 1 1 0.5" "1 1 1 0.7" "200" ;
+		}
+
+		onTime 1000 {
+			transition	"Text2::forecolor" "1 0.9 0.5 0" "1 0.9 0.5 0.8" "400" ;
+			transition	"Text2::rect" "210 225 1 130" "200 225 200 130" "300" ; 
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 3200 {
+			transition	"Pic2::matcolor" "1 1 1 0.7"  "1 1 1 0" "400" ;
+			transition	"Text2::forecolor" "1 0.9 0.5 1"  "1 0.9 0.5 0" "400" ;
+		}
+
+	}
+	windowDef Anim3
+	{
+		notime	1
+
+		onTime 0 {
+			transition	"vertline::rect" "392 27 3 407" "92 27 3 407" "500" ;  
+			transition	"horizline::rect" "11 340 618 4" "11 370 618 5" "500" ;
+			set 		"flashbox::rect" "81 354 24 35" ; 
+			set 		"Pic3::rect" "80 340 28 60" ; 
+			set 		"Text3::rect" "190 245 1 130" ; 
+		}
+
+		onTime 500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 800 {
+			set	"Pic3::matcolor" "1 1 1 0.5" ;
+			transition	"Pic3::rect" "80 340 28 60" "100 210 90 140" "200" ; 
+			transition	"Pic3::matcolor" "1 1 1 0.5" "1 1 1 0.7" "200" ;
+		}
+
+		onTime 1000 {
+			transition	"Text3::forecolor" "1 0.9 0.5 0" "1 0.9 0.5 0.8" "400" ; 
+			transition	"Text3::rect" "190 245 1 130" "180 245 200 130" "300" ; 
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 3200 {
+			transition	"Pic3::matcolor" "1 1 1 0.7"  "1 1 1 0" "400" ;
+			transition	"Text3::forecolor" "1 0.9 0.5 1"  "1 0.9 0.5 0" "400" ;
+		}
+
+	}
+	windowDef Anim4
+	{
+		notime	1
+
+		onTime 0 {
+			transition	"vertline::rect" "92 27 3 407" "168 27 3 407" "500" ;  
+			transition	"horizline::rect" "11 370 618 5" "11 145 618 4" "500" ;
+			set 		"flashbox::rect" "156 127 24 35" ; 
+			set 		"Pic4::rect" "155 118 28 60" ; 
+			set 		"Text4::rect" "265 165 1 130" ; 
+		}
+
+		onTime 500 {
+			set 	"flashbox::bordercolor" "0.77 0.88 0.61 0.2" ;
+		}
+
+		onTime 550 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 600 {
+			set	"flashbox::visible" "1" ; 
+		}
+
+		onTime 650 {
+			set	"flashbox::visible" "0" ; 
+		}
+
+		onTime 700 {
+			set	"flashbox::visible" "1" ;
+		}
+
+		onTime 800 {
+			set	"Pic4::matcolor" "1 1 1 0.5" ;
+			transition	"Pic4::rect" "155 118 28 60" "170 130 90 140" "200" ; 
+			transition	"Pic4::matcolor" "1 1 1 0.5" "1 1 1 0.7" "200" ;
+		}
+
+		onTime 1000 {
+			transition	"Text4::forecolor" "1 0.9 0.5 0" "1 0.9 0.5 0.8" "400" ;
+			transition	"Text4::rect" "265 165 1 130" "255 165 200 130" "300" ; 
+			transition	"FlashBox::bordercolor" "0.77 0.88 0.61 0.2" "0.77 0.88 0.61 0" "200" ;
+		}
+
+		onTime 3200 {
+			transition	"Pic4::matcolor" "1 1 1 0.7"  "1 1 1 0" "400" ;
+			transition	"Text4::forecolor" "1 0.9 0.5 1"  "1 0.9 0.5 0" "400" ;
+		}
+
+	}
+	windowDef Pop1A
+	{
+		rect	40, 80, 60, 90
+		windowDef Pop1SubA
+		{
+			rect	0, 0, 60, 80
+			background	"guis/assets/cpuserver/pop1.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3A
+	{
+		rect	30, 200, 30, 50
+		windowDef Pop3SubA
+		{
+			rect	0, 0, 30, 50
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3B
+	{
+		rect	40, 260, 40, 60
+		windowDef Pop3SubB
+		{
+			rect	0, 0, 40, 60
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3C1
+	{
+		rect	204, 388, 5, 5
+		windowDef Pop3SubC1
+		{
+			rect	0, 0, 30, 40
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	0
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3C2
+	{
+		rect	255, 388, 5, 5
+		windowDef Pop3SubC2
+		{
+			rect	0, 0, 30, 40
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	0
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3C3
+	{
+		rect	305, 388, 5, 5
+		windowDef Pop3SubC3
+		{
+			rect	0, 0, 30, 40
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	0
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop3SubCAnim
+	{
+
+		onTime 0 {
+			set		"Pop3SubC1::visible" "1" ;
+			transition	"Pop3C1::rect" "204 388 5 5" "204 388 30 40" "700" ;
+		}
+
+		onTime 700 {
+			set		"Pop3SubC2::visible" "1" ;
+			transition	"Pop3C2::rect" "255 388 5 5" "255 388 30 40" "700" ;
+		}
+
+		onTime 1400 {
+			set		"Pop3SubC3::visible" "1" ;
+			transition	"Pop3C3::rect" "305 388 5 5" "305 388 30 40" "700" ;
+		}
+
+		onTime 3000 {
+			transition	"Pop3C1::rect" "204 388 30 40" "204 388 5 5" "700" ;
+		}
+
+		onTime 3700 {
+			transition	"Pop3C2::rect" "255 388 30 40" "255 388 5 5" "700" ;
+			set		"Pop3SubC1::visible" "0" ;
+		}
+
+		onTime 4400 {
+			transition	"Pop3C3::rect" "305 388 30 40" "305 388 5 5" "700" ;
+			set		"Pop3SubC2::visible" "0" ;
+		}
+
+		onTime 5100 {
+			set		"Pop3SubC3::visible" "0" ;
+		}
+
+		onTime 9000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Pop1
+	{
+		rect	500, 60, 60, 90
+		windowDef Pop1Sub
+		{
+			rect	0, 0, 60, 80
+			background	"guis/assets/cpuserver/pop1.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Pop2
+	{
+		rect	500, 110, 90, 180
+		windowDef Pop2Sub
+		{
+			rect	0, 0, 90, 180
+			background	"guis/assets/cpuserver/pop2.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Mars
+	{
+		rect	523, 164, 40, 80
+		windowDef MarsSub
+		{
+			rect	0, 0, 40, 80
+			background	"guis/assets/cpuserver/mars.tga"
+			visible	1
+			matcolor	1, 1, 1, 0.3
+		}
+	}
+	windowDef Pop3
+	{
+		rect	565, 80, 40, 60
+		windowDef Pop3Sub
+		{
+			rect	0, 0, 40, 60
+			background	"guis/assets/cpuserver/pop3.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef spikes
+	{
+		visible	1
+		rect	505, 297, 90, 30
+		background	"gui/spike3"
+		matcolor	1 ,1 ,1 ,0.3
+	}
+	windowDef Pop4
+	{
+		rect	500, 290, 100, 40
+		windowDef Pop4Sub
+		{
+			rect	0, 0, 100, 40
+			background	"guis/assets/cpuserver/pop4.tga"
+			visible	1
+			matcolor	0.7, 1, 0.93, 0.7
+		}
+	}
+	windowDef Text8
+	{
+		rect	505, 330, 100, 50
+		text	"#str_01766"
+		textscale	0.16
+		textalign	0
+		forecolor	0.6, 0.9, 0.85, 0.6
+
+		onTime 30 {
+			set "text" "#str_01767" ;
+		}
+
+		onTime 60 {
+			set "text" "#str_01768" ;
+		}
+
+		onTime 90 {
+			set "text" "#str_01769" ;
+		}
+
+		onTime 120 {
+			set "text" "#str_01770" ;
+		}
+
+		onTime 150 {
+			set "text" "#str_01771" ;
+		}
+
+		onTime 180 {
+			set "text" "#str_01772" ;
+		}
+
+		onTime 210 {
+			set "text" "#str_01773" ;
+		}
+
+		onTime 240 {
+			set "text" "#str_01774" ;
+		}
+
+		onTime 270 {
+			set "text" "#str_01775" ;
+		}
+
+		onTime 300 {
+			set "text" "#str_01776" ;
+		}
+
+		onTime 330 {
+			set "text" "#str_01777" ;
+		}
+
+		onTime 360 {
+			set "text" "#str_01778" ;
+		}
+
+		onTime 390 {
+			set "text" "#str_01779" ;
+		}
+
+		onTime 3980 {
+			set "text" " \n" ;
+		}
+
+		onTime 4000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Text9
+	{
+		rect	60, 200, 100, 50
+		text	"#str_01541"
+		textscale	0.16
+		textalign	0
+		forecolor	0.6, 0.9, 0.85, 0.6
+
+		onTime 0 {
+			set "text" " \n" ;
+		}
+
+		onTime 50 {
+			set "text" "#str_00480" ;
+		}
+
+		onTime 100 {
+			set "text" "#str_00481" ;
+		}
+
+		onTime 150 {
+			set "text" "#str_00482" ;
+		}
+
+		onTime 200 {
+			set "text" "#str_00483" ;
+		}
+
+		onTime 250 {
+			set "text" "#str_00749" ;
+		}
+
+		onTime 350 {
+			set "text" "#str_00750" ;
+		}
+
+		onTime 400 {
+			set "text" "#str_00751" ;
+		}
+
+		onTime 450 {
+			set "text" "#str_00752" ;
+		}
+
+		onTime 500 {
+			set "text" "#str_00753" ;
+		}
+
+		onTime 600 {
+			set "text" "#str_00754" ;
+		}
+
+		onTime 650 {
+			set "text" "#str_00755" ;
+		}
+
+		onTime 700 {
+			set "text" "#str_00756" ;
+		}
+
+		onTime 800 {
+			set "text" "#str_00757" ;
+		}
+
+		onTime 850 {
+			set "text" "#str_00758" ;
+		}
+
+		onTime 950 {
+			set "text" "#str_01542" ;
+		}
+
+		onTime 1000 {
+			set "text" "#str_01543" ;
+		}
+
+		onTime 1050 {
+			set "text" "#str_01544" ;
+		}
+
+		onTime 1100 {
+			set "text" "#str_01545" ;
+		}
+
+		onTime 1200 {
+			set "text" "#str_01546" ;
+		}
+
+		onTime 1250 {
+			set "text" "#str_01547" ;
+		}
+
+		onTime 1300 {
+			set "text" "#str_01780" ;
+		}
+
+		onTime 4000 {
+			resetTime "0" ;
+		}
+
+	}
+}

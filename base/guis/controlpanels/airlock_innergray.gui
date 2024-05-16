@@ -1,0 +1,311 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+comment	"gui_parm4 is the airlock name (use all caps, like AIRLOCK STATION 17) This name should match the exit airlock from the previous level."
+	windowDef BgImage
+	{
+		rect	0,0,640,480
+		nocursor	1
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0,0,0,1
+		visible	1
+	}
+	windowDef Glow
+	{
+		rect	5 ,5 ,-630 ,470
+		matcolor	0.05,0.1,0.15,1
+		visible	1
+		background	"gui/glow"
+		noevents	1
+	}
+	windowDef Bgright
+	{
+		rect	318,433,-289,28
+		background	"guis/assets/airlock/inbgfill"
+		matcolor	1,1,1,0.1
+		visible	1
+	}
+	windowDef Bgleft
+	{
+		rect	33,433,289,28
+		background	"guis/assets/airlock/inbgfill"
+		matcolor	1,1,1,0.2
+		visible	1
+	}
+	windowDef Bg
+	{
+		rect	5,240,630,235
+		background	"guis/assets/airlock/inbg2"
+		matcolor	1,1,1,0.6
+		visible	1
+	}
+	windowDef Circles
+	{
+		rect	100,292,440,145
+		visible	1
+		windowDef CircRight
+		{
+			rect	308,12,-118,118
+			visible	1
+			background	"guis/assets/caverns/spincircthin"
+			matcolor	1,1,1,0.3
+		}
+		windowDef CircMidLeft
+		{
+			rect	160,12,118,118
+			visible	1
+			background	"guis/assets/caverns/spincircthin"
+			matcolor	1,1,1,0.6
+		}
+		windowDef CircMidRight
+		{
+			rect	160,12,-118,118
+			visible	1
+			background	"guis/assets/caverns/spincircthin"
+			matcolor	1,1,1,0.3
+		}
+		windowDef CircLeft
+		{
+			rect	12,12,118,118
+			visible	1
+			background	"guis/assets/caverns/spincircthin"
+			matcolor	1,1,1,0.6
+		}
+	}
+	windowDef BtnTop
+	{
+		rect	20,78,600,115
+		background	"guis/assets/airlock/inbtn"
+		matcolor	1,1,1,0.4
+		visible	1
+	}
+	windowDef BtnBottom
+	{
+		rect	20,159,600,-115
+		background	"guis/assets/airlock/inbtn"
+		matcolor	1,1,1,0.4
+		visible	1
+	}
+	windowDef TextBtn
+	{
+		rect	19,127,602,100
+		visible	1
+		forecolor	1,1,1,0.7
+		text	"#str_00644"
+		textscale	1.6
+		textalign	1
+	}
+	windowDef BackgroundBorder
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef Bottom1
+		{
+			rect	18,34,604,-46
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1,1,1,0.2
+		}
+		windowDef Right
+		{
+			rect	576,64,-59,352
+			visible	1
+			background	"guis/assets/common/glowborder_vert"
+			matcolor	1,1,1,1
+		}
+		windowDef Left
+		{
+			rect	5,64,59,352
+			visible	1
+			background	"guis/assets/common/glowborder_vert"
+			matcolor	1,1,1,1
+		}
+		windowDef Bottom
+		{
+			rect	64,416,512,59
+			visible	1
+			background	"guis/assets/common/glowborder_horiz"
+			matcolor	1,1,1,1
+		}
+		windowDef Top
+		{
+			rect	64,5,512,-59
+			visible	1
+			background	"guis/assets/common/glowborder_horiz"
+			matcolor	1,1,1,1
+		}
+		windowDef BLcorner
+		{
+			rect	5,416,-59,59
+			visible	1
+			background	"guis/assets/common/glowborder_corner4"
+			matcolor	1,1,1,1
+		}
+		windowDef BRcorner
+		{
+			rect	576,416,59,59
+			visible	1
+			background	"guis/assets/common/glowborder_corner4"
+			matcolor	1,1,1,1
+		}
+		windowDef Trcorner
+		{
+			rect	576,5,-59,-59
+			visible	1
+			background	"guis/assets/common/glowborder_corner3"
+			matcolor	1,1,1,1
+		}
+		windowDef TLcorner
+		{
+			rect	5,5,59,-59
+			visible	1
+			background	"guis/assets/common/glowborder_corner3"
+			matcolor	1,1,1,1
+		}
+	}
+	windowDef Text
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef TextExt1Press
+		{
+			rect	134,340,86,48
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"14.2"
+			textscale	0.7
+		}
+		windowDef TextIntPress
+		{
+			rect	281,340,86,48
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"14.2"
+			textscale	0.7
+		}
+		windowDef TextExt2Press
+		{
+			rect	430,340,86,48
+			visible	1
+			forecolor	1,1,1,0.3
+			text	"0.13"
+			textscale	0.7
+		}
+		windowDef TextExternal
+		{
+			rect	413,275,205,26
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"#str_00645"
+			textscale	0.32
+			font	"fonts/micro"
+		}
+		windowDef TextInternal
+		{
+			rect	30,275,202,25
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"#str_00646"
+			textscale	0.32
+			font	"fonts/micro"
+		}
+		windowDef TextAirlock
+		{
+			rect	268,275,103,26
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"#str_00551"
+			textscale	0.32
+			font	"fonts/micro"
+		}
+		windowDef TextTank
+		{
+			rect	108,435,206,27
+			visible	1
+			forecolor	1,1,1,0.4
+			text	"#str_00647"
+			textscale	0.32
+			font	"fonts/micro"
+		}
+		windowDef TextTankStatus
+		{
+			rect	334,435,249,29
+			visible	1
+			forecolor	1,1,1,0.4
+			text	"#str_00652"
+			textscale	0.32
+			font	"fonts/micro"
+		}
+	}
+	windowDef ButtonError
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+
+		onAction {
+			set	"cmd" "play guisounds_error" ; 
+		}
+
+	}
+	windowDef TextTitle
+	{
+		rect	19,13,602,56
+		visible	1
+		forecolor	1,1,1,0.4
+		text	"gui::gui_parm4"
+		textscale	0.83
+		textalign	1
+		font	"fonts/micro"
+	}
+	windowDef Bglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	1, 0.8, 0.4, 0.1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0 ,0 ,640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.8 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,640,480
+		matcolor	0.2,0.2,0.2,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Dirt
+	{
+		rect	1,0,-640,480
+		matcolor	1, 1, 1 ,1
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Static
+	{
+		rect	-9,-9,-660,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+	}
+}

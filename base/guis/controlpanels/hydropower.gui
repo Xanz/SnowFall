@@ -1,0 +1,219 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,1
+	windowDef Spikes2
+	{
+		rect	55 ,70 ,162 ,90
+		visible	1
+		background	"gui/spikes"
+		matcolor	1 ,1 ,1 ,1
+	}
+	windowDef PowerCirc
+	{
+		rect	38 ,305 ,140 ,120
+		visible	1
+		background	"guis/assets/power/output21"
+		matcolor	1 ,1 ,1 ,1
+	}
+	windowDef OverlayLines
+	{
+		rect	0, 0, 640, 480
+		background	"guis/assets/hydrocon/bg3.tga"
+		matcolor	1, 1, 1, 1
+		visible	1
+	}
+	windowDef TempGrid
+	{
+		rect	52 ,164 ,174 ,30
+		visible	1
+		background	"guis/assets/rodstat2/temp2"
+		matcolor	1 ,1 ,1 ,1
+	}
+	windowDef Bglow
+	{
+		rect	0, 0, 640, 480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.2, 0.4, 0.6, 0.1
+	}
+	windowDef Text1
+	{
+		rect	110, -8, 540, 70
+		text	"#str_00796"
+		textscale	0.72
+		forecolor	0.4, 0.8, 1, 0.8
+		visible	1
+	}
+	windowDef Gen1
+	{
+		rect	280, 50, 340, 70
+		text	"#str_00726"
+		textscale	0.6
+		forecolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef Gen2
+	{
+		rect	280, 285, 340, 70
+		text	"#str_00797"
+		textscale	0.6
+		forecolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef RightText1
+	{
+		rect	280, 80, 200, 70
+		text	"#str_00777"
+		textscale	0.35
+		forecolor	0, 1, 1, 0.5
+		visible	1
+	}
+	windowDef RightText2
+	{
+		rect	280, 100, 300, 200
+		text	"#str_00798"
+		textscale	0.35
+		forecolor	0.8, 0.4, 0.2, 0.5
+		visible	1
+	}
+	windowDef RightText3
+	{
+		rect	280, 145, 200, 70
+		text	"#str_00119"
+		textscale	0.35
+		forecolor	0, 1, 1, 0.5
+		visible	1
+	}
+	windowDef RightText4
+	{
+		rect	280, 165, 200, 200
+		text	"1.144"
+		textscale	0.35
+		forecolor	0.8, 0.4, 0.2, 0.5
+		visible	1
+	}
+	windowDef RightText5
+	{
+		rect	280, 315, 200, 70
+		text	"#str_00777"
+		textscale	0.35
+		forecolor	0, 1, 1, 0.5
+		visible	1
+	}
+	windowDef RightText6
+	{
+		rect	280, 335, 300, 200
+		text	"#str_00799"
+		textscale	0.35
+		forecolor	0.8, 0.4, 0.2, 0.5
+		visible	1
+	}
+	windowDef RightText7
+	{
+		rect	280, 380, 200, 70
+		text	"#str_00119"
+		textscale	0.35
+		forecolor	0, 1, 1, 0.5
+		visible	1
+	}
+	windowDef RightText8
+	{
+		rect	280, 400, 200, 200
+		text	"2.132"
+		textscale	0.35
+		forecolor	0.8, 0.4, 0.2, 0.5
+		visible	1
+	}
+	windowDef Temp
+	{
+		rect	360, 208, 400, 20
+		text	"#str_00800"
+		textscale	0.4
+		forecolor	0.4, 0.8, 1, 0.6
+		visible	1
+	}
+	windowDef Power
+	{
+		rect	356, 246, 400, 20
+		text	"#str_00801"
+		textscale	0.4
+		forecolor	0.4, 0.8, 1, 0.6
+		visible	1
+	}
+	windowDef TempVal
+	{
+		rect	40, 191, 200, 40
+		text	"#str_00802"
+		textscale	0.55
+		textalign	1
+		forecolor	0.5, 0.9, 1, 0.5
+		visible	1
+	}
+	windowDef PowerVal
+	{
+		rect	60, 266, 200, 40
+		text	"96%"
+		textscale	0.8
+		forecolor	0.5, 0.9, 1, 0.5
+		visible	1
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,660 ,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 6
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 8
+		visible	1
+	}
+	windowDef Addhighlight1
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Addhighlight2
+	{
+		rect	0,200,640,-280
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Scanlines1
+	{
+		rect	0,0,640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	1.5
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Dirt
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt1"
+		noevents	1
+	}
+	windowDef Reflect
+	{
+		rect	0 ,-20 ,640 ,500
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/reflect1"
+	}
+}

@@ -1,0 +1,912 @@
+windowDef Desktop
+{
+	comment	"pda check is on gui_parm7 (add gui_parm7 with the pda's inv_name as the value).\ngui_parm1 should be set on the 3 call stations as station 1 value 1, station 2 value 2, station 3 value 3.\nReport script location number to gui_parm2. parm4 to 1 if location is correct, set to 0 if location is incorrect (added incase lift is at right location but raised/turned)"
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+	float	"info"	0
+	float	"active"	0
+	float	"anim"	0
+	float	"station"	0
+	float	"station2"	0
+
+	onTrigger {
+		if ("anim" == 1) {
+			resetTime "AnimReset" "0" ;
+		}
+		/*
+		set "Glow::matcolor" "0.1 0.05 0 1" ;
+		set "Right::matcolor" "1 0.8 0.4 1" ;
+		set "Left::matcolor" "1 0.8 0.4 1" ;
+		set "Top::matcolor" "1 0.8 0.4 1" ;
+		set "Bottom::matcolor" "1 0.8 0.4 1" ;
+		set "BLCorner::matcolor" "1 0.8 0.4 1" ;
+		set "BRCorner::matcolor" "1 0.8 0.4 1" ;
+		set "TRCorner::matcolor" "1 0.8 0.4 1" ;
+		set "TLCorner::matcolor" "1 0.8 0.4 1" ;
+		set "Bglow::matcolor" "0 0 0 0.1" ;
+		set "Overlay::matcolor" "0.3 0.6 0.6 0" ;
+		set "Background::matcolor" "0.7 0.5 0.5 0.6" ;
+		set "TriggerButton::visible" "1" ;
+		set "TriggerButton::rect" "50 323 540 110" ;
+		set "TriggerButton::text" "LIFT IDLE" ;
+		set "TriggerButton::forecolor" "1 1 1 0.4" ;
+		set "TextTransferringMain::forecolor" "1 1 0.8 0" "1 1 0.8 0.2" ;
+		set "TriggerButtonAlt::forecolor" "1 1 1 0" ;
+		set "TextTransferring::forecolor" "1 0.2 0.2 0" ;
+		set "desktop::anim" "0" ;
+		set "TriggerButton::noevents" "0" ;
+		*/
+	}
+
+	onEvent {
+		if ("gui::gui_parm1" == 1) {
+			set "TextTitle::text" "#str_00559" ;
+			set "TextTransferring::text" "#str_00560" ;
+		}
+		if ("gui::gui_parm1" == 2) {
+			set "TextTitle::text" "#str_00561" ;
+			set "TextTransferring::text" "#str_00562" ;
+		}
+		if ("gui::gui_parm1" == 3) {
+			set "TextTitle::text" "#str_00563" ;
+			set "TextTransferring::text" "#str_00564" ;
+		}
+		if ("gui::gui_parm2" == 13) {
+			set "LiftMapHighlight::rect" "101 115 29 17" ;
+			if ("gui::gui_parm1" == 1) {
+				if ("gui::gui_parm4" == 1) {
+					set "station" "1" ;
+				} else {
+					set "station" "0" ;				
+				}
+			} else {
+				set "station" "0" ;
+				set "station2" "0" ;			
+			}
+		}
+		if ("gui::gui_parm2" == 14) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "101 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 23) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "165 115 29 17" ;
+		}
+		if ("gui::gui_parm2" == 24) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "165 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 31) {
+			set "LiftMapHighlight::rect" "229 180 29 17" ;
+			if ("gui::gui_parm1" == 2) {
+				if ("gui::gui_parm4" == 1) {
+					set "station" "1" ;
+				} else {
+					set "station" "0" ;				
+				}
+			} else {
+				set "station" "0" ;
+				set "station2" "0" ;			
+			}
+		}
+		if ("gui::gui_parm2" == 32) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "229 149 29 17" ;
+		}
+		if ("gui::gui_parm2" == 33) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "229 115 29 17" ;
+		}
+		if ("gui::gui_parm2" == 34) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "229 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 44) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "293 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 54) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "357 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 64) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "421 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 72) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "485 149 29 17" ;
+		}
+		if ("gui::gui_parm2" == 73) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "485 115 29 17" ;
+		}
+		if ("gui::gui_parm2" == 74) {
+			set "station" "0" ;
+			set "station2" "0" ;
+			set "LiftMapHighlight::rect" "485 82 29 17" ;
+		}
+		if ("gui::gui_parm2" == 83) {
+			set "LiftMapHighlight::rect" "545 115 29 17" ;
+			if ("gui::gui_parm1" == 3) {
+				if ("gui::gui_parm4" == 1) {
+					set "station" "1" ;
+				} else {
+					set "station" "0" ;				
+				}
+			} else {
+				set "station" "0" ;
+				set "station2" "0" ;			
+			}
+		}
+	}
+
+	onActivate {
+		set "active" "1" ;
+		if ("gui::*gui_parm7" == 1) {
+			transition "Reflect::matcolor" "1 1 1 0" "1 1 1 0.08" "400" ;
+
+			transition "Glow::matcolor" "0.1 0.05 0 1" "0 0.2 0.18 1" "400" ;
+
+			transition "Right::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "Left::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "Top::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "Top2::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "Bottom::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "BLCorner::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "BRCorner::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "TRCorner::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "TLCorner::matcolor" "1 0.8 0.6 0.7" "0.7 0.8 0.85 0.7" "400" ;
+			transition "Bglow::matcolor" "0 0 0 0.1" "0.1 0.5 0.3 0.1" "400" ;
+			transition "MapBg11::matcolor" "1 0.5 0.2 0.7" "1 1 1 0.7" "400" ;
+			transition "MapBg12::matcolor" "1 0.5 0.2 0.7" "1 1 1 0.7" "400" ;
+			transition "MapBg13::matcolor" "1 0.5 0.2 0.7" "1 1 1 0.7" "400" ;
+			transition "PDABG::matcolor" "1 1 1 1" "1 1 1 0.4" "400" ;
+
+			if ("anim" == 0) {		
+				transition "Btn1::rect" "32 355 574 107" "32 225 574 240" "300" "0" "0.8" ;
+				transition "Btn1_Fill::rect" "73 25 430 52" "73 25 430 182" "300" "0" "0.8" ;
+				transition "Btn1_Bottom::rect" "73 77 430 26" "73 207 430 26" "300" "0" "0.8" ;
+				transition "Btn1_corner2::rect" "503 53 -68 -48" "503 183 -68 -48" "300" "0" "0.8" ;
+				transition "Btn1_corner3::rect" "5 53 68 -48" "5 183 68 -48" "300" "0" "0.8" ;
+				transition "Btn1_left::rect" "5 25 68 28" "5 25 68 158" "300" "0" "0.8" ;
+				transition "Btn1_right::rect" "503 25 -68 28" "503 25 -68 158" "300" "0" "0.8" ;
+				transition "TriggerButton::rect" "50 323 540 110" "50 183 540 322" "300" ;
+				transition "TriggerButton::forecolor" "1 1 1 0.2" "1 1 1 0" "100" ;
+				resetTime "TriggerButton" "0" ;
+				transition "TextTransferringMain::forecolor" "1 1 0.8 0.2" "1 1 0.8 0" "300" ;
+			}
+			resetTime "Liftmap" "0" ;
+			transition "liftmap::matcolor" "1 1 0.8 0.4" "0.8 1 1 0.4" "400" ;
+			transition "TextStation1::forecolor" "1 1 0.9 0.3" "1 1 1 0.6" "400" ;
+			transition "TextStation2::forecolor" "1 1 0.9 0.3" "1 1 1 0.6" "400" ;
+			transition "TextStation3::forecolor" "1 1 0.9 0.3" "1 1 1 0.6" "400" ;
+			transition "TextLoading::forecolor" "1 1 0.9 0.2" "0.6 0.9 1 0.5" "400" ;
+			transition "TextProcessing::forecolor" "1 1 0.9 0.2" "0.6 0.9 1 0.5" "400" ;
+			transition "TextOffload::forecolor" "1 1 0.9 0.2" "0.6 0.9 1 0.5" "400" ;
+		} else {
+			resetTIme "AnimNoPDA" "0" ;
+		}
+	}
+
+	onDeactivate {
+		set "active" "0" ;
+		if ("gui::*gui_parm7" == 1) {
+			transition "Reflect::matcolor" "1 1 1 0.08" "1 1 1 0" "400" ;
+
+			transition "Glow::matcolor" "0 0.2 0.18 1" "0.1 0.05 0 1" "400" ;
+			transition "Right::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "Left::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "Top::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "Top2::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "Bottom::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "BLCorner::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "BRCorner::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "TRCorner::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "TLCorner::matcolor" "0.7 0.8 0.85 0.7" "1 0.8 0.6 0.7" "400" ;
+			transition "Bglow::matcolor" "0.1 0.5 0.3 0.1" "0 0 0 0.1" "400" ;
+			transition "MapBg11::matcolor" "1 1 1 0.7" "1 0.5 0.2 0.7" "400" ;
+			transition "MapBg12::matcolor" "1 1 1 0.7" "1 0.5 0.2 0.7" "400" ;
+			transition "MapBg13::matcolor" "1 1 1 0.7" "1 0.5 0.2 0.7" "400" ;
+			transition "PDABG::matcolor" "1 1 1 0.4" "1 0.3 0 0.2" "400" ;			
+
+			if ("anim" == 0) {			
+				transition "Btn1::rect" "32 225 574 240" "32 355 574 107" "300" "0" "0.8" ;
+				transition "Btn1_Fill::rect" "73 25 430 182" "73 25 430 52" "300" "0" "0.8" ;
+				transition "Btn1_Bottom::rect" "73 207 430 26" "73 77 430 26" "300" "0" "0.8" ;
+				transition "Btn1_corner2::rect" "503 183 -68 -48" "503 53 -68 -48" "300" "0" "0.8" ;
+				transition "Btn1_corner3::rect" "5 183 68 -48" "5 53 68 -48" "300" "0" "0.8" ;
+				transition "Btn1_left::rect" "5 25 68 158" "5 25 68 28" "300" "0" "0.8" ;
+				transition "Btn1_right::rect" "503 25 -68 158" "503 25 -68 28" "300" "0" "0.8" ;
+				transition "TriggerButton::rect" "50 183 540 322" "50 323 540 110" "300" ;
+				transition "TriggerButton::forecolor" "1 1 1 0.2" "1 1 1 0" "100" ;
+				resetTime "TriggerButton" "0" ;
+				transition "TextTransferringMain::forecolor" "1 1 0.8 0" "1 1 0.8 0.2" "300" ;
+			}
+			transition "liftmap::matcolor" "0.8 1 1 0.4" "1 1 0.8 0.4" "400" ;
+			transition "TextStation1::forecolor" "1 1 1 0.6" "1 1 0.9 0.3" "400" ;
+			transition "TextStation2::forecolor" "1 1 1 0.6" "1 1 0.9 0.3" "400" ;
+			transition "TextStation3::forecolor" "1 1 1 0.6" "1 1 0.9 0.3" "400" ;
+			transition "TextLoading::forecolor" "0.6 0.9 1 0.5" "1 1 0.9 0.2" "400" ;
+			transition "TextProcessing::forecolor" "0.6 0.9 1 0.5" "1 1 0.9 0.2" "400" ;
+			transition "TextOffload::forecolor" "0.6 0.9 1 0.5" "1 1 0.9 0.2" "400" ;
+			set "liftmapOverlay::visible" "0" ;
+		}
+	}
+
+	windowDef Anim
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Btn1::rect" "32 225 574 240" "32 355 574 107" "300" "0" "0.8" ;
+			transition "Btn1_Fill::rect" "73 25 430 182" "73 25 430 52" "300" "0" "0.8" ;
+			transition "Btn1_Bottom::rect" "73 207 430 26" "73 77 430 26" "300" "0" "0.8" ;
+			transition "Btn1_corner2::rect" "503 183 -68 -48" "503 53 -68 -48" "300" "0" "0.8" ;
+			transition "Btn1_corner3::rect" "5 183 68 -48" "5 53 68 -48" "300" "0" "0.8" ;
+			transition "Btn1_left::rect" "5 25 68 158" "5 25 68 28" "300" "0" "0.8" ;
+			transition "Btn1_right::rect" "503 25 -68 158" "503 25 -68 28" "300" "0" "0.8" ;
+			
+			set "TriggerButton::visible" "0" ;
+			transition "TriggerButton::forecolor" "1 1 1 0.1" "1 1 1 0" "200" ;
+			transition "TriggerButtonAlt::forecolor" "1 1 1 0" "1 1 1 0.4" "600" ;
+			transition "TextTransferring::forecolor" "1 0.2 0.2 0" "1 0.7 0.4 0.3" "600" ;
+		}
+	}
+	windowDef AnimNoPDA
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Glow::matcolor" "0.1 0.05 0 1" "0.2 0.05 0 0.7" "400" ;
+			transition "Right::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "Left::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "Top::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "Top2::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "Bottom::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "BLCorner::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "BRCorner::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "TRCorner::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "TLCorner::matcolor" "1 0.8 0.6 0.7" "1 0.3 0.2 0.7" "400" ;
+			transition "Bglow::matcolor" "0.1 0.5 0.3 0.1" "0.2 0 0 0.1" "400" ;
+			transition "TextTransferringMain::forecolor" "1 1 0.8 0.2" "1 1 0.8 0" "300" ;
+			set "TriggerButton::visible" "0" ;
+			transition "TriggerButton::forecolor" "1 1 1 0.1" "1 1 1 0" "200" ;
+			transition "TriggerButtonError::forecolor" "1 1 1 0" "1 1 1 0.4" "400" ;
+			transition "TextError::forecolor" "1 0.2 0.2 0" "1 0.2 0.1 0.4" "400" ;
+		}
+
+		onTime 2000 {
+			if ("desktop::active" == 1) {
+				resetTime "1900" ;
+			} else {
+				transition "Glow::matcolor" "0.2 0.05 0 1" "0.1 0.05 0 1" "400" ;
+				transition "Right::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "Left::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "Top::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "Top2::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "Bottom::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "BLCorner::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "BRCorner::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "TRCorner::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "TLCorner::matcolor" "1 0.3 0.2 1" "1 0.8 0.6 0.7" "400" ;
+				transition "Bglow::matcolor" "0.2 0 0 0.1" "0 0 0 0.1" "400" ;
+				
+				set "TriggerButton::visible" "1" ;
+				set "TriggerButton::rect" "50 323 540 110" ;
+				set "TriggerButton::text" "#str_00565" ;
+				resetTime "TriggerButton" "0" ;
+				transition "TextTransferringMain::forecolor" "1 1 0.8 0" "1 1 0.8 0.2" "300" ;
+				
+				transition "TriggerButtonError::forecolor" "1 1 1 0.4" "1 1 1 0" "100" ;
+				transition "TextError::forecolor" "1 0.7 0.4 0.3" "1 0.2 0.2 0" "100" ;
+				
+				set "desktop::anim" "0" ;
+				set "TriggerButton::noevents" "0" ;
+			}
+		}
+	}
+	windowDef AnimReset
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			if ("desktop::active" == 1) {
+				
+				transition "Btn1::rect" "32 355 574 107" "32 225 574 240" "300" "0" "0.8" ;
+				transition "Btn1_Fill::rect" "73 25 430 52" "73 25 430 182" "300" "0" "0.8" ;
+				transition "Btn1_Bottom::rect" "73 77 430 26" "73 207 430 26" "300" "0" "0.8" ;
+				transition "Btn1_corner2::rect" "503 53 -68 -48" "503 183 -68 -48" "300" "0" "0.8" ;
+				transition "Btn1_corner3::rect" "5 53 68 -48" "5 183 68 -48" "300" "0" "0.8" ;
+				transition "Btn1_left::rect" "5 25 68 28" "5 25 68 158" "300" "0" "0.8" ;
+				transition "Btn1_right::rect" "503 25 -68 28" "503 25 -68 158" "300" "0" "0.8" ;
+				
+				set "TriggerButton::visible" "1" ;
+				transition "TriggerButtonAlt::forecolor" "1 1 1 0.4" "1 1 1 0" "100" ;
+				transition "TextTransferring::forecolor" "1 0.7 0.4 0.3" "1 0.2 0.2 0" "100" ;
+				resetTime "TriggerButton" "0" ;
+			} else {
+				set "TriggerButton::visible" "1" ;
+				set "TriggerButton::rect" "50 323 540 110" ;
+				set "TriggerButton::text" "#str_00565" ;
+				resetTime "TriggerButton" "0" ;
+				transition "TextTransferringMain::forecolor" "1 1 0.8 0" "1 1 0.8 0.2" "300" ;
+				
+				transition "TriggerButtonAlt::forecolor" "1 1 1 0.4" "1 1 1 0" "100" ;
+				transition "TextTransferring::forecolor" "1 0.7 0.4 0.3" "1 0.2 0.2 0" "100" ;
+			}
+			set "desktop::anim" "0" ;
+			set "TriggerButton::noevents" "0" ;
+		}
+
+	}
+	windowDef AnimStation
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Btn1::rect" "32 225 574 240" "32 355 574 107" "300" "0" "0.8" ;
+			transition "Btn1_Fill::rect" "73 25 430 182" "73 25 430 52" "300" "0" "0.8" ;
+			transition "Btn1_Bottom::rect" "73 207 430 26" "73 77 430 26" "300" "0" "0.8" ;
+			transition "Btn1_corner2::rect" "503 183 -68 -48" "503 53 -68 -48" "300" "0" "0.8" ;
+			transition "Btn1_corner3::rect" "5 183 68 -48" "5 53 68 -48" "300" "0" "0.8" ;
+			transition "Btn1_left::rect" "5 25 68 158" "5 25 68 28" "300" "0" "0.8" ;
+			transition "Btn1_right::rect" "503 25 -68 158" "503 25 -68 28" "300" "0" "0.8" ;
+			
+			set "TriggerButton::visible" "0" ;
+			transition "TriggerButton::forecolor" "1 1 1 0.1" "1 1 1 0" "200" ;
+			transition "TriggerButtonStation::forecolor" "1 1 1 0" "1 1 1 0.4" "400" ;
+			transition "TextStation::forecolor" "1 0.2 0.2 0" "1 0.2 0.1 0.4" "400" ;
+		}
+
+		onTime 2000 {
+			if ("desktop::active" == 1) {
+				resetTime "1900" ;
+			} else {
+				set "TriggerButton::visible" "1" ;
+				set "TriggerButton::rect" "50 323 540 110" ;
+				set "TriggerButton::text" "#str_00565" ;
+				resetTime "TriggerButton" "0" ;
+				transition "TextTransferringMain::forecolor" "1 1 0.8 0" "1 1 0.8 0.2" "300" ;
+				
+				transition "TriggerButtonStation::forecolor" "1 1 1 0.4" "1 1 1 0" "100" ;
+				transition "TextStation::forecolor" "1 0.7 0.4 0.3" "1 0.2 0.2 0" "100" ;
+				
+				set "desktop::anim" "0" ;
+				set "TriggerButton::noevents" "0" ;
+			}
+		}
+
+	}
+	windowDef BGBlack
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	1, 1, 1,1
+		visible	1
+	}
+	windowDef Glow
+	{
+		rect	8,8,-624,464
+		matcolor	0.2 ,0.12 ,0 ,1
+		visible	1
+		background	"gui/glow"
+		noevents	1
+	}
+	windowDef BGHex
+	{
+		rect	0,1,-639,479
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.1
+		matscalex	12
+		matscaley	10
+	}
+	windowDef MapBg11
+	{
+		rect	18,59,604,20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,0.5,0.2,0.7
+	}
+	windowDef MapBG12
+	{
+		rect	18,79,604,-365
+		visible	1
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,0.5,0.2,0.7
+	}
+	windowDef MapBG13
+	{
+		rect	18,444,604,-20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,0.5,0.2,0.7
+	}
+	windowDef BGFrame
+	{
+		rect	5,5,630,470
+		visible	1
+		windowDef TRCorner
+		{
+			rect	563,0,-67,80
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef Top
+		{
+			rect	67,0,496,40
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef Bottom
+		{
+			rect	34,440,561,-31
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef BRCorner
+		{
+			rect	595,439,-35,-32
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef Left
+		{
+			rect	0,80,-34,359
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef Right
+		{
+			rect	596,80,34,359
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef TLCorner
+		{
+			rect	0,0,67,80
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef BLCorner
+		{
+			rect	0,439,34,-32
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+		windowDef Top2
+		{
+			rect	67,38,496,38
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1, 0.8, 0.6, 0.7
+		}
+	}
+	windowDef scanpulse
+	{
+		rect	5,5,630,470
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-640,3000
+			matcolor	1,1,1,0.02
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+	windowDef Btn1
+	{
+		rect	32,355,574,107
+		visible	1
+		windowDef btn1_Fill
+		{
+			rect	73,25,430,52
+			visible	1
+			backcolor	1,1,0.8,0.19
+		}
+		windowDef btn1_Bottom
+		{
+			rect	73,77,430,26
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_Top
+		{
+			rect	73,-1,430,-26
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_corner2
+		{
+			rect	503,53,-68,-48
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornerlg"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_corner3
+		{
+			rect	5,53,68,-48
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornerlg"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_corner4
+		{
+			rect	503,1,-68,-24
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_corner1
+		{
+			rect	5,1,68,-24
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_right
+		{
+			rect	503,25,-68,28
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,1,0.8,0.4
+		}
+		windowDef btn1_left
+		{
+			rect	5,25,68,28
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,1,0.8,0.4
+		}
+	}
+	windowDef TriggerButtonStation
+	{
+		rect	50,330,540,110
+		text	"#str_00566"
+		textscale	1.1
+		textalign	1
+		forecolor	1, 1, 1, 0
+		cursor	1
+		textaligny	30
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TriggerButtonError
+	{
+		rect	50,330,540,110
+		text	"#str_00567"
+		textscale	1.1
+		textalign	1
+		forecolor	1, 1, 1, 0
+		cursor	1
+		textaligny	30
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TriggerButtonAlt
+	{
+		rect	50,323,540,110
+		text	"#str_00568"
+		textscale	1.4
+		textalign	1
+		forecolor	1, 1, 1, 0
+		cursor	1
+		textaligny	30
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TriggerButton
+	{
+		rect	50,323,540,110
+		text	"#str_00565"
+		textscale	1.4
+		textalign	1
+		forecolor	1, 1, 1, 0.4
+		cursor	1
+		textaligny	30
+		visible	1
+		notime	1
+		font	"fonts/bank"
+
+		onMouseEnter {
+			//	transition	"matcolor" "1 1 1 0.1" "1 1 1 0.3" "200" ; 
+		}
+
+		onMouseExit {
+			//	transition	"matcolor" "1 1 1 0.3" "1 1 1 0.1" "200" ; 
+		}
+//
+		onAction {
+			set 	"desktop::anim" "1" ;
+			set "noevents" "1" ;
+			if ("gui::gui_parm3" == 0) {
+				if ("gui::*gui_parm7" == 1) {
+					if ("desktop::station" == 0) {
+						set	"cmd" "setkeyval callspot1_conpan gui_parm3 1 ; setkeyval callspot2_conpan gui_parm3 1 ; setkeyval callspot3_conpan gui_parm3 1 ; play commoutside_computer_liftcall" ;					
+						runScript	"gui::gui_parm6" ;
+						ResetTime	"Anim" "0" ;
+
+					} else {
+						ResetTime	"AnimStation" "0" ;
+						set "cmd" "play guisounds_error" ;
+					}
+				}
+			}
+		}
+
+		onTime 300 {
+			if ("desktop::active" == 1) {
+				set "text" "#str_00569" ;
+			} else {
+				set "text" "#str_00565" ;
+			}
+			if ("anim" == 0) {
+				transition "forecolor" "1 1 1 0" "1 1 1 0.4" "200" ;
+			}
+		}
+
+	}
+	windowDef TextTitle
+	{
+		rect	4,6,632,48
+		text	"#str_00570"
+		textscale	0.65
+		textalign	1
+		forecolor	1,1,1,0.6
+		visible	1
+		font	"fonts/micro"
+	}
+	windowDef TextTransferringMain
+	{
+		rect	56,213,526,120
+		text	"#str_00571"
+		textscale	1.1
+		textalign	1
+		forecolor	1,1,0.8,0.2
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TextTransferring
+	{
+		rect	56,213,526,120
+		text	"#str_00564"
+		textscale	1.1
+		textalign	1
+		forecolor	1,1,1,0
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TextStation
+	{
+		rect	56,213,526,120
+		text	"#str_00572"
+		textscale	1.1
+		textalign	1
+		forecolor	1,1,1,0
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef TextError
+	{
+		rect	60,230,526,120
+		text	"#str_00573"
+		textscale	0.85
+		textalign	1
+		forecolor	1,1,1,0
+		visible	1
+		font	"fonts/bank"
+	}
+	windowDef LocClip
+	{
+		rect	2,-4,640,238
+		visible	1
+		windowDef PDABG
+		{
+			rect	43,78,553,147
+			matcolor	1,0.3,0,0.2
+			background	"guis/assets/pda/glowup60_256"
+			visible	1
+		}
+		windowDef MapBgTop
+		{
+			rect	36,75,566,21
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBgMid
+		{
+			rect	36,96,566,-112
+			visible	1
+			background	"guis/assets/teleporter/grid4"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBgBottom
+		{
+			rect	36,208,566,-21
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef liftmap
+		{
+			rect	45,67,546,157
+			visible	1
+			background	"guis/assets/commoutside/liftmap"
+			matcolor	1,1,0.8,0.4
+			notime	1
+
+			onTime 400 {
+				set "liftmapOverlay::visible" "1" ;
+			}
+
+		}
+		windowDef liftmapOverlay
+		{
+			rect	45,67,546,157
+			visible	0
+			background	"guis/assets/commoutside/liftmapover"
+			matcolor	0.8,1,1,pdscaleTable4[ time * 0.001 ] / 2
+		}
+		windowDef LiftMapHighlight
+		{
+			rect	229,115,29,17
+			nocursor	1
+			background	"guis/assets/commoutside/lifthighlight"
+			matcolor	0.8, 0.1, 0, 0.6
+			visible	1
+
+			onTime 0 {
+				transition "matcolor" "0.8 0.1 0 0.8" "0.8 0.1 0 0.3" "800" ;
+			}
+
+			onTime 800 {
+				transition "matcolor" "0.8 0.1 0 0.3" "0.8 0.1 0 0.8" "200" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef TextStation1
+		{
+			rect	48,131,177,32
+			text	"#str_00574"
+			textscale	0.4
+			forecolor	1,1,0.9,0.3
+			visible	1
+			font	"fonts/bank"
+		}
+		windowDef TextStation2
+		{
+			rect	259,153,145,33
+			text	"#str_00575"
+			textscale	0.4
+			forecolor	1,1,0.9,0.3
+			visible	1
+			font	"fonts/bank"
+		}
+		windowDef TextStation3
+		{
+			rect	412,161,177,30
+			text	"#str_00576"
+			textscale	0.4
+			forecolor	1,1,0.9,0.3
+			visible	1
+			font	"fonts/bank"
+			textalign	2
+		}
+		windowDef TextLoading
+		{
+			rect	49,146,134,32
+			text	"#str_00577"
+			textscale	0.4
+			forecolor	1,1,0.9,0.2
+			visible	1
+			font	"fonts/bank"
+		}
+		windowDef TextProcessing
+		{
+			rect	260,168,145,33
+			text	"#str_00578"
+			textscale	0.4
+			forecolor	1,1,0.9,0.2
+			visible	1
+			font	"fonts/bank"
+		}
+		windowDef TextOffload
+		{
+			rect	409,176,177,30
+			text	"#str_00579"
+			textscale	0.4
+			forecolor	1,1,0.9,0.2
+			visible	1
+			font	"fonts/bank"
+			textalign	2
+		}
+	}
+	windowDef Bglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0, 0, 0, 0.1
+	}
+	windowDef Outerglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , 0
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,0,640,-480
+		background	"gui/addhighlight"
+		matcolor	0,0,0,0
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Reflect
+	{
+		rect	0,20,-640,-480
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,-480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+}
