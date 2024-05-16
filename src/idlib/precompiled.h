@@ -104,6 +104,10 @@ If you have questions concerning this license or the applicable additional terms
 #include <errno.h>
 #include <math.h>
 
+// #include <glad/glad.h>
+#include <GL/glew.h>
+// #define GLFW_INCLUDE_NON
+
 //-----------------------------------------------------
 
 // non-portable system services

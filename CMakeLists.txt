@@ -21,6 +21,7 @@ file(GLOB_RECURSE OGG_SRC external/OggVorbis/oggsrc/*.c external/OggVorbis/oggsr
 file(GLOB_RECURSE OGG external/OggVorbis/ogg/*.c external/OggVorbis/ogg/*.cpp external/OggVorbis/ogg/*.h)
 file(GLOB_RECURSE VORBIS external/OggVorbis/vorbis/*.c external/OggVorbis/vorbis/*.cpp external/OggVorbis/vorbis/*.h)
 file(GLOB_RECURSE VORBIS_SRC external/OggVorbis/vorbissrc/*.c external/OggVorbis/vorbissrc/*.cpp external/OggVorbis/vorbissrc/*.h)
+# file(GLOB GLAD external/glad/src/glad.c)
 
 set(D3Source
     ${D3GAME}
@@ -42,22 +43,28 @@ set(D3Source
     ${SYSWIN}
     ${TOOLS}
     ${UI}
+    ${GLAD}
     )
 
 add_compile_definitions(_WINDOWS)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(WIN32)
 add_compile_definitions(_USE_32BIT_TIME_T)
-add_compile_definitions(_MBCS)
+# add_compile_definitions(_MBCS)
 add_compile_definitions(_XKEYCHECK_H)
+# add_compile_definitions(GLFW_INCLUDE_NONE)
 
 # Needed so that VSCode can syntax check correctly.
-include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/openal)
-link_directories(${CMAKE_SOURCE_DIR}/external/openal/lib)
+include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/openal external/glfw/include external/glew/include)
+link_directories(${CMAKE_SOURCE_DIR}/external/openal/lib external/glfw/libs external/glew/lib/Release/Win32)
 
-set(LIBS dbghelp dinput8 dsound dxguid glu32 iphlpapi opengl32 winmm ws2_32 eaxguid odbc32 odbccp32)
+set(LIBS dbghelp dinput8 dsound dxguid glu32 iphlpapi opengl32 winmm ws2_32 eaxguid odbc32 odbccp32 glfw3 glew32)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+LINK_FLAGS "/SUBSYSTEM:CONSOLE"
+)

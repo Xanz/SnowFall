@@ -193,88 +193,89 @@ static LONG WINAPI ConWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lPara
 }
 
 LONG WINAPI InputLineWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
-	int key, cursor;
-	switch ( uMsg ) {
-	case WM_KILLFOCUS:
-		if ( ( HWND ) wParam == s_wcd.hWnd || ( HWND ) wParam == s_wcd.hwndErrorBox ) {
-			SetFocus( hWnd );
-			return 0;
-		}
-		break;
+	// int key, cursor;
+	// switch ( uMsg ) {
+	// case WM_KILLFOCUS:
+	// 	if ( ( HWND ) wParam == s_wcd.hWnd || ( HWND ) wParam == s_wcd.hwndErrorBox ) {
+	// 		SetFocus( hWnd );
+	// 		return 0;
+	// 	}
+	// 	break;
 
-	case WM_KEYDOWN:
-		key = MapKey( lParam );
+	// case WM_KEYDOWN:
+	// 	key = MapKey( lParam );
 
-		// command history
-		if ( ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ) {
-			if ( s_wcd.nextHistoryLine - s_wcd.historyLine < COMMAND_HISTORY && s_wcd.historyLine > 0 ) {
-				s_wcd.historyLine--;
-			}
-			s_wcd.consoleField = s_wcd.historyEditLines[ s_wcd.historyLine % COMMAND_HISTORY ];
+	// 	// command history
+	// 	if ( ( key == K_UPARROW ) || ( key == K_KP_UPARROW ) ) {
+	// 		if ( s_wcd.nextHistoryLine - s_wcd.historyLine < COMMAND_HISTORY && s_wcd.historyLine > 0 ) {
+	// 			s_wcd.historyLine--;
+	// 		}
+	// 		s_wcd.consoleField = s_wcd.historyEditLines[ s_wcd.historyLine % COMMAND_HISTORY ];
 
-			SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
-			SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
-			return 0;
-		}
+	// 		SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
+	// 		SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
+	// 		return 0;
+	// 	}
 
-		if ( ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ) {
-			if ( s_wcd.historyLine == s_wcd.nextHistoryLine ) {
-				return 0;
-			}
-			s_wcd.historyLine++;
-			s_wcd.consoleField = s_wcd.historyEditLines[ s_wcd.historyLine % COMMAND_HISTORY ];
+	// 	if ( ( key == K_DOWNARROW ) || ( key == K_KP_DOWNARROW ) ) {
+	// 		if ( s_wcd.historyLine == s_wcd.nextHistoryLine ) {
+	// 			return 0;
+	// 		}
+	// 		s_wcd.historyLine++;
+	// 		s_wcd.consoleField = s_wcd.historyEditLines[ s_wcd.historyLine % COMMAND_HISTORY ];
 
-			SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
-			SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
-			return 0;
-		}
-		break;
+	// 		SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
+	// 		SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
+	// 		return 0;
+	// 	}
+	// 	break;
 
-	case WM_CHAR:
-		key = MapKey( lParam );
+	// case WM_CHAR:
+	// 	key = MapKey( lParam );
 
-		GetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer(), MAX_EDIT_LINE );
-		SendMessage( s_wcd.hwndInputLine, EM_GETSEL, (WPARAM) NULL, (LPARAM) &cursor );
-		s_wcd.consoleField.SetCursor( cursor );
+	// 	GetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer(), MAX_EDIT_LINE );
+	// 	SendMessage( s_wcd.hwndInputLine, EM_GETSEL, (WPARAM) NULL, (LPARAM) &cursor );
+	// 	s_wcd.consoleField.SetCursor( cursor );
 
-		// enter the line
-		if ( key == K_ENTER || key == K_KP_ENTER ) {
-			strncat( s_wcd.consoleText, s_wcd.consoleField.GetBuffer(), sizeof( s_wcd.consoleText ) - strlen( s_wcd.consoleText ) - 5 );
-			strcat( s_wcd.consoleText, "\n" );
-			SetWindowText( s_wcd.hwndInputLine, "" );
+	// 	// enter the line
+	// 	if ( key == K_ENTER || key == K_KP_ENTER ) {
+	// 		strncat( s_wcd.consoleText, s_wcd.consoleField.GetBuffer(), sizeof( s_wcd.consoleText ) - strlen( s_wcd.consoleText ) - 5 );
+	// 		strcat( s_wcd.consoleText, "\n" );
+	// 		SetWindowText( s_wcd.hwndInputLine, "" );
 
-			Sys_Printf( "]%s\n", s_wcd.consoleField.GetBuffer() );
+	// 		Sys_Printf( "]%s\n", s_wcd.consoleField.GetBuffer() );
 
-			// copy line to history buffer
-			s_wcd.historyEditLines[s_wcd.nextHistoryLine % COMMAND_HISTORY] = s_wcd.consoleField;
-			s_wcd.nextHistoryLine++;
-			s_wcd.historyLine = s_wcd.nextHistoryLine;
+	// 		// copy line to history buffer
+	// 		s_wcd.historyEditLines[s_wcd.nextHistoryLine % COMMAND_HISTORY] = s_wcd.consoleField;
+	// 		s_wcd.nextHistoryLine++;
+	// 		s_wcd.historyLine = s_wcd.nextHistoryLine;
 
-			s_wcd.consoleField.Clear();
+	// 		s_wcd.consoleField.Clear();
 
-			return 0;
-		}
+	// 		return 0;
+	// 	}
 
-		// command completion
-		if ( key == K_TAB ) {
-			s_wcd.consoleField.AutoComplete();
+	// 	// command completion
+	// 	if ( key == K_TAB ) {
+	// 		s_wcd.consoleField.AutoComplete();
 
-			SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
-			//s_wcd.consoleField.SetWidthInChars( strlen( s_wcd.consoleField.GetBuffer() ) );
-			SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
+	// 		SetWindowText( s_wcd.hwndInputLine, s_wcd.consoleField.GetBuffer() );
+	// 		//s_wcd.consoleField.SetWidthInChars( strlen( s_wcd.consoleField.GetBuffer() ) );
+	// 		SendMessage( s_wcd.hwndInputLine, EM_SETSEL, s_wcd.consoleField.GetCursor(), s_wcd.consoleField.GetCursor() );
 
-			return 0;
-		}
+	// 		return 0;
+	// 	}
 
-		// clear autocompletion buffer on normal key input
-		if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || 
-			( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) ) {
-			s_wcd.consoleField.ClearAutoComplete();
-		}
-		break;
-	}
+	// 	// clear autocompletion buffer on normal key input
+	// 	if ( ( key >= K_SPACE && key <= K_BACKSPACE ) || 
+	// 		( key >= K_KP_SLASH && key <= K_KP_PLUS ) || ( key >= K_KP_STAR && key <= K_KP_EQUALS ) ) {
+	// 		s_wcd.consoleField.ClearAutoComplete();
+	// 	}
+	// 	break;
+	// }
 
-	return CallWindowProc( s_wcd.SysInputLineWndProc, hWnd, uMsg, wParam, lParam );
+	// return CallWindowProc( s_wcd.SysInputLineWndProc, hWnd, uMsg, wParam, lParam );
+	return 0;
 }
 
 /*

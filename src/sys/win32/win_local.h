@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include <windows.h>
 #include "../../renderer/wglext.h"		// windows OpenGL extensions
+#include <glfw/glfw3.h>
 
 // WGL_ARB_extensions_string
 extern	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
@@ -171,5 +172,7 @@ typedef struct {
 } Win32Vars_t;
 
 extern Win32Vars_t	win32;
+
+extern GLFWwindow* window;
 
 #endif /* !__WIN_LOCAL_H__ */

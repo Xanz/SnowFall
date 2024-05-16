@@ -47,6 +47,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "rc/AFEditor_resource.h"
 #include "rc/doom_resource.h"
 #include "../../renderer/tr_local.h"
+#include <GLFW/glfw3.h>
+
 
 static void		GLW_InitExtensions( void );
 
@@ -261,8 +263,8 @@ LONG WINAPI FakeWndProc (
     // Set up OpenGL
     pixelFormat = ChoosePixelFormat(hDC, &pfd);
     SetPixelFormat(hDC, pixelFormat, &pfd);
-    hGLRC = qwglCreateContext(hDC);
-    qwglMakeCurrent(hDC, hGLRC);
+    // hGLRC = qwglCreateContext(hDC);
+    // qwglMakeCurrent(hDC, hGLRC);
 
 	// free things
     wglMakeCurrent(NULL, NULL);
@@ -481,12 +483,12 @@ static bool GLW_InitDriver( glimpParms_t parms ) {
 	common->Printf( "succeeded\n" );
 
 	common->Printf( "...making context current: " );
-	if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-		qwglDeleteContext( win32.hGLRC );
-		win32.hGLRC = NULL;
-		common->Printf( "^3failed^0\n" );
-		return false;
-	}
+	// if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
+		// qwglDeleteContext( win32.hGLRC );
+	// 	win32.hGLRC = NULL;
+	// 	common->Printf( "^3failed^0\n" );
+	// 	return false;
+	// }
 	common->Printf( "succeeded\n" );
 
 	return true;
@@ -792,66 +794,86 @@ parameters and try again.
 */
 bool GLimp_Init( glimpParms_t parms ) {
 	const char	*driverName;
-	HDC		hDC;
+	// HDC		hDC;
 
 	common->Printf( "Initializing OpenGL subsystem\n" );
 
-	// check our desktop attributes
-	hDC = GetDC( GetDesktopWindow() );
-	win32.desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
-	win32.desktopWidth = GetDeviceCaps( hDC, HORZRES );
-	win32.desktopHeight = GetDeviceCaps( hDC, VERTRES );
-	ReleaseDC( GetDesktopWindow(), hDC );
+	// GLFWwindow* window;
 
-	// we can't run in a window unless it is 32 bpp
-	if ( win32.desktopBitsPixel < 32 && !parms.fullScreen ) {
-		common->Printf("^3Windowed mode requires 32 bit desktop depth^0\n");
+	if(!glfwInit())
+	{
 		return false;
 	}
 
-	// save the hardware gamma so it can be
-	// restored on exit
-	GLimp_SaveGamma();
+	window = glfwCreateWindow(640, 480, "Doom 3 GLFW Testing", NULL, NULL);
+    if (!window)
+    {
+        glfwTerminate();
+        return false;
+    }
 
-	// create our window classes if we haven't already
-	GLW_CreateWindowClasses();
+	glfwMakeContextCurrent(window);
 
-	// this will load the dll and set all our qgl* function pointers,
-	// but doesn't create a window
+	glewInit();
 
-	// r_glDriver is only intended for using instrumented OpenGL
-	// dlls.  Normal users should never have to use it, and it is
-	// not archived.
-	driverName = r_glDriver.GetString()[0] ? r_glDriver.GetString() : "opengl32";
-	if ( !QGL_Init( driverName ) ) {
-		common->Printf( "^3GLimp_Init() could not load r_glDriver \"%s\"^0\n", driverName );
-		return false;
-	}
 
-	// getting the wgl extensions involves creating a fake window to get a context,
-	// which is pretty disgusting, and seems to mess with the AGP VAR allocation
-	GLW_GetWGLExtensionsWithFakeWindow();
 
-	// try to change to fullscreen
-	if ( parms.fullScreen ) {
-		if ( !GLW_SetFullScreen( parms ) ) {
-			GLimp_Shutdown();
-			return false;
-		}
-	}
+	// // check our desktop attributes
+	// hDC = GetDC( GetDesktopWindow() );
+	// win32.desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
+	// win32.desktopWidth = GetDeviceCaps( hDC, HORZRES );
+	// win32.desktopHeight = GetDeviceCaps( hDC, VERTRES );
+	// ReleaseDC( GetDesktopWindow(), hDC );
 
-	// try to create a window with the correct pixel format
-	// and init the renderer context
-	if ( !GLW_CreateWindow( parms ) ) {
-		GLimp_Shutdown();
-		return false;
-	}
+	// // we can't run in a window unless it is 32 bpp
+	// if ( win32.desktopBitsPixel < 32 && !parms.fullScreen ) {
+	// 	common->Printf("^3Windowed mode requires 32 bit desktop depth^0\n");
+	// 	return false;
+	// }
 
-	// wglSwapinterval, etc
-	GLW_CheckWGLExtensions( win32.hDC );
+	// // save the hardware gamma so it can be
+	// // restored on exit
+	// GLimp_SaveGamma();
 
-	// check logging
-	GLimp_EnableLogging( ( r_logFile.GetInteger() != 0 ) );
+	// // create our window classes if we haven't already
+	// GLW_CreateWindowClasses();
+
+	// // this will load the dll and set all our qgl* function pointers,
+	// // but doesn't create a window
+
+	// // r_glDriver is only intended for using instrumented OpenGL
+	// // dlls.  Normal users should never have to use it, and it is
+	// // not archived.
+	// driverName = r_glDriver.GetString()[0] ? r_glDriver.GetString() : "opengl32";
+	// if ( !QGL_Init( driverName ) ) {
+	// 	common->Printf( "^3GLimp_Init() could not load r_glDriver \"%s\"^0\n", driverName );
+	// 	return false;
+	// }
+
+	// // getting the wgl extensions involves creating a fake window to get a context,
+	// // which is pretty disgusting, and seems to mess with the AGP VAR allocation
+	// GLW_GetWGLExtensionsWithFakeWindow();
+
+	// // try to change to fullscreen
+	// if ( parms.fullScreen ) {
+	// 	if ( !GLW_SetFullScreen( parms ) ) {
+	// 		GLimp_Shutdown();
+	// 		return false;
+	// 	}
+	// }
+
+	// // try to create a window with the correct pixel format
+	// // and init the renderer context
+	// if ( !GLW_CreateWindow( parms ) ) {
+	// 	GLimp_Shutdown();
+	// 	return false;
+	// }
+
+	// // wglSwapinterval, etc
+	// GLW_CheckWGLExtensions( win32.hDC );
+
+	// // check logging
+	// GLimp_EnableLogging( ( r_logFile.GetInteger() != 0 ) );
 
 	return true;
 }
@@ -949,14 +971,14 @@ void GLimp_Shutdown( void ) {
 	common->Printf( "Shutting down OpenGL subsystem\n" );
 
 	// set current context to NULL
-	if ( qwglMakeCurrent ) {
-		retVal = qwglMakeCurrent( NULL, NULL ) != 0;
-		common->Printf( "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
-	}
+	// if ( qwglMakeCurrent ) {
+		// retVal = qwglMakeCurrent( NULL, NULL ) != 0;
+		// common->Printf( "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
+	// }
 
 	// delete HGLRC
 	if ( win32.hGLRC ) {
-		retVal = qwglDeleteContext( win32.hGLRC ) != 0;
+		// retVal = qwglDeleteContext( win32.hGLRC ) != 0;
 		common->Printf( "...deleting GL context: %s\n", success[retVal] );
 		win32.hGLRC = NULL;
 	}
@@ -994,7 +1016,7 @@ void GLimp_Shutdown( void ) {
 	GLimp_RestoreGamma();
 
 	// shutdown QGL subsystem
-	QGL_Shutdown();
+	// QGL_Shutdown();
 }
 
 
@@ -1008,15 +1030,18 @@ void GLimp_SwapBuffers( void ) {
 	// wglSwapinterval is a windows-private extension,
 	// so we must check for it here instead of portably
 	//
-	if ( r_swapInterval.IsModified() ) {
-		r_swapInterval.ClearModified();
+	// if ( r_swapInterval.IsModified() ) {
+	// 	r_swapInterval.ClearModified();
 
-		if ( wglSwapIntervalEXT ) {
-			wglSwapIntervalEXT( r_swapInterval.GetInteger() );
-		}
-	}
+	// 	if ( wglSwapIntervalEXT ) {
+	// 		wglSwapIntervalEXT( r_swapInterval.GetInteger() );
+	// 	}
+	// }
 
-	qwglSwapBuffers( win32.hDC );
+	// qwglSwapBuffers( win32.hDC );
+	// win32.
+	glfwSwapBuffers(window);
+	glfwPollEvents();
 
 //Sys_DebugPrintf( "*** SwapBuffers() ***\n" );
 }
@@ -1038,9 +1063,9 @@ GLimp_ActivateContext
 ===================
 */
 void GLimp_ActivateContext( void ) {
-	if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-		win32.wglErrors++;
-	}
+	// if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
+	// 	win32.wglErrors++;
+	// }
 }
 
 /*
@@ -1050,10 +1075,10 @@ GLimp_DeactivateContext
 ===================
 */
 void GLimp_DeactivateContext( void ) {
-	qglFinish();
-	if ( !qwglMakeCurrent( win32.hDC, NULL ) ) {
-		win32.wglErrors++;
-	}
+	glFinish();
+	// if ( !qwglMakeCurrent( win32.hDC, NULL ) ) {
+	// 	win32.wglErrors++;
+	// }
 #ifdef REALLOC_DC
 	// makeCurrent NULL frees the DC, so get another
 	if ( ( win32.hDC = GetDC( win32.hWnd ) ) == NULL ) {
@@ -1073,7 +1098,7 @@ static void GLimp_RenderThreadWrapper( void ) {
 	win32.glimpRenderThread();
 
 	// unbind the context before we die
-	qwglMakeCurrent( win32.hDC, NULL );
+	// qwglMakeCurrent( win32.hDC, NULL );
 }
 
 /*
@@ -1230,7 +1255,8 @@ Returns a function pointer for an OpenGL extension entry point
 GLExtension_t GLimp_ExtensionPointer( const char *name ) {
 	void	(*proc)(void);
 
-	proc = (GLExtension_t)qwglGetProcAddress( name );
+	// proc = (GLExtension_t)glewget( name );
+	proc = glfwGetProcAddress(name);
 
 	if ( !proc ) {
 		common->Printf( "Couldn't find proc address for: %s\n", name );

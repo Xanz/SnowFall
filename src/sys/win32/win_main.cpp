@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "win_local.h"
 #include "rc/CreateResourceIDs.h"
 #include "../../renderer/tr_local.h"
+#include <GLFW/glfw3.h>
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
@@ -63,6 +64,8 @@ idCVar Win32Vars_t::win_timerUpdate( "win_timerUpdate", "0", CVAR_SYSTEM | CVAR_
 idCVar Win32Vars_t::win_allowMultipleInstances( "win_allowMultipleInstances", "0", CVAR_SYSTEM | CVAR_BOOL, "allow multiple instances running concurrently" );
 
 Win32Vars_t	win32;
+
+GLFWwindow* window;
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
@@ -1286,64 +1289,64 @@ _except_handler
 EXCEPTION_DISPOSITION __cdecl _except_handler( struct _EXCEPTION_RECORD *ExceptionRecord, void * EstablisherFrame,
 												struct _CONTEXT *ContextRecord, void * DispatcherContext ) {
 
-	static char msg[ 8192 ];
-	char FPUFlags[2048];
+	// static char msg[ 8192 ];
+	// char FPUFlags[2048];
 
-	Sys_FPU_PrintStateFlags( FPUFlags, ContextRecord->FloatSave.ControlWord,
-										ContextRecord->FloatSave.StatusWord,
-										ContextRecord->FloatSave.TagWord,
-										ContextRecord->FloatSave.ErrorOffset,
-										ContextRecord->FloatSave.ErrorSelector,
-										ContextRecord->FloatSave.DataOffset,
-										ContextRecord->FloatSave.DataSelector );
+	// Sys_FPU_PrintStateFlags( FPUFlags, ContextRecord->FloatSave.ControlWord,
+	// 									ContextRecord->FloatSave.StatusWord,
+	// 									ContextRecord->FloatSave.TagWord,
+	// 									ContextRecord->FloatSave.ErrorOffset,
+	// 									ContextRecord->FloatSave.ErrorSelector,
+	// 									ContextRecord->FloatSave.DataOffset,
+	// 									ContextRecord->FloatSave.DataSelector );
 
 
-	sprintf( msg, 
-		"Please describe what you were doing when DOOM 3 crashed!\n"
-		"If this text did not pop into your email client please copy and email it to programmers@idsoftware.com\n"
-			"\n"
-			"-= FATAL EXCEPTION =-\n"
-			"\n"
-			"%s\n"
-			"\n"
-			"0x%x at address 0x%08x\n"
-			"\n"
-			"%s\n"
-			"\n"
-			"EAX = 0x%08x EBX = 0x%08x\n"
-			"ECX = 0x%08x EDX = 0x%08x\n"
-			"ESI = 0x%08x EDI = 0x%08x\n"
-			"EIP = 0x%08x ESP = 0x%08x\n"
-			"EBP = 0x%08x EFL = 0x%08x\n"
-			"\n"
-			"CS = 0x%04x\n"
-			"SS = 0x%04x\n"
-			"DS = 0x%04x\n"
-			"ES = 0x%04x\n"
-			"FS = 0x%04x\n"
-			"GS = 0x%04x\n"
-			"\n"
-			"%s\n",
-			com_version.GetString(),
-			ExceptionRecord->ExceptionCode,
-			ExceptionRecord->ExceptionAddress,
-			GetExceptionCodeInfo( ExceptionRecord->ExceptionCode ),
-			ContextRecord->Eax, ContextRecord->Ebx,
-			ContextRecord->Ecx, ContextRecord->Edx,
-			ContextRecord->Esi, ContextRecord->Edi,
-			ContextRecord->Eip, ContextRecord->Esp,
-			ContextRecord->Ebp, ContextRecord->EFlags,
-			ContextRecord->SegCs,
-			ContextRecord->SegSs,
-			ContextRecord->SegDs,
-			ContextRecord->SegEs,
-			ContextRecord->SegFs,
-			ContextRecord->SegGs,
-			FPUFlags
-		);
+	// sprintf( msg, 
+	// 	"Please describe what you were doing when DOOM 3 crashed!\n"
+	// 	"If this text did not pop into your email client please copy and email it to programmers@idsoftware.com\n"
+	// 		"\n"
+	// 		"-= FATAL EXCEPTION =-\n"
+	// 		"\n"
+	// 		"%s\n"
+	// 		"\n"
+	// 		"0x%x at address 0x%08x\n"
+	// 		"\n"
+	// 		"%s\n"
+	// 		"\n"
+	// 		"EAX = 0x%08x EBX = 0x%08x\n"
+	// 		"ECX = 0x%08x EDX = 0x%08x\n"
+	// 		"ESI = 0x%08x EDI = 0x%08x\n"
+	// 		"EIP = 0x%08x ESP = 0x%08x\n"
+	// 		"EBP = 0x%08x EFL = 0x%08x\n"
+	// 		"\n"
+	// 		"CS = 0x%04x\n"
+	// 		"SS = 0x%04x\n"
+	// 		"DS = 0x%04x\n"
+	// 		"ES = 0x%04x\n"
+	// 		"FS = 0x%04x\n"
+	// 		"GS = 0x%04x\n"
+	// 		"\n"
+	// 		"%s\n",
+	// 		com_version.GetString(),
+	// 		ExceptionRecord->ExceptionCode,
+	// 		ExceptionRecord->ExceptionAddress,
+	// 		GetExceptionCodeInfo( ExceptionRecord->ExceptionCode ),
+	// 		ContextRecord->Eax, ContextRecord->Ebx,
+	// 		ContextRecord->Ecx, ContextRecord->Edx,
+	// 		ContextRecord->Esi, ContextRecord->Edi,
+	// 		ContextRecord->Eip, ContextRecord->Esp,
+	// 		ContextRecord->Ebp, ContextRecord->EFlags,
+	// 		ContextRecord->SegCs,
+	// 		ContextRecord->SegSs,
+	// 		ContextRecord->SegDs,
+	// 		ContextRecord->SegEs,
+	// 		ContextRecord->SegFs,
+	// 		ContextRecord->SegGs,
+	// 		FPUFlags
+	// 	);
 
-	EmailCrashReport( msg );
-	common->FatalError( msg );
+	// EmailCrashReport( msg );
+	// common->FatalError( msg );
 
     // Tell the OS to restart the faulting instruction
     return ExceptionContinueExecution;
@@ -1357,153 +1360,219 @@ EXCEPTION_DISPOSITION __cdecl _except_handler( struct _EXCEPTION_RECORD *Excepti
 							/*	FPU_EXCEPTION_INEXACT_RESULT |			*/	\
 								0
 
-/*
-==================
-WinMain
-==================
-*/
-int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
 
-	const HCURSOR hcurSave = ::SetCursor( LoadCursor( 0, IDC_WAIT ) );
-
+int main(int argc, char *argv[])
+{
 	Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
 
-	Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
-
-#if 0
-    DWORD handler = (DWORD)_except_handler;
-    __asm
-    {                           // Build EXCEPTION_REGISTRATION record:
-        push    handler         // Address of handler function
-        push    FS:[0]          // Address of previous handler
-        mov     FS:[0],ESP      // Install new EXECEPTION_REGISTRATION
-    }
-#endif
-
-	win32.hInstance = hInstance;
-	idStr::Copynz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
-
-	// done before Com/Sys_Init since we need this for error output
 	Sys_CreateConsole();
 
-	// no abort/retry/fail errors
 	SetErrorMode( SEM_FAILCRITICALERRORS );
 
 	for ( int i = 0; i < MAX_CRITICAL_SECTIONS; i++ ) {
 		InitializeCriticalSection( &win32.criticalSections[i] );
 	}
-
-	// get the initial time base
 	Sys_Milliseconds();
 
-#ifdef DEBUG
-	// disable the painfully slow MS heap check every 1024 allocs
-	_CrtSetDbgFlag( 0 );
-#endif
-
-//	Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
 	Sys_FPU_SetPrecision( FPU_PRECISION_DOUBLE_EXTENDED );
 
-	common->Init( 0, NULL, lpCmdLine );
+	common->Init( 0, NULL, NULL );
 
-#if TEST_FPU_EXCEPTIONS != 0
+	#if TEST_FPU_EXCEPTIONS != 0
 	common->Printf( Sys_FPU_GetState() );
 #endif
 
-#ifndef	ID_DEDICATED
-	if ( win32.win_notaskkeys.GetInteger() ) {
-		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
-	}
-#endif
+// #ifndef	ID_DEDICATED
+// 	if ( win32.win_notaskkeys.GetInteger() ) {
+// 		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
+// 	}
+// #endif
 
 	Sys_StartAsyncThread();
 
-	// hide or show the early console as necessary
+	// 	// hide or show the early console as necessary
 	if ( win32.win_viewlog.GetInteger() || com_skipRenderer.GetBool() || idAsyncNetwork::serverDedicated.GetInteger() ) {
 		Sys_ShowConsole( 1, true );
 	} else {
 		Sys_ShowConsole( 0, false );
 	}
-
 #ifdef SET_THREAD_AFFINITY 
 	// give the main thread an affinity for the first cpu
 	SetThreadAffinityMask( GetCurrentThread(), 1 );
 #endif
 
-	::SetCursor( hcurSave );
+	// ::SetCursor( hcurSave );
 
 	// Launch the script debugger
-	if ( strstr( lpCmdLine, "+debugger" ) ) {
-		// DebuggerClientInit( lpCmdLine );
-		return 0;
-	}
+	// if ( strstr( lpCmdLine, "+debugger" ) ) {
+	// 	// DebuggerClientInit( lpCmdLine );
+	// 	return 0;
+	// }
 
-	::SetFocus( win32.hWnd );
+	// ::SetFocus( win32.hWnd );
 
     // main game loop
 	while( 1 ) {
 
 		Win_Frame();
 
-#ifdef DEBUG
-		Sys_MemFrame();
-#endif
-
 		// set exceptions, even if some crappy syscall changes them!
 		Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
 
-#ifdef ID_ALLOW_TOOLS
-		if ( com_editors ) {
-			if ( com_editors & EDITOR_GUI ) {
-				// GUI editor
-				GUIEditorRun();
-			} else if ( com_editors & EDITOR_RADIANT ) {
-				// Level Editor
-				RadiantRun();
-			}
-			else if (com_editors & EDITOR_MATERIAL ) {
-				//BSM Nerve: Add support for the material editor
-				MaterialEditorRun();
-			}
-			else {
-				if ( com_editors & EDITOR_LIGHT ) {
-					// in-game Light Editor
-					LightEditorRun();
-				}
-				if ( com_editors & EDITOR_SOUND ) {
-					// in-game Sound Editor
-					SoundEditorRun();
-				}
-				if ( com_editors & EDITOR_DECL ) {
-					// in-game Declaration Browser
-					DeclBrowserRun();
-				}
-				if ( com_editors & EDITOR_AF ) {
-					// in-game Articulated Figure Editor
-					AFEditorRun();
-				}
-				if ( com_editors & EDITOR_PARTICLE ) {
-					// in-game Particle Editor
-					ParticleEditorRun();
-				}
-				if ( com_editors & EDITOR_SCRIPT ) {
-					// in-game Script Editor
-					ScriptEditorRun();
-				}
-				if ( com_editors & EDITOR_PDA ) {
-					// in-game PDA Editor
-					PDAEditorRun();
-				}
-			}
-		}
-#endif
 		// run the game
 		common->Frame();
 	}
 
-	// never gets here
 	return 0;
 }
+
+/*
+==================
+WinMain
+==================
+*/
+// int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
+
+// 	const HCURSOR hcurSave = ::SetCursor( LoadCursor( 0, IDC_WAIT ) );
+
+// 	Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
+
+// 	Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
+
+// #if 0
+//     DWORD handler = (DWORD)_except_handler;
+//     __asm
+//     {                           // Build EXCEPTION_REGISTRATION record:
+//         push    handler         // Address of handler function
+//         push    FS:[0]          // Address of previous handler
+//         mov     FS:[0],ESP      // Install new EXECEPTION_REGISTRATION
+//     }
+// #endif
+
+// 	win32.hInstance = hInstance;
+// 	idStr::Copynz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
+
+// 	// done before Com/Sys_Init since we need this for error output
+// 	Sys_CreateConsole();
+
+// 	// no abort/retry/fail errors
+// 	SetErrorMode( SEM_FAILCRITICALERRORS );
+
+// 	for ( int i = 0; i < MAX_CRITICAL_SECTIONS; i++ ) {
+// 		InitializeCriticalSection( &win32.criticalSections[i] );
+// 	}
+
+// 	// get the initial time base
+// 	Sys_Milliseconds();
+
+// #ifdef DEBUG
+// 	// disable the painfully slow MS heap check every 1024 allocs
+// 	_CrtSetDbgFlag( 0 );
+// #endif
+
+// //	Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
+// 	Sys_FPU_SetPrecision( FPU_PRECISION_DOUBLE_EXTENDED );
+
+// 	common->Init( 0, NULL, lpCmdLine );
+
+// #if TEST_FPU_EXCEPTIONS != 0
+// 	common->Printf( Sys_FPU_GetState() );
+// #endif
+
+// #ifndef	ID_DEDICATED
+// 	if ( win32.win_notaskkeys.GetInteger() ) {
+// 		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
+// 	}
+// #endif
+
+// 	Sys_StartAsyncThread();
+
+// 	// hide or show the early console as necessary
+// 	if ( win32.win_viewlog.GetInteger() || com_skipRenderer.GetBool() || idAsyncNetwork::serverDedicated.GetInteger() ) {
+// 		Sys_ShowConsole( 1, true );
+// 	} else {
+// 		Sys_ShowConsole( 0, false );
+// 	}
+
+// #ifdef SET_THREAD_AFFINITY 
+// 	// give the main thread an affinity for the first cpu
+// 	SetThreadAffinityMask( GetCurrentThread(), 1 );
+// #endif
+
+// 	::SetCursor( hcurSave );
+
+// 	// Launch the script debugger
+// 	if ( strstr( lpCmdLine, "+debugger" ) ) {
+// 		// DebuggerClientInit( lpCmdLine );
+// 		return 0;
+// 	}
+
+// 	::SetFocus( win32.hWnd );
+
+//     // main game loop
+// 	while( 1 ) {
+
+// 		Win_Frame();
+
+// #ifdef DEBUG
+// 		Sys_MemFrame();
+// #endif
+
+// 		// set exceptions, even if some crappy syscall changes them!
+// 		Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
+
+// #ifdef ID_ALLOW_TOOLS
+// 		if ( com_editors ) {
+// 			if ( com_editors & EDITOR_GUI ) {
+// 				// GUI editor
+// 				GUIEditorRun();
+// 			} else if ( com_editors & EDITOR_RADIANT ) {
+// 				// Level Editor
+// 				RadiantRun();
+// 			}
+// 			else if (com_editors & EDITOR_MATERIAL ) {
+// 				//BSM Nerve: Add support for the material editor
+// 				MaterialEditorRun();
+// 			}
+// 			else {
+// 				if ( com_editors & EDITOR_LIGHT ) {
+// 					// in-game Light Editor
+// 					LightEditorRun();
+// 				}
+// 				if ( com_editors & EDITOR_SOUND ) {
+// 					// in-game Sound Editor
+// 					SoundEditorRun();
+// 				}
+// 				if ( com_editors & EDITOR_DECL ) {
+// 					// in-game Declaration Browser
+// 					DeclBrowserRun();
+// 				}
+// 				if ( com_editors & EDITOR_AF ) {
+// 					// in-game Articulated Figure Editor
+// 					AFEditorRun();
+// 				}
+// 				if ( com_editors & EDITOR_PARTICLE ) {
+// 					// in-game Particle Editor
+// 					ParticleEditorRun();
+// 				}
+// 				if ( com_editors & EDITOR_SCRIPT ) {
+// 					// in-game Script Editor
+// 					ScriptEditorRun();
+// 				}
+// 				if ( com_editors & EDITOR_PDA ) {
+// 					// in-game PDA Editor
+// 					PDAEditorRun();
+// 				}
+// 			}
+// 		}
+// #endif
+// 		// run the game
+// 		common->Frame();
+// 	}
+
+// 	// never gets here
+// 	return 0;
+// }
 
 /*
 ====================
