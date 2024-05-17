@@ -1026,7 +1026,7 @@ void idUsercmdGenLocal::Keyboard( void ) {
 		}
 	}
 
-	Sys_EndKeyboardInputEvents();
+	// Sys_EndKeyboardInputEvents(); Not needed...
 }
 
 /*

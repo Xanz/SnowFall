@@ -242,11 +242,11 @@ void idAudioHardwareWIN32::SetPrimaryBufferFormat( dword dwPrimaryFreq, dword dw
     dsbd.dwBufferBytes = 0;
     dsbd.lpwfxFormat   = NULL;
        
-	// Obtain write-primary cooperative level. 
-	if( FAILED( hr = m_pDS->SetCooperativeLevel(win32.hWnd, DSSCL_PRIORITY ) ) ) {
-        //DXTRACE_ERR( TEXT("SetPrimaryBufferFormat"), hr );
-		return;
-	}
+	// // Obtain write-primary cooperative level. 
+	// if( FAILED( hr = m_pDS->SetCooperativeLevel(win32.hWnd, DSSCL_PRIORITY ) ) ) {
+    //     //DXTRACE_ERR( TEXT("SetPrimaryBufferFormat"), hr );
+	// 	return;
+	// }
 
 	if( FAILED( hr = m_pDS->CreateSoundBuffer( &dsbd, &pDSBPrimary, NULL ) ) ) {
 		return;

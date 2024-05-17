@@ -144,7 +144,7 @@ static void ResizeWindow( int width, int height ) {
 		winWidth = r.right - r.left;
 
 	}
-	SetWindowPos( win32.hWnd, HWND_TOP, 0, 0, winWidth, winHeight, SWP_SHOWWINDOW );
+	// SetWindowPos( win32.hWnd, HWND_TOP, 0, 0, winWidth, winHeight, SWP_SHOWWINDOW );
 
 	// qwglMakeCurrent( win32.hDC, win32.hGLRC );
 #endif
@@ -174,7 +174,7 @@ static void RestoreWindow( void ) {
 		winHeight = r.bottom - r.top;
 		winWidth = r.right - r.left;
 	}
-	SetWindowPos( win32.hWnd, HWND_TOP, 0, 0, winWidth, winHeight, SWP_SHOWWINDOW );
+	// SetWindowPos( win32.hWnd, HWND_TOP, 0, 0, winWidth, winHeight, SWP_SHOWWINDOW );
 #endif
 }
 

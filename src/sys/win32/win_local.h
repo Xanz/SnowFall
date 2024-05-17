@@ -33,6 +33,20 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../renderer/wglext.h"		// windows OpenGL extensions
 #include <glfw/glfw3.h>
 
+
+struct mouse_poll_t {
+	int action;
+	float value;
+
+	mouse_poll_t() {
+	}
+
+	mouse_poll_t(int a, float v) {
+		action = a;
+		value = v;
+	}
+};
+
 // WGL_ARB_extensions_string
 extern	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
 
@@ -99,13 +113,13 @@ LONG WINAPI MainWndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 void Conbuf_AppendText( const char *msg );
 
 typedef struct {
-	HWND			hWnd;
-	HINSTANCE		hInstance;
+	// HWND			hWnd;
+	// HINSTANCE		hInstance;
 
-	bool			activeApp;			// changed with WM_ACTIVATE messages
-	bool			mouseReleased;		// when the game has the console down or is doing a long operation
-	bool			movingWindow;		// inhibit mouse grab when dragging the window
-	bool			mouseGrabbed;		// current state of grab and hide
+	// bool			activeApp;			// changed with WM_ACTIVATE messages
+	// bool			mouseReleased;		// when the game has the console down or is doing a long operation
+	// bool			movingWindow;		// inhibit mouse grab when dragging the window
+	// bool			mouseGrabbed;		// current state of grab and hide
 
 	OSVERSIONINFOEX	osversion;
 
@@ -138,7 +152,7 @@ typedef struct {
 
 	static idCVar	sys_arch;
 	static idCVar	sys_cpustring;
-	static idCVar	in_mouse;
+	// static idCVar	in_mouse;
 	static idCVar	win_allowAltTab;
 	static idCVar	win_notaskkeys;
 	static idCVar	win_username;
@@ -155,9 +169,9 @@ typedef struct {
 
 	HINSTANCE		hInstDI;			// direct input
 
-	LPDIRECTINPUT8			g_pdi;
-	LPDIRECTINPUTDEVICE8	g_pMouse;
-	LPDIRECTINPUTDEVICE8	g_pKeyboard;
+	// LPDIRECTINPUT8			g_pdi;
+	// LPDIRECTINPUTDEVICE8	g_pMouse;
+	// LPDIRECTINPUTDEVICE8	g_pKeyboard;
 
 	HANDLE			renderCommandsEvent;
 	HANDLE			renderCompletedEvent;
@@ -174,5 +188,11 @@ typedef struct {
 extern Win32Vars_t	win32;
 
 extern GLFWwindow* window;
+
+extern idList<mouse_poll_t> mouse_polls;
+
+extern float lastX;
+
+extern float lastY;
 
 #endif /* !__WIN_LOCAL_H__ */

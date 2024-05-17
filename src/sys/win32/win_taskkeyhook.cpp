@@ -119,7 +119,7 @@ void DisableTaskKeys( BOOL bDisable, BOOL bBeep, BOOL bTaskMgr ) {
 	// task keys (Ctrl+Esc, Alt-Tab, etc.)
 	if ( bDisable ) {
 		if ( !g_hHookKbdLL ) {
-			g_hHookKbdLL = SetWindowsHookEx( WH_KEYBOARD_LL, MyTaskKeyHookLL, win32.hInstance, 0 );
+			// g_hHookKbdLL = SetWindowsHookEx( WH_KEYBOARD_LL, MyTaskKeyHookLL, win32.hInstance, 0 );
 		}
 	} else if ( g_hHookKbdLL != NULL ) {
 		UnhookWindowsHookEx( g_hHookKbdLL );

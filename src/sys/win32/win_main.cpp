@@ -51,7 +51,7 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
-idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
+// idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
 idCVar Win32Vars_t::win_allowAltTab( "win_allowAltTab", "0", CVAR_SYSTEM | CVAR_BOOL, "allow Alt-Tab when fullscreen" );
 idCVar Win32Vars_t::win_notaskkeys( "win_notaskkeys", "0", CVAR_SYSTEM | CVAR_INTEGER, "disable windows task keys" );
 idCVar Win32Vars_t::win_username( "win_username", "", CVAR_SYSTEM | CVAR_INIT, "windows user name" );
@@ -66,6 +66,11 @@ idCVar Win32Vars_t::win_allowMultipleInstances( "win_allowMultipleInstances", "0
 Win32Vars_t	win32;
 
 GLFWwindow* window;
+
+idList<mouse_poll_t> mouse_polls;
+
+float lastX;
+float lastY;
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
@@ -453,7 +458,7 @@ Sys_ShowWindow
 ==============
 */
 void Sys_ShowWindow( bool show ) {
-	::ShowWindow( win32.hWnd, show ? SW_SHOW : SW_HIDE );
+	// ::ShowWindow( win32.hWnd, show ? SW_SHOW : SW_HIDE );
 }
 
 /*
@@ -462,7 +467,8 @@ Sys_IsWindowVisible
 ==============
 */
 bool Sys_IsWindowVisible( void ) {
-	return ( ::IsWindowVisible( win32.hWnd ) != 0 );
+	// return ( ::IsWindowVisible( win32.hWnd ) != 0 );
+	return true;
 }
 
 /*
@@ -840,6 +846,7 @@ Sys_GetEvent
 */
 sysEvent_t Sys_GetEvent( void ) {
 	sysEvent_t	ev;
+	glfwPollEvents();
 
 	// return if we have data
 	if ( eventHead > eventTail ) {
@@ -847,9 +854,23 @@ sysEvent_t Sys_GetEvent( void ) {
 		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
 	}
 
+
+	if(glfwWindowShouldClose(window))
+	{
+		// glfwTerminate();
+	}
+
+	if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
+	{
+	 	ev.evType = SE_KEY;
+	 	ev.evValue = K_ESCAPE;
+	 	ev.evValue2 = true;
+		ev.evPtr = NULL;
+		return ev;
+	}
+
 	// return the empty event 
 	memset( &ev, 0, sizeof( ev ) );
-
 	return ev;
 }
 
@@ -1229,56 +1250,6 @@ const char *GetExceptionCodeInfo( UINT code ) {
 	}
 }
 
-/*
-====================
-EmailCrashReport
-
-  emailer originally from Raven/Quake 4
-====================
-*/
-void EmailCrashReport( LPSTR messageText ) {
-	LPMAPISENDMAIL	MAPISendMail;
-	MapiMessage		message;
-	static int lastEmailTime = 0;
-
-	if ( Sys_Milliseconds() < lastEmailTime + 10000 ) {
-		return;
-	}
-
-	lastEmailTime = Sys_Milliseconds();
-
-	HINSTANCE mapi = LoadLibrary( "MAPI32.DLL" ); 
-	if( mapi ) {
-		MAPISendMail = ( LPMAPISENDMAIL )GetProcAddress( mapi, "MAPISendMail" );
-		if( MAPISendMail ) {
-			MapiRecipDesc toProgrammers =
-			{
-				0,										// ulReserved
-					MAPI_TO,							// ulRecipClass
-					"DOOM 3 Crash",						// lpszName
-					"SMTP:programmers@idsoftware.com",	// lpszAddress
-					0,									// ulEIDSize
-					0									// lpEntry
-			};
-
-			memset( &message, 0, sizeof( message ) );
-			message.lpszSubject = "DOOM 3 Fatal Error";
-			message.lpszNoteText = messageText;
-			message.nRecipCount = 1;
-			message.lpRecips = &toProgrammers;
-
-			MAPISendMail(
-				0,									// LHANDLE lhSession
-				0,									// ULONG ulUIParam
-				&message,							// lpMapiMessage lpMessage
-				MAPI_DIALOG,						// FLAGS flFlags
-				0									// ULONG ulReserved
-				);
-		}
-		FreeLibrary( mapi );
-	}
-}
-
 int Sys_FPU_PrintStateFlags( char *ptr, int ctrl, int stat, int tags, int inof, int inse, int opof, int opse );
 
 /*
@@ -1425,154 +1396,6 @@ int main(int argc, char *argv[])
 
 	return 0;
 }
-
-/*
-==================
-WinMain
-==================
-*/
-// int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow ) {
-
-// 	const HCURSOR hcurSave = ::SetCursor( LoadCursor( 0, IDC_WAIT ) );
-
-// 	Sys_SetPhysicalWorkMemory( 192 << 20, 1024 << 20 );
-
-// 	Sys_GetCurrentMemoryStatus( exeLaunchMemoryStats );
-
-// #if 0
-//     DWORD handler = (DWORD)_except_handler;
-//     __asm
-//     {                           // Build EXCEPTION_REGISTRATION record:
-//         push    handler         // Address of handler function
-//         push    FS:[0]          // Address of previous handler
-//         mov     FS:[0],ESP      // Install new EXECEPTION_REGISTRATION
-//     }
-// #endif
-
-// 	win32.hInstance = hInstance;
-// 	idStr::Copynz( sys_cmdline, lpCmdLine, sizeof( sys_cmdline ) );
-
-// 	// done before Com/Sys_Init since we need this for error output
-// 	Sys_CreateConsole();
-
-// 	// no abort/retry/fail errors
-// 	SetErrorMode( SEM_FAILCRITICALERRORS );
-
-// 	for ( int i = 0; i < MAX_CRITICAL_SECTIONS; i++ ) {
-// 		InitializeCriticalSection( &win32.criticalSections[i] );
-// 	}
-
-// 	// get the initial time base
-// 	Sys_Milliseconds();
-
-// #ifdef DEBUG
-// 	// disable the painfully slow MS heap check every 1024 allocs
-// 	_CrtSetDbgFlag( 0 );
-// #endif
-
-// //	Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
-// 	Sys_FPU_SetPrecision( FPU_PRECISION_DOUBLE_EXTENDED );
-
-// 	common->Init( 0, NULL, lpCmdLine );
-
-// #if TEST_FPU_EXCEPTIONS != 0
-// 	common->Printf( Sys_FPU_GetState() );
-// #endif
-
-// #ifndef	ID_DEDICATED
-// 	if ( win32.win_notaskkeys.GetInteger() ) {
-// 		DisableTaskKeys( TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE );
-// 	}
-// #endif
-
-// 	Sys_StartAsyncThread();
-
-// 	// hide or show the early console as necessary
-// 	if ( win32.win_viewlog.GetInteger() || com_skipRenderer.GetBool() || idAsyncNetwork::serverDedicated.GetInteger() ) {
-// 		Sys_ShowConsole( 1, true );
-// 	} else {
-// 		Sys_ShowConsole( 0, false );
-// 	}
-
-// #ifdef SET_THREAD_AFFINITY 
-// 	// give the main thread an affinity for the first cpu
-// 	SetThreadAffinityMask( GetCurrentThread(), 1 );
-// #endif
-
-// 	::SetCursor( hcurSave );
-
-// 	// Launch the script debugger
-// 	if ( strstr( lpCmdLine, "+debugger" ) ) {
-// 		// DebuggerClientInit( lpCmdLine );
-// 		return 0;
-// 	}
-
-// 	::SetFocus( win32.hWnd );
-
-//     // main game loop
-// 	while( 1 ) {
-
-// 		Win_Frame();
-
-// #ifdef DEBUG
-// 		Sys_MemFrame();
-// #endif
-
-// 		// set exceptions, even if some crappy syscall changes them!
-// 		Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
-
-// #ifdef ID_ALLOW_TOOLS
-// 		if ( com_editors ) {
-// 			if ( com_editors & EDITOR_GUI ) {
-// 				// GUI editor
-// 				GUIEditorRun();
-// 			} else if ( com_editors & EDITOR_RADIANT ) {
-// 				// Level Editor
-// 				RadiantRun();
-// 			}
-// 			else if (com_editors & EDITOR_MATERIAL ) {
-// 				//BSM Nerve: Add support for the material editor
-// 				MaterialEditorRun();
-// 			}
-// 			else {
-// 				if ( com_editors & EDITOR_LIGHT ) {
-// 					// in-game Light Editor
-// 					LightEditorRun();
-// 				}
-// 				if ( com_editors & EDITOR_SOUND ) {
-// 					// in-game Sound Editor
-// 					SoundEditorRun();
-// 				}
-// 				if ( com_editors & EDITOR_DECL ) {
-// 					// in-game Declaration Browser
-// 					DeclBrowserRun();
-// 				}
-// 				if ( com_editors & EDITOR_AF ) {
-// 					// in-game Articulated Figure Editor
-// 					AFEditorRun();
-// 				}
-// 				if ( com_editors & EDITOR_PARTICLE ) {
-// 					// in-game Particle Editor
-// 					ParticleEditorRun();
-// 				}
-// 				if ( com_editors & EDITOR_SCRIPT ) {
-// 					// in-game Script Editor
-// 					ScriptEditorRun();
-// 				}
-// 				if ( com_editors & EDITOR_PDA ) {
-// 					// in-game PDA Editor
-// 					PDAEditorRun();
-// 				}
-// 			}
-// 		}
-// #endif
-// 		// run the game
-// 		common->Frame();
-// 	}
-
-// 	// never gets here
-// 	return 0;
-// }
 
 /*
 ====================
