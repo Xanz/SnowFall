@@ -66,5 +66,5 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-LINK_FLAGS "/SUBSYSTEM:CONSOLE"
+LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
 )
