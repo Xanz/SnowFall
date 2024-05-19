@@ -327,8 +327,14 @@ int GLFWDoom_MapKey (int key) {
 			return K_RIGHT_ALT;
 		case GLFW_KEY_LEFT_CONTROL:
 			return K_CTRL;
-		// case GLFW_KEY_BACKSPACE:
-		// 	return K_BACKSPACE;
+		case GLFW_KEY_LEFT:
+			return K_LEFTARROW;
+		case GLFW_KEY_RIGHT:
+			return K_RIGHTARROW;
+		case GLFW_KEY_UP:
+			return K_UPARROW;
+		case GLFW_KEY_DOWN:
+			return K_DOWNARROW;
 	}
 
 	return 0;

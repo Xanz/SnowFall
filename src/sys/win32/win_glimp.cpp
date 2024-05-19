@@ -343,11 +343,13 @@ static void Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset)
 	{
 		mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
 		Sys_QueEvent( GetTickCount(), SE_MOUSE, 1, 0, 0, NULL );
+		Sys_QueEvent( GetTickCount(), SE_KEY, K_MWHEELUP, 1, 0, NULL );
 	}
 	else if (yoffset <= -1)
 	{
 		mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
 		Sys_QueEvent( GetTickCount(), SE_MOUSE, -1, 0, 0, NULL );
+		Sys_QueEvent( GetTickCount(), SE_KEY, K_MWHEELDOWN, 1, 0, NULL );
 	}
 
 }
