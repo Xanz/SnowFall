@@ -69,8 +69,9 @@ GLFWwindow* window;
 
 idList<mouse_poll_t> mouse_polls;
 
-float lastX;
-float lastY;
+idList<keyboard_poll_t> keyboard_polls;
+
+bool UIActive;
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
@@ -836,6 +837,8 @@ Sys_ClearEvents
 ================
 */
 void Sys_ClearEvents( void ) {
+	mouse_polls.SetNum(0, false);
+	keyboard_polls.SetNum(0, false);
 	eventHead = eventTail = 0;
 }
 
@@ -846,7 +849,6 @@ Sys_GetEvent
 */
 sysEvent_t Sys_GetEvent( void ) {
 	sysEvent_t	ev;
-	glfwPollEvents();
 
 	// return if we have data
 	if ( eventHead > eventTail ) {
@@ -854,20 +856,6 @@ sysEvent_t Sys_GetEvent( void ) {
 		return eventQue[ ( eventTail - 1 ) & MASK_QUED_EVENTS ];
 	}
 
-
-	if(glfwWindowShouldClose(window))
-	{
-		// glfwTerminate();
-	}
-
-	if(glfwGetKey(window, GLFW_KEY_T) == GLFW_PRESS)
-	{
-	 	ev.evType = SE_KEY;
-	 	ev.evValue = K_ESCAPE;
-	 	ev.evValue2 = true;
-		ev.evPtr = NULL;
-		return ev;
-	}
 
 	// return the empty event 
 	memset( &ev, 0, sizeof( ev ) );

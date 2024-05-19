@@ -922,7 +922,7 @@ const char *idWindow::HandleEvent(const sysEvent_t *event, bool *updateVisuals) 
 				}
 			}
 
-		} else if (event->evType == SE_MOUSE) {
+		} else if (event->evType == SE_MOUSE || event->evType == SE_MOUSE_ABS) {
 			if (updateVisuals) {
 				*updateVisuals = true;
 			}

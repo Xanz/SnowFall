@@ -133,6 +133,8 @@ PFNWGLSETPBUFFERATTRIBARBPROC	wglSetPbufferAttribARB;
 #define WGL_SAMPLE_BUFFERS_ARB             0x2041
 #define WGL_SAMPLES_ARB                    0x2042
 
+// Adds raw mouse input.
+idCVar m_rawInput("m_rawinput",	"0", CVAR_BOOL,	"use raw input value : 0 : 1");
 
 
 //
@@ -242,28 +244,135 @@ void GLW_CheckWGLExtensions( HDC hDC ) {
 	wglSetPbufferAttribARB = (PFNWGLSETPBUFFERATTRIBARBPROC)GLimp_ExtensionPointer("wglSetPbufferAttribARB");
 }
 
-
-static void CursorPosition(GLFWwindow* window, double xpos, double ypos)
+static void MouseKey_Callback(GLFWwindow* window, int button, int action, int mods)
 {
-	float xposf = static_cast<float>(xpos);
-	float yposf = static_cast<float>(ypos);
+	if(action == GLFW_PRESS || action == GLFW_RELEASE)
+	{
+		int key;
+		int state = action == GLFW_PRESS ? 1 : 0;
 
-	// if (firstMouse)
-	// {
-		// lastX = xpos;
-		// lastY = ypos;
-		// firstMouse = false;
-	// }
+		// UI seems to use K_MOUSE1 instead of M_ACTION1
+		if(UIActive)
+		{
+			switch(button)
+			{
+			case GLFW_MOUSE_BUTTON_LEFT:
+				key = K_MOUSE1;
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				key = K_MOUSE2;
+				break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				key = K_MOUSE3;
+				break;
+			case GLFW_MOUSE_BUTTON_4:
+				key = K_MOUSE4;
+				break;
+			case GLFW_MOUSE_BUTTON_5:
+				key = K_MOUSE5;
+				break;
+			}
+		}
+		else
+		{
+			switch(button)
+			{
+			case GLFW_MOUSE_BUTTON_LEFT:
+				key = M_ACTION1;
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				key = M_ACTION2;
+				break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				key = M_ACTION3;
+				break;
+			case GLFW_MOUSE_BUTTON_4:
+				key = M_ACTION4;
+				break;
+			case GLFW_MOUSE_BUTTON_5:
+				key = M_ACTION5;
+				break;
+			}
+		}
 
-	float xoffset = xposf - lastX;
-	float yoffset = lastY - yposf; // reversed since y-coordinates go from bottom to top
+		mouse_polls.Append(mouse_poll_t(key, state));
+		Sys_QueEvent(GetTickCount(), SE_KEY, key, state, 0, NULL);
+	}
+}
 
-	lastX = xposf;
-	lastY = yposf;
+static void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	// Backspace needs to be handled here.
+	if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
+	{
+		Sys_QueEvent(GetTickCount(), SE_CHAR, K_BACKSPACE, 0, 0, NULL);
+		return;
+	}
 
-	// sys->GenerateMouseMoveEvent(xpos, ypos);
-	mouse_polls.Append(mouse_poll_t(M_DELTAX, xpos));
-	mouse_polls.Append(mouse_poll_t(M_DELTAY, ypos));
+	if(action == GLFW_PRESS || action == GLFW_RELEASE)
+	{
+		bool state = (action == GLFW_PRESS) ? 1 : 0;
+		keyboard_polls.Append(keyboard_poll_t(key, state));
+
+		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), state, 0, NULL);
+	}
+}
+
+static void Cursor_Callback(GLFWwindow* window, double xpos, double ypos)
+{
+	// We use different mouse styles to allow for better mouse handling for UI.
+	if(UIActive)
+	{
+		Sys_QueEvent( GetTickCount(), SE_MOUSE_ABS, xpos, ypos, 0, NULL );
+	}
+	else
+	{	
+		mouse_polls.Append(mouse_poll_t(M_DELTAX, xpos));
+		mouse_polls.Append(mouse_poll_t(M_DELTAY, ypos));
+		Sys_QueEvent( GetTickCount(), SE_MOUSE, xpos, ypos, 0, NULL );
+
+		glfwSetCursorPos(window, 0, 0);
+	}
+	
+}
+
+static void Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	//Has to be done this way otherwise we get funky skipping.
+	if(yoffset >= 1)
+	{
+		mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
+		Sys_QueEvent( GetTickCount(), SE_MOUSE, 1, 0, 0, NULL );
+	}
+	else if (yoffset <= -1)
+	{
+		mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
+		Sys_QueEvent( GetTickCount(), SE_MOUSE, -1, 0, 0, NULL );
+	}
+
+}
+
+static void Character_Callback(GLFWwindow* window, unsigned int codepoint)
+{
+	// We convert the text to UTF-8
+	char text[5] = { 0 };
+    if (codepoint <= 0x7F) {
+        text[0] = static_cast<char>(codepoint);
+    } else if (codepoint <= 0x7FF) {
+        text[0] = static_cast<char>(0xC0 | (codepoint >> 6));
+        text[1] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    } else if (codepoint <= 0xFFFF) {
+        text[0] = static_cast<char>(0xE0 | (codepoint >> 12));
+        text[1] = static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+        text[2] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    } else if (codepoint <= 0x10FFFF) {
+        text[0] = static_cast<char>(0xF0 | (codepoint >> 18));
+        text[1] = static_cast<char>(0x80 | ((codepoint >> 12) & 0x3F));
+        text[2] = static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+        text[3] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    }
+
+	Sys_QueEvent( GetTickCount(), SE_CHAR, (unsigned char)text[0], 0, 0, NULL );
 }
 /*
 ===================
@@ -285,6 +394,13 @@ bool GLimp_Init( glimpParms_t parms ) {
 	// full screen window
 	if(parms.fullScreen)
 	{
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+
+		//We need this to set our refresh rate correctly.
+		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", glfwGetPrimaryMonitor(), NULL);
 	}
 	else
@@ -297,14 +413,44 @@ bool GLimp_Init( glimpParms_t parms ) {
         glfwTerminate();
         return false;
     }
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE); 
 
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
-
-	glfwSetCursorPosCallback(window, CursorPosition);
+	//Disable resizing.
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); 
 
 	glfwMakeContextCurrent(window);
 
 	glewInit();
+
+	// Raw mouse input
+	if(m_rawInput.GetBool())
+	{
+		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+	}
+	
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(window, 0, 0);
+
+	//Toggle V-Sync
+	if(r_swapInterval.GetInteger() == 1)
+	{	
+		glfwSwapInterval(1);
+	}
+	else
+	{
+		glfwSwapInterval(0);
+	}
+
+	//MSAA samples :)
+	glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
+	
+	glfwSetMouseButtonCallback(window, MouseKey_Callback);
+	glfwSetKeyCallback(window, Key_Callback);
+	glfwSetCursorPosCallback(window, Cursor_Callback);
+	glfwSetScrollCallback(window, Scroll_Callback);
+	glfwSetCharCallback(window, Character_Callback);
 
 	return true;
 }

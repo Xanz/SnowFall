@@ -47,6 +47,20 @@ struct mouse_poll_t {
 	}
 };
 
+struct keyboard_poll_t
+{
+	int key;
+	bool state;	
+
+	keyboard_poll_t() {
+	}
+
+	keyboard_poll_t(int a, bool v) {
+		key = a;
+		state = v;
+	}
+};
+
 // WGL_ARB_extensions_string
 extern	PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
 
@@ -102,7 +116,7 @@ void	IN_ActivateMouse( void );
 
 void	IN_Frame( void );
 
-int		IN_DIMapKey( int key );
+int GLFWDoom_MapKey (int key);
 
 void	DisableTaskKeys( BOOL bDisable, BOOL bBeep, BOOL bTaskMgr );
 
@@ -191,8 +205,8 @@ extern GLFWwindow* window;
 
 extern idList<mouse_poll_t> mouse_polls;
 
-extern float lastX;
+extern idList<keyboard_poll_t> keyboard_polls;
 
-extern float lastY;
+extern bool UIActive;
 
 #endif /* !__WIN_LOCAL_H__ */

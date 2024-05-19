@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Session_local.h"
+#include "../sys/win32/win_local.h"
 
 /*
 ================
@@ -1026,7 +1027,7 @@ void idUsercmdGenLocal::Keyboard( void ) {
 		}
 	}
 
-	// Sys_EndKeyboardInputEvents(); Not needed...
+	Sys_EndKeyboardInputEvents();
 }
 
 /*
@@ -1070,6 +1071,8 @@ void idUsercmdGenLocal::UsercmdInterrupt( void ) {
 	cmd.sequence = com_ticNumber+1;
 
 	buffered[(com_ticNumber+1) & (MAX_BUFFERED_USERCMD-1)] = cmd;
+
+	glfwPollEvents();
 }
 
 /*
@@ -1108,5 +1111,6 @@ usercmd_t idUsercmdGenLocal::GetDirectUsercmd( void ) {
 
 	cmd.duplicateCount = 0;
 
+	glfwPollEvents();
 	return cmd;
 }

@@ -342,6 +342,13 @@ const char *idUserInterfaceLocal::HandleEvent( const sysEvent_t *event, int _tim
 		return ret;
 	}
 
+	// Added to handle UI with ABS mouse pos. Might need further expanding later.
+	if(event->evType == SE_MOUSE_ABS)
+	{
+		cursorX = event->evValue;
+		cursorY = event->evValue2;
+	}
+
 	if ( event->evType == SE_MOUSE ) {
 		cursorX += event->evValue;
 		cursorY += event->evValue2;

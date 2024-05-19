@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "win_local.h"
+#include "framework/Session_local.h"
 
 
 #define DINPUT_BUFFERSIZE           256
@@ -286,106 +287,55 @@ bool IN_StartupKeyboard( void ) {
     return true;
 }
 
+// This function converts a GLFW scan code to its ASCII representation if possible
+int scanCodeToAscii(int scanCode) {
+    const char* keyName = glfwGetKeyName(GLFW_KEY_UNKNOWN, scanCode);
+    if (keyName && keyName[0] != '\0' && keyName[1] == '\0') {
+        return static_cast<int>(keyName[0]);
+    }
+    return -1; // Return -1 if the scan code does not correspond to a printable ASCII character
+}
+
 /*
 =======
 MapKey
 
-Map from windows to quake keynums
-
-FIXME: scan code tables should include the upper 128 scan codes instead
-	   of having to special-case them here.  The current code makes it difficult
-	   to special-case conversions for non-US keyboards.  Currently the only
-	   special-case is for right alt.
+Map from GLFW to Doom keynums
 =======
 */
-int IN_DIMapKey (int key) {
-	if (key == GLFW_KEY_APOSTROPHE)
+int GLFWDoom_MapKey (int key) {
+
+	int scanCode = glfwGetKeyScancode(key);
+
+	int convertedKey = scanCodeToAscii(scanCode);
+
+	if(convertedKey != - 1)
 	{
-		return K_COMMAND;
+		return convertedKey;
 	}
 
-	// if ( key>=128 ) {
-	// 	switch ( key ) {
-	// 		case DIK_HOME:
-	// 			return K_HOME;
-	// 		case DIK_UPARROW:
-	// 			return K_UPARROW;
-	// 		case DIK_PGUP:
-	// 			return K_PGUP;
-	// 		case DIK_LEFTARROW:
-	// 			return K_LEFTARROW;
-	// 		case DIK_RIGHTARROW:
-	// 			return K_RIGHTARROW;
-	// 		case DIK_END:
-	// 			return K_END;
-	// 		case DIK_DOWNARROW:
-	// 			return K_DOWNARROW;
-	// 		case DIK_PGDN:
-	// 			return K_PGDN;
-	// 		case DIK_INSERT:
-	// 			return K_INS;
-	// 		case DIK_DELETE:
-	// 			return K_DEL;
-	// 		case DIK_RMENU:
-	// 			return rightAltKey;
-	// 		case DIK_RCONTROL:
-	// 			return K_CTRL;
-	// 		case DIK_NUMPADENTER:
-	// 			return K_KP_ENTER;
-	// 		case DIK_NUMPADEQUALS:
-	// 			return K_KP_EQUALS;
-	// 		case DIK_PAUSE:
-	// 			return K_PAUSE;
-	// 		case DIK_DIVIDE:
-	// 			return K_KP_SLASH;
-	// 		case DIK_LWIN:
-	// 			return K_LWIN;
-	// 		case DIK_RWIN:
-	// 			return K_RWIN;
-	// 		case DIK_APPS:
-	// 			return K_MENU;
-	// 		case DIK_SYSRQ:
-	// 			return K_PRINT_SCR;
-	// 		default:
-	// 			return 0;
-	// 	}
-	// } else {
-	// 	switch (key) {
-	// 		case DIK_NUMPAD7:
-	// 			return K_KP_HOME;
-	// 		case DIK_NUMPAD8:
-	// 			return K_KP_UPARROW;
-	// 		case DIK_NUMPAD9:
-	// 			return K_KP_PGUP;
-	// 		case DIK_NUMPAD4:
-	// 			return K_KP_LEFTARROW;
-	// 		case DIK_NUMPAD5:
-	// 			return K_KP_5;
-	// 		case DIK_NUMPAD6:
-	// 			return K_KP_RIGHTARROW;
-	// 		case DIK_NUMPAD1:
-	// 			return K_KP_END;
-	// 		case DIK_NUMPAD2:
-	// 			return K_KP_DOWNARROW;
-	// 		case DIK_NUMPAD3:
-	// 			return K_KP_PGDN;
-	// 		case DIK_NUMPAD0:
-	// 			return K_KP_INS;
-	// 		case DIK_DECIMAL:
-	// 			return K_KP_DEL;
-	// 		case DIK_SUBTRACT:
-	// 			return K_KP_MINUS;
-	// 		case DIK_ADD:
-	// 			return K_KP_PLUS;
-	// 		case DIK_NUMLOCK:
-	// 			return K_KP_NUMLOCK;
-	// 		case DIK_MULTIPLY:
-	// 			return K_KP_STAR;
-	// 		default:
-	// 			return keyScanTable[key];
-	// 	}
-	// }
+	// Special keys need to be converted here.
+	switch(key)
+	{
+		case GLFW_KEY_ESCAPE:
+			return K_ESCAPE;
+		case GLFW_KEY_LEFT_SHIFT:
+			return K_SHIFT;
+		case GLFW_KEY_LEFT_ALT:
+			return K_ALT;
+		case GLFW_KEY_RIGHT_ALT:
+			return K_RIGHT_ALT;
+		case GLFW_KEY_LEFT_CONTROL:
+			return K_CTRL;
+		// case GLFW_KEY_BACKSPACE:
+		// 	return K_BACKSPACE;
+	}
+
+	return 0;
 }
+
+
+
 
 
 /*
@@ -415,20 +365,6 @@ IN_InitDirectInput
 */
 
 void IN_InitDirectInput( void ) {
-
-	common->Printf( "Initializing DirectInput...\n" );
-
-	// if ( win32.g_pdi != NULL ) {
-	// 	win32.g_pdi->Release();			// if the previous window was destroyed we need to do this
-	// 	win32.g_pdi = NULL;
-	// }
-
-    // // Register with the DirectInput subsystem and get a pointer
-    // // to a IDirectInput interface we can use.
-    // // Create the base DirectInput object
-	// if ( FAILED( hr = DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&win32.g_pdi, NULL ) ) ) {
-	// 	common->Printf ("DirectInputCreate failed\n");
-    // }
 }
 
 /*
@@ -438,12 +374,6 @@ IN_InitDIMouse
 */
 bool IN_InitDIMouse( void ) {
 
-	IN_ActivateMouse();
-
-	// clear any pending samples
-	Sys_PollMouseInputEvents();
-
-	common->Printf( "mouse: DirectInput initialized.\n");
 	return true;
 }
 
@@ -484,12 +414,6 @@ IN_DeactivateMouse
 ==========================
 */
 void IN_DeactivateMouse( void ) {
-	// if (!win32.g_pMouse || !win32.mouseGrabbed ) {
-	// 	return;
-	// }
-
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	// win32.mouseGrabbed = false;
 }
 
 /*
@@ -498,9 +422,6 @@ IN_DeactivateMouseIfWindowed
 ==========================
 */
 void IN_DeactivateMouseIfWindowed( void ) {
-	if ( !win32.cdsFullscreen ) {
-		IN_DeactivateMouse();
-	}
 }
 
 /*
@@ -518,6 +439,8 @@ Sys_ShutdownInput
 ===========
 */
 void Sys_ShutdownInput( void ) {
+	mouse_polls.Clear();
+	keyboard_polls.Clear();
 	IN_DeactivateMouse();
 	IN_DeactivateKeyboard();
 }
@@ -528,18 +451,10 @@ Sys_InitInput
 ===========
 */
 void Sys_InitInput( void ) {
+	keyboard_polls.SetGranularity(64);
+	mouse_polls.SetGranularity(64);
 	common->Printf ("\n------- Input Initialization -------\n");
-	// IN_InitDirectInput();
-	// if ( win32.in_mouse.GetBool() ) {
-		// IN_InitDIMouse();
-		// don't grab the mouse on initialization
-		// Sys_GrabMouseCursor( false );
-	// } else {
-		// common->Printf ("Mouse control not active.\n");
-	// }
-	// IN_StartupKeyboard();
 	common->Printf ("------------------------------------\n");
-	// win32.in_mouse.ClearModified();
 }
 
 /*
@@ -601,30 +516,10 @@ Called every frame, even if not generating commands
 void IN_Frame( void ) {
 	
 	bool	shouldGrab = true;
+	// Needed to be set up here.
+	bool menuActive = (sessLocal.GetActiveMenu() != NULL);
 
-	// if ( !win32.in_mouse.GetBool() ) {
-		// shouldGrab = false;
-	// }/
-	// if fullscreen, we always want the mouse
-	// if ( !win32.cdsFullscreen ) {
-		// if ( win32.mouseReleased ) {
-		// 	shouldGrab = false;
-		// }
-		// if ( win32.movingWindow ) {
-		// 	shouldGrab = false;
-		// }
-		// if ( !win32.activeApp ) {
-		// 	shouldGrab = false;
-		// }
-	// }
-
-	if ( shouldGrab ) {
-		// if ( win32.mouseGrabbed ) {
-			// IN_DeactivateMouse();
-		// } else {
-			IN_ActivateMouse();
-		// }
-	}
+	UIActive = menuActive;
 }
 
 
@@ -640,10 +535,31 @@ void	Sys_GrabMouseCursor( bool grabIt ) {
 
 //=====================================================================================
 
-static DIDEVICEOBJECTDATA polled_didod[ DINPUT_BUFFERSIZE ];  // Receives buffered data 
-
 static int diFetch;
 static byte toggleFetch[2][ 256 ];
+
+/*
+====================
+CheckKeyboardEvent
+
+Checks if the GLFW key is active and returns the subsequent event.
+
+Not used currently but was useful for testing.
+====================
+*/
+void CheckKeyboardEvent(int key)
+{
+	if(glfwGetKey(window, key) == GLFW_PRESS)
+	{
+		keyboard_polls.Append(keyboard_poll_t(key, true));
+		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), true, 0, NULL);
+	}
+	else
+	{
+		keyboard_polls.Append(keyboard_poll_t(key, false));
+		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), false, 0, NULL);
+	}
+}
 
 /*
 ====================
@@ -651,12 +567,8 @@ Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_PollKeyboardInputEvents( void ) {
-	if(glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-	{
-        glfwSetWindowShouldClose(window, true);
-	}
 	// return the keyboard events.
-	return 0;
+	return keyboard_polls.Num();
 }
 
 /*
@@ -665,38 +577,19 @@ Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_ReturnKeyboardInputEvent( const int n, int &ch, bool &state ) {
-	ch = IN_DIMapKey( polled_didod[ n ].dwOfs );
-	state = (polled_didod[ n ].dwData & 0x80) == 0x80;
-	if ( ch == K_PRINT_SCR || ch == K_CTRL || ch == K_ALT || ch == K_RIGHT_ALT ) {
-		// for windows, add a keydown event for print screen here, since
-		// windows doesn't send keydown events to the WndProc for this key.
-		// ctrl and alt are handled here to get around windows sending ctrl and
-		// alt messages when the right-alt is pressed on non-US 102 keyboards.
-		Sys_QueEvent( GetTickCount(), SE_KEY, ch, state, 0, NULL );
-	}
+	ch = GLFWDoom_MapKey(keyboard_polls[n].key);
+	state = keyboard_polls[n].state;
 	return ch;
 }
 
 
 void Sys_EndKeyboardInputEvents( void ) {
+	keyboard_polls.SetNum(0, false);
 }
 
 //=====================================================================================
 
 int Sys_PollMouseInputEvents( void ) {
-	
-	for(int i = 0; i < mouse_polls.Num(); i++)
-	{
-		switch (mouse_polls[i].action)
-		{
-			case M_DELTAX:
-				Sys_QueEvent( GetTickCount(), SE_MOUSE, mouse_polls[i].value, 0, 0, NULL );
-				break;
-			case M_DELTAY:
-				Sys_QueEvent( GetTickCount(), SE_MOUSE, 0, mouse_polls[i].value, 0, NULL );
-				break;
-		}
-	}
 	return mouse_polls.Num();
 }
 
@@ -706,20 +599,10 @@ int Sys_ReturnMouseInputEvent( const int n, int &action, int &value ) {
 	{
 		return 0;
 	}
-	switch(mouse_polls[n].action)
-	{
-		case M_DELTAX:
-			action = mouse_polls[n].action;
-			value = mouse_polls[n].value;
-			return 1;
-			// break;
-		case M_DELTAY:
-			action = mouse_polls[n].action;
-			value = mouse_polls[n].value;
-			return 1;
-	}
 
-	return 0;
+	action = mouse_polls[n].action;
+	value = mouse_polls[n].value;
+	return 1;
 }
 
 void Sys_EndMouseInputEvents( void ) 
