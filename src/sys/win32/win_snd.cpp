@@ -28,9 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "../../idlib/precompiled.h"
 
-// DirectX SDK
-//#include <DxErr.h>
-
 #include <ks.h>
 #include <ksmedia.h>
 #include "../../sound/snd_local.h"

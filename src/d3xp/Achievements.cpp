@@ -324,7 +324,7 @@ Processed when the player finishes a level.
 ========================
 */
 void idAchievementManager::CheckDoomClassicsAchievements( int killcount, int itemcount, int secretcount, int skill, int mission, int map, int episode, int totalkills, int totalitems, int totalsecret ) {
-
+// Removed
 }
 
 /*

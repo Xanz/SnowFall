@@ -58,9 +58,6 @@
     <Filter Include="Renderer\Jobs\PreLightShadowVolume">
       <UniqueIdentifier>{de864e31-e19e-41ac-8186-9b27d6c29c03}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Sound\OpenAL">
-      <UniqueIdentifier>{4fb3098c-111d-496d-953d-b90f53e9a913}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cm\CollisionModel.h">
@@ -528,17 +525,14 @@
     <ClInclude Include="renderer\GLMatrix.h">
       <Filter>Renderer</Filter>
     </ClInclude>
-    <ClInclude Include="sys\win32\win_nanoafx.h">
-      <Filter>Sys\Win32</Filter>
-    </ClInclude>
     <ClInclude Include="sound\OpenAL\AL_SoundHardware.h">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClInclude>
     <ClInclude Include="sound\OpenAL\AL_SoundSample.h">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClInclude>
     <ClInclude Include="sound\OpenAL\AL_SoundVoice.h">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -1131,13 +1125,13 @@
       <Filter>Sys\Win32</Filter>
     </ClCompile>
     <ClCompile Include="sound\OpenAL\AL_SoundHardware.cpp">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClCompile>
     <ClCompile Include="sound\OpenAL\AL_SoundSample.cpp">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClCompile>
     <ClCompile Include="sound\OpenAL\AL_SoundVoice.cpp">
-      <Filter>Sound\OpenAL</Filter>
+      <Filter>Sound</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -1,2 +1,0 @@
-C:\Git\DOOM-3-BFG\neo\amplitude\Debug\amplitude.exe
-C:\Git\Quake4\neo\amplitude\Debug\amplitude.exe

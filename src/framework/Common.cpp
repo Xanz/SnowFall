@@ -1522,6 +1522,33 @@ bool idCommonLocal::ProcessEvent( const sysEvent_t *event ) {
 		return true;
 	}
 
+	// Let Doom classic run events.
+	if ( IsPlayingDoomClassic() ) {
+		// Translate the event to Doom classic format.
+		//event_t classicEvent;
+		//if ( event->evType == SE_KEY ) {
+
+		//	if( event->evValue2 == 1 ) {
+		//		classicEvent.type = ev_keydown;
+		//	} else if( event->evValue2 == 0 ) {
+		//		classicEvent.type = ev_keyup;
+		//	}
+
+		//	DoomLib::SetPlayer( 0 );
+		//	
+		//	extern Globals * g;
+		//	if ( g != NULL ) {
+		//		classicEvent.data1 =  DoomLib::RemapControl( event->GetKey() );
+		//									
+		//		D_PostEvent( &classicEvent );
+		//	}
+		//	DoomLib::SetPlayer( -1 );
+		//}
+
+		// Let the classics eat all events.
+		return true;
+	}
+
 	// menus / etc
 	if ( MenuEvent( event ) ) {
 		return true;
@@ -1581,25 +1608,25 @@ void idCommonLocal::PerformGameSwitch() {
 
 	if ( idealCurrentGame == DOOM_CLASSIC || idealCurrentGame == DOOM2_CLASSIC ) {
 		// Pause Doom 3 sound.
-		if ( menuSoundWorld != NULL ) {
-			menuSoundWorld->Pause();
-		}
+		//if ( menuSoundWorld != NULL ) {
+		//	menuSoundWorld->Pause();
+		//}
 
 		//DoomLib::skipToNew = false;
 		//DoomLib::skipToLoad = false;
 
-		// Reset match parameters for the classics.
+		//// Reset match parameters for the classics.
 		//DoomLib::matchParms = idMatchParameters();
 
-		// The classics use the usercmd manager too, clear it.
-		userCmdMgr.SetDefaults();
+		//// The classics use the usercmd manager too, clear it.
+		//userCmdMgr.SetDefaults();
 
-		// Classics need a local user too.
-		session->UpdateSignInManager();
-		session->GetSignInManager().RegisterLocalUser( 0 );
+		//// Classics need a local user too.
+		//session->UpdateSignInManager();
+		//session->GetSignInManager().RegisterLocalUser( 0 );
 
-		com_engineHz_denominator = 100LL * DOOM_CLASSIC_HZ;
-		com_engineHz_latched = DOOM_CLASSIC_HZ;
+		//com_engineHz_denominator = 100LL * DOOM_CLASSIC_HZ;
+		//com_engineHz_latched = DOOM_CLASSIC_HZ;
 
 		//DoomLib::SetCurrentExpansion( idealCurrentGame );
 		

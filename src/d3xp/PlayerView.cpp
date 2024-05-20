@@ -469,6 +469,8 @@ void idPlayerView::SingleView( const renderView_t *view, idMenuHandler_HUD * hud
 
 
 		// tunnel vision
+		// Disabled as it causes a red screen to be stuck on screen.
+		/*
 		float health = 0.0f;
 		if ( g_testHealthVision.GetFloat() != 0.0f ) {
 			health = g_testHealthVision.GetFloat();
@@ -487,6 +489,7 @@ void idPlayerView::SingleView( const renderView_t *view, idMenuHandler_HUD * hud
 			renderSystem->SetColor4( ( player->health <= 0.0f ) ? MS2SEC( gameLocal.slow.time ) : lastDamageTime, 1.0f, 1.0f, ( player->health <= 0.0f ) ? 0.0f : alpha );
 			renderSystem->DrawStretchPic( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f, 1.0f, tunnelMaterial );
 		}
+		*/
 
 		if ( bfgVision ) {
 			renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, 1.0f );

@@ -82,27 +82,16 @@ typedef enum {
 
 #define OPERATION_SET 1
 
-// Dropped all DirectX sound library. Half of it doesn't even compile in modern windows.
 
-//#include <dxsdkver.h>
-//#include <xaudio2.h>
-//#include <xaudio2fx.h>
-//#include <X3DAudio.h>
-//#include <xma2defs.h>
-//#include "XAudio2/XA2_SoundSample.h"
-//#include "XAudio2/XA2_SoundVoice.h"
-//#include "XAudio2/XA2_SoundHardware.h"
-
-//OpenAL Support - Taken from RBDoom3BFG
-//I will probably replace this with some form of SDL sound, since I feel bad taking RBDoom3's work :(
-
-#include <al.h>
-#include <alc.h>
-#include <alext.h>
+// OpenAL changes.
+#include <AL\al.h>
+#include <AL\alc.h>
+#include <AL\alext.h>
 
 #include "OpenAL/AL_SoundSample.h"
 #include "OpenAL/AL_SoundVoice.h"
 #include "OpenAL/AL_SoundHardware.h"
+
 
 
 ID_INLINE_EXTERN ALenum CheckALErrors_(const char* filename, int line)
@@ -430,9 +419,7 @@ public:
 
 	virtual void			InitStreamBuffers();
 	virtual void			FreeStreamBuffers();
-
-	virtual void *			GetIXAudio2() const;
-
+	
 	virtual void* GetOpenALDevice() const;
 
 	// for the sound level meter window
@@ -473,8 +460,8 @@ public:
 			sample( NULL ),
 			bufferNumber( 0 )
 		{ }
-		idSoundVoice_OpenAL *	voice;
-		idSoundSample_OpenAL * sample;
+		idSoundVoice_OpenAL*	voice;
+		idSoundSample_OpenAL* sample;
 		int bufferNumber;
 	};
 

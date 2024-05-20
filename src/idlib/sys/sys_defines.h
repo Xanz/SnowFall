@@ -181,28 +181,7 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 // win32 needs this, but 360 doesn't
 #pragma warning( disable: 6540 )	// warning C6540: The use of attribute annotations on this function will invalidate all of its existing __declspec annotations [D:\tech5\engine\engine-10.vcxproj]
 
-
-// VS 2019 ADDED
-// SLART: VS > 2010 has better error checking, I should've documented the locations where all of these error, but most are project wide.
-#pragma warning( disable: 4458 )	// warning C4458:  declaration of 'data' hides class member
-#pragma warning( disable: 4456 )	// warning C4456 : declaration of 'm2' hides previous local declaration
-#pragma warning( disable: 4457 )	// warning C4457 : declaration of 'start' hides function parameter
-#pragma warning( disable: 4459 )	// warning C4459:  declaration of 'vertexCache' hides global declaration
-
-// SLART: VS version > 2010 warn against this, these can be manually fixed but I'm lazy, and it won't break anything by leaving them
-#pragma warning( disable: 4595 )	// warning C4595:  'operator delete[]': non-member operator new or delete functions may not be declared inline (compiling source file doom\doomlib.cpp)
-#pragma warning( disable: 4499 )	// warning C4499:  'extern': an explicit specialization cannot have a storage class (ignored)
-
-// Not my fault! The DXSDK uses this!
-#pragma warning( disable: 4644 )	// warning C4644:  usage of the macro-based offsetof pattern in constant expressions is non-standard; use offsetof defined in the C++ standard library instead
-
-// This might be a problem post-2019, the code uses ATL attributes for CodeAnalysis
-#pragma warning( disable: 4467 )	// warning C4467 : usage of ATL attributes is deprecated
-
-#pragma warning( disable: 5205 ) // warning C5205: delete of an abstract class 'idSessionCallbacks' that has a non-virtual destructor results in undefined behavior
-#pragma warning( disable: 4840 ) // warning C4840: non-portable use of class 'idStr' as an argument to a variadic function
-#pragma warning( disable: 5208 ) // warning C5208: unnamed class used in typedef name cannot declare members other than non-static data members, member enumerations, or member classes (compiling source file sys\win32\win_cpu.cpp)
-#pragma warning( disable: 4244 ) // warning C4244: '=': conversion from 'double' to 'float', possible loss of data (compiling source file idlib\geometry\RenderMatrix.cpp)
+#pragma warning( disable: 4467 )	// usage of ATL attributes is deprecated
 
 
 // checking format strings catches a LOT of errors

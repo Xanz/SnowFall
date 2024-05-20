@@ -707,6 +707,5 @@ idCommonLocal::RunDoomClassicFrame
 =================
 */
 void idCommonLocal::RunDoomClassicFrame() {
-
-	return;
+	// Removed
 }
