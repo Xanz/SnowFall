@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
 #include "RegExp.h"
 #include "DeviceContext.h"
@@ -231,7 +231,7 @@ void idRegisterList::AddReg( const char *name, int type, idVec4 data, idWindow *
 	if ( FindReg( name ) == NULL ) {
 		assert( type >= 0 && type < idRegister::NUMTYPES );
 		int numRegs = idRegister::REGCOUNT[type];
-		idRegister *reg = new idRegister( name, type );
+		idRegister *reg = new (TAG_OLD_UI) idRegister( name, type );
 		reg->var = var;
 		for ( int i = 0; i < numRegs; i++ ) {
 			reg->regs[i] = win->ExpressionConstant(data[i]);
@@ -246,7 +246,7 @@ void idRegisterList::AddReg( const char *name, int type, idVec4 data, idWindow *
 idRegisterList::AddReg
 ====================
 */
-void idRegisterList::AddReg( const char *name, int type, idParser *src, idWindow *win, idWinVar *var ) {
+void idRegisterList::AddReg( const char *name, int type, idTokenParser *src, idWindow *win, idWinVar *var ) {
 	idRegister* reg;
 
 	reg = FindReg( name );
@@ -254,12 +254,12 @@ void idRegisterList::AddReg( const char *name, int type, idParser *src, idWindow
 	if ( reg == NULL ) {
 		assert(type >= 0 && type < idRegister::NUMTYPES);
 		int numRegs = idRegister::REGCOUNT[type];
-		reg = new idRegister( name, type );
+		reg = new (TAG_OLD_UI) idRegister( name, type );
 		reg->var = var;
 		if ( type == idRegister::STRING ) {
 			idToken tok;
 			if ( src->ReadToken( &tok ) ) {
-				tok = common->GetLanguageDict()->GetString( tok );
+				tok = idLocalization::GetString( tok );
 				var->Init( tok, win );
 			}
 		} else {
@@ -351,7 +351,7 @@ void idRegisterList::ReadFromDemoFile(idDemoFile *f) {
 	f->ReadInt( c );
 	regs.DeleteContents( true );
 	for ( int i = 0; i < c; i++ ) {
-		idRegister *reg = new idRegister;
+		idRegister *reg = new (TAG_OLD_UI) idRegister;
 		reg->ReadFromDemoFile( f );
 		regs.Append( reg );
 	}

@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
 
 #include "../Game_local.h"
 
@@ -107,6 +107,7 @@ monsterMoveResult_t idPhysics_Monster::SlideMove( idVec3 &start, idVec3 &velocit
 		}
 
 		if ( tr.c.entityNum != ENTITYNUM_NONE ) {
+			assert( tr.c.entityNum < MAX_GENTITIES );
 			blockingEntity = gameLocal.entities[ tr.c.entityNum ];
 		} 
 		
@@ -217,7 +218,7 @@ monsterMoveResult_t idPhysics_Monster::StepMove( idVec3 &start, idVec3 &velocity
 idPhysics_Monster::Activate
 ================
 */
-void idPhysics_Monster::Activate( void ) {
+void idPhysics_Monster::Activate() {
 	current.atRest = -1;
 	self->BecomeActive( TH_PHYSICS );
 }
@@ -227,7 +228,7 @@ void idPhysics_Monster::Activate( void ) {
 idPhysics_Monster::Rest
 ================
 */
-void idPhysics_Monster::Rest( void ) {
+void idPhysics_Monster::Rest() {
 	current.atRest = gameLocal.time;
 	current.velocity.Zero();
 	self->BecomeInactive( TH_PHYSICS );
@@ -238,7 +239,7 @@ void idPhysics_Monster::Rest( void ) {
 idPhysics_Monster::PutToRest
 ================
 */
-void idPhysics_Monster::PutToRest( void ) {
+void idPhysics_Monster::PutToRest() {
 	Rest();
 }
 
@@ -247,7 +248,7 @@ void idPhysics_Monster::PutToRest( void ) {
 idPhysics_Monster::idPhysics_Monster
 ================
 */
-idPhysics_Monster::idPhysics_Monster( void ) {
+idPhysics_Monster::idPhysics_Monster() {
 
 	memset( &current, 0, sizeof( current ) );
 	current.atRest = -1;
@@ -364,7 +365,7 @@ void idPhysics_Monster::SetMaxStepHeight( const float newMaxStepHeight ) {
 idPhysics_Monster::GetMaxStepHeight
 ================
 */
-float idPhysics_Monster::GetMaxStepHeight( void ) const {
+float idPhysics_Monster::GetMaxStepHeight() const {
 	return maxStepHeight;
 }
 
@@ -373,7 +374,7 @@ float idPhysics_Monster::GetMaxStepHeight( void ) const {
 idPhysics_Monster::OnGround
 ================
 */
-bool idPhysics_Monster::OnGround( void ) const {
+bool idPhysics_Monster::OnGround() const {
 	return current.onGround;
 }
 
@@ -382,7 +383,7 @@ bool idPhysics_Monster::OnGround( void ) const {
 idPhysics_Monster::GetSlideMoveEntity
 ================
 */
-idEntity *idPhysics_Monster::GetSlideMoveEntity( void ) const {
+idEntity *idPhysics_Monster::GetSlideMoveEntity() const {
 	return blockingEntity;
 }
 
@@ -391,7 +392,7 @@ idEntity *idPhysics_Monster::GetSlideMoveEntity( void ) const {
 idPhysics_Monster::GetMoveResult
 ================
 */
-monsterMoveResult_t idPhysics_Monster::GetMoveResult( void ) const {
+monsterMoveResult_t idPhysics_Monster::GetMoveResult() const {
 	return moveResult;
 }
 
@@ -427,7 +428,7 @@ void idPhysics_Monster::UseVelocityMove( bool force ) {
 idPhysics_Monster::EnableImpact
 ================
 */
-void idPhysics_Monster::EnableImpact( void ) {
+void idPhysics_Monster::EnableImpact() {
 	noImpact = false;
 }
 
@@ -436,7 +437,7 @@ void idPhysics_Monster::EnableImpact( void ) {
 idPhysics_Monster::DisableImpact
 ================
 */
-void idPhysics_Monster::DisableImpact( void ) {
+void idPhysics_Monster::DisableImpact() {
 	noImpact = true;
 }
 
@@ -555,7 +556,7 @@ void idPhysics_Monster::UpdateTime( int endTimeMSec ) {
 idPhysics_Monster::GetTime
 ================
 */
-int idPhysics_Monster::GetTime( void ) const {
+int idPhysics_Monster::GetTime() const {
 	return gameLocal.time;
 }
 
@@ -589,7 +590,7 @@ void idPhysics_Monster::ApplyImpulse( const int id, const idVec3 &point, const i
 idPhysics_Monster::IsAtRest
 ================
 */
-bool idPhysics_Monster::IsAtRest( void ) const {
+bool idPhysics_Monster::IsAtRest() const {
 	return current.atRest >= 0;
 }
 
@@ -598,7 +599,7 @@ bool idPhysics_Monster::IsAtRest( void ) const {
 idPhysics_Monster::GetRestStartTime
 ================
 */
-int idPhysics_Monster::GetRestStartTime( void ) const {
+int idPhysics_Monster::GetRestStartTime() const {
 	return current.atRest;
 }
 
@@ -607,7 +608,7 @@ int idPhysics_Monster::GetRestStartTime( void ) const {
 idPhysics_Monster::SaveState
 ================
 */
-void idPhysics_Monster::SaveState( void ) {
+void idPhysics_Monster::SaveState() {
 	saved = current;
 }
 
@@ -616,7 +617,7 @@ void idPhysics_Monster::SaveState( void ) {
 idPhysics_Monster::RestoreState
 ================
 */
-void idPhysics_Monster::RestoreState( void ) {
+void idPhysics_Monster::RestoreState() {
 	current = saved;
 
 	clipModel->Link( gameLocal.clip, self, 0, current.origin, clipModel->GetAxis() );
@@ -766,7 +767,7 @@ const int	MONSTER_VELOCITY_MANTISSA_BITS	= MONSTER_VELOCITY_TOTAL_BITS - 1 - MON
 idPhysics_Monster::WriteToSnapshot
 ================
 */
-void idPhysics_Monster::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Monster::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteFloat( current.origin[0] );
 	msg.WriteFloat( current.origin[1] );
 	msg.WriteFloat( current.origin[2] );
@@ -788,7 +789,7 @@ void idPhysics_Monster::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Monster::ReadFromSnapshot
 ================
 */
-void idPhysics_Monster::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Monster::ReadFromSnapshot( const idBitMsg &msg ) {
 	current.origin[0] = msg.ReadFloat();
 	current.origin[1] = msg.ReadFloat();
 	current.origin[2] = msg.ReadFloat();

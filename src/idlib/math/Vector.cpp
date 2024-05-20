@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../precompiled.h"
 #pragma hdrstop
+#include "../precompiled.h"
 
 idVec2 vec2_origin( 0.0f, 0.0f );
 idVec3 vec3_origin( 0.0f, 0.0f, 0.0f );
@@ -81,7 +81,7 @@ void idVec2::Lerp( const idVec2 &v1, const idVec2 &v2, const float l ) {
 idVec3::ToYaw
 =============
 */
-float idVec3::ToYaw( void ) const {
+float idVec3::ToYaw() const {
 	float yaw;
 	
 	if ( ( y == 0.0f ) && ( x == 0.0f ) ) {
@@ -101,7 +101,7 @@ float idVec3::ToYaw( void ) const {
 idVec3::ToPitch
 =============
 */
-float idVec3::ToPitch( void ) const {
+float idVec3::ToPitch() const {
 	float	forward;
 	float	pitch;
 	
@@ -127,7 +127,7 @@ float idVec3::ToPitch( void ) const {
 idVec3::ToAngles
 =============
 */
-idAngles idVec3::ToAngles( void ) const {
+idAngles idVec3::ToAngles() const {
 	float forward;
 	float yaw;
 	float pitch;
@@ -160,7 +160,7 @@ idAngles idVec3::ToAngles( void ) const {
 idVec3::ToPolar
 =============
 */
-idPolar3 idVec3::ToPolar( void ) const {
+idPolar3 idVec3::ToPolar() const {
 	float forward;
 	float yaw;
 	float pitch;
@@ -192,7 +192,7 @@ idPolar3 idVec3::ToPolar( void ) const {
 idVec3::ToMat3
 =============
 */
-idMat3 idVec3::ToMat3( void ) const {
+idMat3 idVec3::ToMat3() const {
 	idMat3	mat;
 	float	d;
 
@@ -373,25 +373,5 @@ idVec6::ToString
 =============
 */
 const char *idVec6::ToString( int precision ) const {
-	return idStr::FloatArrayToString( ToFloatPtr(), GetDimension(), precision );
-}
-
-
-//===============================================================
-//
-//	idVecX
-//
-//===============================================================
-
-float	idVecX::temp[VECX_MAX_TEMP+4];
-float *	idVecX::tempPtr = (float *) ( ( (int) idVecX::temp + 15 ) & ~15 );
-int		idVecX::tempIndex = 0;
-
-/*
-=============
-idVecX::ToString
-=============
-*/
-const char *idVecX::ToString( int precision ) const {
 	return idStr::FloatArrayToString( ToFloatPtr(), GetDimension(), precision );
 }

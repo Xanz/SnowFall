@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -44,24 +44,24 @@ class idTrigger : public idEntity {
 public:
 	CLASS_PROTOTYPE( idTrigger );
 
-	static void			DrawDebugInfo( void );
+	static void			DrawDebugInfo();
 
 						idTrigger();
-	void				Spawn( void );
+	void				Spawn();
 
-	const function_t *	GetScriptFunction( void ) const;
+	const function_t *	GetScriptFunction() const;
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	virtual void		Enable( void );
-	virtual void		Disable( void );
+	virtual void		Enable();
+	virtual void		Disable();
 
 protected:
-	void				CallScript( void ) const;
+	void				CallScript() const;
 
-	void				Event_Enable( void );
-	void				Event_Disable( void );
+	void				Event_Enable();
+	void				Event_Disable();
 
 	const function_t *	scriptFunction;
 };
@@ -79,18 +79,14 @@ class idTrigger_Multi : public idTrigger {
 public:
 	CLASS_PROTOTYPE( idTrigger_Multi );
 
-						idTrigger_Multi( void );
+						idTrigger_Multi();
 
-	void				Spawn( void );
+	void				Spawn();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-#ifdef CTF    
 protected:
-#else
-private:
-#endif    
 
 	float				wait;
 	float				random;
@@ -124,12 +120,12 @@ class idTrigger_EntityName : public idTrigger {
 public:
 	CLASS_PROTOTYPE( idTrigger_EntityName );
 
-						idTrigger_EntityName( void );
+						idTrigger_EntityName();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	float				wait;
@@ -139,6 +135,7 @@ private:
 	int					nextTriggerTime;
 	bool				triggerFirst;
 	idStr				entityName;
+	bool				testPartialName;
 
 	void				TriggerAction( idEntity *activator );
 	void				Event_TriggerAction( idEntity *activator );
@@ -158,15 +155,15 @@ class idTrigger_Timer : public idTrigger {
 public:
 	CLASS_PROTOTYPE( idTrigger_Timer );
 
-						idTrigger_Timer( void );
+						idTrigger_Timer();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Spawn( void );
+	void				Spawn();
 
-	virtual void		Enable( void );
-	virtual void		Disable( void );
+	virtual void		Enable();
+	virtual void		Disable();
 
 private:
 	float				random;
@@ -176,7 +173,7 @@ private:
 	idStr				onName;
 	idStr				offName;
 
-	void				Event_Timer( void );
+	void				Event_Timer();
 	void				Event_Use( idEntity *activator );
 };
 
@@ -193,12 +190,12 @@ class idTrigger_Count : public idTrigger {
 public:
 	CLASS_PROTOTYPE( idTrigger_Count );
 
-						idTrigger_Count( void );
+						idTrigger_Count();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	int					goal;
@@ -222,12 +219,12 @@ class idTrigger_Hurt : public idTrigger {
 public:
 	CLASS_PROTOTYPE( idTrigger_Hurt );
 
-						idTrigger_Hurt( void );
+						idTrigger_Hurt();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	bool				on;
@@ -270,18 +267,18 @@ public:
 
 	CLASS_PROTOTYPE( idTrigger_Touch );
 
-						idTrigger_Touch( void );
+						idTrigger_Touch();
 
-	void				Spawn( void );
-	virtual void		Think( void );
+	void				Spawn();
+	virtual void		Think();
 
 	void				Save( idSaveGame *savefile );
 	void				Restore( idRestoreGame *savefile );
 
-	virtual void		Enable( void );
-	virtual void		Disable( void );
+	virtual void		Enable();
+	virtual void		Disable();
 
-	void				TouchEntities( void );
+	void				TouchEntities();
 
 private:
 	idClipModel *		clipModel;
@@ -289,7 +286,6 @@ private:
 	void				Event_Trigger( idEntity *activator );
 };
 
-#ifdef CTF
 /*
 ===============================================================================
 
@@ -301,8 +297,8 @@ class idTrigger_Flag : public idTrigger_Multi {
 public:
 	CLASS_PROTOTYPE( idTrigger_Flag );
 
-						idTrigger_Flag( void );
-	void				Spawn( void );
+						idTrigger_Flag();
+	void				Spawn();
 
 private:
 	int					team;
@@ -312,7 +308,5 @@ private:
 
 	void				Event_Touch( idEntity *other, trace_t *trace );
 };
-
-#endif /* CTF */
 
 #endif /* !__GAME_TRIGGER_H__ */

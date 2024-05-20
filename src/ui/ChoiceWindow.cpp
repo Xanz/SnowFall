@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
 #include "DeviceContext.h"
 #include "Window.h"
@@ -66,12 +66,6 @@ void idChoiceWindow::CommonInit() {
 	cvar = NULL;
 	liveUpdate = true;
 	choices.Clear();
-}
-
-idChoiceWindow::idChoiceWindow(idDeviceContext *d, idUserInterfaceLocal *g) : idWindow(d, g) {
-	dc = d;
-	gui = g;
-	CommonInit();
 }
 
 idChoiceWindow::idChoiceWindow(idUserInterfaceLocal *g) : idWindow(g) {
@@ -124,7 +118,7 @@ const char *idChoiceWindow::HandleEvent(const sysEvent_t *event, bool *updateVis
 	if ( event->evType == SE_KEY ) {
 		key = event->evValue;
 
-		if ( key == K_RIGHTARROW || key == K_KP_RIGHTARROW || key == K_MOUSE1)  {
+		if ( key == K_RIGHTARROW || key == K_KP_6 || key == K_MOUSE1)  {
 			// never affects the state, but we want to execute script handlers anyway
 			if ( !event->evValue2 ) {
 				RunScript( ON_ACTIONRELEASE );
@@ -137,7 +131,7 @@ const char *idChoiceWindow::HandleEvent(const sysEvent_t *event, bool *updateVis
 			runAction = true;
 		}
 
-		if ( key == K_LEFTARROW || key == K_KP_LEFTARROW || key == K_MOUSE2) {
+		if ( key == K_LEFTARROW || key == K_KP_4 || key == K_MOUSE2) {
 			// never affects the state, but we want to execute script handlers anyway
 			if ( !event->evValue2 ) {
 				RunScript( ON_ACTIONRELEASE );
@@ -242,7 +236,7 @@ void idChoiceWindow::UpdateChoice() {
 	}
 }
 
-bool idChoiceWindow::ParseInternalVar(const char *_name, idParser *src) {
+bool idChoiceWindow::ParseInternalVar(const char *_name, idTokenParser *src) {
 	if (idStr::Icmp(_name, "choicetype") == 0) {
 		choiceType = src->ParseInt();
 		return true;
@@ -279,7 +273,7 @@ idWinVar *idChoiceWindow::GetWinVarByName(const char *_name, bool fixup, drawWin
 }
 
 // update the lists whenever the WinVar have changed
-void idChoiceWindow::UpdateChoicesAndVals( void ) {
+void idChoiceWindow::UpdateChoicesAndVals() {
 	idToken token;
 	idStr str2, str3;
 	idLexer src;
@@ -294,7 +288,7 @@ void idChoiceWindow::UpdateChoicesAndVals( void ) {
 				if ( token == ";" ) {
 					if ( str2.Length() ) {
 						str2.StripTrailingWhitespace();
-						str2 = common->GetLanguageDict()->GetString( str2 );
+						str2 = idLocalization::GetString( str2 );
 						choices.Append(str2);
 						str2 = "";
 					}

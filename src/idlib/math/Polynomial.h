@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -40,7 +40,7 @@ If you have questions concerning this license or the applicable additional terms
 
 class idPolynomial {
 public:
-					idPolynomial( void );
+					idPolynomial();
 					explicit idPolynomial( int d );
 					explicit idPolynomial( float a, float b );
 					explicit idPolynomial( float a, float b, float c );
@@ -68,15 +68,15 @@ public:
 	bool			operator==(	const idPolynomial &p ) const;					// exact compare, no epsilon
 	bool			operator!=(	const idPolynomial &p ) const;					// exact compare, no epsilon
 
-	void			Zero( void );
+	void			Zero();
 	void			Zero( int d );
 
-	int				GetDimension( void ) const;									// get the degree of the polynomial
-	int				GetDegree( void ) const;									// get the degree of the polynomial
+	int				GetDimension() const;									// get the degree of the polynomial
+	int				GetDegree() const;									// get the degree of the polynomial
 	float			GetValue( const float x ) const;							// evaluate the polynomial with the given real value
 	idComplex		GetValue( const idComplex &x ) const;						// evaluate the polynomial with the given complex value
-	idPolynomial	GetDerivative( void ) const;								// get the first derivative of the polynomial
-	idPolynomial	GetAntiDerivative( void ) const;							// get the anti derivative of the polynomial
+	idPolynomial	GetDerivative() const;								// get the first derivative of the polynomial
+	idPolynomial	GetAntiDerivative() const;							// get the anti derivative of the polynomial
 
 	int				GetRoots( idComplex *roots ) const;							// get all roots
 	int				GetRoots( float *roots ) const;								// get the real roots
@@ -86,11 +86,11 @@ public:
 	static int		GetRoots3( float a, float b, float c, float d, float *roots );
 	static int		GetRoots4( float a, float b, float c, float d, float e, float *roots );
 
-	const float *	ToFloatPtr( void ) const;
-	float *			ToFloatPtr( void );
+	const float *	ToFloatPtr() const;
+	float *			ToFloatPtr();
 	const char *	ToString( int precision = 2 ) const;
 
-	static void		Test( void );
+	static void		Test();
 
 private:
 	int				degree;
@@ -101,7 +101,7 @@ private:
 	int				Laguer( const idComplex *coef, const int degree, idComplex &r ) const;
 };
 
-ID_INLINE idPolynomial::idPolynomial( void ) {
+ID_INLINE idPolynomial::idPolynomial() {
 	degree = -1;
 	allocated = 0;
 	coefficient = NULL;
@@ -388,7 +388,7 @@ ID_INLINE bool idPolynomial::operator!=( const idPolynomial &p ) const {
 	return !Compare( p );
 }
 
-ID_INLINE void idPolynomial::Zero( void ) {
+ID_INLINE void idPolynomial::Zero() {
 	degree = 0;
 }
 
@@ -399,11 +399,11 @@ ID_INLINE void idPolynomial::Zero( int d ) {
 	}
 }
 
-ID_INLINE int idPolynomial::GetDimension( void ) const {
+ID_INLINE int idPolynomial::GetDimension() const {
 	return degree;
 }
 
-ID_INLINE int idPolynomial::GetDegree( void ) const {
+ID_INLINE int idPolynomial::GetDegree() const {
 	return degree;
 }
 
@@ -429,7 +429,7 @@ ID_INLINE idComplex idPolynomial::GetValue( const idComplex &x ) const {
 	return y;
 }
 
-ID_INLINE idPolynomial idPolynomial::GetDerivative( void ) const {
+ID_INLINE idPolynomial idPolynomial::GetDerivative() const {
 	idPolynomial n;
 
 	if ( degree == 0 ) {
@@ -442,7 +442,7 @@ ID_INLINE idPolynomial idPolynomial::GetDerivative( void ) const {
 	return n;
 }
 
-ID_INLINE idPolynomial idPolynomial::GetAntiDerivative( void ) const {
+ID_INLINE idPolynomial idPolynomial::GetAntiDerivative() const {
 	idPolynomial n;
 
 	if ( degree == 0 ) {
@@ -600,18 +600,18 @@ ID_INLINE int idPolynomial::GetRoots4( float a, float b, float c, float d, float
 	}
 }
 
-ID_INLINE const float *idPolynomial::ToFloatPtr( void ) const {
+ID_INLINE const float *idPolynomial::ToFloatPtr() const {
 	return coefficient;
 }
 
-ID_INLINE float *idPolynomial::ToFloatPtr( void ) {
+ID_INLINE float *idPolynomial::ToFloatPtr() {
 	return coefficient;
 }
 
 ID_INLINE void idPolynomial::Resize( int d, bool keep ) {
 	int alloc = ( d + 1 + 3 ) & ~3;
 	if ( alloc > allocated ) {
-		float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ) );
+		float *ptr = (float *) Mem_Alloc16( alloc * sizeof( float ), TAG_MATH );
 		if ( coefficient != NULL ) {
 			if ( keep ) {
 				for ( int i = 0; i <= degree; i++ ) {

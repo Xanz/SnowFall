@@ -1,0 +1,3 @@
+﻿  amplitude.cpp
+C:\Git\Quake4\neo\amplitude\amplitude.cpp(276,13): warning C4244: 'initializing': conversion from 'double' to 'float', possible loss of data
+  amplitude.vcxproj -> C:\Git\Quake4\neo\amplitude\Debug\amplitude.exe

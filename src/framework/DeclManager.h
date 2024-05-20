@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -101,31 +101,31 @@ const int DECL_LEXER_FLAGS	=	LEXFL_NOSTRINGCONCAT |				// multiple strings seper
 class idDeclBase {
 public:
 	virtual 				~idDeclBase() {};
-	virtual const char *	GetName( void ) const = 0;
-	virtual declType_t		GetType( void ) const = 0;
-	virtual declState_t		GetState( void ) const = 0;
-	virtual bool			IsImplicit( void ) const = 0;
-	virtual bool			IsValid( void ) const = 0;
-	virtual void			Invalidate( void ) = 0;
-	virtual void			Reload( void ) = 0;
-	virtual void			EnsureNotPurged( void ) = 0;
-	virtual int				Index( void ) const = 0;
-	virtual int				GetLineNum( void ) const = 0;
-	virtual const char *	GetFileName( void ) const = 0;
+	virtual const char *	GetName() const = 0;
+	virtual declType_t		GetType() const = 0;
+	virtual declState_t		GetState() const = 0;
+	virtual bool			IsImplicit() const = 0;
+	virtual bool			IsValid() const = 0;
+	virtual void			Invalidate() = 0;
+	virtual void			Reload() = 0;
+	virtual void			EnsureNotPurged() = 0;
+	virtual int				Index() const = 0;
+	virtual int				GetLineNum() const = 0;
+	virtual const char *	GetFileName() const = 0;
 	virtual void			GetText( char *text ) const = 0;
-	virtual int				GetTextLength( void ) const = 0;
+	virtual int				GetTextLength() const = 0;
 	virtual void			SetText( const char *text ) = 0;
-	virtual bool			ReplaceSourceFileText( void ) = 0;
-	virtual bool			SourceFileChanged( void ) const = 0;
-	virtual void			MakeDefault( void ) = 0;
-	virtual bool			EverReferenced( void ) const = 0;
-	virtual bool			SetDefaultText( void ) = 0;
-	virtual const char *	DefaultDefinition( void ) const = 0;
-	virtual bool			Parse( const char *text, const int textLength ) = 0;
-	virtual void			FreeData( void ) = 0;
-	virtual size_t			Size( void ) const = 0;
-	virtual void			List( void ) const = 0;
-	virtual void			Print( void ) const = 0;
+	virtual bool			ReplaceSourceFileText() = 0;
+	virtual bool			SourceFileChanged() const = 0;
+	virtual void			MakeDefault() = 0;
+	virtual bool			EverReferenced() const = 0;
+	virtual bool			SetDefaultText() = 0;
+	virtual const char *	DefaultDefinition() const = 0;
+	virtual bool			Parse( const char *text, const int textLength, bool allowBinaryVersion ) = 0;
+	virtual void			FreeData() = 0;
+	virtual size_t			Size() const = 0;
+	virtual void			List() const = 0;
+	virtual void			Print() const = 0;
 };
 
 
@@ -133,104 +133,104 @@ class idDecl {
 public:
 							// The constructor should initialize variables such that
 							// an immediate call to FreeData() does no harm.
-							idDecl( void ) { base = NULL; }
-	virtual 				~idDecl( void ) {};
+							idDecl() { base = NULL; }
+	virtual 				~idDecl() {};
 
 							// Returns the name of the decl.
-	const char *			GetName( void ) const { return base->GetName(); }
+	const char *			GetName() const { return base->GetName(); }
 
 							// Returns the decl type.
-	declType_t				GetType( void ) const { return base->GetType(); }
+	declType_t				GetType() const { return base->GetType(); }
 
 							// Returns the decl state which is usefull for finding out if a decl defaulted.
-	declState_t				GetState( void ) const { return base->GetState(); }
+	declState_t				GetState() const { return base->GetState(); }
 
 							// Returns true if the decl was defaulted or the text was created with a call to SetDefaultText.
-	bool					IsImplicit( void ) const { return base->IsImplicit(); }
+	bool					IsImplicit() const { return base->IsImplicit(); }
 
 							// The only way non-manager code can have an invalid decl is if the *ByIndex()
 							// call was used with forceParse = false to walk the lists to look at names
 							// without touching the media.
-	bool					IsValid( void ) const { return base->IsValid(); }
+	bool					IsValid() const { return base->IsValid(); }
 
 							// Sets state back to unparsed.
 							// Used by decl editors to undo any changes to the decl.
-	void					Invalidate( void ) { base->Invalidate(); }
+	void					Invalidate() { base->Invalidate(); }
 
 							// if a pointer might possible be stale from a previous level,
 							// call this to have it re-parsed
-	void					EnsureNotPurged( void ) { base->EnsureNotPurged(); }
+	void					EnsureNotPurged() { base->EnsureNotPurged(); }
 
 							// Returns the index in the per-type list.
-	int						Index( void ) const { return base->Index(); }
+	int						Index() const { return base->Index(); }
 
 							// Returns the line number the decl starts.
-	int						GetLineNum( void ) const { return base->GetLineNum(); }
+	int						GetLineNum() const { return base->GetLineNum(); }
 
 							// Returns the name of the file in which the decl is defined.
-	const char *			GetFileName( void ) const { return base->GetFileName(); }
+	const char *			GetFileName() const { return base->GetFileName(); }
 
 							// Returns the decl text.
 	void					GetText( char *text ) const { base->GetText( text ); }
 
 							// Returns the length of the decl text.
-	int						GetTextLength( void ) const { return base->GetTextLength(); }
+	int						GetTextLength() const { return base->GetTextLength(); }
 
 							// Sets new decl text.
 	void					SetText( const char *text ) { base->SetText( text ); }
 
 							// Saves out new text for the decl.
 							// Used by decl editors to replace the decl text in the source file.
-	bool					ReplaceSourceFileText( void ) { return base->ReplaceSourceFileText(); }
+	bool					ReplaceSourceFileText() { return base->ReplaceSourceFileText(); }
 
 							// Returns true if the source file changed since it was loaded and parsed.
-	bool					SourceFileChanged( void ) const { return base->SourceFileChanged(); }
+	bool					SourceFileChanged() const { return base->SourceFileChanged(); }
 
 							// Frees data and makes the decl a default.
-	void					MakeDefault( void ) { base->MakeDefault(); }
+	void					MakeDefault() { base->MakeDefault(); }
 
 							// Returns true if the decl was ever referenced.
-	bool					EverReferenced( void ) const { return base->EverReferenced(); }
+	bool					EverReferenced() const { return base->EverReferenced(); }
 
 public:
 							// Sets textSource to a default text if necessary.
 							// This may be overridden to provide a default definition based on the
 							// decl name. For instance materials may default to an implicit definition
 							// using a texture with the same name as the decl.
-	virtual bool			SetDefaultText( void ) { return base->SetDefaultText(); }
+	virtual bool			SetDefaultText() { return base->SetDefaultText(); }
 
 							// Each declaration type must have a default string that it is guaranteed
 							// to parse acceptably. When a decl is not explicitly found, is purged, or
 							// has an error while parsing, MakeDefault() will do a FreeData(), then a
 							// Parse() with DefaultDefinition(). The defaultDefintion should start with
 							// an open brace and end with a close brace.
-	virtual const char *	DefaultDefinition( void ) const { return base->DefaultDefinition(); }
+	virtual const char *	DefaultDefinition() const { return base->DefaultDefinition(); }
 
 							// The manager will have already parsed past the type, name and opening brace.
 							// All necessary media will be touched before return.
 							// The manager will have called FreeData() before issuing a Parse().
 							// The subclass can call MakeDefault() internally at any point if
 							// there are parse errors.
-	virtual bool			Parse( const char *text, const int textLength ) { return base->Parse( text, textLength ); }
+	virtual bool			Parse( const char *text, const int textLength, bool allowBinaryVersion = false ) { return base->Parse( text, textLength, allowBinaryVersion ); }
 
 							// Frees any pointers held by the subclass. This may be called before
 							// any Parse(), so the constructor must have set sane values. The decl will be
 							// invalid after issuing this call, but it will always be immediately followed
 							// by a Parse()
-	virtual void			FreeData( void ) { base->FreeData(); }
+	virtual void			FreeData() { base->FreeData(); }
 
 							// Returns the size of the decl in memory.
-	virtual size_t			Size( void ) const { return base->Size(); }
+	virtual size_t			Size() const { return base->Size(); }
 
 							// If this isn't overridden, it will just print the decl name.
 							// The manager will have printed 7 characters on the line already,
 							// containing the reference state and index number.
-	virtual void			List( void ) const { base->List(); }
+	virtual void			List() const { base->List(); }
 
 							// The print function will already have dumped the text source
 							// and common data, subclasses can override this to dump more
 							// explicit data.
-	virtual void			Print( void ) const { base->Print(); }
+	virtual void			Print() const { base->Print(); }
 
 public:
 	idDeclBase *			base;
@@ -238,8 +238,8 @@ public:
 
 
 template< class type >
-ID_INLINE idDecl *idDeclAllocator( void ) {
-	return new type;
+ID_INLINE idDecl *idDeclAllocator() {
+	return new (TAG_DECL) type;
 }
 
 
@@ -249,26 +249,27 @@ class idSoundShader;
 
 class idDeclManager {
 public:
-	virtual					~idDeclManager( void ) {}
+	virtual					~idDeclManager() {}
 
-	virtual void			Init( void ) = 0;
-	virtual void			Shutdown( void ) = 0;
+	virtual void			Init() = 0;
+	virtual void			Init2() = 0;
+	virtual void			Shutdown() = 0;
 	virtual void			Reload( bool force ) = 0;
 
 	virtual void			BeginLevelLoad() = 0;
 	virtual void			EndLevelLoad() = 0;
 
 							// Registers a new decl type.
-	virtual void			RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)( void ) ) = 0;
+	virtual void			RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)() ) = 0;
 
 							// Registers a new folder with decl files.
 	virtual void			RegisterDeclFolder( const char *folder, const char *extension, declType_t defaultType ) = 0;
 
 							// Returns a checksum for all loaded decl text.
-	virtual int				GetChecksum( void ) const = 0;
+	virtual int				GetChecksum() const = 0;
 
 							// Returns the number of decl types.
-	virtual int				GetNumDeclTypes( void ) const = 0;
+	virtual int				GetNumDeclTypes() const = 0;
 
 							// Returns the type name for a decl type.
 	virtual const char *	GetDeclNameFromType( declType_t type ) const = 0;
@@ -306,7 +307,7 @@ public:
 
 							// When media files are loaded, a reference line can be printed at a
 							// proper indentation if decl_show is set
-	virtual void			MediaPrint( const char *fmt, ... ) id_attribute((format(printf,2,3))) = 0;
+	virtual void			MediaPrint( VERIFY_FORMAT_STRING const char *fmt, ... ) = 0;
 
 	virtual void			WritePrecacheCommands( idFile *f ) = 0;
 
@@ -318,6 +319,8 @@ public:
 	virtual const idMaterial *		MaterialByIndex( int index, bool forceParse = true ) = 0;
 	virtual const idDeclSkin *		SkinByIndex( int index, bool forceParse = true ) = 0;
 	virtual const idSoundShader *	SoundByIndex( int index, bool forceParse = true ) = 0;
+
+	virtual void					Touch( const idDecl * decl ) = 0;
 };
 
 extern idDeclManager *		declManager;

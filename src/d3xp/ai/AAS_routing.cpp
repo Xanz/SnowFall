@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "AAS_local.h"
 #include "../Game_local.h"		// for print and error
@@ -53,9 +54,9 @@ idRoutingCache::idRoutingCache( int size ) {
 	startTravelTime = 0;
 	type = 0;
 	this->size = size;
-	reachabilities = new byte[size];
+	reachabilities = new (TAG_AAS) byte[size];
 	memset( reachabilities, 0, size * sizeof( reachabilities[0] ) );
-	travelTimes = new unsigned short[size];
+	travelTimes = new (TAG_AAS) unsigned short[size];
 	memset( travelTimes, 0, size * sizeof( travelTimes[0] ) );
 }
 
@@ -64,7 +65,7 @@ idRoutingCache::idRoutingCache( int size ) {
 idRoutingCache::~idRoutingCache
 ============
 */
-idRoutingCache::~idRoutingCache( void ) {
+idRoutingCache::~idRoutingCache() {
 	delete [] reachabilities;
 	delete [] travelTimes;
 }
@@ -74,7 +75,7 @@ idRoutingCache::~idRoutingCache( void ) {
 idRoutingCache::Size
 ============
 */
-int idRoutingCache::Size( void ) const {
+int idRoutingCache::Size() const {
 	return sizeof( idRoutingCache ) + size * sizeof( reachabilities[0] ) + size * sizeof( travelTimes[0] );
 }
 
@@ -98,7 +99,7 @@ unsigned short idAASLocal::AreaTravelTime( int areaNum, const idVec3 &start, con
 	if ( dist < 1.0f ) {
 		return 1;
 	}
-	return (unsigned short) idMath::FtoiFast( dist );
+	return (unsigned short) idMath::Ftoi( dist );
 }
 
 /*
@@ -106,7 +107,7 @@ unsigned short idAASLocal::AreaTravelTime( int areaNum, const idVec3 &start, con
 idAASLocal::CalculateAreaTravelTimes
 ============
 */
-void idAASLocal::CalculateAreaTravelTimes(void) {
+void idAASLocal::CalculateAreaTravelTimes() {
 	int n, i, j, numReach, numRevReach, t, maxt;
 	byte *bytePtr;
 	idReachability *reach, *rev_reach;
@@ -131,7 +132,7 @@ void idAASLocal::CalculateAreaTravelTimes(void) {
 		numAreaTravelTimes += numReach * numRevReach;
 	}
 
-	areaTravelTimes = (unsigned short *) Mem_Alloc( numAreaTravelTimes * sizeof( unsigned short ) );
+	areaTravelTimes = (unsigned short *) Mem_Alloc( numAreaTravelTimes * sizeof( unsigned short ), TAG_AAS );
 	bytePtr = (byte *) areaTravelTimes;
 
 	for ( n = 0; n < file->GetNumAreas(); n++ ) {
@@ -175,7 +176,7 @@ void idAASLocal::CalculateAreaTravelTimes(void) {
 idAASLocal::DeleteAreaTravelTimes
 ============
 */
-void idAASLocal::DeleteAreaTravelTimes( void ) {
+void idAASLocal::DeleteAreaTravelTimes() {
 	Mem_Free( areaTravelTimes );
 	areaTravelTimes = NULL;
 	numAreaTravelTimes = 0;
@@ -186,7 +187,7 @@ void idAASLocal::DeleteAreaTravelTimes( void ) {
 idAASLocal::SetupRoutingCache
 ============
 */
-void idAASLocal::SetupRoutingCache( void ) {
+void idAASLocal::SetupRoutingCache() {
 	int i;
 	byte *bytePtr;
 
@@ -195,7 +196,7 @@ void idAASLocal::SetupRoutingCache( void ) {
 		areaCacheIndexSize += file->GetCluster( i ).numReachableAreas;
 	}
 	areaCacheIndex = (idRoutingCache ***) Mem_ClearedAlloc( file->GetNumClusters() * sizeof( idRoutingCache ** ) +
-													areaCacheIndexSize * sizeof( idRoutingCache *) );
+													areaCacheIndexSize * sizeof( idRoutingCache *), TAG_AAS );
 	bytePtr = ((byte *)areaCacheIndex) + file->GetNumClusters() * sizeof( idRoutingCache ** );
 	for ( i = 0; i < file->GetNumClusters(); i++ ) {
 		areaCacheIndex[i] = ( idRoutingCache ** ) bytePtr;
@@ -203,12 +204,12 @@ void idAASLocal::SetupRoutingCache( void ) {
 	}
 
 	portalCacheIndexSize = file->GetNumAreas();
-	portalCacheIndex = (idRoutingCache **) Mem_ClearedAlloc( portalCacheIndexSize * sizeof( idRoutingCache * ) );
+	portalCacheIndex = (idRoutingCache **) Mem_ClearedAlloc( portalCacheIndexSize * sizeof( idRoutingCache * ), TAG_AAS );
 
-	areaUpdate = (idRoutingUpdate *) Mem_ClearedAlloc( file->GetNumAreas() * sizeof( idRoutingUpdate ) );
-	portalUpdate = (idRoutingUpdate *) Mem_ClearedAlloc( (file->GetNumPortals()+1) * sizeof( idRoutingUpdate ) );
+	areaUpdate = (idRoutingUpdate *) Mem_ClearedAlloc( file->GetNumAreas() * sizeof( idRoutingUpdate ), TAG_AAS );
+	portalUpdate = (idRoutingUpdate *) Mem_ClearedAlloc( (file->GetNumPortals()+1) * sizeof( idRoutingUpdate ), TAG_AAS );
 
-	goalAreaTravelTimes = (unsigned short *) Mem_ClearedAlloc( file->GetNumAreas() * sizeof( unsigned short ) );
+	goalAreaTravelTimes = (unsigned short *) Mem_ClearedAlloc( file->GetNumAreas() * sizeof( unsigned short ), TAG_AAS );
 
 	cacheListStart = cacheListEnd = NULL;
 	totalCacheMemory = 0;
@@ -237,7 +238,7 @@ void idAASLocal::DeleteClusterCache( int clusterNum ) {
 idAASLocal::DeletePortalCache
 ============
 */
-void idAASLocal::DeletePortalCache( void ) {
+void idAASLocal::DeletePortalCache() {
 	int i;
 	idRoutingCache *cache;
 
@@ -255,7 +256,7 @@ void idAASLocal::DeletePortalCache( void ) {
 idAASLocal::ShutdownRoutingCache
 ============
 */
-void idAASLocal::ShutdownRoutingCache( void ) {
+void idAASLocal::ShutdownRoutingCache() {
 	int i;
 
 	for ( i = 0; i < file->GetNumClusters(); i++ ) {
@@ -286,7 +287,7 @@ void idAASLocal::ShutdownRoutingCache( void ) {
 idAASLocal::SetupRouting
 ============
 */
-bool idAASLocal::SetupRouting( void ) {
+bool idAASLocal::SetupRouting() {
 	CalculateAreaTravelTimes();
 	SetupRoutingCache();
 	return true;
@@ -297,7 +298,7 @@ bool idAASLocal::SetupRouting( void ) {
 idAASLocal::ShutdownRouting
 ============
 */
-void idAASLocal::ShutdownRouting( void ) {
+void idAASLocal::ShutdownRouting() {
 	DeleteAreaTravelTimes();
 	ShutdownRoutingCache();
 }
@@ -307,7 +308,7 @@ void idAASLocal::ShutdownRouting( void ) {
 idAASLocal::RoutingStats
 ============
 */
-void idAASLocal::RoutingStats( void ) const {
+void idAASLocal::RoutingStats() const {
 	idRoutingCache *cache;
 	int numAreaCache, numPortalCache;
 	int totalAreaCacheMemory, totalPortalCacheMemory;
@@ -541,7 +542,7 @@ aasHandle_t idAASLocal::AddObstacle( const idBounds &bounds ) {
 		return -1;
 	}
 
-	obstacle = new idRoutingObstacle;
+	obstacle = new (TAG_AAS) idRoutingObstacle;
 	obstacle->bounds[0] = bounds[0] - file->GetSettings().boundingBoxes[0][1];
 	obstacle->bounds[1] = bounds[1] - file->GetSettings().boundingBoxes[0][0];
 	GetBoundsAreas_r( 1, obstacle->bounds, obstacle->areas );
@@ -573,7 +574,7 @@ void idAASLocal::RemoveObstacle( const aasHandle_t handle ) {
 idAASLocal::RemoveAllObstacles
 ============
 */
-void idAASLocal::RemoveAllObstacles( void ) {
+void idAASLocal::RemoveAllObstacles() {
 	int i;
 
 	if ( !file ) {
@@ -643,7 +644,7 @@ void idAASLocal::UnlinkCache( idRoutingCache *cache ) const {
 idAASLocal::DeleteOldestCache
 ============
 */
-void idAASLocal::DeleteOldestCache( void ) const {
+void idAASLocal::DeleteOldestCache() const {
 	idRoutingCache *cache;
 
 	assert( cacheListStart );
@@ -842,7 +843,7 @@ idRoutingCache *idAASLocal::GetAreaRoutingCache( int clusterNum, int areaNum, in
 	}
 	// if no cache found
 	if ( !cache ) {
-		cache = new idRoutingCache( file->GetCluster( clusterNum ).numReachableAreas );
+		cache = new (TAG_AAS) idRoutingCache( file->GetCluster( clusterNum ).numReachableAreas );
 		cache->type = CACHETYPE_AREA;
 		cache->cluster = clusterNum;
 		cache->areaNum = areaNum;
@@ -968,7 +969,7 @@ idRoutingCache *idAASLocal::GetPortalRoutingCache( int clusterNum, int areaNum, 
 	}
 	// if no cache found
 	if ( !cache ) {
-		cache = new idRoutingCache( file->GetNumPortals() );
+		cache = new (TAG_AAS) idRoutingCache( file->GetNumPortals() );
 		cache->type = CACHETYPE_PORTAL;
 		cache->cluster = clusterNum;
 		cache->areaNum = areaNum;

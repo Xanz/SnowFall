@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -43,14 +43,15 @@ If you have questions concerning this license or the applicable additional terms
 
 class idHashIndex {
 public:
-					idHashIndex( void );
+	static const int NULL_INDEX = -1;
+					idHashIndex();
 					idHashIndex( const int initialHashSize, const int initialIndexSize );
-					~idHashIndex( void );
+					~idHashIndex();
 
 					// returns total size of allocated memory
-	size_t			Allocated( void ) const;
+	size_t			Allocated() const;
 					// returns total size of allocated memory including size of hash index type
-	size_t			Size( void ) const;
+	size_t			Size() const;
 
 	idHashIndex &	operator=( const idHashIndex &other );
 					// add an index to the hash, assumes the index has not yet been added to the hash
@@ -61,32 +62,39 @@ public:
 	int				First( const int key ) const;
 					// get the next index from the hash, returns -1 if at the end of the hash chain
 	int				Next( const int index ) const;
+
+	// For porting purposes...
+	int				GetFirst( const int key ) const { return First( key ); }
+	int				GetNext( const int index ) const { return Next( index ); }
+
 					// insert an entry into the index and add it to the hash, increasing all indexes >= index
 	void			InsertIndex( const int key, const int index );
 					// remove an entry from the index and remove it from the hash, decreasing all indexes >= index
 	void			RemoveIndex( const int key, const int index );
 					// clear the hash
-	void			Clear( void );
+	void			Clear();
 					// clear and resize
 	void			Clear( const int newHashSize, const int newIndexSize );
 					// free allocated memory
-	void			Free( void );
+	void			Free();
 					// get size of hash table
-	int				GetHashSize( void ) const;
+	int				GetHashSize() const;
 					// get size of the index
-	int				GetIndexSize( void ) const;
+	int				GetIndexSize() const;
 					// set granularity
 	void			SetGranularity( const int newGranularity );
 					// force resizing the index, current hash table stays intact
 	void			ResizeIndex( const int newIndexSize );
 					// returns number in the range [0-100] representing the spread over the hash table
-	int				GetSpread( void ) const;
+	int				GetSpread() const;
 					// returns a key for a string
 	int				GenerateKey( const char *string, bool caseSensitive = true ) const;
 					// returns a key for a vector
 	int				GenerateKey( const idVec3 &v ) const;
 					// returns a key for two integers
 	int				GenerateKey( const int n1, const int n2 ) const;
+					// returns a key for a single integer
+	int				GenerateKey( const int n ) const;
 
 private:
 	int				hashSize;
@@ -108,7 +116,7 @@ private:
 idHashIndex::idHashIndex
 ================
 */
-ID_INLINE idHashIndex::idHashIndex( void ) {
+ID_INLINE idHashIndex::idHashIndex() {
 	Init( DEFAULT_HASH_SIZE, DEFAULT_HASH_SIZE );
 }
 
@@ -126,7 +134,7 @@ ID_INLINE idHashIndex::idHashIndex( const int initialHashSize, const int initial
 idHashIndex::~idHashIndex
 ================
 */
-ID_INLINE idHashIndex::~idHashIndex( void ) {
+ID_INLINE idHashIndex::~idHashIndex() {
 	Free();
 }
 
@@ -135,7 +143,7 @@ ID_INLINE idHashIndex::~idHashIndex( void ) {
 idHashIndex::Allocated
 ================
 */
-ID_INLINE size_t idHashIndex::Allocated( void ) const {
+ID_INLINE size_t idHashIndex::Allocated() const {
 	return hashSize * sizeof( int ) + indexSize * sizeof( int );
 }
 
@@ -144,7 +152,7 @@ ID_INLINE size_t idHashIndex::Allocated( void ) const {
 idHashIndex::Size
 ================
 */
-ID_INLINE size_t idHashIndex::Size( void ) const {
+ID_INLINE size_t idHashIndex::Size() const {
 	return sizeof( *this ) + Allocated();
 }
 
@@ -169,14 +177,14 @@ ID_INLINE idHashIndex &idHashIndex::operator=( const idHashIndex &other ) {
 				delete[] hash;
 			}
 			hashSize = other.hashSize;
-			hash = new int[hashSize];
+			hash = new (TAG_IDLIB_HASH) int[hashSize];
 		}
 		if ( other.indexSize != indexSize || indexChain == INVALID_INDEX ) {
 			if ( indexChain != INVALID_INDEX ) {
 				delete[] indexChain;
 			}
 			indexSize = other.indexSize;
-			indexChain = new int[indexSize];
+			indexChain = new (TAG_IDLIB_HASH) int[indexSize];
 		}
 		memcpy( hash, other.hash, hashSize * sizeof( hash[0] ) );
 		memcpy( indexChain, other.indexChain, indexSize * sizeof( indexChain[0] ) );
@@ -325,7 +333,7 @@ ID_INLINE void idHashIndex::RemoveIndex( const int key, const int index ) {
 idHashIndex::Clear
 ================
 */
-ID_INLINE void idHashIndex::Clear( void ) {
+ID_INLINE void idHashIndex::Clear() {
 	// only clear the hash table because clearing the indexChain is not really needed
 	if ( hash != INVALID_INDEX ) {
 		memset( hash, 0xff, hashSize * sizeof( hash[0] ) );
@@ -348,7 +356,7 @@ ID_INLINE void idHashIndex::Clear( const int newHashSize, const int newIndexSize
 idHashIndex::GetHashSize
 ================
 */
-ID_INLINE int idHashIndex::GetHashSize( void ) const {
+ID_INLINE int idHashIndex::GetHashSize() const {
 	return hashSize;
 }
 
@@ -357,7 +365,7 @@ ID_INLINE int idHashIndex::GetHashSize( void ) const {
 idHashIndex::GetIndexSize
 ================
 */
-ID_INLINE int idHashIndex::GetIndexSize( void ) const {
+ID_INLINE int idHashIndex::GetIndexSize() const {
 	return indexSize;
 }
 
@@ -400,6 +408,15 @@ idHashIndex::GenerateKey
 */
 ID_INLINE int idHashIndex::GenerateKey( const int n1, const int n2 ) const {
 	return ( ( n1 + n2 ) & hashMask );
+}
+
+/*
+================
+idHashIndex::GenerateKey
+================
+*/
+ID_INLINE int idHashIndex::GenerateKey( const int n ) const {
+	return n & hashMask;
 }
 
 #endif /* !__HASHINDEX_H__ */

@@ -1,34 +1,32 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
-#include "../idlib/precompiled.h"
 #pragma hdrstop
-
-#include "../framework/Session_local.h"
+#include "../idlib/precompiled.h"
 
 #include "DeviceContext.h"
 #include "Window.h"
@@ -88,7 +86,7 @@ void SSDCrossHair::InitCrosshairs() {
 
 }
 
-void SSDCrossHair::Draw(idDeviceContext *dc, const idVec2& cursor) {
+void SSDCrossHair::Draw(const idVec2& cursor) {
 
 	float x,y;
 	x = cursor.x-(crosshairWidth/2);
@@ -266,7 +264,7 @@ bool SSDEntity::HitTest(const idVec2& pt) {
 	return false;
 }
 
-void SSDEntity::Draw(idDeviceContext *dc) {
+void SSDEntity::Draw() {
 
 
 	idVec2 persize;
@@ -472,7 +470,7 @@ void SSDAsteroid::WriteAsteroids(idFile* savefile) {
 	}
 }
 
-void SSDAsteroid::ReadAsteroids(idFile* savefile, idGameSSDWindow* _game) {
+void SSDAsteroid::ReadAsteroids( idFile* savefile, idGameSSDWindow* _game) {
 	
 	int count;
 	savefile->Read(&count, sizeof(count));
@@ -799,7 +797,7 @@ void SSDPoints::Init(idGameSSDWindow* _game, SSDEntity* _ent, int _points, int _
 
 	float width = 0;
 	for(int i = 0; i < text.Length(); i++) {
-		width += game->GetDC()->CharWidth(text[i], textScale);
+		width += dc->CharWidth(text[i], textScale);
 	}
 
 	size.Set(0,0);
@@ -1201,12 +1199,6 @@ void SSDPowerup::ReadPowerups(idFile* savefile, idGameSSDWindow* _game) {
 
 idRandom idGameSSDWindow::random;
 
-idGameSSDWindow::idGameSSDWindow(idDeviceContext *d, idUserInterfaceLocal *g) : idWindow(d, g) {
-	dc = d;
-	gui = g;
-	CommonInit();
-}
-
 idGameSSDWindow::idGameSSDWindow(idUserInterfaceLocal *g) : idWindow(g) {
 	gui = g;
 	CommonInit();
@@ -1396,7 +1388,7 @@ void idGameSSDWindow::Draw(int time, float x, float y) {
 
 		//Draw from back to front
 		for(int i = entities.Num()-1; i >= 0; i--) {
-			entities[i]->Draw(dc);
+			entities[i]->Draw();
 		}
 
 		//The last thing to draw is the crosshair
@@ -1405,12 +1397,12 @@ void idGameSSDWindow::Draw(int time, float x, float y) {
 		cursor.x = gui->CursorX();
 		cursor.y = gui->CursorY();
 
-		crosshair.Draw(dc, cursor);
+		crosshair.Draw(cursor);
 	}
 }
 
 
-bool idGameSSDWindow::ParseInternalVar(const char *_name, idParser *src) {
+bool idGameSSDWindow::ParseInternalVar(const char *_name, idTokenParser *src) {
 
 	if (idStr::Icmp(_name, "beginLevel") == 0) {
 		beginLevel = src->ParseBool();
@@ -1630,7 +1622,7 @@ void idGameSSDWindow::CommonInit() {
 	
 	// Precache sounds
 	declManager->FindSound( "arcade_blaster" );
-	declManager->FindSound( "arcade_capture " );
+	declManager->FindSound( "arcade_capture" );
 	declManager->FindSound( "arcade_explode" );
 
 	ResetGameStats();
@@ -1915,7 +1907,7 @@ void idGameSSDWindow::FireWeapon(int key) {
 		
 		if(gameStats.levelStats.targetEnt) {
 			//Aim the projectile from the bottom of the screen directly at the ent
-			//SSDProjectile* newProj = new SSDProjectile(this, idVec3(320,0,0), gameStats.levelStats.targetEnt->position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
+			//SSDProjectile* newProj = new (TAG_OLD_UI) SSDProjectile(this, idVec3(320,0,0), gameStats.levelStats.targetEnt->position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
 			SSDProjectile* newProj = SSDProjectile::GetNewProjectile(this, idVec3(0,-180,0), gameStats.levelStats.targetEnt->position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
 			entities.Append(newProj);
 			//newProj = SSDProjectile::GetNewProjectile(this, idVec3(-320,-0,0), gameStats.levelStats.targetEnt->position, weaponData[gameStats.currentWeapon].speed, weaponData[gameStats.currentWeapon].size);
@@ -1930,8 +1922,6 @@ void idGameSSDWindow::FireWeapon(int key) {
 				HitAsteroid(static_cast<SSDAsteroid*>(gameStats.levelStats.targetEnt), key);
 			} else if(gameStats.levelStats.targetEnt->type == SSD_ENTITY_ASTRONAUT) {
 				HitAstronaut(static_cast<SSDAstronaut*>(gameStats.levelStats.targetEnt), key);
-			} else if(gameStats.levelStats.targetEnt->type == SSD_ENTITY_ASTRONAUT) {
-
 			}
 		} else {
 			////Aim the projectile at the cursor position all the way to the far clipping
@@ -2290,7 +2280,7 @@ SSDEntity* idGameSSDWindow::GetSpecificEntity(int type, int id) {
 
 void idGameSSDWindow::PlaySound(const char* sound) {
 
-	session->sw->PlayShaderDirectly(sound, currentSound);
+	common->SW()->PlayShaderDirectly(sound, currentSound);
 
 	currentSound++;
 	if(currentSound >= MAX_SOUND_CHANNEL) {

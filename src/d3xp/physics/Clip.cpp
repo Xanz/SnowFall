@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -71,16 +72,22 @@ idBlockAlloc<clipLink_t, 1024>	clipLinkAllocator;
 */
 
 static idList<trmCache_s*>		traceModelCache;
+static idList<trmCache_s*>		traceModelCache_Unsaved;
 static idHashIndex				traceModelHash;
-	
+static idHashIndex				traceModelHash_Unsaved;
+const static int				TRACE_MODEL_SAVED = BIT( 16 );
+
+
 /*
 ===============
 idClipModel::ClearTraceModelCache
 ===============
 */
-void idClipModel::ClearTraceModelCache( void ) {
+void idClipModel::ClearTraceModelCache() {
 	traceModelCache.DeleteContents( true );
+	traceModelCache_Unsaved.DeleteContents( true );
 	traceModelHash.Free();
+	traceModelHash_Unsaved.Free();
 }
 
 /*
@@ -88,7 +95,7 @@ void idClipModel::ClearTraceModelCache( void ) {
 idClipModel::TraceModelCacheSize
 ===============
 */
-int idClipModel::TraceModelCacheSize( void ) {
+int idClipModel::TraceModelCacheSize() {
 	return traceModelCache.Num() * sizeof( idTraceModel );
 }
 
@@ -97,25 +104,54 @@ int idClipModel::TraceModelCacheSize( void ) {
 idClipModel::AllocTraceModel
 ===============
 */
-int idClipModel::AllocTraceModel( const idTraceModel &trm ) {
+int idClipModel::AllocTraceModel( const idTraceModel &trm, bool persistantThroughSaves ) {
 	int i, hashKey, traceModelIndex;
 	trmCache_t *entry;
 
 	hashKey = GetTraceModelHashKey( trm );
-	for ( i = traceModelHash.First( hashKey ); i >= 0; i = traceModelHash.Next( i ) ) {
-		if ( traceModelCache[i]->trm == trm ) {
-			traceModelCache[i]->refCount++;
-			return i;
+
+	if( persistantThroughSaves ) {
+		// Look Inside the saved list.
+		for ( i = traceModelHash.First( hashKey ); i >= 0; i = traceModelHash.Next( i ) ) {
+			if ( traceModelCache[i]->trm == trm ) {
+				traceModelCache[i]->refCount++;
+				int flagged_index = i | TRACE_MODEL_SAVED;
+				return flagged_index;
+			}
+		}
+	} else {
+
+		// Look inside the unsaved list.
+		for ( i = traceModelHash_Unsaved.First( hashKey ); i >= 0; i = traceModelHash_Unsaved.Next( i ) ) {
+			if ( traceModelCache_Unsaved[i]->trm == trm ) {
+				traceModelCache_Unsaved[i]->refCount++;
+				return i;
+			}
 		}
 	}
 
-	entry = new trmCache_t;
+
+	entry = new (TAG_PHYSICS_CLIP) trmCache_t;
 	entry->trm = trm;
 	entry->trm.GetMassProperties( 1.0f, entry->volume, entry->centerOfMass, entry->inertiaTensor );
 	entry->refCount = 1;
 
-	traceModelIndex = traceModelCache.Append( entry );
-	traceModelHash.Add( hashKey, traceModelIndex );
+	if( persistantThroughSaves ) {
+		traceModelIndex = traceModelCache.Append( entry );
+		traceModelHash.Add( hashKey, traceModelIndex );
+
+		// Set the saved bit.
+		traceModelIndex |= TRACE_MODEL_SAVED;
+
+	} else {
+		traceModelIndex = traceModelCache_Unsaved.Append( entry );
+		traceModelHash_Unsaved.Add( hashKey, traceModelIndex );
+
+		// remove the saved bit
+		traceModelIndex &= ~TRACE_MODEL_SAVED;
+
+	}
+
 	return traceModelIndex;
 }
 
@@ -125,11 +161,27 @@ idClipModel::FreeTraceModel
 ===============
 */
 void idClipModel::FreeTraceModel( int traceModelIndex ) {
-	if ( traceModelIndex < 0 || traceModelIndex >= traceModelCache.Num() || traceModelCache[traceModelIndex]->refCount <= 0 ) {
-		gameLocal.Warning( "idClipModel::FreeTraceModel: tried to free uncached trace model" );
-		return;
+
+	int realTraceModelIndex = traceModelIndex & ~TRACE_MODEL_SAVED;
+
+	// Check which cache we are using.
+	if( traceModelIndex & TRACE_MODEL_SAVED ) {
+
+		if ( realTraceModelIndex < 0 || realTraceModelIndex >= traceModelCache.Num() || traceModelCache[realTraceModelIndex]->refCount <= 0 ) {
+			gameLocal.Warning( "idClipModel::FreeTraceModel: tried to free uncached trace model" );
+			return;
+		}
+		traceModelCache[realTraceModelIndex]->refCount--;
+
+	} else {
+
+		if ( realTraceModelIndex < 0 || realTraceModelIndex >= traceModelCache_Unsaved.Num() || traceModelCache_Unsaved[realTraceModelIndex]->refCount <= 0 ) {
+			gameLocal.Warning( "idClipModel::FreeTraceModel: tried to free uncached trace model" );
+			return;
+		}
+		traceModelCache_Unsaved[realTraceModelIndex]->refCount--;
+
 	}
-	traceModelCache[traceModelIndex]->refCount--;
 }
 
 /*
@@ -138,7 +190,29 @@ idClipModel::GetCachedTraceModel
 ===============
 */
 idTraceModel *idClipModel::GetCachedTraceModel( int traceModelIndex ) {
-	return &traceModelCache[traceModelIndex]->trm;
+	int realTraceModelIndex = traceModelIndex & ~TRACE_MODEL_SAVED;
+
+	if( traceModelIndex & TRACE_MODEL_SAVED ) {
+		return &traceModelCache[realTraceModelIndex]->trm;
+	} else {
+		return &traceModelCache_Unsaved[realTraceModelIndex]->trm;
+	}
+}
+
+/*
+===============
+idClipModel::GetCachedTraceModel
+===============
+*/
+trmCache_t * idClipModel::GetTraceModelEntry( int traceModelIndex ) {
+
+	int realTraceModelIndex = traceModelIndex & ~TRACE_MODEL_SAVED;
+
+	if( traceModelIndex & TRACE_MODEL_SAVED ) {
+		return traceModelCache[realTraceModelIndex];
+	} else {
+		return traceModelCache_Unsaved[realTraceModelIndex];
+	}
 }
 
 /*
@@ -184,7 +258,7 @@ void idClipModel::RestoreTraceModels( idRestoreGame *savefile ) {
 	traceModelCache.SetNum( num );
 
 	for ( i = 0; i < num; i++ ) {
-		trmCache_t *entry = new trmCache_t;
+		trmCache_t *entry = new (TAG_PHYSICS_CLIP) trmCache_t;
 		
 		savefile->ReadTraceModel( entry->trm );
 
@@ -218,7 +292,7 @@ bool idClipModel::LoadModel( const char *name ) {
 		FreeTraceModel( traceModelIndex );
 		traceModelIndex = -1;
 	}
-	collisionModelHandle = collisionModelManager->LoadModel( name, false );
+	collisionModelHandle = collisionModelManager->LoadModel( name );
 	if ( collisionModelHandle ) {
 		collisionModelManager->GetModelBounds( collisionModelHandle, bounds );
 		collisionModelManager->GetModelContents( collisionModelHandle, contents );
@@ -234,13 +308,13 @@ bool idClipModel::LoadModel( const char *name ) {
 idClipModel::LoadModel
 ================
 */
-void idClipModel::LoadModel( const idTraceModel &trm ) {
+void idClipModel::LoadModel( const idTraceModel &trm, bool persistantThroughSave ) {
 	collisionModelHandle = 0;
 	renderModelHandle = -1;
 	if ( traceModelIndex != -1 ) {
 		FreeTraceModel( traceModelIndex );
 	}
-	traceModelIndex = AllocTraceModel( trm );
+	traceModelIndex = AllocTraceModel( trm, persistantThroughSave );
 	bounds = trm.bounds;
 }
 
@@ -269,7 +343,7 @@ void idClipModel::LoadModel( const int renderModelHandle ) {
 idClipModel::Init
 ================
 */
-void idClipModel::Init( void ) {
+void idClipModel::Init() {
 	enabled = true;
 	entity = NULL;
 	id = 0;
@@ -292,7 +366,7 @@ void idClipModel::Init( void ) {
 idClipModel::idClipModel
 ================
 */
-idClipModel::idClipModel( void ) {
+idClipModel::idClipModel() {
 	Init();
 }
 
@@ -313,7 +387,17 @@ idClipModel::idClipModel
 */
 idClipModel::idClipModel( const idTraceModel &trm ) {
 	Init();
-	LoadModel( trm );
+	LoadModel( trm, true );
+}
+
+/*
+================
+idClipModel::idClipModel
+================
+*/
+idClipModel::idClipModel( const idTraceModel &trm, bool persistantThroughSave ) {
+	Init();
+	LoadModel( trm, persistantThroughSave );
 }
 
 /*
@@ -358,7 +442,7 @@ idClipModel::idClipModel( const idClipModel *model ) {
 idClipModel::~idClipModel
 ================
 */
-idClipModel::~idClipModel( void ) {
+idClipModel::~idClipModel() {
 	// make sure the clip model is no longer linked
 	Unlink();
 	if ( traceModelIndex != -1 ) {
@@ -414,13 +498,14 @@ void idClipModel::Restore( idRestoreGame *savefile ) {
 	savefile->ReadInt( contents );
 	savefile->ReadString( collisionModelName );
 	if ( collisionModelName.Length() ) {
-		collisionModelHandle = collisionModelManager->LoadModel( collisionModelName, false );
+		collisionModelHandle = collisionModelManager->LoadModel( collisionModelName );
 	} else {
 		collisionModelHandle = -1;
 	}
 	savefile->ReadInt( traceModelIndex );
 	if ( traceModelIndex >= 0 ) {
-		traceModelCache[traceModelIndex]->refCount++;
+		int realIndex = traceModelIndex & ~TRACE_MODEL_SAVED;
+		traceModelCache[realIndex]->refCount++;
 	}
 	savefile->ReadInt( renderModelHandle );
 	savefile->ReadBool( linked );
@@ -454,7 +539,7 @@ void idClipModel::SetPosition( const idVec3 &newOrigin, const idMat3 &newAxis ) 
 idClipModel::Handle
 ================
 */
-cmHandle_t idClipModel::Handle( void ) const {
+cmHandle_t idClipModel::Handle() const {
 	assert( renderModelHandle == -1 );
 	if ( collisionModelHandle ) {
 		return collisionModelHandle;
@@ -477,7 +562,7 @@ void idClipModel::GetMassProperties( const float density, float &mass, idVec3 &c
 		gameLocal.Error( "idClipModel::GetMassProperties: clip model %d on '%s' is not a trace model\n", id, entity->name.c_str() );
 	}
 
-	trmCache_t *entry = traceModelCache[traceModelIndex];
+	trmCache_t *entry = GetTraceModelEntry( traceModelIndex ); //traceModelCache[traceModelIndex];
 	mass = entry->volume * density;
 	centerOfMass = entry->centerOfMass;
 	inertiaTensor = density * entry->inertiaTensor;
@@ -488,7 +573,7 @@ void idClipModel::GetMassProperties( const float density, float &mass, idVec3 &c
 idClipModel::Unlink
 ===============
 */
-void idClipModel::Unlink( void ) {
+void idClipModel::Unlink() {
 	clipLink_t *link;
 
 	for ( link = clipLinks; link; link = clipLinks ) {
@@ -602,7 +687,7 @@ idClipModel::CheckModel
 ============
 */
 cmHandle_t idClipModel::CheckModel( const char *name ) {
-	return collisionModelManager->LoadModel( name, false );
+	return collisionModelManager->LoadModel( name );
 }
 
 
@@ -619,7 +704,7 @@ cmHandle_t idClipModel::CheckModel( const char *name ) {
 idClip::idClip
 ===============
 */
-idClip::idClip( void ) {
+idClip::idClip() {
 	numClipSectors = 0;
 	clipSectors = NULL;
 	worldBounds.Zero();
@@ -681,17 +766,17 @@ clipSector_t *idClip::CreateClipSectors_r( const int depth, const idBounds &boun
 idClip::Init
 ===============
 */
-void idClip::Init( void ) {
+void idClip::Init() {
 	cmHandle_t h;
 	idVec3 size, maxSector = vec3_origin;
 
 	// clear clip sectors
-	clipSectors = new clipSector_t[MAX_SECTORS];
+	clipSectors = new (TAG_PHYSICS_CLIP) clipSector_t[MAX_SECTORS];
 	memset( clipSectors, 0, MAX_SECTORS * sizeof( clipSector_t ) );
 	numClipSectors = 0;
 	touchCount = -1;
 	// get world map bounds
-	h = collisionModelManager->LoadModel( "worldMap", false );
+	h = collisionModelManager->LoadModel( "worldMap" );
 	collisionModelManager->GetModelBounds( h, worldBounds );
 	// create world sectors
 	CreateClipSectors_r( 0, worldBounds, maxSector );
@@ -712,7 +797,7 @@ void idClip::Init( void ) {
 idClip::Shutdown
 ===============
 */
-void idClip::Shutdown( void ) {
+void idClip::Shutdown() {
 	delete[] clipSectors;
 	clipSectors = NULL;
 
@@ -1603,7 +1688,7 @@ bool idClip::GetModelContactFeature( const contactInfo_t &contact, const idClipM
 idClip::PrintStatistics
 ============
 */
-void idClip::PrintStatistics( void ) {
+void idClip::PrintStatistics() {
 	gameLocal.Printf( "t = %-3d, r = %-3d, m = %-3d, render = %-3d, contents = %-3d, contacts = %-3d\n",
 					numTranslations, numRotations, numMotions, numRenderModelTraces, numContents, numContacts );
 	numRotations = numTranslations = numMotions = numRenderModelTraces = numContents = numContacts = 0;

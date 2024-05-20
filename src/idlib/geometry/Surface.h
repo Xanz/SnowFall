@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -48,24 +48,23 @@ typedef struct surfaceEdge_s {
 
 class idSurface {
 public:
-							idSurface( void );
+							idSurface();
 							explicit idSurface( const idSurface &surf );
 							explicit idSurface( const idDrawVert *verts, const int numVerts, const int *indexes, const int numIndexes );
-							~idSurface( void );
+							~idSurface();
 
 	const idDrawVert &		operator[]( const int index ) const;
 	idDrawVert &			operator[]( const int index );
 	idSurface &				operator+=( const idSurface &surf );
 
-	int						GetNumIndexes( void ) const { return indexes.Num(); }
-	const int *				GetIndexes( void ) const { return indexes.Ptr(); }
-	int						GetNumVertices( void ) const { return verts.Num(); }
-	const idDrawVert *		GetVertices( void ) const { return verts.Ptr(); }
-	const int *				GetEdgeIndexes( void ) const { return edgeIndexes.Ptr(); }
-	const surfaceEdge_t *	GetEdges( void ) const { return edges.Ptr(); }
+	int						GetNumIndexes() const { return indexes.Num(); }
+	const int *				GetIndexes() const { return indexes.Ptr(); }
+	int						GetNumVertices() const { return verts.Num(); }
+	const idDrawVert *		GetVertices() const { return verts.Ptr(); }
+	const int *				GetEdgeIndexes() const { return edgeIndexes.Ptr(); }
+	const surfaceEdge_t *	GetEdges() const { return edges.Ptr(); }
 
-	void					Clear( void );
-	void					SwapTriangles( idSurface &surf );
+	void					Clear();
 	void					TranslateSelf( const idVec3 &translation );
 	void					RotateSelf( const idMat3 &rotation );
 
@@ -78,9 +77,9 @@ public:
 	bool					ClipInPlace( const idPlane &plane, const float epsilon = ON_EPSILON, const bool keepOn = false );
 
 							// returns true if each triangle can be reached from any other triangle by a traversal
-	bool					IsConnected( void ) const;
+	bool					IsConnected() const;
 							// returns true if the surface is closed
-	bool					IsClosed( void ) const;
+	bool					IsClosed() const;
 							// returns true if the surface is a convex hull
 	bool					IsPolytope( const float epsilon = 0.1f ) const;
 
@@ -93,13 +92,13 @@ public:
 	bool					RayIntersection( const idVec3 &start, const idVec3 &dir, float &scale, bool backFaceCull = false ) const;
 
 protected:
-	idList<idDrawVert>		verts;			// vertices
-	idList<int>				indexes;		// 3 references to vertices for each triangle
-	idList<surfaceEdge_t>	edges;			// edges
-	idList<int>				edgeIndexes;	// 3 references to edges for each triangle, may be negative for reversed edge
+	idList<idDrawVert, TAG_IDLIB_LIST_SURFACE>		verts;			// vertices
+	idList<int, TAG_IDLIB_LIST_SURFACE>				indexes;		// 3 references to vertices for each triangle
+	idList<surfaceEdge_t, TAG_IDLIB_LIST_SURFACE>	edges;			// edges
+	idList<int, TAG_IDLIB_LIST_SURFACE>				edgeIndexes;	// 3 references to edges for each triangle, may be negative for reversed edge
 
 protected:
-	void					GenerateEdgeIndexes( void );
+	void					GenerateEdgeIndexes();
 	int						FindEdge( int v1, int v2 ) const;
 };
 
@@ -108,7 +107,7 @@ protected:
 idSurface::idSurface
 ====================
 */
-ID_INLINE idSurface::idSurface( void ) {
+ID_INLINE idSurface::idSurface() {
 }
 
 /*
@@ -142,7 +141,7 @@ ID_INLINE idSurface::idSurface( const idSurface &surf ) {
 idSurface::~idSurface
 ====================
 */
-ID_INLINE idSurface::~idSurface( void ) {
+ID_INLINE idSurface::~idSurface() {
 }
 
 /*
@@ -186,23 +185,11 @@ ID_INLINE idSurface &idSurface::operator+=( const idSurface &surf ) {
 idSurface::Clear
 =================
 */
-ID_INLINE void idSurface::Clear( void ) {
+ID_INLINE void idSurface::Clear() {
 	verts.Clear();
 	indexes.Clear();
 	edges.Clear();
 	edgeIndexes.Clear();
-}
-
-/*
-=================
-idSurface::SwapTriangles
-=================
-*/
-ID_INLINE void idSurface::SwapTriangles( idSurface &surf ) {
-	verts.Swap( surf.verts );
-	indexes.Swap( surf.indexes );
-	edges.Swap( surf.edges );
-	edgeIndexes.Swap( surf.edgeIndexes );
 }
 
 /*
@@ -224,9 +211,8 @@ idSurface::RotateSelf
 ID_INLINE void idSurface::RotateSelf( const idMat3 &rotation ) {
 	for ( int i = 0; i < verts.Num(); i++ ) {
 		verts[i].xyz *= rotation;
-		verts[i].normal *= rotation;
-		verts[i].tangents[0] *= rotation;
-		verts[i].tangents[1] *= rotation;
+		verts[i].SetNormal( verts[i].GetNormal() * rotation );
+		verts[i].SetTangent( verts[i].GetTangent() * rotation );
 	}
 }
 

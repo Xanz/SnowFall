@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -126,6 +126,13 @@ typedef struct cm_brushBlock_s {
 } cm_brushBlock_t;
 
 typedef struct cm_brush_s {
+	cm_brush_s() {
+		checkcount = 0;
+		contents = 0;
+		material = NULL;
+		primitiveNum = 0;
+		numPlanes = 0;
+	}
 	int						checkcount;			// for multi-check avoidance
 	idBounds				bounds;				// brush bounds
 	int						contents;			// contents of brush
@@ -295,10 +302,11 @@ public:
 	// load collision models from a map file
 	void			LoadMap( const idMapFile *mapFile );
 	// frees all the collision models
-	void			FreeMap( void );
+	void			FreeMap();
 
+	void			Preload( const char *mapName );
 	// get clip handle for model
-	cmHandle_t		LoadModel( const char *modelName, const bool precache );
+	cmHandle_t		LoadModel( const char *modelName );
 	// sets up a trace model for collision with other trace models
 	cmHandle_t		SetupTrmModel( const idTraceModel &trm, const idMaterial *material );
 	// create trace model from a collision model, returns true if succesfull
@@ -341,7 +349,7 @@ public:
 	// print model information, use -1 handle for accumulated model info
 	void			ModelInfo( cmHandle_t model );
 	// list all loaded models
-	void			ListModels( void );
+	void			ListModels();
 	// write a collision model file for the map entity
 	bool			WriteCollisionModelForMapEntity( const idMapEntity *mapEnt, const char *filename, const bool testTraceModel = true );
 
@@ -400,8 +408,8 @@ private:			// CollisionMap_trace.cpp
 	void			RecurseProcBSP_r( trace_t *results, int parentNodeNum, int nodeNum, float p1f, float p2f, const idVec3 &p1, const idVec3 &p2 );
 
 private:			// CollisionMap_load.cpp
-	void			Clear( void );
-	void			FreeTrmModelStructure( void );
+	void			Clear();
+	void			FreeTrmModelStructure();
 					// model deallocation
 	void			RemovePolygonReferences_r( cm_node_t *node, cm_polygon_t *p );
 	void			RemoveBrushReferences_r( cm_node_t *node, cm_brush_t *b );
@@ -433,7 +441,7 @@ private:			// CollisionMap_load.cpp
 	void			R_ChopWindingListWithTreeBrushes( cm_windingList_t *list, cm_node_t *node );
 	idFixedWinding *WindingOutsideBrushes( idFixedWinding *w, const idPlane &plane, int contents, int patch, cm_node_t *headNode );
 					// creation of axial BSP tree
-	cm_model_t *	AllocModel( void );
+	cm_model_t *	AllocModel();
 	cm_node_t *		AllocNode( cm_model_t *model, int blockSize );
 	cm_polygonRef_t*AllocPolygonReference( cm_model_t *model, int blockSize );
 	cm_brushRef_t *	AllocBrushReference( cm_model_t *model, int blockSize );
@@ -441,14 +449,14 @@ private:			// CollisionMap_load.cpp
 	cm_brush_t *	AllocBrush( cm_model_t *model, int numPlanes );
 	void			AddPolygonToNode( cm_model_t *model, cm_node_t *node, cm_polygon_t *p );
 	void			AddBrushToNode( cm_model_t *model, cm_node_t *node, cm_brush_t *b );
-	void			SetupTrmModelStructure( void );
+	void			SetupTrmModelStructure();
 	void			R_FilterPolygonIntoTree( cm_model_t *model, cm_node_t *node, cm_polygonRef_t *pref, cm_polygon_t *p );
 	void			R_FilterBrushIntoTree( cm_model_t *model, cm_node_t *node, cm_brushRef_t *pref, cm_brush_t *b );
 	cm_node_t *		R_CreateAxialBSPTree( cm_model_t *model, cm_node_t *node, const idBounds &bounds );
 	cm_node_t *		CreateAxialBSPTree( cm_model_t *model, cm_node_t *node );
 					// creation of raw polygons
-	void			SetupHash(void);
-	void			ShutdownHash(void);
+	void			SetupHash();
+	void			ShutdownHash();
 	void			ClearHash( idBounds &bounds );
 	int				HashVec(const idVec3 &vec);
 	int				GetVertex( cm_model_t *model, const idVec3 &v, int *vertexNum );
@@ -469,6 +477,10 @@ private:			// CollisionMap_load.cpp
 	cmHandle_t		FindModel( const char *name );
 	cm_model_t *	CollisionModelForMapEntity( const idMapEntity *mapEnt );	// brush/patch model from .map
 	cm_model_t *	LoadRenderModel( const char *fileName );					// ASE/LWO models
+	cm_model_t *	LoadBinaryModel( const char *fileName, ID_TIME_T sourceTimeStamp );
+	cm_model_t *	LoadBinaryModelFromFile( idFile *fileIn, ID_TIME_T sourceTimeStamp );
+	void			WriteBinaryModel( cm_model_t *model, const char *fileName, ID_TIME_T sourceTimeStamp );
+	void			WriteBinaryModelToFile( cm_model_t *model, idFile *fileOut, ID_TIME_T sourceTimeStamp ); 
 	bool			TrmFromModel_r( idTraceModel &trm, cm_node_t *node );
 	bool			TrmFromModel( const cm_model_t *model, idTraceModel &trm );
 
@@ -487,7 +499,7 @@ private:			// CollisionMap_files.cpp
 	void			ParseEdges( idLexer *src, cm_model_t *model );
 	void			ParsePolygons( idLexer *src, cm_model_t *model );
 	void			ParseBrushes( idLexer *src, cm_model_t *model );
-	bool			ParseCollisionModel( idLexer *src );
+	cm_model_t *	ParseCollisionModel( idLexer *src );
 	bool			LoadCollisionModelFile( const char *name, unsigned int mapFileCRC );
 
 private:			// CollisionMap_debug

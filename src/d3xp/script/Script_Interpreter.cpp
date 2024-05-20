@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -155,7 +156,7 @@ void idInterpreter::Restore( idRestoreGame *savefile ) {
 idInterpreter::Reset
 ================
 */
-void idInterpreter::Reset( void ) {
+void idInterpreter::Reset() {
 	callStackDepth = 0;
 	localstackUsed = 0;
 	localstackBase = 0;
@@ -317,7 +318,7 @@ bool idInterpreter::GetRegisterValue( const char *name, idStr &out, int scopeDep
 idInterpreter::GetCallstackDepth
 ================
 */
-int idInterpreter::GetCallstackDepth( void ) const {
+int idInterpreter::GetCallstackDepth() const {
 	return callStackDepth;
 }
 
@@ -326,7 +327,7 @@ int idInterpreter::GetCallstackDepth( void ) const {
 idInterpreter::GetCallstack
 ================
 */
-const prstack_t *idInterpreter::GetCallstack( void ) const {
+const prstack_t *idInterpreter::GetCallstack() const {
 	return &callStack[ 0 ];
 }
 
@@ -335,7 +336,7 @@ const prstack_t *idInterpreter::GetCallstack( void ) const {
 idInterpreter::GetCurrentFunction
 ================
 */
-const function_t *idInterpreter::GetCurrentFunction( void ) const {
+const function_t *idInterpreter::GetCurrentFunction() const {
 	return currentFunction;
 }
 
@@ -344,7 +345,7 @@ const function_t *idInterpreter::GetCurrentFunction( void ) const {
 idInterpreter::GetThread
 ================
 */
-idThread *idInterpreter::GetThread( void ) const {
+idThread *idInterpreter::GetThread() const {
 	return thread;
 }
 
@@ -363,7 +364,7 @@ void idInterpreter::SetThread( idThread *pThread ) {
 idInterpreter::CurrentLine
 ================
 */
-int idInterpreter::CurrentLine( void ) const {
+int idInterpreter::CurrentLine() const {
 	if ( instructionPointer < 0 ) {
 		return 0;
 	}
@@ -375,7 +376,7 @@ int idInterpreter::CurrentLine( void ) const {
 idInterpreter::CurrentFile
 ================
 */
-const char *idInterpreter::CurrentFile( void ) const {
+const char *idInterpreter::CurrentFile() const {
 	if ( instructionPointer < 0 ) {
 		return "";
 	}
@@ -387,7 +388,7 @@ const char *idInterpreter::CurrentFile( void ) const {
 idInterpreter::StackTrace
 ============
 */
-void idInterpreter::StackTrace( void ) const {
+void idInterpreter::StackTrace() const {
 	const function_t	*f;
 	int 				i;
 	int					top;
@@ -471,7 +472,7 @@ void idInterpreter::Warning( const char *fmt, ... ) const {
 idInterpreter::DisplayInfo
 ================
 */
-void idInterpreter::DisplayInfo( void ) const {
+void idInterpreter::DisplayInfo() const {
 	const function_t *f;
 	int i;
 
@@ -510,6 +511,9 @@ Copys the args from the calling thread's stack
 void idInterpreter::ThreadCall( idInterpreter *source, const function_t *func, int args ) {
 	Reset();
 
+	if ( args > LOCALSTACK_SIZE ) {
+		args = LOCALSTACK_SIZE;
+	}
 	memcpy( localstack, &source->localstack[ source->localstackUsed - args ], args );
 
 	localstackUsed = args;
@@ -578,8 +582,9 @@ void idInterpreter::EnterFunction( const function_t *func, bool clearStack ) {
 		maxStackDepth = callStackDepth;
 	}
 
-	if ( !func ) {
+	if ( func == NULL ) {
 		Error( "NULL function" );
+		return;
 	}
 
 	if ( debug ) {
@@ -690,8 +695,9 @@ void idInterpreter::CallEvent( const function_t *func, int argsize ) {
 	const idEventDef	*evdef;
 	const char			*format;
 
-	if ( !func ) {
+	if ( func == NULL ) {
 		Error( "NULL function" );
+		return;
 	}
 
 	assert( func->eventdef );
@@ -701,8 +707,8 @@ void idInterpreter::CallEvent( const function_t *func, int argsize ) {
 	var.intPtr = ( int * )&localstack[ start ];
 	eventEntity = GetEntity( *var.entityNumberPtr );
 
-	if ( !eventEntity || !eventEntity->RespondsTo( *evdef ) ) {
-		if ( eventEntity && developer.GetBool() ) {
+	if ( eventEntity == NULL || !eventEntity->RespondsTo( *evdef ) ) {
+		if ( eventEntity != NULL && developer.GetBool() ) {
 			// give a warning in developer mode
 			Warning( "Function '%s' not supported on entity '%s'", evdef->GetName(), eventEntity->name.c_str() );
 		}
@@ -842,7 +848,7 @@ void idInterpreter::EndMultiFrameEvent( idEntity *ent, const idEventDef *event )
 idInterpreter::MultiFrameEventInProgress
 ================
 */
-bool idInterpreter::MultiFrameEventInProgress( void ) const {
+bool idInterpreter::MultiFrameEventInProgress() const {
 	return multiFrameEvent != NULL;
 }
 
@@ -861,8 +867,9 @@ void idInterpreter::CallSysEvent( const function_t *func, int argsize ) {
 	const idEventDef	*evdef;
 	const char			*format;
 
-	if ( !func ) {
+	if ( func == NULL ) {
 		Error( "NULL function" );
+		return;
 	}
 
 	assert( func->eventdef );
@@ -933,7 +940,7 @@ void idInterpreter::CallSysEvent( const function_t *func, int argsize ) {
 idInterpreter::Execute
 ====================
 */
-bool idInterpreter::Execute( void ) {
+bool idInterpreter::Execute() {
 	varEval_t	var_a;
 	varEval_t	var_b;
 	varEval_t	var_c;

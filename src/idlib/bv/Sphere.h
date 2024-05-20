@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -39,7 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 
 class idSphere {
 public:
-					idSphere( void );
+					idSphere();
 					explicit idSphere( const idVec3 &point );
 					explicit idSphere( const idVec3 &point, const float r );
 
@@ -55,14 +55,14 @@ public:
 	bool			operator==(	const idSphere &a ) const;						// exact compare, no epsilon
 	bool			operator!=(	const idSphere &a ) const;						// exact compare, no epsilon
 
-	void			Clear( void );									// inside out sphere
-	void			Zero( void );									// single point at origin
+	void			Clear();									// inside out sphere
+	void			Zero();									// single point at origin
 	void			SetOrigin( const idVec3 &o );					// set origin of sphere
 	void			SetRadius( const float r );						// set square radius
 
-	const idVec3 &	GetOrigin( void ) const;						// returns origin of sphere
-	float			GetRadius( void ) const;						// returns sphere radius
-	bool			IsCleared( void ) const;						// returns true if sphere is inside out
+	const idVec3 &	GetOrigin() const;						// returns origin of sphere
+	float			GetRadius() const;						// returns sphere radius
+	bool			IsCleared() const;						// returns true if sphere is inside out
 
 	bool			AddPoint( const idVec3 &p );					// add the point, returns true if the sphere expanded
 	bool			AddSphere( const idSphere &s );					// add the sphere, returns true if the sphere expanded
@@ -98,7 +98,7 @@ private:
 
 extern idSphere	sphere_zero;
 
-ID_INLINE idSphere::idSphere( void ) {
+ID_INLINE idSphere::idSphere() {
 }
 
 ID_INLINE idSphere::idSphere( const idVec3 &point ) {
@@ -144,12 +144,12 @@ ID_INLINE bool idSphere::operator!=( const idSphere &a ) const {
 	return !Compare( a );
 }
 
-ID_INLINE void idSphere::Clear( void ) {
+ID_INLINE void idSphere::Clear() {
 	origin.Zero();
 	radius = -1.0f;
 }
 
-ID_INLINE void idSphere::Zero( void ) {
+ID_INLINE void idSphere::Zero() {
 	origin.Zero();
 	radius = 0.0f;
 }
@@ -162,15 +162,15 @@ ID_INLINE void idSphere::SetRadius( const float r ) {
 	radius = r;
 }
 
-ID_INLINE const idVec3 &idSphere::GetOrigin( void ) const {
+ID_INLINE const idVec3 &idSphere::GetOrigin() const {
 	return origin;
 }
 
-ID_INLINE float idSphere::GetRadius( void ) const {
+ID_INLINE float idSphere::GetRadius() const {
 	return radius;
 }
 
-ID_INLINE bool idSphere::IsCleared( void ) const {
+ID_INLINE bool idSphere::IsCleared() const {
 	return ( radius < 0.0f );
 }
 

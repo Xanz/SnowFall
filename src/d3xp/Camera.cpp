@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -49,7 +49,7 @@ END_CLASS
 idCamera::Spawn
 =====================
 */
-void idCamera::Spawn( void ) {
+void idCamera::Spawn() {
 }
 
 /*
@@ -146,7 +146,7 @@ void idCameraView::Event_Activate( idEntity *activator ) {
 idCameraView::Stop
 =====================
 */
-void idCameraView::Stop( void ) {
+void idCameraView::Stop() {
 	if ( g_debugCinematic.GetBool() ) {
 		gameLocal.Printf( "%d: '%s' stop\n", gameLocal.framenum, GetName() );
 	}
@@ -173,7 +173,7 @@ void idCameraView::SetAttachment( idEntity **e, const char *p  ) {
 idCameraView::Spawn
 =====================
 */
-void idCameraView::Spawn( void ) {
+void idCameraView::Spawn() {
 	// if no target specified use ourself
 	const char *cam = spawnArgs.GetString("cameraTarget");
 	if ( strlen ( cam ) == 0) {
@@ -299,7 +299,7 @@ void idCameraAnim::Restore( idRestoreGame *savefile ) {
 idCameraAnim::Spawn
 =====================
 */
-void idCameraAnim::Spawn( void ) {
+void idCameraAnim::Spawn() {
 	if ( spawnArgs.GetVector( "old_origin", "0 0 0", offset ) ) {
 		offset = GetPhysics()->GetOrigin() - offset;
 	} else {
@@ -317,7 +317,7 @@ void idCameraAnim::Spawn( void ) {
 idCameraAnim::Load
 ================
 */
-void idCameraAnim::LoadAnim( void ) {
+void idCameraAnim::LoadAnim() {
 	int			version;
 	idLexer		parser( LEXFL_ALLOWPATHNAMES | LEXFL_NOSTRINGESCAPECHARS | LEXFL_NOSTRINGCONCAT );
 	idToken		token;
@@ -400,50 +400,6 @@ void idCameraAnim::LoadAnim( void ) {
 		camera[ i ].fov = parser.ParseFloat();
 	}
 	parser.ExpectTokenString( "}" );
-
-#if 0
-	if ( !gameLocal.GetLocalPlayer() ) {
-		return;
-	}
-
-	idDebugGraph gGraph;
-	idDebugGraph tGraph;
-	idDebugGraph qGraph;
-	idDebugGraph dtGraph;
-	idDebugGraph dqGraph;
-	gGraph.SetNumSamples( numFrames );
-	tGraph.SetNumSamples( numFrames );
-	qGraph.SetNumSamples( numFrames );
-	dtGraph.SetNumSamples( numFrames );
-	dqGraph.SetNumSamples( numFrames );
-
-	gameLocal.Printf( "\n\ndelta vec:\n" );
-	float diff_t, last_t, t;
-	float diff_q, last_q, q;
-	diff_t = last_t = 0.0f;
-	diff_q = last_q = 0.0f;
-	for( i = 1; i < numFrames; i++ ) {
-		t = ( camera[ i ].t - camera[ i - 1 ].t ).Length();
-		q = ( camera[ i ].q.ToQuat() - camera[ i - 1 ].q.ToQuat() ).Length();
-		diff_t = t - last_t;
-		diff_q = q - last_q;
-		gGraph.AddValue( ( i % 10 ) == 0 );
-		tGraph.AddValue( t );
-		qGraph.AddValue( q );
-		dtGraph.AddValue( diff_t );
-		dqGraph.AddValue( diff_q );
-
-		gameLocal.Printf( "%d: %.8f  :  %.8f,     %.8f  :  %.8f\n", i, t, diff_t, q, diff_q  );
-		last_t = t;
-		last_q = q;
-	}
-
-	gGraph.Draw( colorBlue, 300.0f );
-	tGraph.Draw( colorOrange, 60.0f );
-	dtGraph.Draw( colorYellow, 6000.0f );
-	qGraph.Draw( colorGreen, 60.0f );
-	dqGraph.Draw( colorCyan, 6000.0f );
-#endif
 }
 
 /*
@@ -451,7 +407,7 @@ void idCameraAnim::LoadAnim( void ) {
 idCameraAnim::Start
 ================
 */
-void idCameraAnim::Start( void ) {
+void idCameraAnim::Start() {
 	cycle = spawnArgs.GetInt( "cycle" );
 	if ( !cycle ) {
 		cycle = 1;
@@ -466,7 +422,7 @@ void idCameraAnim::Start( void ) {
 	BecomeActive( TH_THINK );
 
 	// if the player has already created the renderview for this frame, have him update it again so that the camera starts this frame
-	if ( gameLocal.GetLocalPlayer()->GetRenderView()->time == gameLocal.time ) {
+	if ( gameLocal.GetLocalPlayer()->GetRenderView()->time[TIME_GROUP2] == gameLocal.fast.time ) {
 		gameLocal.GetLocalPlayer()->CalculateRenderView();
 	}
 }
@@ -476,7 +432,7 @@ void idCameraAnim::Start( void ) {
 idCameraAnim::Stop
 =====================
 */
-void idCameraAnim::Stop( void ) {
+void idCameraAnim::Stop() {
 	if ( gameLocal.GetCamera() == this ) {
 		if ( g_debugCinematic.GetBool() ) {
 			gameLocal.Printf( "%d: '%s' stop\n", gameLocal.framenum, GetName() );
@@ -497,42 +453,7 @@ void idCameraAnim::Stop( void ) {
 idCameraAnim::Think
 =====================
 */
-void idCameraAnim::Think( void ) {
-	int frame;
-	int frameTime;
-
-	if ( thinkFlags & TH_THINK ) {
-		// check if we're done in the Think function when the cinematic is being skipped (idCameraAnim::GetViewParms isn't called when skipping cinematics).
-		if ( !gameLocal.skipCinematic ) {
-			return;
-		}
-
-		if ( camera.Num() < 2 ) {
-			// 1 frame anims never end
-			return;
-		}
-
-		if ( frameRate == USERCMD_HZ ) {
-			frameTime	= gameLocal.time - starttime;
-			frame		= frameTime / gameLocal.msec;
-		} else {
-			frameTime	= ( gameLocal.time - starttime ) * frameRate;
-			frame		= frameTime / 1000;
-		}
-		
-		if ( frame > camera.Num() + cameraCuts.Num() - 2 ) {
-			if ( cycle > 0 ) {
-				cycle--;
-			}
-
-			if ( cycle != 0 ) {
-				// advance start time so that we loop
-				starttime += ( ( camera.Num() - cameraCuts.Num() ) * 1000 ) / frameRate;
-			} else {
-				Stop();
-			}
-		}
-	}
+void idCameraAnim::Think() {
 }
 
 /*
@@ -562,19 +483,11 @@ void idCameraAnim::GetViewParms( renderView_t *view ) {
 		return;
 	}
 
-#ifdef _D3XP
 	SetTimeState ts( timeGroup );
-#endif
 
-	if ( frameRate == USERCMD_HZ ) {
-		frameTime	= gameLocal.time - starttime;
-		frame		= frameTime / gameLocal.msec;
-		lerp		= 0.0f;
-	} else {
-		frameTime	= ( gameLocal.time - starttime ) * frameRate;
-		frame		= frameTime / 1000;
-		lerp		= ( frameTime % 1000 ) * 0.001f;
-	}
+	frameTime	= ( gameLocal.time - starttime ) * frameRate;
+	frame		= frameTime / 1000;
+	lerp		= ( frameTime % 1000 ) * 0.001f;
 
 	// skip any frames where camera cuts occur
 	realFrame = frame;
@@ -588,7 +501,7 @@ void idCameraAnim::GetViewParms( renderView_t *view ) {
 	}
 
 	if ( g_debugCinematic.GetBool() ) {
-		int prevFrameTime	= ( gameLocal.time - starttime - gameLocal.msec ) * frameRate;
+		int prevFrameTime	= ( gameLocal.previousTime - starttime ) * frameRate;
 		int prevFrame		= prevFrameTime / 1000;
 		int prevCut;
 
@@ -661,7 +574,7 @@ void idCameraAnim::GetViewParms( renderView_t *view ) {
 	static int lastFrame = 0;
 	static idVec3 lastFrameVec( 0.0f, 0.0f, 0.0f );
 	if ( gameLocal.time != lastFrame ) {
-		gameRenderWorld->DebugBounds( colorCyan, idBounds( view->vieworg ).Expand( 16.0f ), vec3_origin, gameLocal.msec );
+		gameRenderWorld->DebugBounds( colorCyan, idBounds( view->vieworg ).Expand( 16.0f ), vec3_origin, 1 );
 		gameRenderWorld->DebugLine( colorRed, view->vieworg, view->vieworg + idVec3( 0.0f, 0.0f, 2.0f ), 10000, false );
 		gameRenderWorld->DebugLine( colorCyan, lastFrameVec, view->vieworg, 10000, false );
 		gameRenderWorld->DebugLine( colorYellow, view->vieworg + view->viewaxis[ 0 ] * 64.0f, view->vieworg + view->viewaxis[ 0 ] * 66.0f, 10000, false );
@@ -695,7 +608,7 @@ void idCameraAnim::Event_Activate( idEntity *_activator ) {
 idCameraAnim::Event_Start
 ================
 */
-void idCameraAnim::Event_Start( void ) {
+void idCameraAnim::Event_Start() {
 	Start();
 }
 
@@ -704,7 +617,7 @@ void idCameraAnim::Event_Start( void ) {
 idCameraAnim::Event_Stop
 ================
 */
-void idCameraAnim::Event_Stop( void ) {
+void idCameraAnim::Event_Stop() {
 	Stop();
 }
 
@@ -713,7 +626,7 @@ void idCameraAnim::Event_Stop( void ) {
 idCameraAnim::Event_SetCallback
 ================
 */
-void idCameraAnim::Event_SetCallback( void ) {
+void idCameraAnim::Event_SetCallback() {
 	if ( ( gameLocal.GetCamera() == this ) && !threadNum ) {
 		threadNum = idThread::CurrentThreadNum();
 		idThread::ReturnInt( true );

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -44,7 +44,7 @@ If you have questions concerning this license or the applicable additional terms
 idIK::idIK
 ================
 */
-idIK::idIK( void ) {
+idIK::idIK() {
 	ik_activate = false;
 	initialized = false;
 	self = NULL;
@@ -58,7 +58,7 @@ idIK::idIK( void ) {
 idIK::~idIK
 ================
 */
-idIK::~idIK( void ) {
+idIK::~idIK() {
 }
 
 /*
@@ -93,6 +93,7 @@ void idIK::Restore( idRestoreGame *savefile ) {
 		if ( animator == NULL || animator->ModelDef() == NULL ) {
 			gameLocal.Warning( "idIK::Restore: IK for entity '%s' at (%s) has no model set.",
 								self->name.c_str(), self->GetPhysics()->GetOrigin().ToString(0) );
+			return;
 		}
 		modifiedAnim = animator->GetAnim( anim );
 		if ( modifiedAnim == 0 ) {
@@ -110,7 +111,7 @@ void idIK::Restore( idRestoreGame *savefile ) {
 idIK::IsInitialized
 ================
 */
-bool idIK::IsInitialized( void ) const {
+bool idIK::IsInitialized() const {
 	return initialized && ik_enable.GetBool();
 }
 
@@ -162,7 +163,7 @@ bool idIK::Init( idEntity *self, const char *anim, const idVec3 &modelOffset ) {
 idIK::Evaluate
 ================
 */
-void idIK::Evaluate( void ) {
+void idIK::Evaluate() {
 }
 
 /*
@@ -170,7 +171,7 @@ void idIK::Evaluate( void ) {
 idIK::ClearJointMods
 ================
 */
-void idIK::ClearJointMods( void ) {
+void idIK::ClearJointMods() {
 	ik_activate = false;
 }
 
@@ -547,7 +548,7 @@ bool idIK_Walk::Init( idEntity *self, const char *anim, const idVec3 &modelOffse
 			verts[i] = footWinding[i] * footSize;
 		}
 		trm.SetupPolygon( verts, 4 );
-		footModel = new idClipModel( trm );
+		footModel = new (TAG_PHYSICS_CLIP) idClipModel( trm );
 	}
 
 	initialized = true;
@@ -560,8 +561,8 @@ bool idIK_Walk::Init( idEntity *self, const char *anim, const idVec3 &modelOffse
 idIK_Walk::Evaluate
 ================
 */
-void idIK_Walk::Evaluate( void ) {
-	int i, newPivotFoot;
+void idIK_Walk::Evaluate() {
+	int i, newPivotFoot = -1;
 	float modelHeight, jointHeight, lowestHeight, floorHeights[MAX_LEGS];
 	float shift, smallestShift, newHeight, step, newPivotYaw, height, largestAnkleHeight;
 	idVec3 modelOrigin, normal, hipDir, kneeDir, start, end, jointOrigins[MAX_LEGS];
@@ -776,7 +777,7 @@ void idIK_Walk::Evaluate( void ) {
 idIK_Walk::ClearJointMods
 ================
 */
-void idIK_Walk::ClearJointMods( void ) {
+void idIK_Walk::ClearJointMods() {
 	int i;
 
 	if ( !self || !ik_activate ) {
@@ -799,7 +800,7 @@ void idIK_Walk::ClearJointMods( void ) {
 idIK_Walk::EnableAll
 ================
 */
-void idIK_Walk::EnableAll( void ) {
+void idIK_Walk::EnableAll() {
 	enabledLegs = ( 1 << numLegs ) - 1;
 	oldHeightsValid = false;
 }
@@ -809,7 +810,7 @@ void idIK_Walk::EnableAll( void ) {
 idIK_Walk::DisableAll
 ================
 */
-void idIK_Walk::DisableAll( void ) {
+void idIK_Walk::DisableAll() {
 	enabledLegs = 0;
 	oldHeightsValid = false;
 }
@@ -1048,7 +1049,7 @@ bool idIK_Reach::Init( idEntity *self, const char *anim, const idVec3 &modelOffs
 idIK_Reach::Evaluate
 ================
 */
-void idIK_Reach::Evaluate( void ) {
+void idIK_Reach::Evaluate() {
 	int i;
 	idVec3 modelOrigin, shoulderOrigin, elbowOrigin, handOrigin, shoulderDir, elbowDir;
 	idMat3 modelAxis, axis;
@@ -1110,7 +1111,7 @@ void idIK_Reach::Evaluate( void ) {
 idIK_Reach::ClearJointMods
 ================
 */
-void idIK_Reach::ClearJointMods( void ) {
+void idIK_Reach::ClearJointMods() {
 	int i;
 
 	if ( !self || !ik_activate ) {

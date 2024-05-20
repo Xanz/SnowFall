@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
+
 
 #include "Model_ase.h"
 
@@ -65,7 +66,7 @@ typedef struct {
 static ase_t ase;
 
 
-static aseMesh_t *ASE_GetCurrentMesh( void )
+static aseMesh_t *ASE_GetCurrentMesh()
 {
 	return ase.currentMesh;
 }
@@ -140,7 +141,7 @@ static void ASE_ParseBracedBlock( void (*parser)( const char *token ) )
 	}
 }
 
-static void ASE_SkipEnclosingBraces( void )
+static void ASE_SkipEnclosingBraces()
 {
 	int indent = 0;
 
@@ -161,7 +162,7 @@ static void ASE_SkipEnclosingBraces( void )
 	}
 }
 
-static void ASE_SkipRestOfLine( void )
+static void ASE_SkipRestOfLine()
 {
 	ASE_GetToken( true );
 }
@@ -246,7 +247,7 @@ static void ASE_KeyMATERIAL_LIST( const char *token )
 	{
 		VERBOSE( ( "..material %d\n", ase.model->materials.Num() ) );
 
-		ase.currentMaterial = (aseMaterial_t *)Mem_Alloc( sizeof( aseMaterial_t ) );
+		ase.currentMaterial = (aseMaterial_t *)Mem_Alloc( sizeof( aseMaterial_t ), TAG_MODEL );
 		memset( ase.currentMaterial, 0, sizeof( aseMaterial_t ) );
 		ase.currentMaterial->uTiling = 1;
 		ase.currentMaterial->vTiling = 1;
@@ -420,18 +421,19 @@ static void ASE_KeyMESH_TVERTLIST( const char *token )
 
 	if ( !strcmp( token, "*MESH_TVERT" ) )
 	{
-		char u[80], v[80], w[80];
+		const int maxLength = 80;
+		char u[maxLength], v[maxLength], w[maxLength];
 
 		ASE_GetToken( false );
 
 		ASE_GetToken( false );
-		strcpy( u, ase.token );
+		strncpy( u, ase.token, maxLength ); u[maxLength-1] = '\0';
 
 		ASE_GetToken( false );
-		strcpy( v, ase.token );
+		strncpy( v, ase.token, maxLength ); v[maxLength-1] = '\0';
 
 		ASE_GetToken( false );
-		strcpy( w, ase.token );
+		strncpy( w, ase.token, maxLength ); w[maxLength-1] = '\0';
 
 		pMesh->tvertexes[ase.currentVertex].x = atof( u );
 		// our OpenGL second texture axis is inverted from MAX's sense
@@ -540,8 +542,9 @@ static void ASE_KeyMESH_NORMALS( const char *token )
 			}
 		}
 
-		if ( v == 3 ) {
+		if ( v >= 3 ) {
 			common->Error( "MESH_NORMALS vertex index doesn't match face" );
+			return;
 		}
 
 		ASE_GetToken( false );
@@ -624,7 +627,7 @@ static void ASE_KeyMESH( const char *token )
 	}
 	else if ( !strcmp( token, "*MESH_VERTEX_LIST" ) )
 	{
-		pMesh->vertexes = (idVec3 *)Mem_Alloc( sizeof( idVec3 ) * pMesh->numVertexes );
+		pMesh->vertexes = (idVec3 *)Mem_Alloc( sizeof( idVec3 ) * pMesh->numVertexes, TAG_MODEL );
 		ase.currentVertex = 0;
 		VERBOSE( ( ".....parsing MESH_VERTEX_LIST\n" ) );
 		ASE_ParseBracedBlock( ASE_KeyMESH_VERTEX_LIST );
@@ -632,20 +635,20 @@ static void ASE_KeyMESH( const char *token )
 	else if ( !strcmp( token, "*MESH_TVERTLIST" ) )
 	{
 		ase.currentVertex = 0;
-		pMesh->tvertexes = (idVec2 *)Mem_Alloc( sizeof( idVec2 ) * pMesh->numTVertexes );
+		pMesh->tvertexes = (idVec2 *)Mem_Alloc( sizeof( idVec2 ) * pMesh->numTVertexes, TAG_MODEL );
 		VERBOSE( ( ".....parsing MESH_TVERTLIST\n" ) );
 		ASE_ParseBracedBlock( ASE_KeyMESH_TVERTLIST );
 	}
 	else if ( !strcmp( token, "*MESH_CVERTLIST" ) )
 	{
 		ase.currentVertex = 0;
-		pMesh->cvertexes = (idVec3 *)Mem_Alloc( sizeof( idVec3 ) * pMesh->numCVertexes );
+		pMesh->cvertexes = (idVec3 *)Mem_Alloc( sizeof( idVec3 ) * pMesh->numCVertexes, TAG_MODEL );
 		VERBOSE( ( ".....parsing MESH_CVERTLIST\n" ) );
 		ASE_ParseBracedBlock( ASE_KeyMESH_CVERTLIST );
 	}
 	else if ( !strcmp( token, "*MESH_FACE_LIST" ) )
 	{
-		pMesh->faces = (aseFace_t *)Mem_Alloc( sizeof( aseFace_t ) * pMesh->numFaces );
+		pMesh->faces = (aseFace_t *)Mem_Alloc( sizeof( aseFace_t ) * pMesh->numFaces, TAG_MODEL );
 		ase.currentFace = 0;
 		VERBOSE( ( ".....parsing MESH_FACE_LIST\n" ) );
 		ASE_ParseBracedBlock( ASE_KeyMESH_FACE_LIST );
@@ -688,7 +691,7 @@ static void ASE_KeyMESH_ANIMATION( const char *token )
 	{
 		VERBOSE( ( "...found MESH\n" ) );
 
-		mesh = (aseMesh_t *)Mem_Alloc( sizeof( aseMesh_t ) );
+		mesh = (aseMesh_t *)Mem_Alloc( sizeof( aseMesh_t ), TAG_MODEL );
 		memset( mesh, 0, sizeof( aseMesh_t ) );
 		ase.currentMesh = mesh;
 
@@ -728,7 +731,15 @@ static void ASE_KeyGEOMOBJECT( const char *token )
 	else if ( !strcmp( token, "*MESH" ) )
 	{
 		ase.currentMesh = &ase.currentObject->mesh;
-		memset( ase.currentMesh, 0, sizeof( ase.currentMesh ) );
+		idVec3	transforms[ 4 ];
+		for ( int i = 0; i < 4; ++i ) {
+			transforms[ i ] = ase.currentMesh->transform[ i ];
+		}
+
+		memset( ase.currentMesh, 0, sizeof( *ase.currentMesh ) );
+		for ( int i = 0; i < 4; ++i ) {
+			ase.currentMesh->transform[ i ] = transforms[ i ];
+		}
 
 		ASE_ParseBracedBlock( ASE_KeyMESH );
 	}
@@ -756,12 +767,12 @@ static void ASE_KeyGEOMOBJECT( const char *token )
 
 }
 
-void ASE_ParseGeomObject( void ) {
+void ASE_ParseGeomObject() {
 	aseObject_t	*object;
 
 	VERBOSE( ("GEOMOBJECT" ) );
 
-	object = (aseObject_t *)Mem_Alloc( sizeof( aseObject_t ) );
+	object = (aseObject_t *)Mem_Alloc( sizeof( aseObject_t ), TAG_MODEL );
 	memset( object, 0, sizeof( aseObject_t ) );
 	ase.model->objects.Append( object );
 	ase.currentObject = object;
@@ -794,7 +805,7 @@ aseModel_t *ASE_Parse( const char *buffer, bool verbose ) {
 	ase.currentObject = NULL;
 
 	// NOTE: using new operator because aseModel_t contains idList class objects
-	ase.model = new aseModel_t;
+	ase.model = new (TAG_MODEL) aseModel_t;
 	memset( ase.model, 0, sizeof( aseModel_t ) );
 	ase.model->objects.Resize( 32, 32 );
 	ase.model->materials.Resize( 32, 32 );

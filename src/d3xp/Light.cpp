@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -189,7 +189,9 @@ void idLight::UpdateChangeableSpawnArgs( const idDict *source ) {
 idLight::idLight
 ================
 */
-idLight::idLight() {
+idLight::idLight():
+	previousBaseColor( vec3_zero ) ,
+	nextBaseColor( vec3_zero ) {
 	memset( &renderLight, 0, sizeof( renderLight ) );
 	localLightOrigin	= vec3_zero;
 	localLightAxis		= mat3_identity;
@@ -305,7 +307,7 @@ void idLight::Restore( idRestoreGame *savefile ) {
 idLight::Spawn
 ================
 */
-void idLight::Spawn( void ) {
+void idLight::Spawn() {
 	bool start_off;
 	bool needBroken;
 	const char *demonic_shader;
@@ -319,6 +321,8 @@ void idLight::Spawn( void ) {
 
 	// set the base color from the shader parms
 	baseColor.Set( renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
+	previousBaseColor.Set(  renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
+	nextBaseColor.Set(  renderLight.shaderParms[ SHADERPARM_RED ], renderLight.shaderParms[ SHADERPARM_GREEN ], renderLight.shaderParms[ SHADERPARM_BLUE ] );
 
 	// set the number of light levels
 	spawnArgs.GetInt( "levels", "1", levels );
@@ -356,12 +360,10 @@ void idLight::Spawn( void ) {
 		Off();
 	}
 
-#ifdef CTF
     // Midnight CTF
     if ( gameLocal.mpGame.IsGametypeFlagBased() && gameLocal.serverInfo.GetBool("si_midnight") && !spawnArgs.GetBool("midnight_override") ) {
         Off();
     }
-#endif
     
 	health = spawnArgs.GetInt( "health", "0" );
 	spawnArgs.GetString( "broken", "", brokenModel );
@@ -429,7 +431,7 @@ void idLight::Spawn( void ) {
 idLight::SetLightLevel
 ================
 */
-void idLight::SetLightLevel( void ) {
+void idLight::SetLightLevel() {
 	idVec3	color;
 	float	intensity;
 
@@ -492,6 +494,16 @@ void idLight::SetColor( const idVec4 &color ) {
 
 /*
 ================
+idLight::SetColor
+================
+*/
+void idLight::SetColor( const idVec3 &color ) {
+	baseColor = color;
+	SetLightLevel();
+}
+
+/*
+================
 idLight::SetShader
 ================
 */
@@ -509,6 +521,7 @@ idLight::SetLightParm
 void idLight::SetLightParm( int parmnum, float value ) {
 	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
 		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+		return;
 	}
 
 	renderLight.shaderParms[ parmnum ] = value;
@@ -560,7 +573,7 @@ void idLight::SetRadius( float radius ) {
 idLight::On
 ================
 */
-void idLight::On( void ) {
+void idLight::On() {
 	currentLevel = levels;
 	// offset the start time of the shader to sync it to the game time
 	renderLight.shaderParms[ SHADERPARM_TIMEOFFSET ] = -MS2SEC( gameLocal.time );
@@ -577,7 +590,7 @@ void idLight::On( void ) {
 idLight::Off
 ================
 */
-void idLight::Off( void ) {
+void idLight::Off() {
 	currentLevel = 0;
 	// kill any sound it was making
 	if ( refSound.referenceSound && refSound.referenceSound->CurrentlyPlaying() ) {
@@ -648,7 +661,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 		SetModel( brokenModel );
 
 		if ( !spawnArgs.GetBool( "nonsolid" ) ) {
-			GetPhysics()->SetClipModel( new idClipModel( brokenModel.c_str() ), 1.0f );
+			GetPhysics()->SetClipModel( new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( brokenModel.c_str() ), 1.0f );
 			GetPhysics()->SetContents( CONTENTS_SOLID );
 		}
 	} else if ( spawnArgs.GetBool( "hideModelOnBreak" ) ) {
@@ -656,9 +669,9 @@ void idLight::BecomeBroken( idEntity *activator ) {
 		GetPhysics()->SetContents( 0 );
 	}
 
-	if ( gameLocal.isServer ) {
+	if ( common->IsServer() ) {
 
-		ServerSendEvent( EVENT_BECOMEBROKEN, NULL, true, -1 );
+		ServerSendEvent( EVENT_BECOMEBROKEN, NULL, true );
 
 		if ( spawnArgs.GetString( "def_damage", "", &damageDefName ) ) {
 			idVec3 origin = renderEntity.origin + renderEntity.bounds.GetCenter() * renderEntity.axis;
@@ -679,7 +692,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 
 	// if the light has a sound, either start the alternate (broken) sound, or stop the sound
 	const char *parm = spawnArgs.GetString( "snd_broken" );
-	if ( refSound.shader || ( parm && *parm ) ) {
+	if ( refSound.shader || ( parm != NULL && *parm != NULL ) ) {
 		StopSound( SND_CHANNEL_ANY, false );
 		const idSoundShader *alternate = refSound.shader ? refSound.shader->GetAltSound() : declManager->FindSound( parm );
 		if ( alternate ) {
@@ -689,7 +702,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 	}
 
 	parm = spawnArgs.GetString( "mtr_broken" );
-	if ( parm && *parm ) {
+	if ( parm != NULL && *parm != NULL ) {
 		SetShader( parm );
 	}
 
@@ -701,7 +714,7 @@ void idLight::BecomeBroken( idEntity *activator ) {
 idLight::PresentLightDefChange
 ================
 */
-void idLight::PresentLightDefChange( void ) {
+void idLight::PresentLightDefChange() {
 	// let the renderer apply it to the world
 	if ( ( lightDefHandle != -1 ) ) {
 		gameRenderWorld->UpdateLightDef( lightDefHandle, &renderLight );
@@ -715,7 +728,7 @@ void idLight::PresentLightDefChange( void ) {
 idLight::PresentModelDefChange
 ================
 */
-void idLight::PresentModelDefChange( void ) {
+void idLight::PresentModelDefChange() {
 
 	if ( !renderEntity.hModel || IsHidden() ) {
 		return;
@@ -734,7 +747,7 @@ void idLight::PresentModelDefChange( void ) {
 idLight::Present
 ================
 */
-void idLight::Present( void ) {
+void idLight::Present() {
 	// don't present to the renderer if the entity hasn't changed
 	if ( !( thinkFlags & TH_UPDATEVISUALS ) ) {
 		return;
@@ -767,7 +780,7 @@ void idLight::Present( void ) {
 idLight::Think
 ================
 */
-void idLight::Think( void ) {
+void idLight::Think() {
 	idVec4 color;
 
 	if ( thinkFlags & TH_THINK ) {
@@ -789,6 +802,24 @@ void idLight::Think( void ) {
 
 /*
 ================
+idLight::ClientThink
+================
+*/
+void idLight::ClientThink( const int curTime, const float fraction, const bool predict ) {
+	
+	InterpolatePhysics( fraction );
+	
+	if( baseColor != nextBaseColor ) {
+		baseColor = Lerp( previousBaseColor, nextBaseColor, fraction );
+		SetColor( baseColor );
+		BecomeActive( TH_UPDATEVISUALS );
+	}
+
+	Present();
+}
+
+/*
+================
 idLight::GetPhysicsToSoundTransform
 ================
 */
@@ -803,7 +834,7 @@ bool idLight::GetPhysicsToSoundTransform( idVec3 &origin, idMat3 &axis ) {
 idLight::FreeLightDef
 ================
 */
-void idLight::FreeLightDef( void ) {
+void idLight::FreeLightDef() {
 	if ( lightDefHandle != -1 ) {
 		gameRenderWorld->FreeLightDef( lightDefHandle );
 		lightDefHandle = -1;
@@ -831,12 +862,7 @@ void idLight::SaveState( idDict *args ) {
 idLight::ShowEditingDialog
 ===============
 */
-void idLight::ShowEditingDialog( void ) {
-	if ( g_editEntityMode.GetInteger() == 1 ) {
-		common->InitTool( EDITOR_LIGHT, &spawnArgs );
-	} else {
-		common->InitTool( EDITOR_SOUND, &spawnArgs );
-	}
+void idLight::ShowEditingDialog() {
 }
 
 /*
@@ -856,6 +882,7 @@ idLight::Event_GetLightParm
 void idLight::Event_GetLightParm( int parmnum ) {
 	if ( ( parmnum < 0 ) || ( parmnum >= MAX_ENTITY_SHADER_PARMS ) ) {
 		gameLocal.Error( "shader parm index (%d) out of range", parmnum );
+		return;
 	}
 
 	idThread::ReturnFloat( renderLight.shaderParms[ parmnum ] );
@@ -902,7 +929,7 @@ void idLight::Event_SetRadius( float radius ) {
 idLight::Event_Hide
 ================
 */
-void idLight::Event_Hide( void ) {
+void idLight::Event_Hide() {
 	Hide();
 	PresentModelDefChange();
 	Off();
@@ -913,7 +940,7 @@ void idLight::Event_Hide( void ) {
 idLight::Event_Show
 ================
 */
-void idLight::Event_Show( void ) {
+void idLight::Event_Show() {
 	Show();
 	PresentModelDefChange();
 	On();
@@ -924,7 +951,7 @@ void idLight::Event_Show( void ) {
 idLight::Event_On
 ================
 */
-void idLight::Event_On( void ) {
+void idLight::Event_On() {
 	On();
 }
 
@@ -933,7 +960,7 @@ void idLight::Event_On( void ) {
 idLight::Event_Off
 ================
 */
-void idLight::Event_Off( void ) {
+void idLight::Event_Off() {
 	Off();
 }
 
@@ -978,7 +1005,7 @@ idLight::Event_SetSoundHandles
   set the same sound def handle on all targeted lights
 ================
 */
-void idLight::Event_SetSoundHandles( void ) {
+void idLight::Event_SetSoundHandles() {
 	int i;
 	idEntity *targetEnt;
 
@@ -988,7 +1015,7 @@ void idLight::Event_SetSoundHandles( void ) {
 
 	for ( i = 0; i < targets.Num(); i++ ) {
 		targetEnt = targets[ i ].GetEntity();
-		if ( targetEnt && targetEnt->IsType( idLight::Type ) ) {
+		if ( targetEnt != NULL && targetEnt->IsType( idLight::Type ) ) {
 			idLight	*light = static_cast<idLight*>(targetEnt);
 			light->lightParent = this;
 
@@ -1027,7 +1054,7 @@ void idLight::Event_FadeIn( float time ) {
 idLight::ClientPredictionThink
 ================
 */
-void idLight::ClientPredictionThink( void ) {
+void idLight::ClientPredictionThink() {
 	Think();
 }
 
@@ -1036,7 +1063,7 @@ void idLight::ClientPredictionThink( void ) {
 idLight::WriteToSnapshot
 ================
 */
-void idLight::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idLight::WriteToSnapshot( idBitMsg &msg ) const {
 
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
@@ -1075,10 +1102,12 @@ void idLight::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idLight::ReadFromSnapshot
 ================
 */
-void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idLight::ReadFromSnapshot( const idBitMsg &msg ) {
 	idVec4	shaderColor;
 	int		oldCurrentLevel = currentLevel;
 	idVec3	oldBaseColor = baseColor;
+
+	previousBaseColor = nextBaseColor;
 
 	GetPhysics()->ReadFromSnapshot( msg );
 	ReadBindFromSnapshot( msg );
@@ -1094,7 +1123,9 @@ void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 			Off();
 		}
 	}
-	UnpackColor( msg.ReadLong(), baseColor );
+
+	UnpackColor( msg.ReadLong(), nextBaseColor );
+
 	// lightParentEntityNum = msg.ReadBits( GENTITYNUM_BITS );	
 
 /*	// only helps prediction
@@ -1123,7 +1154,7 @@ void idLight::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 	ReadColorFromSnapshot( msg );
 
 	if ( msg.HasChanged() ) {
-		if ( ( currentLevel != oldCurrentLevel ) || ( baseColor != oldBaseColor ) ) {
+		if ( ( currentLevel != oldCurrentLevel ) || ( previousBaseColor != nextBaseColor ) ) {
 			SetLightLevel();
 		} else {
 			PresentLightDefChange();
@@ -1148,5 +1179,4 @@ bool idLight::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 			return idEntity::ClientReceiveEvent( event, time, msg );
 		}
 	}
-	return false;
 }

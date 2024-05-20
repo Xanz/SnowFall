@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -42,11 +42,11 @@ public:
 	float				r;		// real part
 	float				i;		// imaginary part
 
-						idComplex( void );
+						idComplex();
 						idComplex( const float r, const float i );
 
 	void 				Set( const float r, const float i );
-	void				Zero( void );
+	void				Zero();
 
 	float				operator[]( int index ) const;
 	float &				operator[]( int index );
@@ -84,21 +84,21 @@ public:
 	bool				operator==(	const idComplex &a ) const;						// exact compare, no epsilon
 	bool				operator!=(	const idComplex &a ) const;						// exact compare, no epsilon
 
-	idComplex			Reciprocal( void ) const;
-	idComplex			Sqrt( void ) const;
-	float				Abs( void ) const;
+	idComplex			Reciprocal() const;
+	idComplex			Sqrt() const;
+	float				Abs() const;
 
-	int					GetDimension( void ) const;
+	int					GetDimension() const;
 
-	const float *		ToFloatPtr( void ) const;
-	float *				ToFloatPtr( void );
+	const float *		ToFloatPtr() const;
+	float *				ToFloatPtr();
 	const char *		ToString( int precision = 2 ) const;
 };
 
 extern idComplex complex_origin;
 #define complex_zero complex_origin
 
-ID_INLINE idComplex::idComplex( void ) {
+ID_INLINE idComplex::idComplex() {
 }
 
 ID_INLINE idComplex::idComplex( const float r, const float i ) {
@@ -111,7 +111,7 @@ ID_INLINE void idComplex::Set( const float r, const float i ) {
 	this->i = i;
 }
 
-ID_INLINE void idComplex::Zero( void ) {
+ID_INLINE void idComplex::Zero() {
 	r = i = 0.0f;
 }
 
@@ -256,7 +256,7 @@ ID_INLINE idComplex operator-( const float a, const idComplex &b ) {
 	return idComplex( a - b.r, -b.i );
 }
 
-ID_INLINE idComplex idComplex::Reciprocal( void ) const {
+ID_INLINE idComplex idComplex::Reciprocal() const {
 	float s, t;
 	if ( idMath::Fabs( r ) >= idMath::Fabs( i ) ) {
 		s = i / r;
@@ -269,7 +269,7 @@ ID_INLINE idComplex idComplex::Reciprocal( void ) const {
 	}
 }
 
-ID_INLINE idComplex idComplex::Sqrt( void ) const {
+ID_INLINE idComplex idComplex::Sqrt() const {
 	float x, y, w;
 
 	if ( r == 0.0f && i == 0.0f ) {
@@ -294,7 +294,7 @@ ID_INLINE idComplex idComplex::Sqrt( void ) const {
 	}
 }
 
-ID_INLINE float idComplex::Abs( void ) const {
+ID_INLINE float idComplex::Abs() const {
 	float x, y, t;
 	x = idMath::Fabs( r );
 	y = idMath::Fabs( i );
@@ -333,15 +333,15 @@ ID_INLINE bool idComplex::operator!=( const idComplex &a ) const {
 	return !Compare( a );
 }
 
-ID_INLINE int idComplex::GetDimension( void ) const {
+ID_INLINE int idComplex::GetDimension() const {
 	return 2;
 }
 
-ID_INLINE const float *idComplex::ToFloatPtr( void ) const {
+ID_INLINE const float *idComplex::ToFloatPtr() const {
 	return &r;
 }
 
-ID_INLINE float *idComplex::ToFloatPtr( void ) {
+ID_INLINE float *idComplex::ToFloatPtr() {
 	return &r;
 }
 

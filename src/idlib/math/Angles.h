@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -54,12 +54,12 @@ public:
 	float			yaw;
 	float			roll;
 
-					idAngles( void );
+					idAngles();
 					idAngles( float pitch, float yaw, float roll );
 					explicit idAngles( const idVec3 &v );
 
 	void 			Set( float pitch, float yaw, float roll );
-	idAngles &		Zero( void );
+	idAngles &		Zero();
 
 	float			operator[]( int index ) const;
 	float &			operator[]( int index );
@@ -81,28 +81,28 @@ public:
 	bool			operator==(	const idAngles &a ) const;						// exact compare, no epsilon
 	bool			operator!=(	const idAngles &a ) const;						// exact compare, no epsilon
 
-	idAngles &		Normalize360( void );	// normalizes 'this'
-	idAngles &		Normalize180( void );	// normalizes 'this'
+	idAngles &		Normalize360();	// normalizes 'this'
+	idAngles &		Normalize180();	// normalizes 'this'
 
 	void			Clamp( const idAngles &min, const idAngles &max );
 
-	int				GetDimension( void ) const;
+	int				GetDimension() const;
 
 	void			ToVectors( idVec3 *forward, idVec3 *right = NULL, idVec3 *up = NULL ) const;
-	idVec3			ToForward( void ) const;
-	idQuat			ToQuat( void ) const;
-	idRotation		ToRotation( void ) const;
-	idMat3			ToMat3( void ) const;
-	idMat4			ToMat4( void ) const;
-	idVec3			ToAngularVelocity( void ) const;
-	const float *	ToFloatPtr( void ) const;
-	float *			ToFloatPtr( void );
+	idVec3			ToForward() const;
+	idQuat			ToQuat() const;
+	idRotation		ToRotation() const;
+	idMat3			ToMat3() const;
+	idMat4			ToMat4() const;
+	idVec3			ToAngularVelocity() const;
+	const float *	ToFloatPtr() const;
+	float *			ToFloatPtr();
 	const char *	ToString( int precision = 2 ) const;
 };
 
 extern idAngles ang_zero;
 
-ID_INLINE idAngles::idAngles( void ) {
+ID_INLINE idAngles::idAngles() {
 }
 
 ID_INLINE idAngles::idAngles( float pitch, float yaw, float roll ) {
@@ -123,7 +123,7 @@ ID_INLINE void idAngles::Set( float pitch, float yaw, float roll ) {
 	this->roll	= roll;
 }
 
-ID_INLINE idAngles &idAngles::Zero( void ) {
+ID_INLINE idAngles &idAngles::Zero() {
 	pitch = yaw = roll = 0.0f;
 	return *this;
 }
@@ -247,15 +247,15 @@ ID_INLINE void idAngles::Clamp( const idAngles &min, const idAngles &max ) {
 	}
 }
 
-ID_INLINE int idAngles::GetDimension( void ) const {
+ID_INLINE int idAngles::GetDimension() const {
 	return 3;
 }
 
-ID_INLINE const float *idAngles::ToFloatPtr( void ) const {
+ID_INLINE const float *idAngles::ToFloatPtr() const {
 	return &pitch;
 }
 
-ID_INLINE float *idAngles::ToFloatPtr( void ) {
+ID_INLINE float *idAngles::ToFloatPtr() {
 	return &pitch;
 }
 

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -44,7 +44,6 @@ class idClip;
 class idClipModel;
 class idEntity;
 
-
 //===============================================================
 //
 //	idClipModel
@@ -56,15 +55,16 @@ class idClipModel {
 	friend class idClip;
 
 public:
-							idClipModel( void );
+							idClipModel();
 							explicit idClipModel( const char *name );
 							explicit idClipModel( const idTraceModel &trm );
+							explicit idClipModel( const idTraceModel &trm, bool persistantThroughSave );
 							explicit idClipModel( const int renderModelHandle );
 							explicit idClipModel( const idClipModel *model );
-							~idClipModel( void );
+							~idClipModel();
 
 	bool					LoadModel( const char *name );
-	void					LoadModel( const idTraceModel &trm );
+	void					LoadModel( const idTraceModel &trm, bool persistantThroughSave = true );
 	void					LoadModel( const int renderModelHandle );
 
 	void					Save( idSaveGame *savefile ) const;
@@ -72,38 +72,38 @@ public:
 
 	void					Link( idClip &clp );				// must have been linked with an entity and id before
 	void					Link( idClip &clp, idEntity *ent, int newId, const idVec3 &newOrigin, const idMat3 &newAxis, int renderModelHandle = -1 );
-	void					Unlink( void );						// unlink from sectors
+	void					Unlink();						// unlink from sectors
 	void					SetPosition( const idVec3 &newOrigin, const idMat3 &newAxis );	// unlinks the clip model
 	void					Translate( const idVec3 &translation );							// unlinks the clip model
 	void					Rotate( const idRotation &rotation );							// unlinks the clip model
-	void					Enable( void );						// enable for clipping
-	void					Disable( void );					// keep linked but disable for clipping
+	void					Enable();						// enable for clipping
+	void					Disable();					// keep linked but disable for clipping
 	void					SetMaterial( const idMaterial *m );
-	const idMaterial *		GetMaterial( void ) const;
+	const idMaterial *		GetMaterial() const;
 	void					SetContents( int newContents );		// override contents
-	int						GetContents( void ) const;
+	int						GetContents() const;
 	void					SetEntity( idEntity *newEntity );
-	idEntity *				GetEntity( void ) const;
+	idEntity *				GetEntity() const;
 	void					SetId( int newId );
-	int						GetId( void ) const;
+	int						GetId() const;
 	void					SetOwner( idEntity *newOwner );
-	idEntity *				GetOwner( void ) const;
-	const idBounds &		GetBounds( void ) const;
-	const idBounds &		GetAbsBounds( void ) const;
-	const idVec3 &			GetOrigin( void ) const;
-	const idMat3 &			GetAxis( void ) const;
-	bool					IsTraceModel( void ) const;			// returns true if this is a trace model
-	bool					IsRenderModel( void ) const;		// returns true if this is a render model
-	bool					IsLinked( void ) const;				// returns true if the clip model is linked
-	bool					IsEnabled( void ) const;			// returns true if enabled for collision detection
+	idEntity *				GetOwner() const;
+	const idBounds &		GetBounds() const;
+	const idBounds &		GetAbsBounds() const;
+	const idVec3 &			GetOrigin() const;
+	const idMat3 &			GetAxis() const;
+	bool					IsTraceModel() const;			// returns true if this is a trace model
+	bool					IsRenderModel() const;		// returns true if this is a render model
+	bool					IsLinked() const;				// returns true if the clip model is linked
+	bool					IsEnabled() const;			// returns true if enabled for collision detection
 	bool					IsEqual( const idTraceModel &trm ) const;
-	cmHandle_t				Handle( void ) const;				// returns handle used to collide vs this model
-	const idTraceModel *	GetTraceModel( void ) const;
+	cmHandle_t				Handle() const;				// returns handle used to collide vs this model
+	const idTraceModel *	GetTraceModel() const;
 	void					GetMassProperties( const float density, float &mass, idVec3 &centerOfMass, idMat3 &inertiaTensor ) const;
 
 	static cmHandle_t		CheckModel( const char *name );
-	static void				ClearTraceModelCache( void );
-	static int				TraceModelCacheSize( void );
+	static void				ClearTraceModelCache();
+	static int				TraceModelCacheSize();
 
 	static void				SaveTraceModels( idSaveGame *savefile );
 	static void				RestoreTraceModels( idRestoreGame *savefile );
@@ -126,13 +126,14 @@ private:
 	struct clipLink_s *		clipLinks;				// links into sectors
 	int						touchCount;
 
-	void					Init( void );			// initialize
+	void					Init();			// initialize
 	void					Link_r( struct clipSector_s *node );
 
-	static int				AllocTraceModel( const idTraceModel &trm );
+	static int				AllocTraceModel( const idTraceModel &trm, bool persistantThroughSaves = true );
 	static void				FreeTraceModel( int traceModelIndex );
 	static idTraceModel *	GetCachedTraceModel( int traceModelIndex );
 	static int				GetTraceModelHashKey( const idTraceModel &trm );
+	static struct trmCache_s *		GetTraceModelEntry( int traceModelIndex );
 };
 
 
@@ -147,11 +148,11 @@ ID_INLINE void idClipModel::Rotate( const idRotation &rotation ) {
 	axis *= rotation.ToMat3();
 }
 
-ID_INLINE void idClipModel::Enable( void ) {
+ID_INLINE void idClipModel::Enable() {
 	enabled = true;
 }
 
-ID_INLINE void idClipModel::Disable( void ) {
+ID_INLINE void idClipModel::Disable() {
 	enabled = false;
 }
 
@@ -159,7 +160,7 @@ ID_INLINE void idClipModel::SetMaterial( const idMaterial *m ) {
 	material = m;
 }
 
-ID_INLINE const idMaterial * idClipModel::GetMaterial( void ) const {
+ID_INLINE const idMaterial * idClipModel::GetMaterial() const {
 	return material;
 }
 
@@ -167,7 +168,7 @@ ID_INLINE void idClipModel::SetContents( int newContents ) {
 	contents = newContents;
 }
 
-ID_INLINE int idClipModel::GetContents( void ) const {
+ID_INLINE int idClipModel::GetContents() const {
 	return contents;
 }
 
@@ -175,7 +176,7 @@ ID_INLINE void idClipModel::SetEntity( idEntity *newEntity ) {
 	entity = newEntity;
 }
 
-ID_INLINE idEntity *idClipModel::GetEntity( void ) const {
+ID_INLINE idEntity *idClipModel::GetEntity() const {
 	return entity;
 }
 
@@ -183,7 +184,7 @@ ID_INLINE void idClipModel::SetId( int newId ) {
 	id = newId;
 }
 
-ID_INLINE int idClipModel::GetId( void ) const {
+ID_INLINE int idClipModel::GetId() const {
 	return id;
 }
 
@@ -191,39 +192,39 @@ ID_INLINE void idClipModel::SetOwner( idEntity *newOwner ) {
 	owner = newOwner;
 }
 
-ID_INLINE idEntity *idClipModel::GetOwner( void ) const {
+ID_INLINE idEntity *idClipModel::GetOwner() const {
 	return owner;
 }
 
-ID_INLINE const idBounds &idClipModel::GetBounds( void ) const {
+ID_INLINE const idBounds &idClipModel::GetBounds() const {
 	return bounds;
 }
 
-ID_INLINE const idBounds &idClipModel::GetAbsBounds( void ) const {
+ID_INLINE const idBounds &idClipModel::GetAbsBounds() const {
 	return absBounds;
 }
 
-ID_INLINE const idVec3 &idClipModel::GetOrigin( void ) const {
+ID_INLINE const idVec3 &idClipModel::GetOrigin() const {
 	return origin;
 }
 
-ID_INLINE const idMat3 &idClipModel::GetAxis( void ) const {
+ID_INLINE const idMat3 &idClipModel::GetAxis() const {
 	return axis;
 }
 
-ID_INLINE bool idClipModel::IsRenderModel( void ) const {
+ID_INLINE bool idClipModel::IsRenderModel() const {
 	return ( renderModelHandle != -1 );
 }
 
-ID_INLINE bool idClipModel::IsTraceModel( void ) const {
+ID_INLINE bool idClipModel::IsTraceModel() const {
 	return ( traceModelIndex != -1 );
 }
 
-ID_INLINE bool idClipModel::IsLinked( void ) const {
+ID_INLINE bool idClipModel::IsLinked() const {
 	return ( clipLinks != NULL );
 }
 
-ID_INLINE bool idClipModel::IsEnabled( void ) const {
+ID_INLINE bool idClipModel::IsEnabled() const {
 	return enabled;
 }
 
@@ -231,7 +232,7 @@ ID_INLINE bool idClipModel::IsEqual( const idTraceModel &trm ) const {
 	return ( traceModelIndex != -1 && *GetCachedTraceModel( traceModelIndex ) == trm );
 }
 
-ID_INLINE const idTraceModel *idClipModel::GetTraceModel( void ) const {
+ID_INLINE const idTraceModel *idClipModel::GetTraceModel() const {
 	if ( !IsTraceModel() ) {
 		return NULL;
 	}
@@ -250,10 +251,10 @@ class idClip {
 	friend class idClipModel;
 
 public:
-							idClip( void );
+							idClip();
 
-	void					Init( void );
-	void					Shutdown( void );
+	void					Init();
+	void					Shutdown();
 
 	// clip versus the rest of the world
 	bool					Translation( trace_t &results, const idVec3 &start, const idVec3 &end,
@@ -298,11 +299,11 @@ public:
 	int						EntitiesTouchingBounds( const idBounds &bounds, int contentMask, idEntity **entityList, int maxCount ) const;
 	int						ClipModelsTouchingBounds( const idBounds &bounds, int contentMask, idClipModel **clipModelList, int maxCount ) const;
 
-	const idBounds &		GetWorldBounds( void ) const;
-	idClipModel *			DefaultClipModel( void );
+	const idBounds &		GetWorldBounds() const;
+	idClipModel *			DefaultClipModel();
 
 							// stats and debug drawing
-	void					PrintStatistics( void );
+	void					PrintStatistics();
 	void					DrawClipModels( const idVec3 &eye, const float radius, const idEntity *passEntity );
 	bool					DrawModelContactFeature( const contactInfo_t &contact, const idClipModel *clipModel, int lifetime ) const;
 
@@ -341,11 +342,11 @@ ID_INLINE bool idClip::TraceBounds( trace_t &results, const idVec3 &start, const
 	return ( results.fraction < 1.0f );
 }
 
-ID_INLINE const idBounds & idClip::GetWorldBounds( void ) const {
+ID_INLINE const idBounds & idClip::GetWorldBounds() const {
 	return worldBounds;
 }
 
-ID_INLINE idClipModel *idClip::DefaultClipModel( void ) {
+ID_INLINE idClipModel *idClip::DefaultClipModel() {
 	return &defaultClipModel;
 }
 

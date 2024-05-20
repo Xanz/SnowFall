@@ -1,36 +1,38 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
 
 #include "win_local.h"
 
+#pragma warning(disable:4740)	// warning C4740: flow in or out of inline asm code suppresses global optimization
+#pragma warning(disable:4731)	// warning C4731: 'XXX' : frame pointer register 'ebx' modified by inline assembly code
 
 /*
 ==============================================================
@@ -45,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 Sys_GetClockTicks
 ================
 */
-double Sys_GetClockTicks( void ) {
+double Sys_GetClockTicks() {
 #if 0
 
 	LARGE_INTEGER li;
@@ -76,7 +78,7 @@ double Sys_GetClockTicks( void ) {
 Sys_ClockTicksPerSecond
 ================
 */
-double Sys_ClockTicksPerSecond( void ) {
+double Sys_ClockTicksPerSecond() {
 	static double ticks = 0;
 #if 0
 
@@ -129,7 +131,7 @@ double Sys_ClockTicksPerSecond( void ) {
 HasCPUID
 ================
 */
-static bool HasCPUID( void ) {
+static bool HasCPUID() {
 	__asm 
 	{
 		pushfd						// save eflags
@@ -196,7 +198,7 @@ static void CPUID( int func, unsigned regs[4] ) {
 IsAMD
 ================
 */
-static bool IsAMD( void ) {
+static bool IsAMD() {
 	char pstring[16];
 	char processorString[13];
 
@@ -227,7 +229,7 @@ static bool IsAMD( void ) {
 HasCMOV
 ================
 */
-static bool HasCMOV( void ) {
+static bool HasCMOV() {
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -245,7 +247,7 @@ static bool HasCMOV( void ) {
 Has3DNow
 ================
 */
-static bool Has3DNow( void ) {
+static bool Has3DNow() {
 	unsigned regs[4];
 
 	// check AMD-specific functions
@@ -268,7 +270,7 @@ static bool Has3DNow( void ) {
 HasMMX
 ================
 */
-static bool HasMMX( void ) {
+static bool HasMMX() {
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -286,7 +288,7 @@ static bool HasMMX( void ) {
 HasSSE
 ================
 */
-static bool HasSSE( void ) {
+static bool HasSSE() {
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -304,7 +306,7 @@ static bool HasSSE( void ) {
 HasSSE2
 ================
 */
-static bool HasSSE2( void ) {
+static bool HasSSE2() {
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -322,7 +324,7 @@ static bool HasSSE2( void ) {
 HasSSE3
 ================
 */
-static bool HasSSE3( void ) {
+static bool HasSSE3() {
 	unsigned regs[4];
 
 	// get CPU feature bits
@@ -343,7 +345,7 @@ LogicalProcPerPhysicalProc
 #define NUM_LOGICAL_BITS   0x00FF0000     // EBX[23:16] Bit 16-23 in ebx contains the number of logical
                                           // processors per physical processor when execute cpuid with 
                                           // eax set to 1
-static unsigned char LogicalProcPerPhysicalProc( void ) {
+static unsigned char LogicalProcPerPhysicalProc() {
 	unsigned int regebx = 0;
 	__asm {
 		mov eax, 1
@@ -361,7 +363,7 @@ GetAPIC_ID
 #define INITIAL_APIC_ID_BITS  0xFF000000  // EBX[31:24] Bits 24-31 (8 bits) return the 8-bit unique 
                                           // initial APIC ID for the processor this code is running on.
                                           // Default value = 0xff if HT is not supported
-static unsigned char GetAPIC_ID( void ) {
+static unsigned char GetAPIC_ID() {
 	unsigned int regebx = 0;
 	__asm {
 		mov eax, 1
@@ -477,7 +479,7 @@ int CPUCount( int &logicalNum, int &physicalNum ) {
 HasHTT
 ================
 */
-static bool HasHTT( void ) {
+static bool HasHTT() {
 	unsigned regs[4];
 	int logicalNum, physicalNum, HTStatusFlag;
 
@@ -501,7 +503,7 @@ static bool HasHTT( void ) {
 HasHTT
 ================
 */
-static bool HasDAZ( void ) {
+static bool HasDAZ() {
 	__declspec(align(16)) unsigned char FXSaveArea[512];
 	unsigned char *FXArea = FXSaveArea;
 	DWORD dwMask = 0;
@@ -527,11 +529,184 @@ static bool HasDAZ( void ) {
 }
 
 /*
+================================================================================================
+
+	CPU
+
+================================================================================================
+*/
+
+/*
+========================
+CountSetBits 
+Helper function to count set bits in the processor mask.
+========================
+*/
+DWORD CountSetBits( ULONG_PTR bitMask ) {
+	DWORD LSHIFT = sizeof( ULONG_PTR ) * 8 - 1;
+	DWORD bitSetCount = 0;
+	ULONG_PTR bitTest = (ULONG_PTR)1 << LSHIFT;    
+
+	for ( DWORD i = 0; i <= LSHIFT; i++ ) {
+		bitSetCount += ( ( bitMask & bitTest ) ? 1 : 0 );
+		bitTest /= 2;
+	}
+
+	return bitSetCount;
+}
+
+typedef BOOL (WINAPI *LPFN_GLPI)( PSYSTEM_LOGICAL_PROCESSOR_INFORMATION, PDWORD );
+
+enum LOGICAL_PROCESSOR_RELATIONSHIP_LOCAL {
+    localRelationProcessorCore,
+    localRelationNumaNode,
+    localRelationCache,
+	localRelationProcessorPackage
+};
+
+struct cpuInfo_t {
+	int processorPackageCount;
+	int processorCoreCount;
+	int logicalProcessorCount;
+	int numaNodeCount;
+	struct cacheInfo_t {
+		int count;
+		int associativity;
+		int lineSize;
+		int size;
+	} cacheLevel[3];
+};
+
+/*
+========================
+GetCPUInfo
+========================
+*/
+bool GetCPUInfo( cpuInfo_t & cpuInfo ) {
+	PSYSTEM_LOGICAL_PROCESSOR_INFORMATION buffer = NULL;
+	PSYSTEM_LOGICAL_PROCESSOR_INFORMATION ptr = NULL;
+	PCACHE_DESCRIPTOR Cache;
+	LPFN_GLPI	glpi;
+	BOOL		done = FALSE;
+	DWORD		returnLength = 0;
+	DWORD		byteOffset = 0;
+
+	memset( & cpuInfo, 0, sizeof( cpuInfo ) );
+
+	glpi = (LPFN_GLPI)GetProcAddress( GetModuleHandle(TEXT("kernel32")), "GetLogicalProcessorInformation" );
+	if ( NULL == glpi ) {
+		idLib::Printf( "\nGetLogicalProcessorInformation is not supported.\n" );
+		return 0;
+	}
+
+	while ( !done ) {
+		DWORD rc = glpi( buffer, &returnLength );
+
+		if ( FALSE == rc ) {
+			if ( GetLastError() == ERROR_INSUFFICIENT_BUFFER ) {
+				if ( buffer ) {
+					free( buffer );
+				}
+
+				buffer = (PSYSTEM_LOGICAL_PROCESSOR_INFORMATION)malloc( returnLength );
+			} else {
+				idLib::Printf( "Sys_CPUCount error: %d\n", GetLastError() );
+				return false;
+			}
+		} else {
+			done = TRUE;
+		}
+	}
+
+	ptr = buffer;
+
+	while ( byteOffset + sizeof(SYSTEM_LOGICAL_PROCESSOR_INFORMATION) <= returnLength ) {
+		switch ( (LOGICAL_PROCESSOR_RELATIONSHIP_LOCAL) ptr->Relationship ) {
+			case localRelationProcessorCore:
+				cpuInfo.processorCoreCount++;
+
+				// A hyperthreaded core supplies more than one logical processor.
+				cpuInfo.logicalProcessorCount += CountSetBits( ptr->ProcessorMask );
+				break;
+
+			case localRelationNumaNode:
+				// Non-NUMA systems report a single record of this type.
+				cpuInfo.numaNodeCount++;
+				break;
+
+			case localRelationCache:
+				// Cache data is in ptr->Cache, one CACHE_DESCRIPTOR structure for each cache. 
+				Cache = &ptr->Cache;
+				if ( Cache->Level >= 1 && Cache->Level <= 3 ) {
+					int level = Cache->Level - 1;
+					if ( cpuInfo.cacheLevel[level].count > 0 ) {
+						cpuInfo.cacheLevel[level].count++;
+					} else {
+						cpuInfo.cacheLevel[level].associativity = Cache->Associativity;
+						cpuInfo.cacheLevel[level].lineSize = Cache->LineSize;
+						cpuInfo.cacheLevel[level].size = Cache->Size;
+					}
+				}
+				break;
+
+			case localRelationProcessorPackage:
+				// Logical processors share a physical package.
+				cpuInfo.processorPackageCount++;
+				break;
+
+			default:
+				idLib::Printf( "Error: Unsupported LOGICAL_PROCESSOR_RELATIONSHIP value.\n" );
+				break;
+		}
+		byteOffset += sizeof( SYSTEM_LOGICAL_PROCESSOR_INFORMATION );
+		ptr++;
+	}
+
+	free( buffer );
+
+	return true;
+}
+
+/*
+========================
+Sys_GetCPUCacheSize
+========================
+*/
+void Sys_GetCPUCacheSize( int level, int & count, int & size, int & lineSize ) {
+	assert( level >= 1 && level <= 3 );
+	cpuInfo_t cpuInfo;
+
+	GetCPUInfo( cpuInfo );
+
+	count = cpuInfo.cacheLevel[level - 1].count;
+	size = cpuInfo.cacheLevel[level - 1].size;
+	lineSize = cpuInfo.cacheLevel[level - 1].lineSize;
+}
+
+/*
+========================
+Sys_CPUCount
+
+numLogicalCPUCores	- the number of logical CPU per core
+numPhysicalCPUCores	- the total number of cores per package
+numCPUPackages		- the total number of packages (physical processors)
+========================
+*/
+void Sys_CPUCount( int & numLogicalCPUCores, int & numPhysicalCPUCores, int & numCPUPackages ) {
+	cpuInfo_t cpuInfo;
+	GetCPUInfo( cpuInfo );
+
+	numPhysicalCPUCores = cpuInfo.processorCoreCount;
+	numLogicalCPUCores = cpuInfo.logicalProcessorCount;
+	numCPUPackages = cpuInfo.processorPackageCount;
+}
+
+/*
 ================
 Sys_GetCPUId
 ================
 */
-cpuid_t Sys_GetCPUId( void ) {
+cpuid_t Sys_GetCPUId() {
 	int flags;
 
 	// verify we're at least a Pentium or 486 with CPUID support
@@ -680,7 +855,7 @@ int Sys_FPU_PrintStateFlags( char *ptr, int ctrl, int stat, int tags, int inof, 
 Sys_FPU_StackIsEmpty
 ===============
 */
-bool Sys_FPU_StackIsEmpty( void ) {
+bool Sys_FPU_StackIsEmpty() {
 	__asm {
 		mov			eax, statePtr
 		fnstenv		[eax]
@@ -699,7 +874,7 @@ empty:
 Sys_FPU_ClearStack
 ===============
 */
-void Sys_FPU_ClearStack( void ) {
+void Sys_FPU_ClearStack() {
 	__asm {
 		mov			eax, statePtr
 		fnstenv		[eax]
@@ -724,7 +899,7 @@ Sys_FPU_GetState
   gets the FPU state without changing the state
 ===============
 */
-const char *Sys_FPU_GetState( void ) {
+const char *Sys_FPU_GetState() {
 	double fpuStack[8] = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
 	double *fpuStackPtr = fpuStack;
 	int i, numValues;

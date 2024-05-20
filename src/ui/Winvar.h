@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -54,7 +54,7 @@ public:
 		delete []name; 
 		name = NULL;
 		if (_name) {
-			name = new char[strlen(_name)+1]; 
+			name = new (TAG_OLD_UI) char[strlen(_name)+1]; 
 			strcpy(name, _name); 
 		}
 	}
@@ -77,7 +77,7 @@ public:
 	virtual void WriteToSaveGame( idFile *savefile ) = 0;
 	virtual void ReadFromSaveGame( idFile *savefile ) = 0;
 
-	virtual float x( void ) const = 0;
+	virtual float x() const = 0;
 
 	void SetEval(bool b) {
 		eval = b;
@@ -143,7 +143,7 @@ public:
 		savefile->Read( &data, sizeof( data ) );
 	}
 
-	virtual float x( void ) const { return data ? 1.0f : 0.0f; };
+	virtual float x() const { return data ? 1.0f : 0.0f; };
 
 protected:
 	bool data;
@@ -156,7 +156,12 @@ public:
 	virtual void Init(const char *_name, idWindow *win) {
 		idWinVar::Init(_name, win);
 		if (guiDict) {
-			data = guiDict->GetString(GetName());
+			const char * name = GetName();
+			if ( name[0] == 0 ) {
+				data = "";
+			} else {
+				data = guiDict->GetString( name );
+			}
 		} 
 	}
 	int	operator==(	const idStr &other ) const {
@@ -246,7 +251,7 @@ public:
 	}
 
 	// return wether string is emtpy
-	virtual float x( void ) const { return data[0] ? 1.0f : 0.0f; };
+	virtual float x() const { return data[0] ? 1.0f : 0.0f; };
 
 protected:
 	idStr data;
@@ -305,7 +310,7 @@ public:
 	}
 
 	// no suitable conversion
-	virtual float x( void ) const { assert( false ); return 0.0f; };
+	virtual float x() const { assert( false ); return 0.0f; };
 
 protected:
 	int data;
@@ -361,7 +366,7 @@ public:
 		savefile->Read( &data, sizeof( data ) );
 	}
 
-	virtual float x( void ) const { return data; };
+	virtual float x() const { return data; };
 protected:
 	float data;
 };
@@ -848,7 +853,7 @@ multiplexes access to a list if idWinVar*
 class idMultiWinVar : public idList< idWinVar * > {
 public:
 	void Set( const char *val );
-	void Update( void );
+	void Update();
 	void SetGuiInfo( idDict *dict );
 };
 

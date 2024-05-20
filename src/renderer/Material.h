@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -40,7 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 class idImage;
 class idCinematic;
 class idUserInterface;
-class idMegaTexture;
 
 // moved from image.h for default parm
 typedef enum {
@@ -52,12 +51,8 @@ typedef enum {
 typedef enum {
 	TR_REPEAT,
 	TR_CLAMP,
-	TR_CLAMP_TO_BORDER,		// this should replace TR_CLAMP_TO_ZERO and TR_CLAMP_TO_ZERO_ALPHA,
-							// but I don't want to risk changing it right now
-	TR_CLAMP_TO_ZERO,		// guarantee 0,0,0,255 edge for projected textures,
-	// set AFTER image format selection
-	TR_CLAMP_TO_ZERO_ALPHA	// guarantee 0 alpha edge for projected textures,
-	// set AFTER image format selection
+	TR_CLAMP_TO_ZERO,		// guarantee 0,0,0,255 edge for projected textures
+	TR_CLAMP_TO_ZERO_ALPHA	// guarantee 0 alpha edge for projected textures
 } textureRepeat_t;
 
 typedef struct {
@@ -174,7 +169,8 @@ typedef enum {
 	SL_AMBIENT,						// execute after lighting
 	SL_BUMP,
 	SL_DIFFUSE,
-	SL_SPECULAR
+	SL_SPECULAR,
+	SL_COVERAGE,
 } stageLighting_t;
 
 // cross-blended terrain textures need to modulate the color by
@@ -194,16 +190,15 @@ typedef struct {
 	int					vertexParms[MAX_VERTEX_PARMS][4];	// evaluated register indexes
 
 	int					fragmentProgram;
+	int					glslProgram;
 	int					numFragmentProgramImages;
 	idImage *			fragmentProgramImages[MAX_FRAGMENT_IMAGES];
-
-	idMegaTexture		*megaTexture;		// handles all the binding and parameter setting 
 } newShaderStage_t;
 
 typedef struct {
 	int					conditionRegister;	// if registers[conditionRegister] == 0, skip stage
 	stageLighting_t		lighting;			// determines which passes interact with lights
-	int					drawStateBits;
+	uint64				drawStateBits;
 	colorStage_t		color;
 	bool				hasAlphaTest;
 	int					alphaTestRegister;
@@ -256,6 +251,7 @@ const int MAX_SHADER_STAGES			= 256;
 const int MAX_TEXGEN_REGISTERS		= 4;
 
 const int MAX_ENTITY_SHADER_PARMS	= 12;
+const int MAX_GLOBAL_SHADER_PARMS	= 12;	// ? this looks like it should only be 8
 
 // material flags
 typedef enum {
@@ -344,12 +340,12 @@ public:
 						idMaterial();
 	virtual				~idMaterial();
 
-	virtual size_t		Size( void ) const;
-	virtual bool		SetDefaultText( void );
-	virtual const char *DefaultDefinition( void ) const;
-	virtual bool		Parse( const char *text, const int textLength );
-	virtual void		FreeData( void );
-	virtual void		Print( void ) const;
+	virtual size_t		Size() const;
+	virtual bool		SetDefaultText();
+	virtual const char *DefaultDefinition() const;
+	virtual bool		Parse( const char *text, const int textLength, bool allowBinaryVersion );
+	virtual void		FreeData();
+	virtual void		Print() const;
 
 	//BSM Nerve: Added for material editor
 	bool				Save( const char *fileName = NULL );
@@ -357,88 +353,95 @@ public:
 						// returns the internal image name for stage 0, which can be used
 						// for the renderer CaptureRenderToImage() call
 						// I'm not really sure why this needs to be virtual...
-	virtual const char	*ImageName( void ) const;
+	virtual const char	*ImageName() const;
 
 	void				ReloadImages( bool force ) const;
 
 						// returns number of stages this material contains
-	const int			GetNumStages( void ) const { return numStages; }
+	const int			GetNumStages() const { return numStages; }
+
+						// if the material is simple, all that needs to be known are
+						// the images for drawing.
+						// These will either all return valid images, or all return NULL
+	idImage *			GetFastPathBumpImage() const { return fastPathBumpImage; };
+	idImage *			GetFastPathDiffuseImage() const { return fastPathDiffuseImage; };
+	idImage *			GetFastPathSpecularImage() const { return fastPathSpecularImage; };
 
 						// get a specific stage
 	const shaderStage_t *GetStage( const int index ) const { assert(index >= 0 && index < numStages); return &stages[index]; }
 
 						// get the first bump map stage, or NULL if not present.
 						// used for bumpy-specular
-	const shaderStage_t *GetBumpStage( void ) const;
+	const shaderStage_t *GetBumpStage() const;
 
 						// returns true if the material will draw anything at all.  Triggers, portals,
 						// etc, will not have anything to draw.  A not drawn surface can still castShadow,
 						// which can be used to make a simplified shadow hull for a complex object set
 						// as noShadow
-	bool				IsDrawn( void ) const { return ( numStages > 0 || entityGui != 0 || gui != NULL ); }
+	bool				IsDrawn() const { return ( numStages > 0 || entityGui != 0 || gui != NULL ); }
 
 						// returns true if the material will draw any non light interaction stages
-	bool				HasAmbient( void ) const { return ( numAmbientStages > 0 ); }
+	bool				HasAmbient() const { return ( numAmbientStages > 0 ); }
 
 						// returns true if material has a gui
-	bool				HasGui( void ) const { return ( entityGui != 0 || gui != NULL ); }
+	bool				HasGui() const { return ( entityGui != 0 || gui != NULL ); }
 
 						// returns true if the material will generate another view, either as
 						// a mirror or dynamic rendered image
-	bool				HasSubview( void ) const { return hasSubview; }
+	bool				HasSubview() const { return hasSubview; }
 
 						// returns true if the material will generate shadows, not making a
 						// distinction between global and no-self shadows
-	bool				SurfaceCastsShadow( void ) const { return TestMaterialFlag( MF_FORCESHADOWS ) || !TestMaterialFlag( MF_NOSHADOWS ); }
+	bool				SurfaceCastsShadow() const { return TestMaterialFlag( MF_FORCESHADOWS ) || !TestMaterialFlag( MF_NOSHADOWS ); }
 
 						// returns true if the material will generate interactions with fog/blend lights
 						// All non-translucent surfaces receive fog unless they are explicitly noFog
-	bool				ReceivesFog( void ) const { return ( IsDrawn() && !noFog && coverage != MC_TRANSLUCENT ); }
+	bool				ReceivesFog() const { return ( IsDrawn() && !noFog && coverage != MC_TRANSLUCENT ); }
 
 						// returns true if the material will generate interactions with normal lights
 						// Many special effect surfaces don't have any bump/diffuse/specular
 						// stages, and don't interact with lights at all
-	bool				ReceivesLighting( void ) const { return numAmbientStages != numStages; }
+	bool				ReceivesLighting() const { return numAmbientStages != numStages; }
 
 						// returns true if the material should generate interactions on sides facing away
 						// from light centers, as with noshadow and noselfshadow options
-	bool				ReceivesLightingOnBackSides( void ) const { return ( materialFlags & (MF_NOSELFSHADOW|MF_NOSHADOWS) ) != 0; }
+	bool				ReceivesLightingOnBackSides() const { return ( materialFlags & (MF_NOSELFSHADOW|MF_NOSHADOWS) ) != 0; }
 
 						// Standard two-sided triangle rendering won't work with bump map lighting, because
 						// the normal and tangent vectors won't be correct for the back sides.  When two
 						// sided lighting is desired. typically for alpha tested surfaces, this is
 						// addressed by having CleanupModelSurfaces() create duplicates of all the triangles
 						// with apropriate order reversal.
-	bool				ShouldCreateBackSides( void ) const { return shouldCreateBackSides; }
+	bool				ShouldCreateBackSides() const { return shouldCreateBackSides; }
 
 						// characters and models that are created by a complete renderbump can use a faster
 						// method of tangent and normal vector generation than surfaces which have a flat
 						// renderbump wrapped over them.
-	bool				UseUnsmoothedTangents( void ) const { return unsmoothedTangents; }
+	bool				UseUnsmoothedTangents() const { return unsmoothedTangents; }
 
 						// by default, monsters can have blood overlays placed on them, but this can
 						// be overrided on a per-material basis with the "noOverlays" material command.
 						// This will always return false for translucent surfaces
-	bool				AllowOverlays( void ) const { return allowOverlays; }
+	bool				AllowOverlays() const { return allowOverlays; }
 
 						// MC_OPAQUE, MC_PERFORATED, or MC_TRANSLUCENT, for interaction list linking and
 						// dmap flood filling
 						// The depth buffer will not be filled for MC_TRANSLUCENT surfaces
 						// FIXME: what do nodraw surfaces return?
-	materialCoverage_t	Coverage( void ) const { return coverage; }
+	materialCoverage_t	Coverage() const { return coverage; }
 
 						// returns true if this material takes precedence over other in coplanar cases
 	bool				HasHigherDmapPriority( const idMaterial &other ) const { return ( IsDrawn() && !other.IsDrawn() ) ||
 																						( Coverage() < other.Coverage() ); }
 
 						// returns a idUserInterface if it has a global gui, or NULL if no gui
-	idUserInterface	*	GlobalGui( void ) const { return gui; }
+	idUserInterface	*	GlobalGui() const { return gui; }
 
 						// a discrete surface will never be merged with other surfaces by dmap, which is
 						// necessary to prevent mutliple gui surfaces, mirrors, autosprites, and some other
 						// special effects from being combined into a single surface
 						// guis, merging sprites or other effects, mirrors and remote views are always discrete
-	bool				IsDiscrete( void ) const { return ( entityGui || gui || deform != DFRM_NONE || sort == SS_SUBVIEW ||
+	bool				IsDiscrete() const { return ( entityGui || gui || deform != DFRM_NONE || sort == SS_SUBVIEW ||
 												( surfaceFlags & SURF_DISCRETE ) != 0 ); }
 
 						// Normally, dmap chops each surface by every BSP boundary, then reoptimizes.
@@ -449,7 +452,7 @@ public:
 						// of not automatically fixing up interpenetrations, so when this is used, you
 						// should manually make the edges of your sky box exactly meet, instead of poking
 						// into each other.
-	bool				NoFragment( void ) const { return ( surfaceFlags & SURF_NOFRAGMENT ) != 0; }
+	bool				NoFragment() const { return ( surfaceFlags & SURF_NOFRAGMENT ) != 0; }
 
 	//------------------------------------------------------------------
 	// light shader specific functions, only called for light entities
@@ -494,94 +497,102 @@ public:
 	bool				TestMaterialFlag( const int flag ) const { return ( materialFlags & flag ) != 0; }
 
 						// get content flags
-	const int			GetContentFlags( void ) const { return contentFlags; }
+	const int			GetContentFlags() const { return contentFlags; }
 
 						// get surface flags
-	const int			GetSurfaceFlags( void ) const { return surfaceFlags; }
+	const int			GetSurfaceFlags() const { return surfaceFlags; }
 
 						// gets name for surface type (stone, metal, flesh, etc.)
-	const surfTypes_t	GetSurfaceType( void ) const { return static_cast<surfTypes_t>( surfaceFlags & SURF_TYPE_MASK ); }
+	const surfTypes_t	GetSurfaceType() const { return static_cast<surfTypes_t>( surfaceFlags & SURF_TYPE_MASK ); }
 
 						// get material description
-	const char *		GetDescription( void ) const { return desc; }
+	const char *		GetDescription() const { return desc; }
 
 						// get sort order
-	const float			GetSort( void ) const { return sort; }
+	const float			GetSort() const { return sort; }
+
+	const int			GetStereoEye() const { return stereoEye; }
+
 						// this is only used by the gui system to force sorting order
 						// on images referenced from tga's instead of materials. 
 						// this is done this way as there are 2000 tgas the guis use
 	void				SetSort( float s ) const { sort = s; };
 
 						// DFRM_NONE, DFRM_SPRITE, etc
-	deform_t			Deform( void ) const { return deform; }
+	deform_t			Deform() const { return deform; }
 
 						// flare size, expansion size, etc
 	const int			GetDeformRegister( int index ) const { return deformRegisters[index]; }
 
 						// particle system to emit from surface and table for turbulent
-	const idDecl		*GetDeformDecl( void ) const { return deformDecl; }
+	const idDecl		*GetDeformDecl() const { return deformDecl; }
 
 						// currently a surface can only have one unique texgen for all the stages
 	texgen_t			Texgen() const;
 
 						// wobble sky parms
-	const int *			GetTexGenRegisters( void ) const { return texGenRegisters; }
+	const int *			GetTexGenRegisters() const { return texGenRegisters; }
 
 						// get cull type
-	const cullType_t	GetCullType( void ) const { return cullType; }
+	const cullType_t	GetCullType() const { return cullType; }
 
-	float				GetEditorAlpha( void ) const { return editorAlpha; }
+	float				GetEditorAlpha() const { return editorAlpha; }
 
-	int					GetEntityGui( void ) const { return entityGui; }
+	int					GetEntityGui() const { return entityGui; }
 
-	decalInfo_t			GetDecalInfo( void ) const { return decalInfo; }
+	decalInfo_t			GetDecalInfo() const { return decalInfo; }
 
 						// spectrums are used for "invisible writing" that can only be
 						// illuminated by a light of matching spectrum
-	int					Spectrum( void ) const { return spectrum; }
+	int					Spectrum() const { return spectrum; }
 
-	float				GetPolygonOffset( void ) const { return polygonOffset; }
+	float				GetPolygonOffset() const { return polygonOffset; }
 
-	float				GetSurfaceArea( void ) const { return surfaceArea; }
+	float				GetSurfaceArea() const { return surfaceArea; }
 	void				AddToSurfaceArea( float area ) { surfaceArea += area; }
 
 	//------------------------------------------------------------------
 
 						// returns the length, in milliseconds, of the videoMap on this material,
 						// or zero if it doesn't have one
-	int					CinematicLength( void ) const;
+	int					CinematicLength() const;
 
-	void				CloseCinematic( void ) const;
+	void				CloseCinematic() const;
 
 	void				ResetCinematicTime( int time ) const;
+
+	int					GetCinematicStartTime() const;
 
 	void				UpdateCinematic( int time ) const;
 
 	//------------------------------------------------------------------
 
 						// gets an image for the editor to use
-	idImage *			GetEditorImage( void ) const;
-	int					GetImageWidth( void ) const;
-	int					GetImageHeight( void ) const;
+	idImage *			GetEditorImage() const;
+	int					GetImageWidth() const;
+	int					GetImageHeight() const;
 
 	void				SetGui( const char *_gui ) const;
-
-						// just for resource tracking
-	void				SetImageClassifications( int tag ) const;
 
 	//------------------------------------------------------------------
 
 						// returns number of registers this material contains
 	const int			GetNumRegisters() const { return numRegisters; }
 
-						// regs should point to a float array large enough to hold GetNumRegisters() floats
-	void				EvaluateRegisters( float *regs, const float entityParms[MAX_ENTITY_SHADER_PARMS], 
-											const struct viewDef_s *view, idSoundEmitter *soundEmitter = NULL ) const;
+						// Regs should point to a float array large enough to hold GetNumRegisters() floats.
+						// FloatTime is passed in because different entities, which may be running in parallel,
+						// can be in different time groups.
+	void				EvaluateRegisters( 
+							float *			registers, 
+							const float		localShaderParms[MAX_ENTITY_SHADER_PARMS],
+							const float		globalShaderParms[MAX_GLOBAL_SHADER_PARMS], 
+							const float		floatTime, 
+							idSoundEmitter *soundEmitter ) const;
 
 						// if a material only uses constants (no entityParm or globalparm references), this
 						// will return a pointer to an internal table, and EvaluateRegisters will not need
 						// to be called.  If NULL is returned, EvaluateRegisters must be used.
-	const float *		ConstantRegisters() const;
+	const float *		ConstantRegisters() const				{ return constantRegisters; };
 
 	bool				SuppressInSubview() const				{ return suppressInSubview; };
 	bool				IsPortalSky() const						{ return portalSky; };
@@ -593,16 +604,18 @@ private:
 	void				ParseMaterial( idLexer &src );
 	bool				MatchToken( idLexer &src, const char *match );
 	void				ParseSort( idLexer &src );
+	void				ParseStereoEye( idLexer &src );
 	void				ParseBlend( idLexer &src, shaderStage_t *stage );
 	void				ParseVertexParm( idLexer &src, newShaderStage_t *newStage );
+	void				ParseVertexParm2( idLexer &src, newShaderStage_t *newStage );
 	void				ParseFragmentMap( idLexer &src, newShaderStage_t *newStage );
 	void				ParseStage( idLexer &src, const textureRepeat_t trpDefault = TR_REPEAT );
 	void				ParseDeform( idLexer &src );
 	void				ParseDecalInfo( idLexer &src );
 	bool				CheckSurfaceParm( idToken *token );
 	int					GetExpressionConstant( float f );
-	int					GetExpressionTemporary( void );
-	expOp_t	*			GetExpressionOp( void );
+	int					GetExpressionTemporary();
+	expOp_t	*			GetExpressionOp();
 	int					EmitOp( int a, int b, expOpType_t opType );
 	int					ParseEmitOp( idLexer &src, int a, expOpType_t opType, int priority );
 	int					ParseTerm( idLexer &src );
@@ -615,12 +628,17 @@ private:
 	void				SortInteractionStages();
 	void				AddImplicitStages( const textureRepeat_t trpDefault = TR_REPEAT );
 	void				CheckForConstantRegisters();
+	void				SetFastPathImages();
 
 private:
 	idStr				desc;				// description
 	idStr				renderBump;			// renderbump command options, without the "renderbump" at the start
 
-	idImage	*			lightFalloffImage;
+	idImage	*			lightFalloffImage;	// only for light shaders
+
+	idImage *			fastPathBumpImage;	// if any of these are set, they all will be
+	idImage *			fastPathDiffuseImage;
+	idImage *			fastPathSpecularImage;
 
 	int					entityGui;			// draw a gui with the idUserInterface from the renderEntity_t
 											// non zero will draw gui, gui2, or gui3 from renderEnitty_t
@@ -640,6 +658,7 @@ private:
 
 
 	mutable	float		sort;				// lower numbered shaders draw before higher numbered
+	int					stereoEye;
 	deform_t			deform;
 	int					deformRegisters[4];		// numeric parameter for deforms
 	const idDecl		*deformDecl;			// for surface emitted particle deforms and tables
@@ -686,6 +705,6 @@ private:
 	int					refCount;
 };
 
-typedef idList<const idMaterial *> idMatList;
+typedef idList<const idMaterial *, TAG_MATERIAL> idMatList;
 
 #endif /* !__MATERIAL_H__ */

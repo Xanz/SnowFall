@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -45,19 +45,19 @@ public:
 						~idHierarchy();
 	
 	void				SetOwner( type *object );
-	type *				Owner( void ) const;
+	type *				Owner() const;
 	void				ParentTo( idHierarchy &node );
 	void				MakeSiblingAfter( idHierarchy &node );
 	bool				ParentedBy( const idHierarchy &node ) const;
-	void				RemoveFromParent( void );
-	void				RemoveFromHierarchy( void );
+	void				RemoveFromParent();
+	void				RemoveFromHierarchy();
 
-	type *				GetParent( void ) const;		// parent of this node
-	type *				GetChild( void ) const;			// first child of this node
-	type *				GetSibling( void ) const;		// next node with the same parent
-	type *				GetPriorSibling( void ) const;	// previous node with the same parent
-	type *				GetNext( void ) const;			// goes through all nodes of the hierarchy
-	type *				GetNextLeaf( void ) const;		// goes through all leaf nodes of the hierarchy
+	type *				GetParent() const;		// parent of this node
+	type *				GetChild() const;			// first child of this node
+	type *				GetSibling() const;		// next node with the same parent
+	type *				GetPriorSibling() const;	// previous node with the same parent
+	type *				GetNext() const;			// goes through all nodes of the hierarchy
+	type *				GetNextLeaf() const;		// goes through all leaf nodes of the hierarchy
 
 private:
 	idHierarchy *		parent;
@@ -65,7 +65,7 @@ private:
 	idHierarchy *		child;
 	type *				owner;
 
-	idHierarchy<type>	*GetPriorSiblingNode( void ) const;	// previous node with the same parent
+	idHierarchy<type>	*GetPriorSiblingNode() const;	// previous node with the same parent
 };
 
 /*
@@ -99,7 +99,7 @@ Gets the object that is associated with this node.
 ================
 */
 template< class type >
-type *idHierarchy<type>::Owner( void ) const {
+type *idHierarchy<type>::Owner() const {
 	return owner;
 }
 
@@ -167,7 +167,7 @@ idHierarchy<type>::RemoveFromParent
 ================
 */
 template< class type >
-void idHierarchy<type>::RemoveFromParent( void ) {
+void idHierarchy<type>::RemoveFromParent() {
 	idHierarchy<type> *prev;
 
 	if ( parent ) {
@@ -191,7 +191,7 @@ Removes the node from the hierarchy and adds it's children to the parent.
 ================
 */
 template< class type >
-void idHierarchy<type>::RemoveFromHierarchy( void ) {
+void idHierarchy<type>::RemoveFromHierarchy() {
 	idHierarchy<type> *parentNode;
 	idHierarchy<type> *node;
 
@@ -217,7 +217,7 @@ idHierarchy<type>::GetParent
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetParent( void ) const {
+type *idHierarchy<type>::GetParent() const {
 	if ( parent ) {
 		return parent->owner;
 	}
@@ -230,7 +230,7 @@ idHierarchy<type>::GetChild
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetChild( void ) const {
+type *idHierarchy<type>::GetChild() const {
 	if ( child ) {
 		return child->owner;
 	}
@@ -243,7 +243,7 @@ idHierarchy<type>::GetSibling
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetSibling( void ) const {
+type *idHierarchy<type>::GetSibling() const {
 	if ( sibling ) {
 		return sibling->owner;
 	}
@@ -258,7 +258,7 @@ Returns NULL if no parent, or if it is the first child.
 ================
 */
 template< class type >
-idHierarchy<type> *idHierarchy<type>::GetPriorSiblingNode( void ) const {
+idHierarchy<type> *idHierarchy<type>::GetPriorSiblingNode() const {
 	if ( !parent || ( parent->child == this ) ) {
 		return NULL;
 	}
@@ -288,7 +288,7 @@ Returns NULL if no parent, or if it is the first child.
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetPriorSibling( void ) const {
+type *idHierarchy<type>::GetPriorSibling() const {
 	idHierarchy<type> *prior;
 
 	prior = GetPriorSiblingNode();
@@ -307,7 +307,7 @@ Goes through all nodes of the hierarchy.
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetNext( void ) const {
+type *idHierarchy<type>::GetNext() const {
 	const idHierarchy<type> *node;
 
 	if ( child ) {
@@ -333,7 +333,7 @@ Goes through all leaf nodes of the hierarchy.
 ================
 */
 template< class type >
-type *idHierarchy<type>::GetNextLeaf( void ) const {
+type *idHierarchy<type>::GetNextLeaf() const {
 	const idHierarchy<type> *node;
 
 	if ( child ) {

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -32,12 +32,13 @@ instancing of objects.
 
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
-#include "TypeInfo.h"
+#include <typeinfo>
 
 
 /***********************************************************************
@@ -62,8 +63,8 @@ initialized in any order, the constructor must handle the case that subclasses
 are initialized before superclasses.
 ================
 */
-idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFunc<idClass> *eventCallbacks, idClass *( *CreateInstance )( void ), 
-	void ( idClass::*Spawn )( void ), void ( idClass::*Save )( idSaveGame *savefile ) const, void ( idClass::*Restore )( idRestoreGame *savefile ) ) {
+idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFunc<idClass> *eventCallbacks, idClass *( *CreateInstance )(), 
+	void ( idClass::*Spawn )(), void ( idClass::*Save )( idSaveGame *savefile ) const, void ( idClass::*Restore )( idRestoreGame *savefile ) ) {
 
 	idTypeInfo *type;
 	idTypeInfo **insert;
@@ -121,7 +122,7 @@ Initializes the event callback table for the class.  Creates a
 table for fast lookups of event functions.  Should only be called once.
 ================
 */
-void idTypeInfo::Init( void ) {
+void idTypeInfo::Init() {
 	idTypeInfo				*c;
 	idEventFunc<idClass>	*def;
 	int						ev;
@@ -165,13 +166,13 @@ void idTypeInfo::Init( void ) {
 	// are events.  NOTE: could save some space by keeping track of the maximum
 	// event that the class responds to and doing range checking.
 	num = idEventDef::NumEventCommands();
-	eventMap = new eventCallback_t[ num ];
+	eventMap = new (TAG_SYSTEM) eventCallback_t[ num ];
 	memset( eventMap, 0, sizeof( eventCallback_t ) * num );
 	eventCallbackMemory += sizeof( eventCallback_t ) * num;
 
 	// allocate temporary memory for flags so that the subclass's event callbacks
 	// override the superclass's event callback
-	set = new bool[ num ];
+	set = new (TAG_SYSTEM) bool[ num ];
 	memset( set, 0, sizeof( bool ) * num );
 
 	// go through the inheritence order and copies the event callback function into
@@ -235,9 +236,9 @@ ABSTRACT_DECLARATION( NULL, idClass )
 END_CLASS
 
 // alphabetical order
-idList<idTypeInfo *>	idClass::types;
+idList<idTypeInfo *, TAG_IDCLASS>	idClass::types;
 // typenum order
-idList<idTypeInfo *>	idClass::typenums;
+idList<idTypeInfo *, TAG_IDCLASS>	idClass::typenums;
 
 bool	idClass::initialized	= false;
 int		idClass::typeNumBits	= 0;
@@ -249,7 +250,7 @@ int		idClass::numobjects		= 0;
 idClass::CallSpawn
 ================
 */
-void idClass::CallSpawn( void ) {
+void idClass::CallSpawn() {
 	idTypeInfo *type;
 
 	type = GetType();
@@ -283,7 +284,7 @@ classSpawnFunc_t idClass::CallSpawnFunc( idTypeInfo *cls ) {
 idClass::FindUninitializedMemory
 ================
 */
-void idClass::FindUninitializedMemory( void ) {
+void idClass::FindUninitializedMemory() {
 #ifdef ID_DEBUG_UNINITIALIZED_MEMORY
 	unsigned long *ptr = ( ( unsigned long * )this ) - 1;
 	int size = *ptr;
@@ -303,7 +304,7 @@ void idClass::FindUninitializedMemory( void ) {
 idClass::Spawn
 ================
 */
-void idClass::Spawn( void ) {
+void idClass::Spawn() {
 }
 
 /*
@@ -374,7 +375,7 @@ their event callback table for the associated class.  This should only be called
 once during the execution of the program or DLL.
 ================
 */
-void idClass::Init( void ) {
+void idClass::Init() {
 	idTypeInfo	*c;
 	int			num;
 
@@ -423,7 +424,7 @@ void idClass::Init( void ) {
 idClass::Shutdown
 ================
 */
-void idClass::Shutdown( void ) {
+void idClass::Shutdown() {
 	idTypeInfo	*c;
 
 	for( c = typelist; c != NULL; c = c->next ) {
@@ -440,57 +441,17 @@ void idClass::Shutdown( void ) {
 idClass::new
 ================
 */
-#ifdef ID_DEBUG_MEMORY
-#undef new
-#endif
-
 void * idClass::operator new( size_t s ) {
 	int *p;
 
 	s += sizeof( int );
-	p = (int *)Mem_Alloc( s );
+	p = (int *)Mem_Alloc( s, TAG_IDCLASS );
 	*p = s;
 	memused += s;
 	numobjects++;
 
-#ifdef ID_DEBUG_UNINITIALIZED_MEMORY
-	unsigned long *ptr = (unsigned long *)p;
-	int size = s;
-	assert( ( size & 3 ) == 0 );
-	size >>= 3;
-	for ( int i = 1; i < size; i++ ) {
-		ptr[i] = 0xcdcdcdcd;
-	}
-#endif
-
 	return p + 1;
 }
-
-void * idClass::operator new( size_t s, int, int, char *, int ) {
-	int *p;
-
-	s += sizeof( int );
-	p = (int *)Mem_Alloc( s );
-	*p = s;
-	memused += s;
-	numobjects++;
-
-#ifdef ID_DEBUG_UNINITIALIZED_MEMORY
-	unsigned long *ptr = (unsigned long *)p;
-	int size = s;
-	assert( ( size & 3 ) == 0 );
-	size >>= 3;
-	for ( int i = 1; i < size; i++ ) {
-		ptr[i] = 0xcdcdcdcd;
-	}
-#endif
-
-	return p + 1;
-}
-
-#ifdef ID_DEBUG_MEMORY
-#define new ID_DEBUG_NEW
-#endif
 
 /*
 ================
@@ -498,17 +459,6 @@ idClass::delete
 ================
 */
 void idClass::operator delete( void *ptr ) {
-	int *p;
-
-	if ( ptr ) {
-		p = ( ( int * )ptr ) - 1;
-		memused -= *p;
-		numobjects--;
-        Mem_Free( p );
-	}
-}
-
-void idClass::operator delete( void *ptr, int, int, char *, int ) {
 	int *p;
 
 	if ( ptr ) {
@@ -590,7 +540,7 @@ idClass::GetClassname
 Returns the text classname of the object.
 ================
 */
-const char *idClass::GetClassname( void ) const {
+const char *idClass::GetClassname() const {
 	idTypeInfo *type;
 
 	type = GetType();
@@ -604,7 +554,7 @@ idClass::GetSuperclass
 Returns the text classname of the superclass.
 ================
 */
-const char *idClass::GetSuperclass( void ) const {
+const char *idClass::GetSuperclass() const {
 	idTypeInfo *cls;
 
 	cls = GetType();
@@ -642,10 +592,19 @@ bool idClass::PostEventArgs( const idEventDef *ev, int time, int numargs, ... ) 
 		return false;
 	}
 
+	bool isReplicated = true;
+	// If this is an entity with skipReplication, we want to process the event normally even on clients.
+	if ( IsType( idEntity::Type ) ) {
+		idEntity * thisEnt = static_cast< idEntity * >( this );
+		if ( thisEnt->fl.skipReplication ) {
+			isReplicated = false;
+		}
+	}
+
 	// we service events on the client to avoid any bad code filling up the event pool
 	// we don't want them processed usually, unless when the map is (re)loading.
 	// we allow threads to run fine, though.
-	if ( gameLocal.isClient && ( gameLocal.GameState() != GAMESTATE_STARTUP ) && !IsType( idThread::Type ) ) {
+	if ( common->IsClient() && isReplicated && ( gameLocal.GameState() != GAMESTATE_STARTUP ) && !IsType( idThread::Type ) ) {
 		return true;
 	}
 
@@ -944,14 +903,12 @@ bool idClass::ProcessEventArgPtr( const idEventDef *ev, int *data ) {
 	assert( ev );
 	assert( idEvent::initialized );
 
-#ifdef _D3XP
 	SetTimeState ts;
 
 	if ( IsType( idEntity::Type ) ) {
 		idEntity *ent = (idEntity*)this;
 		ts.PushState( ent->timeGroup );
 	}
-#endif
 
 	if ( g_debugTriggers.GetBool() && ( ev == &EV_Activate ) && IsType( idEntity::Type ) ) {
 		const idEntity *ent = *reinterpret_cast<idEntity **>( data );
@@ -1053,7 +1010,7 @@ http://developer.apple.com/documentation/DeveloperTools/Conceptual/MachORuntime/
 idClass::Event_Remove
 ================
 */
-void idClass::Event_Remove( void ) {
+void idClass::Event_Remove() {
 	delete this;
 }
 
@@ -1062,7 +1019,7 @@ void idClass::Event_Remove( void ) {
 idClass::Event_SafeRemove
 ================
 */
-void idClass::Event_SafeRemove( void ) {
+void idClass::Event_SafeRemove() {
 	// Forces the remove to be done at a safe time
 	PostEventMS( &EV_Remove, 0 );
 }

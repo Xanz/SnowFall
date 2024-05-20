@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -40,13 +40,13 @@ If you have questions concerning this license or the applicable additional terms
 class idWinding {
 
 public:
-					idWinding( void );
+					idWinding();
 					explicit idWinding( const int n );								// allocate for n points
 					explicit idWinding( const idVec3 *verts, const int n );			// winding from points
 					explicit idWinding( const idVec3 &normal, const float dist );	// base winding for plane
 					explicit idWinding( const idPlane &plane );						// base winding for plane
 					explicit idWinding( const idWinding &winding );
-	virtual			~idWinding( void );
+	virtual			~idWinding();
 
 	idWinding &		operator=( const idWinding &winding );
 	const idVec5 &	operator[]( const int index ) const;
@@ -59,9 +59,9 @@ public:
 	void			AddPoint( const idVec5 &v );
 
 					// number of points on winding
-	int				GetNumPoints( void ) const;
+	int				GetNumPoints() const;
 	void			SetNumPoints( int n );
-	virtual void	Clear( void );
+	virtual void	Clear();
 
 					// huge winding for plane, the points go counter clockwise when facing the front of the plane
 	void			BaseForPlane( const idVec3 &normal, const float dist );
@@ -78,14 +78,14 @@ public:
 	bool			ClipInPlace( const idPlane &plane, const float epsilon = ON_EPSILON, const bool keepOn = false );
 
 					// returns a copy of the winding
-	idWinding *		Copy( void ) const;
-	idWinding *		Reverse( void ) const;
-	void			ReverseSelf( void );
+	idWinding *		Copy() const;
+	idWinding *		Reverse() const;
+	void			ReverseSelf();
 	void			RemoveEqualPoints( const float epsilon = ON_EPSILON );
 	void			RemoveColinearPoints( const idVec3 &normal, const float epsilon = ON_EPSILON );
 	void			RemovePoint( int point );
-	void			InsertPoint( const idVec3 &point, int spot );
-	bool			InsertPointIfOnEdge( const idVec3 &point, const idPlane &plane, const float epsilon = ON_EPSILON );
+	void			InsertPoint( const idVec5 &point, int spot );
+	bool			InsertPointIfOnEdge( const idVec5 &point, const idPlane &plane, const float epsilon = ON_EPSILON );
 					// add a winding to the convex hull
 	void			AddToConvexHull( const idWinding *winding, const idVec3 &normal, const float epsilon = ON_EPSILON );
 					// add a point to the convex hull
@@ -96,16 +96,16 @@ public:
 					// check whether the winding is valid or not
 	bool			Check( bool print = true ) const;
 
-	float			GetArea( void ) const;
-	idVec3			GetCenter( void ) const;
+	float			GetArea() const;
+	idVec3			GetCenter() const;
 	float			GetRadius( const idVec3 &center ) const;
 	void			GetPlane( idVec3 &normal, float &dist ) const;
 	void			GetPlane( idPlane &plane ) const;
 	void			GetBounds( idBounds &bounds ) const;
 
-	bool			IsTiny( void ) const;
-	bool			IsHuge( void ) const;	// base winding for a plane is typically huge
-	void			Print( void ) const;
+	bool			IsTiny() const;
+	bool			IsHuge() const;	// base winding for a plane is typically huge
+	void			Print() const;
 
 	float			PlaneDistance( const idPlane &plane ) const;
 	int				PlaneSide( const idPlane &plane, const float epsilon = ON_EPSILON ) const;
@@ -129,7 +129,7 @@ protected:
 	virtual bool	ReAllocate( int n, bool keep = false );
 };
 
-ID_INLINE idWinding::idWinding( void ) {
+ID_INLINE idWinding::idWinding() {
 	numPoints = allocedSize = 0;
 	p = NULL;
 }
@@ -180,7 +180,7 @@ ID_INLINE idWinding::idWinding( const idWinding &winding ) {
 	numPoints = winding.GetNumPoints();
 }
 
-ID_INLINE idWinding::~idWinding( void ) {
+ID_INLINE idWinding::~idWinding() {
 	delete[] p;
 	p = NULL;
 }
@@ -235,7 +235,7 @@ ID_INLINE void idWinding::AddPoint( const idVec5 &v ) {
 	numPoints++;
 }
 
-ID_INLINE int idWinding::GetNumPoints( void ) const {
+ID_INLINE int idWinding::GetNumPoints() const {
 	return numPoints;
 }
 
@@ -246,7 +246,7 @@ ID_INLINE void idWinding::SetNumPoints( int n ) {
 	numPoints = n;
 }
 
-ID_INLINE void idWinding::Clear( void ) {
+ID_INLINE void idWinding::Clear() {
 	numPoints = 0;
 	delete[] p;
 	p = NULL;
@@ -281,18 +281,18 @@ ID_INLINE bool idWinding::EnsureAlloced( int n, bool keep ) {
 class idFixedWinding : public idWinding {
 
 public:
-					idFixedWinding( void );
+					idFixedWinding();
 					explicit idFixedWinding( const int n );
 					explicit idFixedWinding( const idVec3 *verts, const int n );
 					explicit idFixedWinding( const idVec3 &normal, const float dist );
 					explicit idFixedWinding( const idPlane &plane );
 					explicit idFixedWinding( const idWinding &winding );
 					explicit idFixedWinding( const idFixedWinding &winding );
-	virtual			~idFixedWinding( void );
+	virtual			~idFixedWinding();
 
 	idFixedWinding &operator=( const idWinding &winding );
 
-	virtual void	Clear( void );
+	virtual void	Clear();
 
 					// splits the winding in a back and front part, 'this' becomes the front part
 					// returns a SIDE_?
@@ -304,7 +304,7 @@ protected:
 	virtual bool	ReAllocate( int n, bool keep = false );
 };
 
-ID_INLINE idFixedWinding::idFixedWinding( void ) {
+ID_INLINE idFixedWinding::idFixedWinding() {
 	numPoints = 0;
 	p = data;
 	allocedSize = MAX_POINTS_ON_WINDING;
@@ -377,7 +377,7 @@ ID_INLINE idFixedWinding::idFixedWinding( const idFixedWinding &winding ) {
 	numPoints = winding.GetNumPoints();
 }
 
-ID_INLINE idFixedWinding::~idFixedWinding( void ) {
+ID_INLINE idFixedWinding::~idFixedWinding() {
 	p = NULL;	// otherwise it tries to free the fixed buffer
 }
 
@@ -395,7 +395,7 @@ ID_INLINE idFixedWinding &idFixedWinding::operator=( const idWinding &winding ) 
 	return *this;
 }
 
-ID_INLINE void idFixedWinding::Clear( void ) {
+ID_INLINE void idFixedWinding::Clear() {
 	numPoints = 0;
 }
 #endif	/* !__WINDING_H__ */

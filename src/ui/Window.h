@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -115,12 +115,13 @@ struct idRegEntry {
 	int index;
 };
 
+
 class rvGEWindowWrapper;
 class idWindow;
 
 struct idTimeLineEvent {
 	idTimeLineEvent() {
-		event = new idGuiScriptList;
+		event = new (TAG_OLD_UI) idGuiScriptList;
 	}
 	~idTimeLineEvent() {
 		delete event;
@@ -139,10 +140,10 @@ public:
 
 	rvNamedEvent(const char* name)
 	{
-		mEvent = new idGuiScriptList;
+		mEvent = new (TAG_OLD_UI) idGuiScriptList;
 		mName  = name;
 	}
-	~rvNamedEvent(void)
+	~rvNamedEvent()
 	{
 		delete mEvent;
 	}
@@ -166,7 +167,6 @@ class idUserInterfaceLocal;
 class idWindow {
 public:
 	idWindow(idUserInterfaceLocal *gui);
-	idWindow(idDeviceContext *d, idUserInterfaceLocal *gui);
 	virtual ~idWindow();
 
 	enum {
@@ -200,10 +200,6 @@ public:
 
 	static const idRegEntry RegisterVars[];
 	static const int		NumRegisterVars;
-
-	void SetDC(idDeviceContext *d);
-
-	idDeviceContext*	GetDC ( void ) { return dc; }
 
 	idWindow *SetFocus(idWindow *w, bool scripts = true);
 
@@ -246,10 +242,10 @@ public:
 	bool Contains(const idRectangle &sr, float x, float y);
 	const char *GetName() { return name; };
 
-	virtual bool Parse(idParser *src, bool rebuild = true);
+	virtual bool Parse( idTokenParser *src, bool rebuild = true);
 	virtual const char *HandleEvent(const sysEvent_t *event, bool *updateVisuals);
 	void	CalcRects(float x, float y);
-	virtual void Redraw(float x, float y);
+	virtual void Redraw(float x, float y, bool hud);
 
 	virtual void ArchiveToDictionary(idDict *dict, bool useNames = true);
 	virtual void InitFromDictionary(idDict *dict, bool byName = true);
@@ -266,6 +262,7 @@ public:
 	virtual void MouseExit();
 	virtual void MouseEnter();
 	virtual void DrawBackground(const idRectangle &drawRect);
+	virtual idWindow * GetChildWithOnAction( float xd, float yd );
 	virtual const char *RouteMouseCoords(float xd, float yd);
 	virtual void SetBuddy(idWindow *buddy) {};
 	virtual void HandleBuddyUpdate(idWindow *buddy) {};
@@ -296,11 +293,11 @@ public:
 
 	int NumTransitions();
 
-	bool ParseScript(idParser *src, idGuiScriptList &list, int *timeParm = NULL, bool allowIf = false);
+	bool ParseScript(idTokenParser *src, idGuiScriptList &list, int *timeParm = NULL, bool allowIf = false);
 	bool RunScript(int n);
 	bool RunScriptList(idGuiScriptList *src);
 	void SetRegs(const char *key, const char *val);
-	int ParseExpression( idParser *src, idWinVar *var = NULL, int component = 0 );
+	int ParseExpression( idTokenParser *src, idWinVar *var = NULL, int component = 0 );
 	int ExpressionConstant(float f);
 	idRegisterList *RegList() { return &regList; }
 	void AddCommand(const char *cmd);
@@ -321,7 +318,7 @@ public:
 
 	idWindow*	FindChildByPoint	( float x, float y, idWindow* below = NULL );
 	int			GetChildIndex		( idWindow* window );
-	int			GetChildCount		( void );
+	int			GetChildCount		();
 	idWindow*	GetChild			( int index );
 	void		RemoveChild			( idWindow *win );
 	bool		InsertChild			( idWindow *win, idWindow* before );
@@ -336,7 +333,7 @@ protected:
 	friend		class rvGEWindowWrapper;
 
 	idWindow*	FindChildByPoint	( float x, float y, idWindow** below );
-	void		SetDefaults			( void );
+	void		SetDefaults			();
 
 	friend class idSimpleWindow;
 	friend class idUserInterfaceLocal;
@@ -351,19 +348,19 @@ protected:
 	int ExpressionTemporary();
 	wexpOp_t *ExpressionOp();
 	int EmitOp( int a, int b, wexpOpType_t opType, wexpOp_t **opp = NULL );
-	int ParseEmitOp( idParser *src, int a, wexpOpType_t opType, int priority, wexpOp_t **opp = NULL );
-	int ParseTerm( idParser *src, idWinVar *var = NULL, int component = 0 );
-	int ParseExpressionPriority( idParser *src, int priority, idWinVar *var = NULL, int component = 0 );
+	int ParseEmitOp( idTokenParser *src, int a, wexpOpType_t opType, int priority, wexpOp_t **opp = NULL );
+	int ParseTerm( idTokenParser *src, idWinVar *var = NULL, int component = 0 );
+	int ParseExpressionPriority( idTokenParser *src, int priority, idWinVar *var = NULL, int component = 0 );
 	void EvaluateRegisters(float *registers);
 	void SaveExpressionParseState();
 	void RestoreExpressionParseState();
-	void ParseBracedExpression(idParser *src);
-	bool ParseScriptEntry(const char *name, idParser *src);
-	bool ParseRegEntry(const char *name, idParser *src);
-	virtual bool ParseInternalVar(const char *name, idParser *src);
-	void ParseString(idParser *src, idStr &out);
-	void ParseVec4(idParser *src, idVec4 &out);
-	void ConvertRegEntry(const char *name, idParser *src, idStr &out, int tabs);
+	void ParseBracedExpression(idTokenParser *src);
+	bool ParseScriptEntry(const char *name, idTokenParser *src);
+	bool ParseRegEntry(const char *name, idTokenParser *src);
+	virtual bool ParseInternalVar(const char *name, idTokenParser *src);
+	void ParseString(idTokenParser *src, idStr &out);
+	void ParseVec4(idTokenParser *src, idVec4 &out);
+	void ConvertRegEntry(const char *name, idTokenParser *src, idStr &out, int tabs);
 
 	float actualX;					// physical coords
 	float actualY;					// ''
@@ -388,8 +385,8 @@ protected:
 	idStr	comment;
 	idVec2	shear;
 
+	class idFont * font;
 	signed char	textShadow;
-	unsigned char fontNum;
 	unsigned char cursor;					//
 	signed char	textAlign;
 
@@ -407,22 +404,20 @@ protected:
 	idWinStr	text;
 	idWinBackground	backGroundName;			// 
 
-	idList<idWinVar*> definedVars;
-	idList<idWinVar*> updateVars;
+	idList<idWinVar*, TAG_OLD_UI> definedVars;
+	idList<idWinVar*, TAG_OLD_UI> updateVars;
 
 	idRectangle textRect;			// text extented rect
 	const idMaterial *background;         // background asset  
 
 	idWindow *parent;				// parent window
-	idList<idWindow*> children;		// child windows	
-	idList<drawWin_t> drawWindows;		
+	idList<idWindow*, TAG_OLD_UI> children;		// child windows	
+	idList<drawWin_t, TAG_OLD_UI> drawWindows;		
 
 	idWindow *focusedChild;			// if a child window has the focus
 	idWindow *captureChild;			// if a child window has mouse capture
 	idWindow *overChild;			// if a child window has mouse capture
 	bool hover;
-
-	idDeviceContext *dc;
 
 	idUserInterfaceLocal *gui;
 
@@ -432,16 +427,16 @@ protected:
 	idGuiScriptList *scripts[SCRIPT_COUNT];
 	bool *saveTemps;
 
-	idList<idTimeLineEvent*> timeLineEvents;
-	idList<idTransitionData> transitions;
+	idList<idTimeLineEvent*, TAG_OLD_UI> timeLineEvents;
+	idList<idTransitionData, TAG_OLD_UI> transitions;
 
 	static bool registerIsTemporary[MAX_EXPRESSION_REGISTERS]; // statics to assist during parsing
 
-	idList<wexpOp_t> ops;			   	// evaluate to make expressionRegisters
-	idList<float> expressionRegisters;
-	idList<wexpOp_t> *saveOps;			   	// evaluate to make expressionRegisters
-	idList<rvNamedEvent*>		namedEvents;		//  added named events
-	idList<float> *saveRegs;
+	idList<wexpOp_t, TAG_OLD_UI> ops;			   	// evaluate to make expressionRegisters
+	idList<float, TAG_OLD_UI> expressionRegisters;
+	idList<wexpOp_t, TAG_OLD_UI> *saveOps;			   	// evaluate to make expressionRegisters
+	idList<rvNamedEvent*, TAG_OLD_UI>		namedEvents;		//  added named events
+	idList<float, TAG_OLD_UI> *saveRegs;
 
 	idRegisterList regList;
 

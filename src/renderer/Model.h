@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -44,64 +44,42 @@ If you have questions concerning this license or the applicable additional terms
 #define MD5_CAMERA_EXT			"md5camera"
 #define MD5_VERSION				10
 
-// using shorts for triangle indexes can save a significant amount of traffic, but
-// to support the large models that renderBump loads, they need to be 32 bits
-#if 1
-
-#define GL_INDEX_TYPE		GL_UNSIGNED_INT
-typedef int glIndex_t;
-
-#else
-
-#define GL_INDEX_TYPE		GL_UNSIGNED_SHORT
-typedef short glIndex_t;
-
-#endif
-
-
-typedef struct {
-	// NOTE: making this a glIndex is dubious, as there can be 2x the faces as verts
-	glIndex_t					p1, p2;					// planes defining the edge
-	glIndex_t					v1, v2;					// verts defining the edge
-} silEdge_t;
+#include "jobs/ShadowShared.h"
+#include "jobs/prelightshadowvolume/PreLightShadowVolume.h"
+#include "jobs/staticshadowvolume/StaticShadowVolume.h"
+#include "jobs/dynamicshadowvolume/DynamicShadowVolume.h"
 
 // this is used for calculating unsmoothed normals and tangents for deformed models
-typedef struct dominantTri_s {
-	glIndex_t					v2, v3;
+struct dominantTri_t {
+	triIndex_t					v2, v3;
 	float						normalizationScale[3];
-} dominantTri_t;
-
-typedef struct lightingCache_s {
-	idVec3						localLightVector;		// this is the statically computed vector to the light
-														// in texture space for cards without vertex programs
-} lightingCache_t;
-
-typedef struct shadowCache_s {
-	idVec4						xyz;					// we use homogenous coordinate tricks
-} shadowCache_t;
+};
 
 const int SHADOW_CAP_INFINITE	= 64;
 
-// our only drawing geometry type
-typedef struct srfTriangles_s {
-	idBounds					bounds;					// for culling
+class idRenderModelStatic;
+struct viewDef_t;
 
-	int							ambientViewCount;		// if == tr.viewCount, it is visible this view
+// our only drawing geometry type
+struct srfTriangles_t {
+	srfTriangles_t() {}
+
+	idBounds					bounds;					// for culling
 
 	bool						generateNormals;		// create normals from geometry, instead of using explicit ones
 	bool						tangentsCalculated;		// set when the vertex tangents have been calculated
-	bool						facePlanesCalculated;	// set when the face planes have been calculated
 	bool						perfectHull;			// true if there aren't any dangling edges
-	bool						deformedSurface;		// if true, indexes, silIndexes, mirrorVerts, and silEdges are
+	bool						referencedVerts;		// if true the 'verts' are referenced and should not be freed
+	bool						referencedIndexes;		// if true, indexes, silIndexes, mirrorVerts, and silEdges are
 														// pointers into the original surface, and should not be freed
 
 	int							numVerts;				// number of vertices
 	idDrawVert *				verts;					// vertices, allocated with special allocator
 
 	int							numIndexes;				// for shadows, this has both front and rear end caps and silhouette planes
-	glIndex_t *					indexes;				// indexes, allocated with special allocator
+	triIndex_t *				indexes;				// indexes, allocated with special allocator
 
-	glIndex_t *					silIndexes;				// indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
+	triIndex_t *				silIndexes;				// indexes changed to be the first vertex with same XYZ, ignoring normal and texcoords
 
 	int							numMirroredVerts;		// this many verts at the end of the vert list are tangent mirrors
 	int *						mirroredVerts;			// tri->mirroredVerts[0] is the mirror of tri->numVerts - tri->numMirroredVerts + 0
@@ -112,8 +90,6 @@ typedef struct srfTriangles_s {
 	int							numSilEdges;			// number of silhouette edges
 	silEdge_t *					silEdges;				// silhouette edges
 
-	idPlane *					facePlanes;				// [numIndexes/3] plane equations
-
 	dominantTri_t *				dominantTris;			// [numVerts] for deformed surface fast tangent calculation
 
 	int							numShadowIndexesNoFrontCaps;	// shadow volumes with front caps omitted
@@ -122,40 +98,46 @@ typedef struct srfTriangles_s {
 	int							shadowCapPlaneBits;		// bits 0-5 are set when that plane of the interacting light has triangles
 														// projected on it, which means that if the view is on the outside of that
 														// plane, we need to draw the rear caps of the shadow volume
-														// turboShadows will have SHADOW_CAP_INFINITE
+														// dynamic shadows will have SHADOW_CAP_INFINITE
 
-	shadowCache_t *				shadowVertexes;			// these will be copied to shadowCache when it is going to be drawn.
-														// these are NULL when vertex programs are available
+	idShadowVert *				preLightShadowVertexes;	// shadow vertices in CPU memory for pre-light shadow volumes
+	idShadowVert *				staticShadowVertexes;	// shadow vertices in CPU memory for static shadow volumes
 
-	struct srfTriangles_s *		ambientSurface;			// for light interactions, point back at the original surface that generated
+	srfTriangles_t *			ambientSurface;			// for light interactions, point back at the original surface that generated
 														// the interaction, which we will get the ambientCache from
 
-	struct srfTriangles_s *		nextDeferredFree;		// chain of tris to free next frame
+	srfTriangles_t *			nextDeferredFree;		// chain of tris to free next frame
+
+	// for deferred normal / tangent transformations by joints
+	// the jointsInverted list / buffer object on md5WithJoints may be
+	// shared by multiple srfTriangles_t
+	idRenderModelStatic *		staticModelWithJoints;
 
 	// data in vertex object space, not directly readable by the CPU
-	struct vertCache_s *		indexCache;				// int
-	struct vertCache_s *		ambientCache;			// idDrawVert
-	struct vertCache_s *		lightingCache;			// lightingCache_t
-	struct vertCache_s *		shadowCache;			// shadowCache_t
-} srfTriangles_t;
+	vertCacheHandle_t			indexCache;				// GL_INDEX_TYPE
+	vertCacheHandle_t			ambientCache;			// idDrawVert
+	vertCacheHandle_t			shadowCache;			// idVec4
 
-typedef idList<srfTriangles_t *> idTriList;
+	DISALLOW_COPY_AND_ASSIGN( srfTriangles_t );
+};
 
-typedef struct modelSurface_s {
+typedef idList<srfTriangles_t *, TAG_IDLIB_LIST_TRIANGLES> idTriList;
+
+struct modelSurface_t {
 	int							id;
 	const idMaterial *			shader;
 	srfTriangles_t *			geometry;
-} modelSurface_t;
+};
 
-typedef enum {
+enum dynamicModel_t {
 	DM_STATIC,		// never creates a dynamic model
 	DM_CACHED,		// once created, stays constant until the entity is updated (animating characters)
 	DM_CONTINUOUS	// must be recreated for every single view (time dependent things like particles)
-} dynamicModel_t;
+};
 
-typedef enum {
+enum jointHandle_t {
 	INVALID_JOINT				= -1
-} jointHandle_t;
+};
 
 class idMD5Joint {
 public:
@@ -174,6 +156,11 @@ public:
 
 	// Loads static models only, dynamic models must be loaded by the modelManager
 	virtual void				InitFromFile( const char *fileName ) = 0;
+
+	// Supports reading/writing binary file formats
+	virtual bool				LoadBinaryModel( idFile * file, const ID_TIME_T sourceTimeStamp ) = 0;
+	virtual void				WriteBinaryModel( idFile * file, ID_TIME_T *_timeStamp = NULL ) const = 0;
+	virtual bool				SupportsBinaryModel() = 0;
 
 	// renderBump uses this to load the very high poly count models, skipping the
 	// shadow and tangent generation, along with some surface cleanup to make it load faster
@@ -233,7 +220,7 @@ public:
 	virtual int					Memory() const = 0;
 
 	// for reloadModels
-	virtual ID_TIME_T				Timestamp() const = 0;
+	virtual ID_TIME_T			Timestamp() const = 0;
 
 	// returns the number of surfaces
 	virtual int					NumSurfaces() const = 0;
@@ -252,12 +239,6 @@ public:
 
 	// Frees surfaces triangles.
 	virtual void				FreeSurfaceTriangles( srfTriangles_t *tris ) const = 0;
-
-	// created at load time by stitching together all surfaces and sharing
-	// the maximum number of edges.  This may be incorrect if a skin file
-	// remaps surfaces between shadow casting and non-shadow casting, or
-	// if some surfaces are noSelfShadow and others aren't
-	virtual srfTriangles_t	*	ShadowHull() const = 0;
 
 	// models of the form "_area*" may have a prelight shadow model associated with it
 	virtual bool				IsStaticWorldModel() const = 0;
@@ -286,13 +267,13 @@ public:
 	// The renderer will delete the returned dynamic model the next view
 	// This isn't const, because it may need to reload a purged model if it
 	// wasn't precached correctly.
-	virtual idRenderModel *		InstantiateDynamicModel( const struct renderEntity_s *ent, const struct viewDef_s *view, idRenderModel *cachedModel ) = 0;
+	virtual idRenderModel *		InstantiateDynamicModel( const struct renderEntity_s *ent, const viewDef_t *view, idRenderModel *cachedModel ) = 0;
 
 	// Returns the number of joints or 0 if the model is not an MD5
-	virtual int					NumJoints( void ) const = 0;
+	virtual int					NumJoints() const = 0;
 
 	// Returns the MD5 joints or NULL if the model is not an MD5
-	virtual const idMD5Joint *	GetJoints( void ) const = 0;
+	virtual const idMD5Joint *	GetJoints() const = 0;
 
 	// Returns the handle for the joint with the given name.
 	virtual jointHandle_t		GetJointHandle( const char *name ) const = 0;
@@ -301,7 +282,7 @@ public:
 	virtual const char *		GetJointName( jointHandle_t handle ) const = 0;
 
 	// Returns the default animation pose or NULL if the model is not an MD5.
-	virtual const idJointQuat *	GetDefaultPose( void ) const = 0;
+	virtual const idJointQuat *	GetDefaultPose() const = 0;
 
 	// Returns number of the joint nearest to the given triangle.
 	virtual int					NearestJoint( int surfaceNum, int a, int c, int b ) const = 0;
@@ -309,6 +290,17 @@ public:
 	// Writing to and reading from a demo file.
 	virtual void				ReadFromDemoFile( class idDemoFile *f ) = 0;
 	virtual void				WriteToDemoFile( class idDemoFile *f ) = 0;
+
+	// if false, the model doesn't need to be linked into the world, because it
+	// can't contribute visually -- triggers, etc
+	virtual bool				ModelHasDrawingSurfaces() const { return true; };
+
+	// if false, the model doesn't generate interactions with lights
+ 	virtual bool				ModelHasInteractingSurfaces() const { return true; };
+
+	// if false, the model doesn't need to be added to the view unless it is
+	// directly visible, because it can't cast shadows into the view
+	virtual bool				ModelHasShadowCastingSurfaces() const { return true; };
 };
 
 #endif /* !__MODEL_H__ */

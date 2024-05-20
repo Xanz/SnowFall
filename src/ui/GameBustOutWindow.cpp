@@ -1,34 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
-#include "../framework/Session_local.h"
 #include "../renderer/Image.h"
 
 #include "DeviceContext.h"
@@ -187,7 +186,7 @@ void BOEntity::Update( float timeslice, int guiTime ) {
 BOEntity::Draw
 ======================
 */
-void BOEntity::Draw(idDeviceContext *dc) {
+void BOEntity::Draw() {
 	if ( visible ) {
 		dc->DrawMaterialRotated( position.x, position.y, width, height, material, color, 1.0f, 1.0f, DEG2RAD(0.f) );
 	}
@@ -198,7 +197,7 @@ void BOEntity::Draw(idDeviceContext *dc) {
 * BOBrick
 ****************************************************************************
 */
-BOBrick::BOBrick( void ) {
+BOBrick::BOBrick() {
 	ent = NULL;
 	x = y = width = height = 0;
 	powerup = POWERUP_NONE;
@@ -223,7 +222,7 @@ BOBrick::BOBrick( BOEntity *_ent, float _x, float _y, float _width, float _heigh
 	ent->game->entities.Append( ent );
 }
 
-BOBrick::~BOBrick( void ) {
+BOBrick::~BOBrick() {
 }
 
 /*
@@ -407,12 +406,6 @@ collideDir_t BOBrick::checkCollision( idVec2 pos, idVec2 vel ) {
 * idGameBustOutWindow
 ****************************************************************************
 */
-idGameBustOutWindow::idGameBustOutWindow(idDeviceContext *d, idUserInterfaceLocal *g) : idWindow(d, g) {
-	dc = d;
-	gui = g;
-	CommonInit();
-}
-
 idGameBustOutWindow::idGameBustOutWindow(idUserInterfaceLocal *g) : idWindow(g) {
 	gui = g;
 	CommonInit();
@@ -544,7 +537,7 @@ void idGameBustOutWindow::ReadFromSaveGame( idFile *savefile ) {
 	for ( i=0; i<numberOfEnts; i++ ) {
 		BOEntity *ent;
 
-		ent = new BOEntity( this );
+		ent = new (TAG_OLD_UI) BOEntity( this );
 		ent->ReadFromSaveGame( savefile, this );
 		entities.Append( ent );
 	}
@@ -566,7 +559,7 @@ void idGameBustOutWindow::ReadFromSaveGame( idFile *savefile ) {
 	}
 
 	// Read paddle
-	paddle = new BOBrick();
+	paddle = new (TAG_OLD_UI) BOBrick();
 	paddle->ReadFromSaveGame( savefile, this );
 
 	// Read board
@@ -574,7 +567,7 @@ void idGameBustOutWindow::ReadFromSaveGame( idFile *savefile ) {
 	for ( row=0; row<BOARD_ROWS; row++ ) {
 		savefile->Read( &numberOfEnts, sizeof(numberOfEnts) );
 		for ( i=0; i<numberOfEnts; i++ ) {
-			BOBrick *brick = new BOBrick();
+			BOBrick *brick = new (TAG_OLD_UI) BOBrick();
 			brick->ReadFromSaveGame( savefile, this );
 			board[row].Append( brick );
 		}
@@ -639,8 +632,8 @@ void idGameBustOutWindow::CommonInit() {
 	levelBoardData = NULL;
 
 	// Create Paddle
-	ent = new BOEntity( this );
-	paddle = new BOBrick( ent, 260.f, 440.f, 96.f, 24.f );
+	ent = new (TAG_OLD_UI) BOEntity( this );
+	paddle = new (TAG_OLD_UI) BOBrick( ent, 260.f, 440.f, 96.f, 24.f );
 	paddle->ent->SetMaterial( "game/bustout/paddle" );
 }
 
@@ -687,7 +680,7 @@ const char *idGameBustOutWindow::HandleEvent(const sysEvent_t *event, bool *upda
 idGameBustOutWindow::ParseInternalVar
 =============================
 */
-bool idGameBustOutWindow::ParseInternalVar(const char *_name, idParser *src) {
+bool idGameBustOutWindow::ParseInternalVar(const char *_name, idTokenParser *src) {
 	if ( idStr::Icmp(_name, "gamerunning") == 0 ) {
 		gamerunning = src->ParseBool();
 		return true;
@@ -767,7 +760,7 @@ void idGameBustOutWindow::Draw(int time, float x, float y) {
 	UpdateGame();
 
 	for( i = entities.Num()-1; i >= 0; i-- ) {
-		entities[i]->Draw(dc);
+		entities[i]->Draw();
 	}
 }
 
@@ -806,7 +799,7 @@ void idGameBustOutWindow::UpdateScore() {
 		gui->HandleNamedEvent( "extraBall" );
 
 		// Play sound
-		session->sw->PlayShaderDirectly( "arcade_extraball", S_UNIQUE_CHANNEL );
+		common->SW()->PlayShaderDirectly( "arcade_extraball", S_UNIQUE_CHANNEL );
 
 		nextBallScore = gameScore + 10000;
 	}
@@ -822,7 +815,7 @@ void idGameBustOutWindow::UpdateScore() {
 idGameBustOutWindow::ClearBoard
 =============================
 */
-void idGameBustOutWindow::ClearBoard( void ) {
+void idGameBustOutWindow::ClearBoard() {
 	int i,j;
 
 	ClearPowerups();
@@ -845,7 +838,7 @@ void idGameBustOutWindow::ClearBoard( void ) {
 idGameBustOutWindow::ClearPowerups
 =============================
 */
-void idGameBustOutWindow::ClearPowerups( void ) {
+void idGameBustOutWindow::ClearPowerups() {
 	while ( powerUps.Num() ) {
 		powerUps[0]->removed = true;
 		powerUps.RemoveIndex( 0 );
@@ -857,7 +850,7 @@ void idGameBustOutWindow::ClearPowerups( void ) {
 idGameBustOutWindow::ClearBalls
 =============================
 */
-void idGameBustOutWindow::ClearBalls( void ) {
+void idGameBustOutWindow::ClearBalls() {
 	while ( balls.Num() ) {
 		balls[0]->removed = true;
 		balls.RemoveIndex( 0 );
@@ -871,7 +864,7 @@ void idGameBustOutWindow::ClearBalls( void ) {
 idGameBustOutWindow::LoadBoardFiles
 =============================
 */
-void idGameBustOutWindow::LoadBoardFiles( void ) {
+void idGameBustOutWindow::LoadBoardFiles() {
 	int i;
 	int w,h;
 	ID_TIME_T time;
@@ -883,7 +876,7 @@ void idGameBustOutWindow::LoadBoardFiles( void ) {
 	}
 
 	boardSize = 9 * 12 * 4;
-	levelBoardData = (byte*)Mem_Alloc( boardSize * numLevels );
+	levelBoardData = (byte*)Mem_Alloc( boardSize * numLevels, TAG_CRAP );
 
 	currentBoard = levelBoardData;
 
@@ -915,7 +908,7 @@ void idGameBustOutWindow::LoadBoardFiles( void ) {
 idGameBustOutWindow::SetCurrentBoard
 =============================
 */
-void idGameBustOutWindow::SetCurrentBoard( void ) {
+void idGameBustOutWindow::SetCurrentBoard() {
 	int i,j;
 	int realLevel = ((currentLevel-1) % numLevels);
 	int boardSize;
@@ -938,8 +931,8 @@ void idGameBustOutWindow::SetCurrentBoard( void ) {
 				idVec4 bcolor;
 				float pType = 0.f;
 
-				BOEntity *bent = new BOEntity( this );
-				BOBrick *brick = new BOBrick( bent, bx, by, stepx, stepy );
+				BOEntity *bent = new (TAG_OLD_UI) BOEntity( this );
+				BOBrick *brick = new (TAG_OLD_UI) BOBrick( bent, bx, by, stepx, stepy );
 
 				bcolor.x = currentBoard[pixelindex + 0] / 255.f;
 				bcolor.y = currentBoard[pixelindex + 1] / 255.f;
@@ -972,10 +965,10 @@ void idGameBustOutWindow::SetCurrentBoard( void ) {
 idGameBustOutWindow::CreateNewBall
 =============================
 */
-BOEntity * idGameBustOutWindow::CreateNewBall( void ) {
+BOEntity * idGameBustOutWindow::CreateNewBall() {
 	BOEntity *ball;
 
-	ball = new BOEntity( this );
+	ball = new (TAG_OLD_UI) BOEntity( this );
 	ball->position.x = 300.f;
 	ball->position.y = 416.f;
 	ball->SetMaterial( "game/bustout/ball" );
@@ -996,7 +989,7 @@ idGameBustOutWindow::CreatePowerup
 =============================
 */
 BOEntity * idGameBustOutWindow::CreatePowerup( BOBrick *brick ) {
-	BOEntity *powerEnt = new BOEntity( this );
+	BOEntity *powerEnt = new (TAG_OLD_UI) BOEntity( this );
 
 	powerEnt->position.x = brick->x;
 	powerEnt->position.y = brick->y;
@@ -1031,7 +1024,7 @@ BOEntity * idGameBustOutWindow::CreatePowerup( BOBrick *brick ) {
 idGameBustOutWindow::UpdatePowerups
 =============================
 */
-void idGameBustOutWindow::UpdatePowerups( void ) {
+void idGameBustOutWindow::UpdatePowerups() {
 	idVec2 pos;
 
 	for ( int i=0; i < powerUps.Num(); i++ ) {
@@ -1081,7 +1074,7 @@ void idGameBustOutWindow::UpdatePowerups( void ) {
 			}
 
 			// Play the sound
-			session->sw->PlayShaderDirectly( "arcade_powerup", S_UNIQUE_CHANNEL );
+			common->SW()->PlayShaderDirectly( "arcade_powerup", S_UNIQUE_CHANNEL );
 
 			// Remove it
 			powerUps.RemoveIndex( i );
@@ -1095,7 +1088,7 @@ void idGameBustOutWindow::UpdatePowerups( void ) {
 idGameBustOutWindow::UpdatePaddle
 =============================
 */
-void idGameBustOutWindow::UpdatePaddle( void ) {
+void idGameBustOutWindow::UpdatePaddle() {
 	idVec2 cursorPos;
 	float  oldPos = paddle->x;
 
@@ -1123,7 +1116,7 @@ void idGameBustOutWindow::UpdatePaddle( void ) {
 idGameBustOutWindow::UpdateBall
 =============================
 */
-void idGameBustOutWindow::UpdateBall( void ) {
+void idGameBustOutWindow::UpdateBall() {
 	int ballnum,i,j;
 	bool playSoundBounce = false;
 	bool playSoundBrick = false;
@@ -1210,7 +1203,7 @@ void idGameBustOutWindow::UpdateBall( void ) {
 					brick->ent->fadeOut = true;
 
 					if ( brick->powerup > POWERUP_NONE ) {
-						BOEntity *pUp = CreatePowerup( brick );
+						verify( CreatePowerup( brick ) != NULL );
 					}
 
 					numBricks--;
@@ -1239,9 +1232,9 @@ void idGameBustOutWindow::UpdateBall( void ) {
 		}
 
 		if ( playSoundBounce ) {
-			session->sw->PlayShaderDirectly( "arcade_ballbounce", bounceChannel );
+			common->SW()->PlayShaderDirectly( "arcade_ballbounce", bounceChannel );
 		} else if ( playSoundBrick ) {
-			session->sw->PlayShaderDirectly( "arcade_brickhit", bounceChannel );
+			common->SW()->PlayShaderDirectly( "arcade_brickhit", bounceChannel );
 		}
 
 		if ( playSoundBounce || playSoundBrick ) {
@@ -1266,12 +1259,12 @@ void idGameBustOutWindow::UpdateBall( void ) {
 			gameOver = true;
 
 			// Game Over sound
-			session->sw->PlayShaderDirectly( "arcade_sadsound", S_UNIQUE_CHANNEL );
+			common->SW()->PlayShaderDirectly( "arcade_sadsound", S_UNIQUE_CHANNEL );
 		} else {
 			ballsRemaining--;
 
 			// Ball was lost, but game is not over
-			session->sw->PlayShaderDirectly( "arcade_missedball", S_UNIQUE_CHANNEL );
+			common->SW()->PlayShaderDirectly( "arcade_missedball", S_UNIQUE_CHANNEL );
 		}
 
 		ClearPowerups();

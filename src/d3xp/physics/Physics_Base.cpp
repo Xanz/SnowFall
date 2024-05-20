@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
 
 #include "../Game_local.h"
 
@@ -39,7 +39,7 @@ END_CLASS
 idPhysics_Base::idPhysics_Base
 ================
 */
-idPhysics_Base::idPhysics_Base( void ) {
+idPhysics_Base::idPhysics_Base() {
 	self = NULL;
 	clipMask = 0;
 	SetGravity( gameLocal.GetGravity() );
@@ -51,7 +51,7 @@ idPhysics_Base::idPhysics_Base( void ) {
 idPhysics_Base::~idPhysics_Base
 ================
 */
-idPhysics_Base::~idPhysics_Base( void ) {
+idPhysics_Base::~idPhysics_Base() {
 	if ( self && self->GetPhysics() == this ) {
 		self->SetPhysics( NULL );
 	}
@@ -141,7 +141,7 @@ idClipModel *idPhysics_Base::GetClipModel( int id ) const {
 idPhysics_Base::GetNumClipModels
 ================
 */
-int idPhysics_Base::GetNumClipModels( void ) const {
+int idPhysics_Base::GetNumClipModels() const {
 	return 0;
 }
 
@@ -226,6 +226,24 @@ bool idPhysics_Base::Evaluate( int timeStepMSec, int endTimeMSec ) {
 
 /*
 ================
+idPhysics_Base::Interpolate
+================
+*/
+bool idPhysics_Base::Interpolate( const float fraction ) {
+	return false;
+}
+
+/*
+================
+idPhysics_Base::ResetInterpolationState
+================
+*/
+void idPhysics_Base::ResetInterpolationState( const idVec3 & origin, const idMat3 & axis ) {
+
+}
+
+/*
+================
 idPhysics_Base::UpdateTime
 ================
 */
@@ -237,7 +255,7 @@ void idPhysics_Base::UpdateTime( int endTimeMSec ) {
 idPhysics_Base::GetTime
 ================
 */
-int idPhysics_Base::GetTime( void ) const {
+int idPhysics_Base::GetTime() const {
 	return 0;
 }
 
@@ -271,7 +289,7 @@ void idPhysics_Base::AddForce( const int id, const idVec3 &point, const idVec3 &
 idPhysics_Base::Activate
 ================
 */
-void idPhysics_Base::Activate( void ) {
+void idPhysics_Base::Activate() {
 }
 
 /*
@@ -279,7 +297,7 @@ void idPhysics_Base::Activate( void ) {
 idPhysics_Base::PutToRest
 ================
 */
-void idPhysics_Base::PutToRest( void ) {
+void idPhysics_Base::PutToRest() {
 }
 
 /*
@@ -287,7 +305,7 @@ void idPhysics_Base::PutToRest( void ) {
 idPhysics_Base::IsAtRest
 ================
 */
-bool idPhysics_Base::IsAtRest( void ) const {
+bool idPhysics_Base::IsAtRest() const {
 	return true;
 }
 
@@ -296,7 +314,7 @@ bool idPhysics_Base::IsAtRest( void ) const {
 idPhysics_Base::GetRestStartTime
 ================
 */
-int idPhysics_Base::GetRestStartTime( void ) const {
+int idPhysics_Base::GetRestStartTime() const {
 	return 0;
 }
 
@@ -305,7 +323,7 @@ int idPhysics_Base::GetRestStartTime( void ) const {
 idPhysics_Base::IsPushable
 ================
 */
-bool idPhysics_Base::IsPushable( void ) const {
+bool idPhysics_Base::IsPushable() const {
 	return true;
 }
 
@@ -314,7 +332,7 @@ bool idPhysics_Base::IsPushable( void ) const {
 idPhysics_Base::SaveState
 ================
 */
-void idPhysics_Base::SaveState( void ) {
+void idPhysics_Base::SaveState() {
 }
 
 /*
@@ -322,7 +340,7 @@ void idPhysics_Base::SaveState( void ) {
 idPhysics_Base::RestoreState
 ================
 */
-void idPhysics_Base::RestoreState( void ) {
+void idPhysics_Base::RestoreState() {
 }
 
 /*
@@ -425,7 +443,7 @@ void idPhysics_Base::SetGravity( const idVec3 &newGravity ) {
 idPhysics_Base::GetGravity
 ================
 */
-const idVec3 &idPhysics_Base::GetGravity( void ) const {
+const idVec3 &idPhysics_Base::GetGravity() const {
 	return gravityVector;
 }
 
@@ -434,7 +452,7 @@ const idVec3 &idPhysics_Base::GetGravity( void ) const {
 idPhysics_Base::GetGravityNormal
 ================
 */
-const idVec3 &idPhysics_Base::GetGravityNormal( void ) const {
+const idVec3 &idPhysics_Base::GetGravityNormal() const {
 	return gravityNormal;
 }
 
@@ -470,7 +488,7 @@ int idPhysics_Base::ClipContents( const idClipModel *model ) const {
 idPhysics_Base::DisableClip
 ================
 */
-void idPhysics_Base::DisableClip( void ) {
+void idPhysics_Base::DisableClip() {
 }
 
 /*
@@ -478,7 +496,7 @@ void idPhysics_Base::DisableClip( void ) {
 idPhysics_Base::EnableClip
 ================
 */
-void idPhysics_Base::EnableClip( void ) {
+void idPhysics_Base::EnableClip() {
 }
 
 /*
@@ -486,7 +504,7 @@ void idPhysics_Base::EnableClip( void ) {
 idPhysics_Base::UnlinkClip
 ================
 */
-void idPhysics_Base::UnlinkClip( void ) {
+void idPhysics_Base::UnlinkClip() {
 }
 
 /*
@@ -494,7 +512,7 @@ void idPhysics_Base::UnlinkClip( void ) {
 idPhysics_Base::LinkClip
 ================
 */
-void idPhysics_Base::LinkClip( void ) {
+void idPhysics_Base::LinkClip() {
 }
 
 /*
@@ -502,7 +520,7 @@ void idPhysics_Base::LinkClip( void ) {
 idPhysics_Base::EvaluateContacts
 ================
 */
-bool idPhysics_Base::EvaluateContacts( void ) {
+bool idPhysics_Base::EvaluateContacts() {
 	return false;
 }
 
@@ -511,7 +529,7 @@ bool idPhysics_Base::EvaluateContacts( void ) {
 idPhysics_Base::GetNumContacts
 ================
 */
-int idPhysics_Base::GetNumContacts( void ) const {
+int idPhysics_Base::GetNumContacts() const {
 	return contacts.Num();
 }
 
@@ -529,7 +547,7 @@ const contactInfo_t &idPhysics_Base::GetContact( int num ) const {
 idPhysics_Base::ClearContacts
 ================
 */
-void idPhysics_Base::ClearContacts( void ) {
+void idPhysics_Base::ClearContacts() {
 	int i;
 	idEntity *ent;
 
@@ -539,7 +557,7 @@ void idPhysics_Base::ClearContacts( void ) {
 			ent->RemoveContactEntity( self );
 		}
 	}
-	contacts.SetNum( 0, false );
+	contacts.SetNum( 0 );
 }
 
 /*
@@ -593,7 +611,7 @@ void idPhysics_Base::RemoveContactEntity( idEntity *e ) {
 idPhysics_Base::HasGroundContacts
 ================
 */
-bool idPhysics_Base::HasGroundContacts( void ) const {
+bool idPhysics_Base::HasGroundContacts() const {
 	int i;
 
 	for ( i = 0; i < contacts.Num(); i++ ) {
@@ -675,7 +693,7 @@ void idPhysics_Base::SetMaster( idEntity *master, const bool orientated ) {
 idPhysics_Base::GetBlockingInfo
 ================
 */
-const trace_t *idPhysics_Base::GetBlockingInfo( void ) const {
+const trace_t *idPhysics_Base::GetBlockingInfo() const {
 	return NULL;
 }
 
@@ -684,7 +702,7 @@ const trace_t *idPhysics_Base::GetBlockingInfo( void ) const {
 idPhysics_Base::GetBlockingEntity
 ================
 */
-idEntity *idPhysics_Base::GetBlockingEntity( void ) const {
+idEntity *idPhysics_Base::GetBlockingEntity() const {
 	return NULL;
 }
 
@@ -693,7 +711,7 @@ idEntity *idPhysics_Base::GetBlockingEntity( void ) const {
 idPhysics_Base::GetLinearEndTime
 ================
 */
-int idPhysics_Base::GetLinearEndTime( void ) const {
+int idPhysics_Base::GetLinearEndTime() const {
 	return 0;
 }
 
@@ -702,7 +720,7 @@ int idPhysics_Base::GetLinearEndTime( void ) const {
 idPhysics_Base::GetAngularEndTime
 ================
 */
-int idPhysics_Base::GetAngularEndTime( void ) const {
+int idPhysics_Base::GetAngularEndTime() const {
 	return 0;
 }
 
@@ -716,13 +734,13 @@ void idPhysics_Base::AddGroundContacts( const idClipModel *clipModel ) {
 	int index, num;
 
 	index = contacts.Num();
-	contacts.SetNum( index + 10, false );
+	contacts.SetNum( index + 10 );
 
 	dir.SubVec3(0) = gravityNormal;
 	dir.SubVec3(1) = vec3_origin;
 	num = gameLocal.clip.Contacts( &contacts[index], 10, clipModel->GetOrigin(),
 					dir, CONTACT_EPSILON, clipModel, clipModel->GetAxis(), clipMask, self );
-	contacts.SetNum( index + num, false );
+	contacts.SetNum( index + num );
 }
 
 /*
@@ -730,7 +748,7 @@ void idPhysics_Base::AddGroundContacts( const idClipModel *clipModel ) {
 idPhysics_Base::AddContactEntitiesForContacts
 ================
 */
-void idPhysics_Base::AddContactEntitiesForContacts( void ) {
+void idPhysics_Base::AddContactEntitiesForContacts() {
 	int i;
 	idEntity *ent;
 
@@ -747,7 +765,7 @@ void idPhysics_Base::AddContactEntitiesForContacts( void ) {
 idPhysics_Base::ActivateContactEntities
 ================
 */
-void idPhysics_Base::ActivateContactEntities( void ) {
+void idPhysics_Base::ActivateContactEntities() {
 	int i;
 	idEntity *ent;
 
@@ -766,7 +784,7 @@ void idPhysics_Base::ActivateContactEntities( void ) {
 idPhysics_Base::IsOutsideWorld
 ================
 */
-bool idPhysics_Base::IsOutsideWorld( void ) const {
+bool idPhysics_Base::IsOutsideWorld() const {
 	if ( !gameLocal.clip.GetWorldBounds().Expand( 128.0f ).IntersectsBounds( GetAbsBounds() ) ) {
 		return true;
 	}
@@ -786,7 +804,7 @@ void idPhysics_Base::DrawVelocity( int id, float linearScale, float angularScale
 	dir = GetLinearVelocity( id );
 	dir *= linearScale;
 	if ( dir.LengthSqr() > Square( 0.1f ) ) {
-		dir.Truncate( 10.0f );
+		dir = dir.Truncate( 10.0f );
 		org = GetOrigin( id );
 		gameRenderWorld->DebugArrow( colorRed, org, org + dir, 1 );
 	}
@@ -825,7 +843,7 @@ void idPhysics_Base::DrawVelocity( int id, float linearScale, float angularScale
 idPhysics_Base::WriteToSnapshot
 ================
 */
-void idPhysics_Base::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_Base::WriteToSnapshot( idBitMsg &msg ) const {
 }
 
 /*
@@ -833,5 +851,5 @@ void idPhysics_Base::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Base::ReadFromSnapshot
 ================
 */
-void idPhysics_Base::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_Base::ReadFromSnapshot( const idBitMsg &msg ) {
 }

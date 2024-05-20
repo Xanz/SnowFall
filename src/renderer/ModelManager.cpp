@@ -1,37 +1,39 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
 #include "Model_local.h"
 #include "tr_local.h"	// just for R_FreeWorldInteractions and R_CreateWorldInteractions
 
+idCVar r_binaryLoadRenderModels( "r_binaryLoadRenderModels", "1", 0, "enable binary load/write of render models" );
+idCVar preload_MapModels( "preload_MapModels", "1", CVAR_SYSTEM | CVAR_BOOL, "preload models during begin or end levelload" );
 
 class idRenderModelManagerLocal : public idRenderModelManager {
 public:
@@ -52,16 +54,16 @@ public:
 	virtual void			WritePrecacheCommands( idFile *file );
 	virtual void			BeginLevelLoad();
 	virtual void			EndLevelLoad();
+	virtual void			Preload( const idPreloadManifest &manifest );
 
 	virtual	void			PrintMemInfo( MemInfo_t *mi );
 
 private:
-	idList<idRenderModel*>	models;
+	idList<idRenderModel*, TAG_MODEL>	models;
 	idHashIndex				hash;
 	idRenderModel *			defaultModel;
 	idRenderModel *			beamModel;
 	idRenderModel *			spriteModel;
-	idRenderModel *			trailModel;
 	bool					insideLevelLoad;		// don't actually load now
 
 	idRenderModel *			GetModel( const char *modelName, bool createIfNotFound );
@@ -86,7 +88,6 @@ idRenderModelManagerLocal::idRenderModelManagerLocal() {
 	beamModel = NULL;
 	spriteModel = NULL;
 	insideLevelLoad = false;
-	trailModel = NULL;
 }
 
 /*
@@ -123,7 +124,7 @@ void idRenderModelManagerLocal::ListModels_f( const idCmdArgs &args ) {
 	common->Printf( " mem   srf verts tris\n" );
 	common->Printf( " ---   --- ----- ----\n" );
 
-	for ( int i = 0 ; i < localModelManager.models.Num() ; i++ ) {
+	for ( int i = 0; i < localModelManager.models.Num(); i++ ) {
 		idRenderModel	*model = localModelManager.models[i];
 
 		if ( !model->IsLoaded() ) {
@@ -170,7 +171,8 @@ void idRenderModelManagerLocal::TouchModel_f( const idCmdArgs &args ) {
 	}
 
 	common->Printf( "touchModel %s\n", model );
-	session->UpdateScreen();
+	const bool captureToImage = false;
+	common->UpdateScreen( captureToImage );
 	idRenderModel *m = renderModelManager->CheckModel( model );
 	if ( !m ) {
 		common->Printf( "...not found\n" );
@@ -183,7 +185,7 @@ idRenderModelManagerLocal::WritePrecacheCommands
 =================
 */
 void idRenderModelManagerLocal::WritePrecacheCommands( idFile *f ) {
-	for ( int i = 0 ; i < models.Num() ; i++ ) {
+	for ( int i = 0; i < models.Num(); i++ ) {
 		idRenderModel	*model = models[i];
 
 		if ( !model ) {
@@ -214,7 +216,7 @@ void idRenderModelManagerLocal::Init() {
 	insideLevelLoad = false;
 
 	// create a default model
-	idRenderModelStatic *model = new idRenderModelStatic;
+	idRenderModelStatic *model = new (TAG_MODEL) idRenderModelStatic;
 	model->InitEmpty( "_DEFAULT" );
 	model->MakeDefaultModel();
 	model->SetLevelLoadReferenced( true );
@@ -222,13 +224,13 @@ void idRenderModelManagerLocal::Init() {
 	AddModel( model );
 
 	// create the beam model
-	idRenderModelStatic *beam = new idRenderModelBeam;
+	idRenderModelStatic *beam = new (TAG_MODEL) idRenderModelBeam;
 	beam->InitEmpty( "_BEAM" );
 	beam->SetLevelLoadReferenced( true );
 	beamModel = beam;
 	AddModel( beam );
 
-	idRenderModelStatic *sprite = new idRenderModelSprite;
+	idRenderModelStatic *sprite = new (TAG_MODEL) idRenderModelSprite;
 	sprite->InitEmpty( "_SPRITE" );
 	sprite->SetLevelLoadReferenced( true );
 	spriteModel = sprite;
@@ -250,26 +252,38 @@ void idRenderModelManagerLocal::Shutdown() {
 idRenderModelManagerLocal::GetModel
 =================
 */
-idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool createIfNotFound ) {
-	idStr		canonical;
-	idStr		extension;
+idRenderModel *idRenderModelManagerLocal::GetModel( const char *_modelName, bool createIfNotFound ) {
 
-	if ( !modelName || !modelName[0] ) {
+	if ( !_modelName || !_modelName[0] ) {
 		return NULL;
 	}
 
-	canonical = modelName;
+	idStrStatic< MAX_OSPATH > canonical = _modelName;
 	canonical.ToLower();
 
+	idStrStatic< MAX_OSPATH > extension;
+	canonical.ExtractFileExtension( extension );
+
 	// see if it is already present
-	int key = hash.GenerateKey( modelName, false );
+	int key = hash.GenerateKey( canonical, false );
 	for ( int i = hash.First( key ); i != -1; i = hash.Next( i ) ) {
 		idRenderModel *model = models[i];
 
 		if ( canonical.Icmp( model->Name() ) == 0 ) {
 			if ( !model->IsLoaded() ) {
 				// reload it if it was purged
-				model->LoadModel();
+				idStr generatedFileName = "generated/rendermodels/";
+				generatedFileName.AppendPath( canonical );
+				generatedFileName.SetFileExtension( va( "b%s", extension.c_str() ) );
+				if ( model->SupportsBinaryModel() && r_binaryLoadRenderModels.GetBool() ) {
+					idFileLocal file( fileSystem->OpenFileReadMemory( generatedFileName ) );
+					model->PurgeModel();
+					if ( !model->LoadBinaryModel( file, 0 ) ) {
+						model->LoadModel();
+					}
+				} else {
+					model->LoadModel();
+				}
 			} else if ( insideLevelLoad && !model->IsLevelLoadReferenced() ) {
 				// we are reusing a model already in memory, but
 				// touch all the materials to make sure they stay
@@ -285,29 +299,50 @@ idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool 
 
 	// determine which subclass of idRenderModel to initialize
 
-	idRenderModel	*model;
+	idRenderModel * model = NULL;
 
-	canonical.ExtractFileExtension( extension );
-
-	if ( ( extension.Icmp( "ase" ) == 0 ) || ( extension.Icmp( "lwo" ) == 0 ) || ( extension.Icmp( "flt" ) == 0 ) ) {
-		model = new idRenderModelStatic;
-		model->InitFromFile( modelName );
-	} else if ( extension.Icmp( "ma" ) == 0 ) {
-		model = new idRenderModelStatic;
-		model->InitFromFile( modelName );
+	if ( ( extension.Icmp( "ase" ) == 0 ) || ( extension.Icmp( "lwo" ) == 0 ) || ( extension.Icmp( "flt" ) == 0 ) || ( extension.Icmp( "ma" ) == 0 ) ) {
+		model = new (TAG_MODEL) idRenderModelStatic;
 	} else if ( extension.Icmp( MD5_MESH_EXT ) == 0 ) {
-		model = new idRenderModelMD5;
-		model->InitFromFile( modelName );
+		model = new (TAG_MODEL) idRenderModelMD5;
 	} else if ( extension.Icmp( "md3" ) == 0 ) {
-		model = new idRenderModelMD3;
-		model->InitFromFile( modelName );
+		model = new (TAG_MODEL) idRenderModelMD3;
 	} else if ( extension.Icmp( "prt" ) == 0  ) {
-		model = new idRenderModelPrt;
-		model->InitFromFile( modelName );
+		model = new (TAG_MODEL) idRenderModelPrt;
 	} else if ( extension.Icmp( "liquid" ) == 0  ) {
-		model = new idRenderModelLiquid;
-		model->InitFromFile( modelName );
-	} else {
+		model = new (TAG_MODEL) idRenderModelLiquid;
+	}
+
+	idStrStatic< MAX_OSPATH > generatedFileName;
+
+	if ( model != NULL ) {
+
+		generatedFileName = "generated/rendermodels/";
+		generatedFileName.AppendPath( canonical );
+		generatedFileName.SetFileExtension( va( "b%s", extension.c_str() ) );
+
+		// Get the timestamp on the original file, if it's newer than what is stored in binary model, regenerate it
+		ID_TIME_T sourceTimeStamp = fileSystem->GetTimestamp( canonical );
+
+		idFileLocal file( fileSystem->OpenFileReadMemory( generatedFileName ) );
+
+		if ( !model->SupportsBinaryModel() || !r_binaryLoadRenderModels.GetBool() ) {
+			model->InitFromFile( canonical );
+		} else {
+			if ( !model->LoadBinaryModel( file, sourceTimeStamp ) ) {
+				model->InitFromFile( canonical );
+
+				idFileLocal outputFile( fileSystem->OpenFileWrite( generatedFileName, "fs_basepath" ) );
+				idLib::Printf( "Writing %s\n", generatedFileName.c_str() );
+				model->WriteBinaryModel( outputFile );
+			} /* else {
+				idLib::Printf( "loaded binary model %s from file %s\n", model->Name(), generatedFileName.c_str() );
+			} */
+		} 
+	}
+
+	// Not one of the known formats
+	if ( model == NULL ) {
 
 		if ( extension.Length() ) {
 			common->Warning( "unknown model type '%s'", canonical.c_str() );
@@ -317,13 +352,16 @@ idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool 
 			return NULL;
 		}
 
-		idRenderModelStatic	*smodel = new idRenderModelStatic;
-		smodel->InitEmpty( modelName );
+		idRenderModelStatic	*smodel = new (TAG_MODEL) idRenderModelStatic;
+		smodel->InitEmpty( canonical );
 		smodel->MakeDefaultModel();
 
 		model = smodel;
 	}
 
+	if ( cvarSystem->GetCVarBool( "fs_buildresources" ) ) {
+		fileSystem->AddModelPreload( canonical );
+	}
 	model->SetLevelLoadReferenced( true );
 
 	if ( !createIfNotFound && model->IsDefaultModel() ) {
@@ -331,6 +369,10 @@ idRenderModel *idRenderModelManagerLocal::GetModel( const char *modelName, bool 
 		model = NULL;
 
 		return NULL;
+	}
+
+	if ( cvarSystem->GetCVarBool( "fs_buildgame" ) ) {
+		fileSystem->AddModelPreload( model->Name() );
 	}
 
 	AddModel( model );
@@ -344,7 +386,7 @@ idRenderModelManagerLocal::AllocModel
 =================
 */
 idRenderModel *idRenderModelManagerLocal::AllocModel() {
-	return new idRenderModelStatic();
+	return new (TAG_MODEL) idRenderModelStatic();
 }
 
 /*
@@ -421,8 +463,10 @@ idRenderModelManagerLocal::RemoveModel
 */
 void idRenderModelManagerLocal::RemoveModel( idRenderModel *model ) {
 	int index = models.FindIndex( model );
-	hash.RemoveIndex( hash.GenerateKey( model->Name(), false ), index );
-	models.RemoveIndex( index );
+	if ( index != -1 ) {
+		hash.RemoveIndex( hash.GenerateKey( model->Name(), false ), index );
+		models.RemoveIndex( index );
+	}
 }
 
 /*
@@ -440,7 +484,7 @@ void idRenderModelManagerLocal::ReloadModels( bool forceAll ) {
 	R_FreeDerivedData();
 
 	// skip the default model at index 0
-	for ( int i = 1 ; i < models.Num() ; i++ ) {
+	for ( int i = 1; i < models.Num(); i++ ) {
 		idRenderModel	*model = models[i];
 
 		// we may want to allow world model reloading in the future, but we don't now
@@ -474,7 +518,7 @@ idRenderModelManagerLocal::FreeModelVertexCaches
 =================
 */
 void idRenderModelManagerLocal::FreeModelVertexCaches() {
-	for ( int i = 0 ; i < models.Num() ; i++ ) {
+	for ( int i = 0; i < models.Num(); i++ ) {
 		idRenderModel *model = models[i];
 		model->FreeVertexCache();
 	}
@@ -488,10 +532,11 @@ idRenderModelManagerLocal::BeginLevelLoad
 void idRenderModelManagerLocal::BeginLevelLoad() {
 	insideLevelLoad = true;
 
-	for ( int i = 0 ; i < models.Num() ; i++ ) {
+	for ( int i = 0; i < models.Num(); i++ ) {
 		idRenderModel *model = models[i];
 
-		if ( com_purgeAll.GetBool() && model->IsReloadable() ) {
+		// always reload all models 
+		if ( model->IsReloadable() ) {
 			R_CheckForEntityDefsUsingModel( model );
 			model->PurgeModel();
 		}
@@ -499,9 +544,70 @@ void idRenderModelManagerLocal::BeginLevelLoad() {
 		model->SetLevelLoadReferenced( false );
 	}
 
-	// purge unused triangle surface memory
-	R_PurgeTriSurfData( frameData );
+	vertexCache.FreeStaticData();
 }
+
+/*
+=================
+idRenderModelManagerLocal::Preload
+=================
+*/
+void idRenderModelManagerLocal::Preload( const idPreloadManifest &manifest  ) {
+	if ( preload_MapModels.GetBool() ) {
+		// preload this levels images
+		int	start = Sys_Milliseconds();
+		int numLoaded = 0;
+		idList< preloadSort_t > preloadSort;
+		preloadSort.Resize( manifest.NumResources() );
+		for ( int i = 0; i < manifest.NumResources(); i++ ) {
+			const preloadEntry_s & p = manifest.GetPreloadByIndex( i );
+			idResourceCacheEntry rc;
+			idStrStatic< MAX_OSPATH > filename;
+			if ( p.resType == PRELOAD_MODEL ) {
+				filename = "generated/rendermodels/";
+				filename += p.resourceName;
+				idStrStatic< 16 > ext;
+				filename.ExtractFileExtension( ext );
+				filename.SetFileExtension( va( "b%s", ext.c_str() ) );
+			}
+			if ( p.resType == PRELOAD_PARTICLE ) {
+				filename = "generated/particles/";
+				filename += p.resourceName;
+				filename += ".bprt";
+			}
+			if ( !filename.IsEmpty() ) {
+				if ( fileSystem->GetResourceCacheEntry( filename, rc ) ) {
+					preloadSort_t ps = {};
+					ps.idx = i;
+					ps.ofs = rc.offset;
+					preloadSort.Append( ps );
+				}
+			}
+		}
+		
+		preloadSort.SortWithTemplate( idSort_Preload() );
+
+		for ( int i = 0; i < preloadSort.Num(); i++ ) {
+			const preloadSort_t & ps = preloadSort[ i ];
+			const preloadEntry_s & p = manifest.GetPreloadByIndex( ps.idx );
+			if ( p.resType == PRELOAD_MODEL ) {
+				idRenderModel * model = FindModel( p.resourceName );
+				if ( model != NULL ) {
+					model->SetLevelLoadReferenced( true );
+				}
+			} else if ( p.resType == PRELOAD_PARTICLE ) {
+				declManager->FindType( DECL_PARTICLE, p.resourceName );
+			}
+			numLoaded++;
+		}
+
+		int	end = Sys_Milliseconds();
+		common->Printf( "%05d models preloaded ( or were already loaded ) in %5.1f seconds\n", numLoaded, ( end - start ) * 0.001 );
+		common->Printf( "----------------------------------------\n" );
+	}
+}
+
+
 
 /*
 =================
@@ -519,7 +625,7 @@ void idRenderModelManagerLocal::EndLevelLoad() {
 	int	loadCount = 0;
 
 	// purge any models not touched
-	for ( int i = 0 ; i < models.Num() ; i++ ) {
+	for ( int i = 0; i < models.Num(); i++ ) {
 		idRenderModel *model = models[i];
 
 		if ( !model->IsLevelLoadReferenced() && model->IsLoaded() && model->IsReloadable() ) {
@@ -538,25 +644,36 @@ void idRenderModelManagerLocal::EndLevelLoad() {
 
 			keepCount++;
 		}
+
+		common->UpdateLevelLoadPacifier();
 	}
 
-	// purge unused triangle surface memory
-	R_PurgeTriSurfData( frameData );
-
 	// load any new ones
-	for ( int i = 0 ; i < models.Num() ; i++ ) {
+	for ( int i = 0; i < models.Num(); i++ ) {
+		common->UpdateLevelLoadPacifier();
+
+
 		idRenderModel *model = models[i];
 
 		if ( model->IsLevelLoadReferenced() && !model->IsLoaded() && model->IsReloadable() ) {
-
 			loadCount++;
 			model->LoadModel();
+		}
+	}
 
-			if ( ( loadCount & 15 ) == 0 ) {
-				session->PacifierUpdate();
+	// create static vertex/index buffers for all models
+	for ( int i = 0; i < models.Num(); i++ ) {
+		common->UpdateLevelLoadPacifier();
+
+
+		idRenderModel *model = models[i];
+		if ( model->IsLoaded() ) {
+			for ( int j = 0; j < model->NumSurfaces(); j++ ) {
+				R_CreateStaticBuffersForTri( *(model->Surface( j )->geometry) );
 			}
 		}
 	}
+
 
 	// _D3XP added this
 	int	end = Sys_Milliseconds();
@@ -584,7 +701,7 @@ void idRenderModelManagerLocal::PrintMemInfo( MemInfo_t *mi ) {
 	}
 
 	// sort first
-	sortIndex = new int[ localModelManager.models.Num()];
+	sortIndex = new (TAG_MODEL) int[ localModelManager.models.Num()];
 
 	for ( i = 0; i <  localModelManager.models.Num(); i++ ) {
 		sortIndex[i] = i;
@@ -601,7 +718,7 @@ void idRenderModelManagerLocal::PrintMemInfo( MemInfo_t *mi ) {
 	}
 
 	// print next
-	for ( int i = 0 ; i < localModelManager.models.Num() ; i++ ) {
+	for ( int i = 0; i < localModelManager.models.Num(); i++ ) {
 		idRenderModel	*model = localModelManager.models[sortIndex[i]];
 		int mem;
 
@@ -614,7 +731,7 @@ void idRenderModelManagerLocal::PrintMemInfo( MemInfo_t *mi ) {
 		f->Printf( "%s %s\n", idStr::FormatNumber( mem ).c_str(), model->Name() );
 	}
 
-	delete sortIndex;
+	delete [] sortIndex;
 	mi->modelAssetsTotal = totalMem;
 
 	f->Printf( "\nTotal model bytes allocated: %s\n", idStr::FormatNumber( totalMem ).c_str() );

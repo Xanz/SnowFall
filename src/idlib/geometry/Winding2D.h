@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -42,15 +42,15 @@ If you have questions concerning this license or the applicable additional terms
 
 class idWinding2D {
 public:
-					idWinding2D( void );
+					idWinding2D();
 
 	idWinding2D &	operator=( const idWinding2D &winding );
 	const idVec2 &	operator[]( const int index ) const;
 	idVec2 &		operator[]( const int index );
 
-	void			Clear( void );
+	void			Clear();
 	void			AddPoint( const idVec2 &point );
-	int				GetNumPoints( void ) const;
+	int				GetNumPoints() const;
 
 	void			Expand( const float d );
 	void			ExpandForAxialBox( const idVec2 bounds[2] );
@@ -62,17 +62,17 @@ public:
 					// if there is nothing at the front the number of points is set to zero
 	bool			ClipInPlace( const idVec3 &plane, const float epsilon = ON_EPSILON, const bool keepOn = false );
 
-	idWinding2D *	Copy( void ) const;
-	idWinding2D *	Reverse( void ) const;
+	idWinding2D *	Copy() const;
+	idWinding2D *	Reverse() const;
 
-	float			GetArea( void ) const;
-	idVec2			GetCenter( void ) const;
+	float			GetArea() const;
+	idVec2			GetCenter() const;
 	float			GetRadius( const idVec2 &center ) const;
 	void			GetBounds( idVec2 bounds[2] ) const;
 
-	bool			IsTiny( void ) const;
-	bool			IsHuge( void ) const;	// base winding for a plane is typically huge
-	void			Print( void ) const;
+	bool			IsTiny() const;
+	bool			IsHuge() const;	// base winding for a plane is typically huge
+	void			Print() const;
 
 	float			PlaneDistance( const idVec3 &plane ) const;
 	int				PlaneSide( const idVec3 &plane, const float epsilon = ON_EPSILON ) const;
@@ -90,7 +90,7 @@ private:
 	idVec2			p[MAX_POINTS_ON_WINDING_2D];
 };
 
-ID_INLINE idWinding2D::idWinding2D( void ) {
+ID_INLINE idWinding2D::idWinding2D() {
 	numPoints = 0;
 }
 
@@ -112,7 +112,7 @@ ID_INLINE idVec2 &idWinding2D::operator[]( const int index ) {
 	return p[ index ];
 }
 
-ID_INLINE void idWinding2D::Clear( void ) {
+ID_INLINE void idWinding2D::Clear() {
 	numPoints = 0;
 }
 
@@ -120,7 +120,7 @@ ID_INLINE void idWinding2D::AddPoint( const idVec2 &point ) {
 	p[numPoints++] = point;
 }
 
-ID_INLINE int idWinding2D::GetNumPoints( void ) const {
+ID_INLINE int idWinding2D::GetNumPoints() const {
 	return numPoints;
 }
 

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -142,7 +142,7 @@ class idTarget_WaitForButton : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_WaitForButton );
 
-	void				Think( void );
+	void				Think();
 
 private:
 	void				Event_Activate( idEntity *activator );
@@ -210,12 +210,12 @@ class idTarget_FadeEntity : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_FadeEntity );
 
-						idTarget_FadeEntity( void );
+						idTarget_FadeEntity();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Think( void );
+	void				Think();
 
 private:
 	idVec4				fadeFrom;
@@ -269,7 +269,7 @@ class idTarget_Give : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_Give );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	void				Event_Activate( idEntity *activator );
@@ -288,8 +288,6 @@ class idTarget_GiveEmail : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_GiveEmail );
 
-	void				Spawn( void );
-
 private:
 	void				Event_Activate( idEntity *activator );
 };
@@ -306,7 +304,7 @@ class idTarget_SetModel : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_SetModel );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	void				Event_Activate( idEntity *activator );
@@ -321,23 +319,21 @@ idTarget_SetInfluence
 ===============================================================================
 */
 
-#ifdef _D3XP
 typedef struct SavedGui_s {
 	SavedGui_s() {memset(gui, 0, sizeof(idUserInterface*)*MAX_RENDERENTITY_GUI); };
 	idUserInterface*	gui[MAX_RENDERENTITY_GUI];
 } SavedGui_t;
-#endif
 
 class idTarget_SetInfluence : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_SetInfluence );
 
-						idTarget_SetInfluence( void );
+						idTarget_SetInfluence();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Spawn( void );
+	void				Spawn();
 
 private:
 	void				Event_Activate( idEntity *activator );
@@ -345,12 +341,12 @@ private:
 	void				Event_GatherEntities();
 	void				Event_Flash( float flash, int out );
 	void				Event_ClearFlash( float flash );
-	void				Think( void );
+	void				Think();
 
-	idList<int>			lightList;
-	idList<int>			guiList;
-	idList<int>			soundList;
-	idList<int>			genericList;
+	idList<int, TAG_TARGET>			lightList;
+	idList<int, TAG_TARGET>			guiList;
+	idList<int, TAG_TARGET>			soundList;
+	idList<int, TAG_TARGET>			genericList;
 	float				flashIn;
 	float				flashOut;
 	float				delay;
@@ -361,9 +357,7 @@ private:
 	bool				soundFaded;
 	bool				restoreOnTrigger;
 
-#ifdef _D3XP
-	idList<SavedGui_t>	savedGuiList;
-#endif
+	idList<SavedGui_t, TAG_TARGET>	savedGuiList;
 };
 
 
@@ -399,10 +393,10 @@ public:
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
-	void				Think( void );
+	void				Think();
 
 private:
-	idInterpolate<int>	fovSetting;
+	idInterpolate<float>	fovSetting;
 
 	void				Event_Activate( idEntity *activator );
 };
@@ -486,9 +480,9 @@ class idTarget_Tip : public idTarget {
 public:
 	CLASS_PROTOTYPE( idTarget_Tip );
 
-						idTarget_Tip( void );
+						idTarget_Tip();
 
-	void				Spawn( void );
+	void				Spawn();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
@@ -497,8 +491,8 @@ private:
 	idVec3				playerPos;
 
 	void				Event_Activate( idEntity *activator );
-	void				Event_TipOff( void );
-	void				Event_GetPlayerPos( void );
+	void				Event_TipOff();
+	void				Event_GetPlayerPos();
 };
 
 /*
@@ -548,6 +542,20 @@ private:
 /*
 ===============================================================================
 
+idTarget_Checkpoint
+
+===============================================================================
+*/
+class idTarget_Checkpoint : public idTarget {
+public:
+	CLASS_PROTOTYPE( idTarget_Checkpoint );
+private:
+	void				Event_Activate( idEntity *activator );
+};
+
+/*
+===============================================================================
+
 idTarget_EnableStamina
 
 ===============================================================================
@@ -574,5 +582,34 @@ private:
 	void				Event_RestoreVolume();
 };
 
+/*
+===============================================================================
+
+idTarget_RumbleJoystick
+
+===============================================================================
+*/
+
+class idTarget_RumbleJoystick : public idTarget {
+public:
+	CLASS_PROTOTYPE( idTarget_RumbleJoystick );
+private:
+	void				Event_Activate( idEntity *activator );
+};
+
+/*
+===============================================================================
+
+idTarget_Achievement
+
+===============================================================================
+*/
+
+class idTarget_Achievement : public idTarget {
+public:
+	CLASS_PROTOTYPE( idTarget_Achievement );
+private:
+	void				Event_Activate( idEntity *activator );
+};
 
 #endif /* !__GAME_TARGET_H__ */
