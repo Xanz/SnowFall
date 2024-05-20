@@ -62,7 +62,7 @@ PFNWGLCHOOSEPIXELFORMATARBPROC			wglChoosePixelFormatARB;
 PFNWGLCREATECONTEXTATTRIBSARBPROC		wglCreateContextAttribsARB;
 
 
-idCVar r_useOpenGL32( "r_useOpenGL32", "1", CVAR_INTEGER, "0 = OpenGL 2.0, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
+idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 2.0, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 
 //
 // function declaration
