@@ -1208,10 +1208,6 @@ bool GLimp_Init( glimpParms_t parms ) {
 
 	// wglSwapinterval, etc
 	GLW_CheckWGLExtensions( win32.hDC );
-
-	// check logging
-	// GLimp_EnableLogging( ( r_logFile.GetInteger() != 0 ) );
-
 	return true;
 }
 
@@ -1272,12 +1268,10 @@ void GLimp_Shutdown() {
 
 	common->Printf( "Shutting down OpenGL subsystem\n" );
 
-	// set current context to NULL
-	// if ( wglMakeCurrent ) 
-	{
-		retVal = wglMakeCurrent( NULL, NULL ) != 0;
-		common->Printf( "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
-	}
+
+	retVal = wglMakeCurrent( NULL, NULL ) != 0;
+	common->Printf( "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
+
 
 	// delete HGLRC
 	if ( win32.hGLRC ) {
@@ -1527,22 +1521,3 @@ OutputDebugString( "-->GLimp_WakeBackEnd\n" );
 OutputDebugString( "<--GLimp_WakeBackEnd\n" );
 #endif
 }
-
-/*
-===================
-GLimp_ExtensionPointer
-
-Returns a function pointer for an OpenGL extension entry point
-===================
-*/
-// GLExtension_t GLimp_ExtensionPointer( const char *name ) {
-// 	void	(*proc)();
-
-// 	proc = (GLExtension_t)qwglGetProcAddress( name );
-
-// 	if ( !proc ) {
-// 		common->Printf( "Couldn't find proc address for: %s\n", name );
-// 	}
-
-// 	return proc;
-// }

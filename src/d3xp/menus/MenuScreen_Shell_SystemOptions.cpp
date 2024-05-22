@@ -420,8 +420,8 @@ idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustField
 void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustField( const int fieldIndex, const int adjustAmount ) {
 	switch ( fieldIndex ) {
 		case SYSTEM_FIELD_FRAMERATE: {
-			static const int numValues = 2;
-			static const int values[numValues] = { 60, 120 };
+			static const int numValues = 4;
+			static const int values[numValues] = { 60, 120, 240, 300 };
 			com_engineHz.SetInteger( AdjustOption( com_engineHz.GetInteger(), values, numValues, adjustAmount ) );
 			break;
 		}
