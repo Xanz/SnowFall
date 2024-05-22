@@ -967,7 +967,10 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 	// if the glsl file doesn't exist or we have a newer HLSL file we need to recreate the glsl file.
 	idStr programGLSL;
 	idStr programUniforms;
-	if ( ( glslFileLength <= 0 ) || ( hlslTimeStamp > glslTimeStamp ) ) {
+
+	// Xanz
+	// We need to always export new glsl files otherwise we will have issues with GL_ being reserved.
+	if ( ( glslFileLength <= 0 ) || ( hlslTimeStamp > glslTimeStamp ) || true ) {
 		if ( hlslFileLength <= 0 ) {
 			// hlsl file doesn't even exist bail out
 			return false;

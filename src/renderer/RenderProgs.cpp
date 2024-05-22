@@ -79,7 +79,7 @@ void idRenderProgManager::Init() {
 	} builtins[] = {
 		{ BUILTIN_GUI, "gui.vfp" },
 		{ BUILTIN_COLOR, "color.vfp" },
-		{ BUILTIN_SIMPLESHADE, "simpleshade.vfp" },
+		// { BUILTIN_SIMPLESHADE, "simpleshade.vfp" },
 		{ BUILTIN_TEXTURED, "texture.vfp" },
 		{ BUILTIN_TEXTURE_VERTEXCOLOR, "texture_color.vfp" },
 		{ BUILTIN_TEXTURE_VERTEXCOLOR_SKINNED, "texture_color_skinned.vfp" },
@@ -106,11 +106,11 @@ void idRenderProgManager::Init() {
 		{ BUILTIN_POSTPROCESS, "postprocess.vfp" },
 		{ BUILTIN_STEREO_DEGHOST, "stereoDeGhost.vfp" },
 		{ BUILTIN_STEREO_WARP, "stereoWarp.vfp" },
-		{ BUILTIN_ZCULL_RECONSTRUCT, "zcullReconstruct.vfp" },
+		// { BUILTIN_ZCULL_RECONSTRUCT, "zcullReconstruct.vfp" },
 		{ BUILTIN_BINK, "bink.vfp" },
 		{ BUILTIN_BINK_GUI, "bink_gui.vfp" },
 		{ BUILTIN_STEREO_INTERLACE, "stereoInterlace.vfp" },
-		{ BUILTIN_MOTION_BLUR, "motionBlur.vfp" },
+		// { BUILTIN_MOTION_BLUR, "motionBlur.vfp" },
 	};
 	int numBuiltins = sizeof( builtins ) / sizeof( builtins[0] );
 	vertexShaders.SetNum( numBuiltins );
@@ -222,11 +222,13 @@ int idRenderProgManager::FindVertexShader( const char * name ) {
 
 	// FIXME: we should really scan the program source code for using rpEnableSkinning but at this
 	// point we directly load a binary and the program source code is not available on the consoles
-	if (	idStr::Icmp( name, "heatHaze.vfp" ) == 0 ||
-			idStr::Icmp( name, "heatHazeWithMask.vfp" ) == 0 ||
-			idStr::Icmp( name, "heatHazeWithMaskAndVertex.vfp" ) == 0 ) {
-		vertexShaders[index].usesJoints = true;
-		vertexShaders[index].optionalSkinning = true;
+	for( int i = 0; i < vertexShaders[index].uniforms.Num(); i++ )
+	{
+		if( vertexShaders[index].uniforms[i] == RENDERPARM_ENABLE_SKINNING )
+		{
+			vertexShaders[index].usesJoints = true;
+			vertexShaders[index].optionalSkinning = true;
+		}
 	}
 
 	return index;
