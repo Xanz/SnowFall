@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -28,6 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef __DICT_H__
 #define __DICT_H__
+
+class idSerializer;
 
 /*
 ===============================================================================
@@ -49,11 +51,11 @@ class idKeyValue {
 	friend class idDict;
 
 public:
-	const idStr &		GetKey( void ) const { return *key; }
-	const idStr &		GetValue( void ) const { return *value; }
+	const idStr &		GetKey() const { return *key; }
+	const idStr &		GetValue() const { return *value; }
 
-	size_t				Allocated( void ) const { return key->Allocated() + value->Allocated(); }
-	size_t				Size( void ) const { return sizeof( *this ) + key->Size() + value->Size(); }
+	size_t				Allocated() const { return key->Allocated() + value->Allocated(); }
+	size_t				Size() const { return sizeof( *this ) + key->Size() + value->Size(); }
 
 	bool				operator==( const idKeyValue &kv ) const { return ( key == kv.key && value == kv.value ); }
 
@@ -62,11 +64,21 @@ private:
 	const idPoolStr *	value;
 };
 
+/*
+================================================
+idSort_KeyValue 
+================================================
+*/
+class idSort_KeyValue : public idSort_Quick< idKeyValue, idSort_KeyValue > {
+public:
+	int Compare( const idKeyValue & a, const idKeyValue & b ) const { return a.GetKey().Icmp( b.GetKey() ); }
+};
+
 class idDict {
 public:
-						idDict( void );
+						idDict();
 						idDict( const idDict &other );	// allow declaration with assignment
-						~idDict( void );
+						~idDict();
 
 						// set the granularity for the index
 	void				SetGranularity( int granularity );
@@ -83,12 +95,12 @@ public:
 						// copy key/value pairs from other dict not present in this dict
 	void				SetDefaults( const idDict *dict );
 						// clear dict freeing up memory
-	void				Clear( void );
+	void				Clear();
 						// print the dict
 	void				Print() const;
 
-	size_t				Allocated( void ) const;
-	size_t				Size( void ) const { return sizeof( *this ) + Allocated(); }
+	size_t				Allocated() const;
+	size_t				Size() const { return sizeof( *this ) + Allocated(); }
 
 	void				Set( const char *key, const char *value );
 	void				SetFloat( const char *key, float val );
@@ -102,9 +114,12 @@ public:
 
 						// these return default values of 0.0, 0 and false
 	const char *		GetString( const char *key, const char *defaultString = "" ) const;
-	float				GetFloat( const char *key, const char *defaultString = "0" ) const;
-	int					GetInt( const char *key, const char *defaultString = "0" ) const;
-	bool				GetBool( const char *key, const char *defaultString = "0" ) const;
+	float				GetFloat( const char *key, const char *defaultString ) const;
+	int					GetInt( const char *key, const char *defaultString ) const;
+	bool				GetBool( const char *key, const char *defaultString ) const;
+	float				GetFloat( const char *key, const float defaultFloat = 0.0f ) const;
+	int					GetInt( const char *key, const int defaultInt = 0 ) const;
+	bool				GetBool( const char *key, const bool defaultBool = false ) const;
 	idVec3				GetVector( const char *key, const char *defaultString = NULL ) const;
 	idVec2				GetVec2( const char *key, const char *defaultString = NULL ) const;
 	idVec4				GetVec4( const char *key, const char *defaultString = NULL ) const;
@@ -116,13 +131,16 @@ public:
 	bool				GetFloat( const char *key, const char *defaultString, float &out ) const;
 	bool				GetInt( const char *key, const char *defaultString, int &out ) const;
 	bool				GetBool( const char *key, const char *defaultString, bool &out ) const;
+	bool				GetFloat( const char *key, const float defaultFloat, float &out ) const;
+	bool				GetInt( const char *key, const int defaultInt, int &out ) const;
+	bool				GetBool( const char *key, const bool defaultBool, bool &out ) const;
 	bool				GetVector( const char *key, const char *defaultString, idVec3 &out ) const;
 	bool				GetVec2( const char *key, const char *defaultString, idVec2 &out ) const;
 	bool				GetVec4( const char *key, const char *defaultString, idVec4 &out ) const;
 	bool				GetAngles( const char *key, const char *defaultString, idAngles &out ) const;
 	bool				GetMatrix( const char *key, const char *defaultString, idMat3 &out ) const;
 
-	int					GetNumKeyVals( void ) const;
+	int					GetNumKeyVals() const;
 	const idKeyValue *	GetKeyVal( int index ) const;
 						// returns the key/value pair with the given key
 						// returns NULL if the key/value pair does not exist
@@ -141,11 +159,16 @@ public:
 	void				WriteToFileHandle( idFile *f ) const;
 	void				ReadFromFileHandle( idFile *f );
 
-						// returns a unique checksum for this dictionary's content
-	int					Checksum( void ) const;
+	void				WriteToIniFile( idFile * f ) const;
+	bool				ReadFromIniFile( idFile * f );
 
-	static void			Init( void );
-	static void			Shutdown( void );
+	void				Serialize( idSerializer & ser );
+
+						// returns a unique checksum for this dictionary's content
+	int					Checksum() const;
+
+	static void			Init();
+	static void			Shutdown();
 
 	static void			ShowMemoryUsage_f( const idCmdArgs &args );
 	static void			ListKeys_f( const idCmdArgs &args );
@@ -160,7 +183,7 @@ private:
 };
 
 
-ID_INLINE idDict::idDict( void ) {
+ID_INLINE idDict::idDict() {
 	args.SetGranularity( 16 );
 	argHash.SetGranularity( 16 );
 	argHash.Clear( 128, 16 );
@@ -170,7 +193,7 @@ ID_INLINE idDict::idDict( const idDict &other ) {
 	*this = other;
 }
 
-ID_INLINE idDict::~idDict( void ) {
+ID_INLINE idDict::~idDict() {
 	Clear();
 }
 
@@ -257,6 +280,30 @@ ID_INLINE bool idDict::GetBool( const char *key, const char *defaultString ) con
 	return ( atoi( GetString( key, defaultString ) ) != 0 );
 }
 
+ID_INLINE float idDict::GetFloat( const char *key, const float defaultFloat ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		return atof( kv->GetValue() );
+	}
+	return defaultFloat;
+}
+
+ID_INLINE int idDict::GetInt( const char *key, int defaultInt ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		return atoi( kv->GetValue() );
+	}
+	return defaultInt;
+}
+
+ID_INLINE bool idDict::GetBool( const char *key, const bool defaultBool ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		return atoi( kv->GetValue() ) != 0;
+	}
+	return defaultBool;
+}
+
 ID_INLINE idVec3 idDict::GetVector( const char *key, const char *defaultString ) const {
 	idVec3 out;
 	GetVector( key, defaultString, out );
@@ -287,7 +334,7 @@ ID_INLINE idMat3 idDict::GetMatrix( const char *key, const char *defaultString )
 	return out;
 }
 
-ID_INLINE int idDict::GetNumKeyVals( void ) const {
+ID_INLINE int idDict::GetNumKeyVals() const {
 	return args.Num();
 }
 

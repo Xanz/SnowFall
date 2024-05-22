@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -80,7 +80,7 @@ END_CLASS
 idPlayerStart::idPlayerStart
 ================
 */
-idPlayerStart::idPlayerStart( void ) {
+idPlayerStart::idPlayerStart() {
 	teleportStage = 0;
 }
 
@@ -89,7 +89,7 @@ idPlayerStart::idPlayerStart( void ) {
 idPlayerStart::Spawn
 ================
 */
-void idPlayerStart::Spawn( void ) {
+void idPlayerStart::Spawn() {
 	teleportStage = 0;
 }
 
@@ -132,7 +132,6 @@ bool idPlayerStart::ClientReceiveEvent( int event, int time, const idBitMsg &msg
 			return idEntity::ClientReceiveEvent( event, time, msg );
 		}
 	}
-	return false;
 }
 
 /*
@@ -188,18 +187,16 @@ void idPlayerStart::TeleportPlayer( idPlayer *player ) {
 	const char *viewName = spawnArgs.GetString( "visualView", "" );
 	idEntity *ent = viewName ? gameLocal.FindEntity( viewName ) : NULL;
 
-#ifdef _D3XP
 	SetTimeState ts( player->timeGroup );
-#endif
 
-	if ( f && ent ) {
+	if ( f && ent != NULL ) {
 		// place in private camera view for some time
 		// the entity needs to teleport to where the camera view is to have the PVS right
 		player->Teleport( ent->GetPhysics()->GetOrigin(), ang_zero, this );
 		player->StartSound( "snd_teleport_enter", SND_CHANNEL_ANY, 0, false, NULL );
 		player->SetPrivateCameraView( static_cast<idCamera*>(ent) );
 		// the player entity knows where to spawn from the previous Teleport call
-		if ( !gameLocal.isClient ) {
+		if ( !common->IsClient() ) {
 			player->PostEventSec( &EV_Player_ExitTeleporter, f );
 		}
 	} else {
@@ -207,7 +204,7 @@ void idPlayerStart::TeleportPlayer( idPlayer *player ) {
 		player->Teleport( GetPhysics()->GetOrigin(), GetPhysics()->GetAxis().ToAngles(), NULL );
 
 		// multiplayer hijacked this entity, so only push the player in multiplayer
-		if ( gameLocal.isMultiplayer ) {
+		if ( common->IsMultiplayer() ) {
 			player->GetPhysics()->SetLinearVelocity( GetPhysics()->GetAxis()[0] * pushVel );
 		}
 	}
@@ -234,14 +231,14 @@ void idPlayerStart::Event_TeleportPlayer( idEntity *activator ) {
 
 		} else {
 
-			if ( gameLocal.isServer ) {
+			if ( common->IsServer() ) {
 				idBitMsg	msg;
 				byte		msgBuf[MAX_EVENT_PARAM_SIZE];
 
-				msg.Init( msgBuf, sizeof( msgBuf ) );
+				msg.InitWrite( msgBuf, sizeof( msgBuf ) );
 				msg.BeginWriting();
 				msg.WriteBits( player->entityNumber, GENTITYNUM_BITS );
-				ServerSendEvent( EVENT_TELEPORTPLAYER, &msg, false, -1 );
+				ServerSendEvent( EVENT_TELEPORTPLAYER, &msg, false );
 			}
 
 			TeleportPlayer( player );
@@ -288,7 +285,7 @@ void idActivator::Restore( idRestoreGame *savefile ) {
 idActivator::Spawn
 ================
 */
-void idActivator::Spawn( void ) {
+void idActivator::Spawn() {
 	bool start_off;
 
 	spawnArgs.GetBool( "stay_on", "0", stay_on );
@@ -307,7 +304,7 @@ void idActivator::Spawn( void ) {
 idActivator::Think
 ================
 */
-void idActivator::Think( void ) {
+void idActivator::Think() {
 	RunPhysics();
 	if ( thinkFlags & TH_THINK ) {
 		if ( TouchTriggers() ) {
@@ -350,7 +347,7 @@ END_CLASS
 idPathCorner::Spawn
 =====================
 */
-void idPathCorner::Spawn( void ) {
+void idPathCorner::Spawn() {
 }
 
 /*
@@ -358,7 +355,7 @@ void idPathCorner::Spawn( void ) {
 idPathCorner::DrawDebugInfo
 =====================
 */
-void idPathCorner::DrawDebugInfo( void ) {
+void idPathCorner::DrawDebugInfo() {
 	idEntity *ent;
 	idBounds bnds( idVec3( -4.0, -4.0f, -8.0f ), idVec3( 4.0, 4.0f, 64.0f ) );
 
@@ -387,7 +384,7 @@ idPathCorner *idPathCorner::RandomPath( const idEntity *source, const idEntity *
 	num = 0;
 	for( i = 0; i < source->targets.Num(); i++ ) {
 		ent = source->targets[ i ].GetEntity();
-		if ( ent && ( ent != ignore ) && ent->IsType( idPathCorner::Type ) ) {
+		if ( ent != NULL && ( ent != ignore ) && ent->IsType( idPathCorner::Type ) ) {
 			path[ num++ ] = static_cast<idPathCorner *>( ent );
 			if ( num >= MAX_GENTITIES ) {
 				break;
@@ -408,7 +405,7 @@ idPathCorner *idPathCorner::RandomPath( const idEntity *source, const idEntity *
 idPathCorner::Event_RandomPath
 =====================
 */
-void idPathCorner::Event_RandomPath( void ) {
+void idPathCorner::Event_RandomPath() {
 	idPathCorner *path;
 
 	path = RandomPath( this, NULL );
@@ -435,7 +432,7 @@ END_CLASS
 idDamagable::idDamagable
 ================
 */
-idDamagable::idDamagable( void ) {
+idDamagable::idDamagable() {
 	count = 0;
 	nextTriggerTime = 0;
 }
@@ -465,7 +462,7 @@ void idDamagable::Restore( idRestoreGame *savefile ) {
 idDamagable::Spawn
 ================
 */
-void idDamagable::Spawn( void ) {
+void idDamagable::Spawn() {
 	idStr broken;
 
 	health = spawnArgs.GetInt( "health", "5" );
@@ -559,13 +556,12 @@ void idDamagable::Killed( idEntity *inflictor, idEntity *attacker, int damage, c
 	BecomeBroken( attacker );
 }
 
-#ifdef _D3XP
 /*
 ================
 idDamagable::Hide
 ================
 */
-void idDamagable::Hide( void ) {
+void idDamagable::Hide() {
 	idEntity::Hide();
 	GetPhysics()->SetContents( 0 );
 }
@@ -575,11 +571,10 @@ void idDamagable::Hide( void ) {
 idDamagable::Show
 ================
 */
-void idDamagable::Show( void ) {
+void idDamagable::Show() {
 	idEntity::Show();
 	GetPhysics()->SetContents( CONTENTS_SOLID );
 }
-#endif
 
 /*
 ================
@@ -595,7 +590,7 @@ void idDamagable::Event_BecomeBroken( idEntity *activator ) {
 idDamagable::Event_RestoreDamagable
 ================
 */
-void idDamagable::Event_RestoreDamagable( void ) {
+void idDamagable::Event_RestoreDamagable() {
 	health = spawnArgs.GetInt( "health", "5" );
 	Show();
 }
@@ -618,7 +613,7 @@ END_CLASS
 idExplodable::Spawn
 ================
 */
-void idExplodable::Spawn( void ) {
+void idExplodable::Spawn() {
 	Hide();
 }
 
@@ -668,7 +663,7 @@ END_CLASS
 idSpring::Think
 ================
 */
-void idSpring::Think( void ) {
+void idSpring::Think() {
 	idVec3 start, end, origin;
 	idMat3 axis;
 
@@ -704,7 +699,7 @@ void idSpring::Think( void ) {
 idSpring::Event_LinkSpring
 ================
 */
-void idSpring::Event_LinkSpring( void ) {
+void idSpring::Event_LinkSpring() {
 	idStr name1, name2;
 
 	spawnArgs.GetString( "ent1", "", name1 );
@@ -712,8 +707,9 @@ void idSpring::Event_LinkSpring( void ) {
 
 	if ( name1.Length() ) {
 		ent1 = gameLocal.FindEntity( name1 );
-		if ( !ent1 ) {
+		if ( ent1 == NULL ) {
 			gameLocal.Error( "idSpring '%s' at (%s): cannot find first entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString(0), name1.c_str() );
+			return;
 		}
 	}
 	else {
@@ -722,13 +718,15 @@ void idSpring::Event_LinkSpring( void ) {
 
 	if ( name2.Length() ) {
 		ent2 = gameLocal.FindEntity( name2 );
-		if ( !ent2 ) {
+		if ( ent2 == NULL ) {
 			gameLocal.Error( "idSpring '%s' at (%s): cannot find second entity '%s'", name.c_str(), GetPhysics()->GetOrigin().ToString(0), name2.c_str() );
+			return;
 		}
 	}
 	else {
 		ent2 = gameLocal.entities[ENTITYNUM_WORLD];
 	}
+
 	spring.SetPosition( ent1->GetPhysics(), id1, p1, ent2->GetPhysics(), id2, p2 );
 	BecomeActive( TH_THINK );
 }
@@ -738,7 +736,7 @@ void idSpring::Event_LinkSpring( void ) {
 idSpring::Spawn
 ================
 */
-void idSpring::Spawn( void ) {
+void idSpring::Spawn() {
 	float Kstretch, damping, restLength;
 
 	spawnArgs.GetInt( "id1", "0", id1 );
@@ -777,7 +775,7 @@ END_CLASS
 idForceField::Toggle
 ================
 */
-void idForceField::Toggle( void ) {
+void idForceField::Toggle() {
 	if ( thinkFlags & TH_THINK ) {
 		BecomeInactive( TH_THINK );
 	} else {
@@ -785,12 +783,27 @@ void idForceField::Toggle( void ) {
 	}
 }
 
+
+
 /*
 ================
 idForceField::Think
 ================
 */
-void idForceField::Think( void ) {
+void idForceField::ClientThink( const int curTime, const float fraction, const bool predict ) { 
+
+		// evaluate force
+		forceField.Evaluate( gameLocal.time );
+
+	Present();
+}
+
+/*
+================
+idForceField::Think
+================
+*/
+void idForceField::Think() {
 	if ( thinkFlags & TH_THINK ) {
 		// evaluate force
 		forceField.Evaluate( gameLocal.time );
@@ -821,7 +834,7 @@ void idForceField::Restore( idRestoreGame *savefile ) {
 idForceField::Spawn
 ================
 */
-void idForceField::Spawn( void ) {
+void idForceField::Spawn() {
 	idVec3 uniform;
 	float explosion, implosion, randomTorque;
 
@@ -849,7 +862,7 @@ void idForceField::Spawn( void ) {
 	forceField.SetMonsterOnly( spawnArgs.GetBool( "monsterOnly", "0" ) );
 
 	// set the collision model on the force field
-	forceField.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ) );
+	forceField.SetClipModel( new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( GetPhysics()->GetClipModel() ) );
 
 	// remove the collision model from the physics object
 	GetPhysics()->SetClipModel( NULL, 1.0f );
@@ -864,7 +877,7 @@ void idForceField::Spawn( void ) {
 idForceField::Event_Toggle
 ================
 */
-void idForceField::Event_Toggle( void ) {
+void idForceField::Event_Toggle() {
 	Toggle();
 }
 
@@ -887,7 +900,7 @@ void idForceField::Event_Activate( idEntity *activator ) {
 idForceField::Event_FindTargets
 ================
 */
-void idForceField::Event_FindTargets( void ) {
+void idForceField::Event_FindTargets() {
 	FindTargets();
 	RemoveNullTargets();
 	if ( targets.Num() ) {
@@ -909,10 +922,8 @@ const idEventDef EV_LaunchMissiles( "launchMissiles", "ssssdf" );
 const idEventDef EV_LaunchMissilesUpdate( "<launchMissiles>", "dddd" );
 const idEventDef EV_AnimDone( "<AnimDone>", "d" );
 const idEventDef EV_StartRagdoll( "startRagdoll" );
-#ifdef _D3XP
 const idEventDef EV_SetAnimation( "setAnimation", "s" );
 const idEventDef EV_GetAnimationLength( "getAnimationLength", NULL, 'f' );
-#endif
 
 CLASS_DECLARATION( idAFEntity_Gibbable, idAnimated )
 	EVENT( EV_Activate,				idAnimated::Event_Activate )
@@ -924,10 +935,8 @@ CLASS_DECLARATION( idAFEntity_Gibbable, idAnimated )
 	EVENT( EV_FootstepRight,		idAnimated::Event_Footstep )
 	EVENT( EV_LaunchMissiles,		idAnimated::Event_LaunchMissiles )
 	EVENT( EV_LaunchMissilesUpdate,	idAnimated::Event_LaunchMissilesUpdate )
-#ifdef _D3XP
 	EVENT( EV_SetAnimation,			idAnimated::Event_SetAnimation )
 	EVENT( EV_GetAnimationLength,	idAnimated::Event_GetAnimationLength )
-#endif
 END_CLASS
 
 /*
@@ -944,6 +953,7 @@ idAnimated::idAnimated() {
 	activator = NULL;
 	current_anim_index = 0;
 	num_anims = 0;
+	achievement = -1;
 
 }
 
@@ -992,7 +1002,7 @@ void idAnimated::Restore( idRestoreGame *savefile ) {
 idAnimated::Spawn
 ================
 */
-void idAnimated::Spawn( void ) {
+void idAnimated::Spawn() {
 	idStr		animname;
 	int			anim2;
 	float		wait;
@@ -1008,15 +1018,13 @@ void idAnimated::Spawn( void ) {
 
 	// allow bullets to collide with a combat model
 	if ( spawnArgs.GetBool( "combatModel", "0" ) ) {
-		combatModel = new idClipModel( modelDefHandle );
+		combatModel = new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( modelDefHandle );
 	}
 
 	// allow the entity to take damage
 	if ( spawnArgs.GetBool( "takeDamage", "0" ) ) {
 		fl.takedamage = true;
 	}
-
-	blendFrames = 0;
 
 	current_anim_index = 0;
 	spawnArgs.GetInt( "num_anims", "0", num_anims );
@@ -1066,7 +1074,7 @@ void idAnimated::Spawn( void ) {
 idAnimated::LoadAF
 ===============
 */
-bool idAnimated::LoadAF( void ) {
+bool idAnimated::LoadAF() {
 	idStr fileName;
 
 	if ( !spawnArgs.GetString( "ragdoll", "*unknown*", fileName ) ) {
@@ -1092,7 +1100,7 @@ bool idAnimated::GetPhysicsToSoundTransform( idVec3 &origin, idMat3 &axis ) {
 idAnimated::StartRagdoll
 ================
 */
-bool idAnimated::StartRagdoll( void ) {
+bool idAnimated::StartRagdoll() {
 	// if no AF loaded
 	if ( !af.IsLoaded() ) {
 		return false;
@@ -1117,7 +1125,7 @@ bool idAnimated::StartRagdoll( void ) {
 idAnimated::PlayNextAnim
 =====================
 */
-void idAnimated::PlayNextAnim( void ) {
+void idAnimated::PlayNextAnim() {
 	const char *animname;
 	int len;
 	int cycle;
@@ -1179,7 +1187,7 @@ void idAnimated::PlayNextAnim( void ) {
 idAnimated::Event_StartRagdoll
 ================
 */
-void idAnimated::Event_StartRagdoll( void ) {
+void idAnimated::Event_StartRagdoll() {
 	StartRagdoll();
 }
 
@@ -1223,6 +1231,23 @@ void idAnimated::Event_Activate( idEntity *_activator ) {
 		return;
 	}
 
+	// achievement associated with this entity (given on activation)
+	achievement = spawnArgs.GetInt( "achievement", "-1" );
+	if ( achievement != -1 ) {
+		idPlayer *player = gameLocal.GetLocalPlayer();
+		if ( player != NULL ) {
+			bool shouldCountAction = true;
+			// only count unlocking lockers if we're in the base game
+			if ( achievement == ACHIEVEMENT_OPEN_ALL_LOCKERS && player->GetExpansionType() != GAME_BASE ) {
+				shouldCountAction = false;
+			}
+
+			if ( shouldCountAction ) {
+				player->GetAchievementManager().EventCompletesAchievement( (achievement_t)achievement );
+			}
+		}
+	}
+
 	activated = true;
 	activator = _activator;
 	ProcessEvent( &EV_Animated_Start );
@@ -1233,7 +1258,7 @@ void idAnimated::Event_Activate( idEntity *_activator ) {
 idAnimated::Event_Start
 ================
 */
-void idAnimated::Event_Start( void ) {
+void idAnimated::Event_Start() {
 	int cycle;
 	int len;
 
@@ -1273,7 +1298,7 @@ void idAnimated::Event_Start( void ) {
 idAnimated::Event_Footstep
 ===============
 */
-void idAnimated::Event_Footstep( void ) {
+void idAnimated::Event_Footstep() {
 	StartSound( "snd_footstep", SND_CHANNEL_BODY, 0, false, NULL );
 }
 
@@ -1311,8 +1336,9 @@ void idAnimated::Event_LaunchMissilesUpdate( int launchjoint, int targetjoint, i
 	dir.Normalize();
 
 	gameLocal.SpawnEntityDef( *projectileDef, &ent, false );
-	if ( !ent || !ent->IsType( idProjectile::Type ) ) {
+	if ( ent == NULL || !ent->IsType( idProjectile::Type ) ) {
 		gameLocal.Error( "idAnimated '%s' at (%s): in 'launchMissiles' call '%s' is not an idProjectile", name.c_str(), GetPhysics()->GetOrigin().ToString(0), projectilename );
+		return;
 	}
 	projectile = ( idProjectile * )ent;
 	projectile->Create( this, launchPos, dir );
@@ -1357,7 +1383,6 @@ void idAnimated::Event_LaunchMissiles( const char *projectilename, const char *s
 	ProcessEvent( &EV_LaunchMissilesUpdate, launch, target, numshots - 1, framedelay );
 }
 
-#ifdef _D3XP
 /*
 =====================
 idAnimated::Event_SetAnimation
@@ -1388,7 +1413,6 @@ void idAnimated::Event_GetAnimationLength() {
 
 	idThread::ReturnFloat(length);
 }
-#endif
 
 /*
 ===============================================================================
@@ -1409,7 +1433,7 @@ END_CLASS
 idStaticEntity::idStaticEntity
 ===============
 */
-idStaticEntity::idStaticEntity( void ) {
+idStaticEntity::idStaticEntity() {
 	spawnTime = 0;
 	active = false;
 	fadeFrom.Set( 1, 1, 1, 1 );
@@ -1454,7 +1478,7 @@ void idStaticEntity::Restore( idRestoreGame *savefile ) {
 idStaticEntity::Spawn
 ===============
 */
-void idStaticEntity::Spawn( void ) {
+void idStaticEntity::Spawn() {
 	bool solid;
 	bool hidden;
 
@@ -1499,15 +1523,14 @@ void idStaticEntity::Spawn( void ) {
 idStaticEntity::ShowEditingDialog
 ================
 */
-void idStaticEntity::ShowEditingDialog( void ) {
-	common->InitTool( EDITOR_PARTICLE, &spawnArgs );
+void idStaticEntity::ShowEditingDialog() {
 }
 /*
 ================
 idStaticEntity::Think
 ================
 */
-void idStaticEntity::Think( void ) {
+void idStaticEntity::Think() {
 	idEntity::Think();
 	if ( thinkFlags & TH_THINK ) {
 		if ( runGui && renderEntity.gui[0] ) {
@@ -1556,7 +1579,7 @@ void idStaticEntity::Fade( const idVec4 &to, float fadeTime ) {
 idStaticEntity::Hide
 ================
 */
-void idStaticEntity::Hide( void ) {
+void idStaticEntity::Hide() {
 	idEntity::Hide();
 	GetPhysics()->SetContents( 0 );
 }
@@ -1566,7 +1589,7 @@ void idStaticEntity::Hide( void ) {
 idStaticEntity::Show
 ================
 */
-void idStaticEntity::Show( void ) {
+void idStaticEntity::Show() {
 	idEntity::Show();
 	if ( spawnArgs.GetBool( "solid" ) ) {
 		GetPhysics()->SetContents( CONTENTS_SOLID );
@@ -1607,7 +1630,7 @@ void idStaticEntity::Event_Activate( idEntity *activator ) {
 idStaticEntity::WriteToSnapshot
 ================
 */
-void idStaticEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idStaticEntity::WriteToSnapshot( idBitMsg &msg ) const {
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 	WriteColorToSnapshot( msg );
@@ -1620,7 +1643,7 @@ void idStaticEntity::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idStaticEntity::ReadFromSnapshot
 ================
 */
-void idStaticEntity::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idStaticEntity::ReadFromSnapshot( const idBitMsg &msg ) {
 	bool hidden;
 
 	GetPhysics()->ReadFromSnapshot( msg );
@@ -1659,7 +1682,7 @@ END_CLASS
 idFuncEmitter::idFuncEmitter
 ===============
 */
-idFuncEmitter::idFuncEmitter( void ) {
+idFuncEmitter::idFuncEmitter() {
 	hidden = false;
 }
 
@@ -1668,7 +1691,7 @@ idFuncEmitter::idFuncEmitter( void ) {
 idFuncEmitter::Spawn
 ===============
 */
-void idFuncEmitter::Spawn( void ) {
+void idFuncEmitter::Spawn() {
 	if ( spawnArgs.GetBool( "start_off" ) ) {
 		hidden = true;
 		renderEntity.shaderParms[SHADERPARM_PARTICLE_STOPTIME] = MS2SEC( 1 );
@@ -1718,7 +1741,7 @@ void idFuncEmitter::Event_Activate( idEntity *activator ) {
 idFuncEmitter::WriteToSnapshot
 ================
 */
-void idFuncEmitter::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idFuncEmitter::WriteToSnapshot( idBitMsg &msg ) const {
 	msg.WriteBits( hidden ? 1 : 0, 1 );
 	msg.WriteFloat( renderEntity.shaderParms[ SHADERPARM_PARTICLE_STOPTIME ] );
 	msg.WriteFloat( renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] );
@@ -1729,13 +1752,167 @@ void idFuncEmitter::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idFuncEmitter::ReadFromSnapshot
 ================
 */
-void idFuncEmitter::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idFuncEmitter::ReadFromSnapshot( const idBitMsg &msg ) {
 	hidden = msg.ReadBits( 1 ) != 0;
 	renderEntity.shaderParms[ SHADERPARM_PARTICLE_STOPTIME ] = msg.ReadFloat();
 	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = msg.ReadFloat();
 	if ( msg.HasChanged() ) {
 		UpdateVisuals();
 	}
+}
+
+/*
+===============================================================================
+
+idFuncShootProjectile
+
+===============================================================================
+*/
+
+
+CLASS_DECLARATION( idStaticEntity, idFuncShootProjectile )
+	EVENT( EV_Activate,				idFuncShootProjectile::Event_Activate )
+	END_CLASS
+
+	/*
+	===============
+	idFuncShootProjectile::idFuncShootProjectile
+	===============
+	*/
+	idFuncShootProjectile::idFuncShootProjectile() {
+		mRespawnDelay = 1000;
+		mRespawnTime = 0;
+		mShootSpeed = 1000;
+		mShootDir = idVec3( 0.0f, 0.0f, 1.0f );
+}
+
+/*
+===============
+idFuncShootProjectile::Spawn
+===============
+*/
+void idFuncShootProjectile::Spawn() {
+}
+
+/*
+===============
+idFuncShootProjectile::Think
+===============
+*/
+void idFuncShootProjectile::Think() {
+	if ( thinkFlags & TH_THINK ) {
+		// time to spawn a new projectile?
+		if ( mRespawnTime > 0 && mRespawnTime <= gameLocal.GetTime() ) {
+			const idDict *dict = gameLocal.FindEntityDefDict( mEntityDefName );
+			idEntity *ent = NULL;
+			gameLocal.SpawnEntityDef( *dict, &ent );
+			if ( ent != NULL ) {
+				idProjectile *proj = static_cast<idProjectile *>(ent);
+
+				idVec3 pushVel = mShootDir * mShootSpeed;
+				proj->Create( this, GetPhysics()->GetOrigin(), mShootDir );
+				proj->Launch( GetPhysics()->GetOrigin(), mShootDir, pushVel );
+				if ( mShootSpeed == 0.0f ) {
+					proj->GetPhysics()->SetLinearVelocity( vec3_zero );
+				} else {
+					proj->GetPhysics()->SetLinearVelocity( pushVel );
+				}
+
+				mLastProjectile = proj;
+			}
+			if ( mShootSpeed == 0.0f ) {
+				mRespawnTime = 0;	// stationary, respawn when triggered
+			} else {
+				mRespawnTime = gameLocal.GetTime() + mRespawnDelay;		// moving, respawn after delay
+			}
+		}
+	}
+}
+
+/*
+===============
+idFuncShootProjectile::Save
+===============
+*/
+void idFuncShootProjectile::Save( idSaveGame *savefile ) const {
+	savefile->WriteInt( mRespawnDelay );
+	savefile->WriteInt( mRespawnTime );
+	savefile->WriteFloat( mShootSpeed );
+	savefile->WriteVec3( mShootDir );
+	savefile->WriteString( mEntityDefName );
+}
+
+/*
+===============
+idFuncShootProjectile::Restore
+===============
+*/
+void idFuncShootProjectile::Restore( idRestoreGame *savefile ) {
+	savefile->ReadInt( mRespawnDelay );
+	savefile->ReadInt( mRespawnTime );
+	savefile->ReadFloat( mShootSpeed );
+	savefile->ReadVec3( mShootDir );
+	savefile->ReadString( mEntityDefName );
+}
+
+/*
+================
+idFuncShootProjectile::Event_Activate
+================
+*/
+void idFuncShootProjectile::Event_Activate( idEntity *activator ) {
+	if ( ( thinkFlags & TH_THINK ) != 0 ) {
+		if ( mShootSpeed == 0.0f && mRespawnTime == 0 ) {
+			mRespawnTime = gameLocal.GetTime();
+			return;
+		}
+	}
+
+	mRespawnDelay = spawnArgs.GetInt( "spawn_delay_ms" );
+	mShootSpeed = spawnArgs.GetFloat( "speed" );
+	mEntityDefName = spawnArgs.GetString( "def_projectile" );
+	if ( targets.Num() > 0 && targets[0].IsValid() ) {
+		mShootDir = targets[0]->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();
+		mShootDir.Normalize();
+	} else {
+		// stationary projectile, doesn't move and only respawns when triggered
+		mShootSpeed = 0.0f;
+		mRespawnTime = 0;
+	}
+
+	if ( ( thinkFlags & TH_THINK ) != 0 ) {
+		// currently active, deactivate
+		BecomeInactive( TH_THINK );
+	} else {
+		// currently inactive, activate
+		BecomeActive( TH_THINK );
+		mRespawnTime = gameLocal.GetTime();
+	}
+}
+
+/*
+================
+idFuncShootProjectile::WriteToSnapshot
+================
+*/
+void idFuncShootProjectile::WriteToSnapshot( idBitMsg &msg ) const {
+	// 	msg.WriteBits( hidden ? 1 : 0, 1 );
+	// 	msg.WriteFloat( renderEntity.shaderParms[ SHADERPARM_PARTICLE_STOPTIME ] );
+	// 	msg.WriteFloat( renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] );
+}
+
+/*
+================
+idFuncShootProjectile::ReadFromSnapshot
+================
+*/
+void idFuncShootProjectile::ReadFromSnapshot( const idBitMsg &msg ) {
+	// 	hidden = msg.ReadBits( 1 ) != 0;
+	// 	renderEntity.shaderParms[ SHADERPARM_PARTICLE_STOPTIME ] = msg.ReadFloat();
+	// 	renderEntity.shaderParms[ SHADERPARM_TIMEOFFSET ] = msg.ReadFloat();
+	// 	if ( msg.HasChanged() ) {
+	// 		UpdateVisuals();
+	// 	}
 }
 
 
@@ -1759,7 +1936,7 @@ END_CLASS
 idFuncSplat::idFuncSplat
 ===============
 */
-idFuncSplat::idFuncSplat( void ) {
+idFuncSplat::idFuncSplat() {
 }
 
 /*
@@ -1767,7 +1944,7 @@ idFuncSplat::idFuncSplat( void ) {
 idFuncSplat::Spawn
 ===============
 */
-void idFuncSplat::Spawn( void ) {
+void idFuncSplat::Spawn() {
 }
 
 /*
@@ -1775,12 +1952,12 @@ void idFuncSplat::Spawn( void ) {
 idFuncSplat::Event_Splat
 ================
 */
-void idFuncSplat::Event_Splat( void ) {
+void idFuncSplat::Event_Splat() {
 	const char *splat = NULL;
 	int count = spawnArgs.GetInt( "splatCount", "1" );
 	for ( int i = 0; i < count; i++ ) {
 		splat = spawnArgs.RandomPrefix( "mtr_splat", gameLocal.random );
-		if ( splat && *splat ) {
+		if ( splat != NULL && *splat != NULL ) {
 			float size = spawnArgs.GetFloat( "splatSize", "128" );
 			float dist = spawnArgs.GetFloat( "splatDistance", "128" );
 			float angle = spawnArgs.GetFloat( "splatAngle", "0" );
@@ -1851,7 +2028,7 @@ void idFuncSmoke::Restore( idRestoreGame *savefile ) {
 idFuncSmoke::Spawn
 ===============
 */
-void idFuncSmoke::Spawn( void ) {
+void idFuncSmoke::Spawn() {
 	const char *smokeName = spawnArgs.GetString( "smoke" );
 	if ( *smokeName != '\0' ) {
 		smoke = static_cast<const idDeclParticle *>( declManager->FindType( DECL_PARTICLE, smokeName ) );
@@ -1890,7 +2067,7 @@ void idFuncSmoke::Event_Activate( idEntity *activator ) {
 idFuncSmoke::Think
 ================
 */
-void idFuncSmoke::Think( void ) {
+void idFuncSmoke::Think() {
 
 	// if we are completely closed off from the player, don't do anything at all
 	if ( CheckDormant() || smoke == NULL || smokeTime == -1 ) {
@@ -1927,7 +2104,7 @@ END_CLASS
 idTextEntity::Spawn
 ================
 */
-void idTextEntity::Spawn( void ) {
+void idTextEntity::Spawn() {
 	// these are cached as the are used each frame
 	text = spawnArgs.GetString( "text" );
 	playerOriented = spawnArgs.GetBool( "playerOriented" );
@@ -1962,7 +2139,7 @@ void idTextEntity::Restore( idRestoreGame *savefile ) {
 idTextEntity::Think
 ================
 */
-void idTextEntity::Think( void ) {
+void idTextEntity::Think() {
 	if ( thinkFlags & TH_THINK ) {
 		gameRenderWorld->DrawText( text, GetPhysics()->GetOrigin(), 0.25, colorWhite, playerOriented ? gameLocal.GetLocalPlayer()->viewAngles.ToMat3() : GetPhysics()->GetAxis().Transpose(), 1 );
 		for ( int i = 0; i < targets.Num(); i++ ) {
@@ -1996,7 +2173,7 @@ END_CLASS
 idVacuumSeparatorEntity::idVacuumSeparatorEntity
 ================
 */
-idVacuumSeparatorEntity::idVacuumSeparatorEntity( void ) {
+idVacuumSeparatorEntity::idVacuumSeparatorEntity() {
 	portal = 0;
 }
 
@@ -2144,7 +2321,7 @@ void idLocationEntity::Spawn() {
 idLocationEntity::GetLocation
 ======================
 */
-const char *idLocationEntity::GetLocation( void ) const {
+const char *idLocationEntity::GetLocation() const {
 	return spawnArgs.GetString( "location" );
 }
 
@@ -2196,7 +2373,7 @@ void idBeam::Restore( idRestoreGame *savefile ) {
 idBeam::Spawn
 ===============
 */
-void idBeam::Spawn( void ) {
+void idBeam::Spawn() {
 	float width;
 
 	if ( spawnArgs.GetFloat( "width", "0", width ) ) {
@@ -2213,7 +2390,7 @@ void idBeam::Spawn( void ) {
 idBeam::Think
 ================
 */
-void idBeam::Think( void ) {
+void idBeam::Think() {
 	idBeam *masterEnt;
 
 	if ( !IsHidden() && !target.GetEntity() ) {
@@ -2259,7 +2436,7 @@ void idBeam::SetBeamTarget( const idVec3 &origin ) {
 idBeam::Show
 ================
 */
-void idBeam::Show( void ) {
+void idBeam::Show() {
 	idBeam *targetEnt;
 
 	idEntity::Show();
@@ -2276,7 +2453,7 @@ void idBeam::Show( void ) {
 idBeam::Event_MatchTarget
 ================
 */
-void idBeam::Event_MatchTarget( void ) {
+void idBeam::Event_MatchTarget() {
 	int i;
 	idEntity *targetEnt;
 	idBeam *targetBeam;
@@ -2288,14 +2465,15 @@ void idBeam::Event_MatchTarget( void ) {
 	targetBeam = NULL;
 	for( i = 0; i < targets.Num(); i++ ) {
 		targetEnt = targets[ i ].GetEntity();
-		if ( targetEnt && targetEnt->IsType( idBeam::Type ) ) {
+		if ( targetEnt != NULL && targetEnt->IsType( idBeam::Type ) ) {
 			targetBeam = static_cast<idBeam *>( targetEnt );
 			break;
 		}
 	}
 
-	if ( !targetBeam ) {
+	if ( targetBeam == NULL ) {
 		gameLocal.Error( "Could not find valid beam target for '%s'", name.c_str() );
+		return;
 	}
 
 	target = targetBeam;
@@ -2323,7 +2501,7 @@ void idBeam::Event_Activate( idEntity *activator ) {
 idBeam::WriteToSnapshot
 ================
 */
-void idBeam::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idBeam::WriteToSnapshot( idBitMsg &msg ) const {
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 	WriteColorToSnapshot( msg );
@@ -2337,7 +2515,7 @@ void idBeam::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idBeam::ReadFromSnapshot
 ================
 */
-void idBeam::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idBeam::ReadFromSnapshot( const idBitMsg &msg ) {
 	GetPhysics()->ReadFromSnapshot( msg );
 	ReadBindFromSnapshot( msg );
 	ReadColorFromSnapshot( msg );
@@ -2405,6 +2583,10 @@ idLiquid::Event_Touch
 void idLiquid::Event_Touch( idEntity *other, trace_t *trace ) {
 	// FIXME: for QuakeCon
 /*
+	if ( common->IsClient() ) {
+		return;
+	}
+
 	idVec3 pos;
 
 	pos = other->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin();
@@ -2460,9 +2642,9 @@ void idShaking::Restore( idRestoreGame *savefile ) {
 idShaking::Spawn
 ===============
 */
-void idShaking::Spawn( void ) {
+void idShaking::Spawn() {
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -2479,7 +2661,7 @@ void idShaking::Spawn( void ) {
 idShaking::BeginShaking
 ================
 */
-void idShaking::BeginShaking( void ) {
+void idShaking::BeginShaking() {
 	int			phase;
 	idAngles	shake;
 	int			period;
@@ -2574,7 +2756,7 @@ void idEarthQuake::Restore( idRestoreGame *savefile ) {
 idEarthQuake::Spawn
 ===============
 */
-void idEarthQuake::Spawn( void ) {
+void idEarthQuake::Spawn() {
 	nextTriggerTime = 0;
 	shakeStopTime = 0;
 	wait = spawnArgs.GetFloat( "wait", "15" );
@@ -2653,7 +2835,7 @@ void idEarthQuake::Event_Activate( idEntity *activator ) {
 idEarthQuake::Think
 ================
 */
-void idEarthQuake::Think( void ) {
+void idEarthQuake::Think() {
 	if ( thinkFlags & TH_THINK ) {
 		if ( gameLocal.time > shakeStopTime ) {
 			BecomeInactive( TH_THINK );
@@ -2662,7 +2844,7 @@ void idEarthQuake::Think( void ) {
 			}
 			return;
 		}
-		float shakeVolume = gameSoundWorld->CurrentShakeAmplitudeForPosition( gameLocal.time, gameLocal.GetLocalPlayer()->firstPersonViewOrigin );
+		float shakeVolume = gameSoundWorld->CurrentShakeAmplitude();
 		gameLocal.RadiusPush( GetPhysics()->GetOrigin(), 256, 1500 * shakeVolume, this, this, 1.0f, true );
 	}
 	BecomeInactive( TH_UPDATEVISUALS );
@@ -2716,7 +2898,7 @@ void idFuncPortal::Restore( idRestoreGame *savefile ) {
 idFuncPortal::Spawn
 ===============
 */
-void idFuncPortal::Spawn( void ) {
+void idFuncPortal::Spawn() {
 	portal = gameRenderWorld->FindPortal( GetPhysics()->GetAbsBounds().Expand( 32.0f ) );
 	if ( portal > 0 ) {
 		state = spawnArgs.GetBool( "start_on" );
@@ -2781,7 +2963,7 @@ void idFuncAASPortal::Restore( idRestoreGame *savefile ) {
 idFuncAASPortal::Spawn
 ===============
 */
-void idFuncAASPortal::Spawn( void ) {
+void idFuncAASPortal::Spawn() {
 	state = spawnArgs.GetBool( "start_on" );
 	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, state );
 }
@@ -2841,7 +3023,7 @@ void idFuncAASObstacle::Restore( idRestoreGame *savefile ) {
 idFuncAASObstacle::Spawn
 ===============
 */
-void idFuncAASObstacle::Spawn( void ) {
+void idFuncAASObstacle::Spawn() {
 	state = spawnArgs.GetBool( "start_on" );
 	gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_OBSTACLE, state );
 }
@@ -2906,7 +3088,7 @@ void idFuncRadioChatter::Restore( idRestoreGame *savefile ) {
 idFuncRadioChatter::Spawn
 ===============
 */
-void idFuncRadioChatter::Spawn( void ) {
+void idFuncRadioChatter::Spawn() {
 	time = spawnArgs.GetFloat( "time", "5.0" );
 }
 
@@ -2916,29 +3098,22 @@ idFuncRadioChatter::Event_Activate
 ================
 */
 void idFuncRadioChatter::Event_Activate( idEntity *activator ) {
-	idPlayer *player;
-	const char	*sound;
-	const idSoundShader *shader;
-	int length;
-	
-	if ( activator->IsType( idPlayer::Type ) ) {
-		player = static_cast<idPlayer *>( activator );
-	} else {
-		player = gameLocal.GetLocalPlayer();
+	idPlayer * player = gameLocal.GetLocalPlayer();
+
+	if ( player != NULL && player->hudManager ) {
+		player->hudManager->SetRadioMessage( true );
 	}
 
-	player->hud->HandleNamedEvent( "radioChatterUp" );
-
-	sound = spawnArgs.GetString( "snd_radiochatter", "" );
-	if ( sound && *sound ) {
-		shader = declManager->FindSound( sound );
+	const char * sound = spawnArgs.GetString( "snd_radiochatter", "" );
+	if ( sound != NULL && *sound != NULL ) {
+		const idSoundShader * shader = declManager->FindSound( sound );
+		int length = 0;
 		player->StartSoundShader( shader, SND_CHANNEL_RADIO, SSF_GLOBAL, false, &length );
 		time = MS2SEC( length + 150 );
 	}
 	// we still put the hud up because this is used with no sound on 
 	// certain frame commands when the chatter is triggered
 	PostEventSec( &EV_ResetRadioHud, time, player );
-
 }
 
 /*
@@ -2948,7 +3123,11 @@ idFuncRadioChatter::Event_ResetRadioHud
 */
 void idFuncRadioChatter::Event_ResetRadioHud( idEntity *activator ) {
 	idPlayer *player = ( activator->IsType( idPlayer::Type ) ) ? static_cast<idPlayer *>( activator ) : gameLocal.GetLocalPlayer();
-	player->hud->HandleNamedEvent( "radioChatterDown" );
+
+	if ( player != NULL && player->hudManager ) {
+		player->hudManager->SetRadioMessage( false );
+	}
+
 	ActivateTargets( activator );
 }
 
@@ -3045,7 +3224,7 @@ void idPhantomObjects::Restore( idRestoreGame *savefile ) {
 idPhantomObjects::Spawn
 ===============
 */
-void idPhantomObjects::Spawn( void ) {
+void idPhantomObjects::Spawn() {
 	throw_time = spawnArgs.GetFloat( "time", "5" );
 	speed = spawnArgs.GetFloat( "speed", "1200" );
 	shake_time = spawnArgs.GetFloat( "shake_time", "1" );
@@ -3119,7 +3298,7 @@ void idPhantomObjects::Event_Activate( idEntity *activator ) {
 idPhantomObjects::Think
 ================
 */
-void idPhantomObjects::Think( void ) {
+void idPhantomObjects::Think() {
 	int			i;
 	int			num;
 	float		time;
@@ -3141,8 +3320,9 @@ void idPhantomObjects::Think( void ) {
 	}
 
 	targetEnt = target.GetEntity();
-	if ( !targetEnt || ( targetEnt->health <= 0 ) || ( end_time && ( gameLocal.time > end_time ) ) || gameLocal.inCinematic ) {
+	if ( targetEnt == NULL || ( targetEnt->health <= 0 ) || ( end_time && ( gameLocal.time > end_time ) ) || gameLocal.inCinematic ) {
 		BecomeInactive( TH_THINK );
+		return;
 	}
 
 	const idVec3 &toPos = targetEnt->GetEyePosition();
@@ -3206,7 +3386,6 @@ void idPhantomObjects::Think( void ) {
 	}
 }
 
-#ifdef _D3XP
 /*
 ===============================================================================
 
@@ -3486,7 +3665,7 @@ idFuncMountedObject::~idFuncMountedObject() {
 idFuncMountedObject::Spawn
 ===============
 */
-void idFuncMountedObject::Spawn( void ) {
+void idFuncMountedObject::Spawn() {
 	// Get viewOffset
 	spawnArgs.GetInt( "harc", "45", harc );
 	spawnArgs.GetInt( "varc", "30", varc );
@@ -3508,7 +3687,7 @@ void idFuncMountedObject::Spawn( void ) {
 idFuncMountedObject::Think
 ================
 */
-void idFuncMountedObject::Think( void ) {
+void idFuncMountedObject::Think() {
 
 	idEntity::Think();
 }
@@ -3540,6 +3719,9 @@ idFuncMountedObject::Event_Touch
 ================
 */
 void idFuncMountedObject::Event_Touch( idEntity *other, trace_t *trace ) {
+	if ( common->IsClient() ) {
+		return;
+	}
 
 	ProcessEvent( &EV_Activate, other );
 }
@@ -3607,7 +3789,7 @@ idFuncMountedWeapon::~idFuncMountedWeapon() {
 }
 
 
-void idFuncMountedWeapon::Spawn( void ) {
+void idFuncMountedWeapon::Spawn() {
 
 	// Get projectile info
 	projectile = gameLocal.FindEntityDefDict( spawnArgs.GetString( "def_projectile" ), false );
@@ -3627,7 +3809,7 @@ void idFuncMountedWeapon::Spawn( void ) {
 	PostEventMS( &EV_PostSpawn, 0 );   
 }
 
-void idFuncMountedWeapon::Think( void ) {
+void idFuncMountedWeapon::Think() {
 
 	if ( isMounted && turret ) {
 		idVec3		vec = mountedPlayer->viewAngles.ToForward();
@@ -3672,7 +3854,7 @@ void idFuncMountedWeapon::Think( void ) {
 	idFuncMountedObject::Think();
 }
 
-void idFuncMountedWeapon::Event_PostSpawn( void ) {
+void idFuncMountedWeapon::Event_PostSpawn() {
 
 	if ( targets.Num() >= 1 ) {
 		for ( int i=0; i < targets.Num(); i++ ) {
@@ -3709,7 +3891,7 @@ END_CLASS
 idPortalSky::idPortalSky
 ===============
 */
-idPortalSky::idPortalSky( void ) {
+idPortalSky::idPortalSky() {
 
 }
 
@@ -3718,7 +3900,7 @@ idPortalSky::idPortalSky( void ) {
 idPortalSky::~idPortalSky
 ===============
 */
-idPortalSky::~idPortalSky( void ) {
+idPortalSky::~idPortalSky() {
 
 }
 
@@ -3727,7 +3909,7 @@ idPortalSky::~idPortalSky( void ) {
 idPortalSky::Spawn
 ===============
 */
-void idPortalSky::Spawn( void ) {
+void idPortalSky::Spawn() {
 	if ( !spawnArgs.GetBool( "triggered" ) ) {
 		PostEventMS( &EV_PostSpawn, 1 );
 	}
@@ -3750,4 +3932,3 @@ idPortalSky::Event_Activate
 void idPortalSky::Event_Activate( idEntity *activator ) {
 	gameLocal.SetPortalSkyEnt( this );
 }
-#endif /* _D3XP */

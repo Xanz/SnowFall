@@ -1,34 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../precompiled.h"
 #pragma hdrstop
-
+#include "../precompiled.h"
 
 /*
 =================
@@ -36,7 +35,7 @@ UpdateVertexIndex
 =================
 */
 ID_INLINE int UpdateVertexIndex( int vertexIndexNum[2], int *vertexRemap, int *vertexCopyIndex, int vertNum ) {
-	int s = INTSIGNBITSET( vertexRemap[vertNum] );
+	int s = INT32_SIGNBITSET( vertexRemap[vertNum] );
 	vertexIndexNum[0] = vertexRemap[vertNum];
 	vertexRemap[vertNum] = vertexIndexNum[s];
 	vertexIndexNum[1] += s;
@@ -93,28 +92,28 @@ int idSurface::Split( const idPlane &plane, const float epsilon, idSurface **fro
 	if ( !counts[SIDE_FRONT] && !counts[SIDE_BACK] ) {
 
 		f = ( verts[indexes[1]].xyz - verts[indexes[0]].xyz ).Cross( verts[indexes[0]].xyz - verts[indexes[2]].xyz ) * plane.Normal();
-		if ( FLOATSIGNBITSET( f ) ) {
-			*back = new idSurface( *this );
+		if ( IEEE_FLT_SIGNBITSET( f ) ) {
+			*back = new (TAG_IDLIB_SURFACE) idSurface( *this );
 			return SIDE_BACK;
 		} else {
-			*front = new idSurface( *this );
+			*front = new (TAG_IDLIB_SURFACE) idSurface( *this );
 			return SIDE_FRONT;
 		}
 	}
 	// if nothing at the front of the clipping plane
 	if ( !counts[SIDE_FRONT] ) {
-		*back = new idSurface( *this );
+		*back = new (TAG_IDLIB_SURFACE) idSurface( *this );
 		return SIDE_BACK;
 	}
 	// if nothing at the back of the clipping plane
 	if ( !counts[SIDE_BACK] ) {
-		*front = new idSurface( *this );
+		*front = new (TAG_IDLIB_SURFACE) idSurface( *this );
 		return SIDE_FRONT;
 	}
 
 	// allocate front and back surface
-	*front = surface[0] = new idSurface();
-	*back = surface[1] = new idSurface();
+	*front = surface[0] = new (TAG_IDLIB_SURFACE) idSurface();
+	*back = surface[1] = new (TAG_IDLIB_SURFACE) idSurface();
 
 	edgeSplitVertex = (int *) _alloca( edges.Num() * sizeof( int ) );
 	numEdgeSplitVertexes = 0;
@@ -181,12 +180,12 @@ int idSurface::Split( const idPlane &plane, const float epsilon, idSurface **fro
 		v1 = indexes[i+1];
 		v2 = indexes[i+2];
 
-		switch( ( INTSIGNBITSET( edgeSplitVertex[e0] ) | ( INTSIGNBITSET( edgeSplitVertex[e1] ) << 1 ) | ( INTSIGNBITSET( edgeSplitVertex[e2] ) << 2 ) ) ^ 7 ) {
+		switch( ( INT32_SIGNBITSET( edgeSplitVertex[e0] ) | ( INT32_SIGNBITSET( edgeSplitVertex[e1] ) << 1 ) | ( INT32_SIGNBITSET( edgeSplitVertex[e2] ) << 2 ) ) ^ 7 ) {
 			case 0: {	// no edges split
 				if ( ( sides[v0] & sides[v1] & sides[v2] ) & SIDE_ON ) {
 					// coplanar
 					f = ( verts[v1].xyz - verts[v0].xyz ).Cross( verts[v0].xyz - verts[v2].xyz ) * plane.Normal();
-					s = FLOATSIGNBITSET( f );
+					s = IEEE_FLT_SIGNBITSET( f );
 				} else {
 					s = ( sides[v0] | sides[v1] | sides[v2] ) & SIDE_BACK;
 				}
@@ -330,16 +329,16 @@ int idSurface::Split( const idPlane &plane, const float epsilon, idSurface **fro
 		}
 	}
 
-	surface[0]->indexes.SetNum( indexNum[0], false );
-	surface[1]->indexes.SetNum( indexNum[1], false );
+	surface[0]->indexes.SetNum( indexNum[0] );
+	surface[1]->indexes.SetNum( indexNum[1] );
 
 	// copy vertexes
-	surface[0]->verts.SetNum( vertexIndexNum[0][1], false );
+	surface[0]->verts.SetNum( vertexIndexNum[0][1] );
 	index = vertexCopyIndex[0];
 	for ( i = numEdgeSplitVertexes; i < surface[0]->verts.Num(); i++ ) {
 		surface[0]->verts[i] = verts[index[i]];
 	}
-	surface[1]->verts.SetNum( vertexIndexNum[1][1], false );
+	surface[1]->verts.SetNum( vertexIndexNum[1][1] );
 	index = vertexCopyIndex[1];
 	for ( i = numEdgeSplitVertexes; i < surface[1]->verts.Num(); i++ ) {
 		surface[1]->verts[i] = verts[index[i]];
@@ -381,8 +380,8 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 	int				indexNum;
 	int				numEdgeSplitVertexes;
 	idDrawVert		v;
-	idList<idDrawVert> newVerts;
-	idList<int>		newIndexes;
+	idList<idDrawVert, TAG_IDLIB_LIST_SURFACE> newVerts;
+	idList<int, TAG_IDLIB_LIST_SURFACE>		newIndexes;
 
 	dists = (float *) _alloca( verts.Num() * sizeof( float ) );
 	sides = (byte *) _alloca( verts.Num() * sizeof( byte ) );
@@ -406,7 +405,7 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 	if ( !counts[SIDE_FRONT] && !counts[SIDE_BACK] ) {
 
 		f = ( verts[indexes[1]].xyz - verts[indexes[0]].xyz ).Cross( verts[indexes[0]].xyz - verts[indexes[2]].xyz ) * plane.Normal();
-		if ( FLOATSIGNBITSET( f ) ) {
+		if ( IEEE_FLT_SIGNBITSET( f ) ) {
 			Clear();
 			return false;
 		} else {
@@ -473,7 +472,7 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 		v1 = indexes[i+1];
 		v2 = indexes[i+2];
 
-		switch( ( INTSIGNBITSET( edgeSplitVertex[e0] ) | ( INTSIGNBITSET( edgeSplitVertex[e1] ) << 1 ) | ( INTSIGNBITSET( edgeSplitVertex[e2] ) << 2 ) ) ^ 7 ) {
+		switch( ( INT32_SIGNBITSET( edgeSplitVertex[e0] ) | ( INT32_SIGNBITSET( edgeSplitVertex[e1] ) << 1 ) | ( INT32_SIGNBITSET( edgeSplitVertex[e2] ) << 2 ) ) ^ 7 ) {
 			case 0: {	// no edges split
 				if ( ( sides[v0] | sides[v1] | sides[v2] ) & SIDE_BACK ) {
 					break;
@@ -484,7 +483,7 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 						break;
 					}
 					f = ( verts[v1].xyz - verts[v0].xyz ).Cross( verts[v0].xyz - verts[v2].xyz ) * plane.Normal();
-					if ( FLOATSIGNBITSET( f ) ) {
+					if ( IEEE_FLT_SIGNBITSET( f ) ) {
 						break;
 					}
 				}
@@ -577,10 +576,10 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 		}
 	}
 
-	newIndexes.SetNum( indexNum, false );
+	newIndexes.SetNum( indexNum );
 
 	// copy vertexes
-	newVerts.SetNum( vertexIndexNum[1], false );
+	newVerts.SetNum( vertexIndexNum[1] );
 	for ( i = numEdgeSplitVertexes; i < newVerts.Num(); i++ ) {
 		newVerts[i] = verts[vertexCopyIndex[i]];
 	}
@@ -599,7 +598,7 @@ bool idSurface::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 idSurface::IsConnected
 =============
 */
-bool idSurface::IsConnected( void ) const {
+bool idSurface::IsConnected() const {
 	int i, j, numIslands, numTris;
 	int queueStart, queueEnd;
 	int *queue, *islandNum;
@@ -630,7 +629,7 @@ bool idSurface::IsConnected( void ) const {
 			for ( j = 0; j < 3; j++ ) {
 
 				edgeNum = index[j];
-				nextTri = edges[abs(edgeNum)].tris[INTSIGNBITNOTSET(edgeNum)];
+				nextTri = edges[abs(edgeNum)].tris[INT32_SIGNBITNOTSET(edgeNum)];
 
 				if ( nextTri == -1 ) {
 					continue;
@@ -657,7 +656,7 @@ bool idSurface::IsConnected( void ) const {
 idSurface::IsClosed
 =================
 */
-bool idSurface::IsClosed( void ) const {
+bool idSurface::IsClosed() const {
 	for ( int i = 0; i < edges.Num(); i++ ) {
 		if ( edges[i].tris[0] < 0 || edges[i].tris[1] < 0 ) {
 			return false;
@@ -706,21 +705,21 @@ float idSurface::PlaneDistance( const idPlane &plane ) const {
 		d = plane.Distance( verts[i].xyz );
 		if ( d < min ) {
 			min = d;
-			if ( FLOATSIGNBITSET( min ) & FLOATSIGNBITNOTSET( max ) ) {
+			if ( IEEE_FLT_SIGNBITSET( min ) & IEEE_FLT_SIGNBITNOTSET( max ) ) {
 				return 0.0f;
 			}
 		}
 		if ( d > max ) {
 			max = d;
-			if ( FLOATSIGNBITSET( min ) & FLOATSIGNBITNOTSET( max ) ) {
+			if ( IEEE_FLT_SIGNBITSET( min ) & IEEE_FLT_SIGNBITNOTSET( max ) ) {
 				return 0.0f;
 			}
 		}
 	}
-	if ( FLOATSIGNBITNOTSET( min ) ) {
+	if ( IEEE_FLT_SIGNBITNOTSET( min ) ) {
 		return min;
 	}
-	if ( FLOATSIGNBITSET( max ) ) {
+	if ( IEEE_FLT_SIGNBITSET( max ) ) {
 		return max;
 	}
 	return 0.0f;
@@ -798,7 +797,7 @@ bool idSurface::RayIntersection( const idVec3 &start, const idVec3 &dir, float &
 	for ( i = 0; i < edges.Num(); i++ ) {
 		pl.FromLine( verts[ edges[i].verts[1] ].xyz, verts[ edges[i].verts[0] ].xyz );
 		d = pl.PermutedInnerProduct( rayPl );
-		sidedness[ i ] = FLOATSIGNBITSET( d );
+		sidedness[ i ] = IEEE_FLT_SIGNBITSET( d );
 	}
 
 	// test triangles
@@ -806,9 +805,9 @@ bool idSurface::RayIntersection( const idVec3 &start, const idVec3 &dir, float &
 		i0 = edgeIndexes[i+0];
 		i1 = edgeIndexes[i+1];
 		i2 = edgeIndexes[i+2];
-		s0 = sidedness[abs(i0)] ^ INTSIGNBITSET( i0 );
-		s1 = sidedness[abs(i1)] ^ INTSIGNBITSET( i1 );
-		s2 = sidedness[abs(i2)] ^ INTSIGNBITSET( i2 );
+		s0 = sidedness[abs(i0)] ^ INT32_SIGNBITSET( i0 );
+		s1 = sidedness[abs(i1)] ^ INT32_SIGNBITSET( i1 );
+		s2 = sidedness[abs(i2)] ^ INT32_SIGNBITSET( i2 );
 
 		if ( s0 & s1 & s2 ) {
 			plane.FromPoints( verts[indexes[i+0]].xyz, verts[indexes[i+1]].xyz, verts[indexes[i+2]].xyz );
@@ -838,7 +837,7 @@ idSurface::GenerateEdgeIndexes
   Assumes each edge is shared by at most two triangles.
 =================
 */
-void idSurface::GenerateEdgeIndexes( void ) {
+void idSurface::GenerateEdgeIndexes() {
 	int i, j, i0, i1, i2, s, v0, v1, edgeNum;
 	int *index, *vertexEdges, *edgeChain;
 	surfaceEdge_t e[3];
@@ -847,7 +846,7 @@ void idSurface::GenerateEdgeIndexes( void ) {
 	memset( vertexEdges, -1, verts.Num() * sizeof( int ) );
 	edgeChain = (int *) _alloca16( indexes.Num() * sizeof( int ) );
 
-	edgeIndexes.SetNum( indexes.Num(), true );
+	edgeIndexes.SetNum( indexes.Num() );
 
 	edges.Clear();
 
@@ -862,13 +861,13 @@ void idSurface::GenerateEdgeIndexes( void ) {
 		i1 = index[1];
 		i2 = index[2];
 		// setup edges each with smallest vertex number first
-		s = INTSIGNBITSET(i1 - i0);
+		s = INT32_SIGNBITSET(i1 - i0);
 		e[0].verts[0] = index[s];
 		e[0].verts[1] = index[s^1];
-		s = INTSIGNBITSET(i2 - i1) + 1;
+		s = INT32_SIGNBITSET(i2 - i1) + 1;
 		e[1].verts[0] = index[s];
 		e[1].verts[1] = index[s^3];
-		s = INTSIGNBITSET(i2 - i0) << 1;
+		s = INT32_SIGNBITSET(i2 - i0) << 1;
 		e[2].verts[0] = index[s];
 		e[2].verts[1] = index[s^2];
 		// get edges

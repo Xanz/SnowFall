@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
 
 #include "../Game_local.h"
 
@@ -40,7 +40,7 @@ END_CLASS
 idPhysics_Parametric::Activate
 ================
 */
-void idPhysics_Parametric::Activate( void ) {
+void idPhysics_Parametric::Activate() {
 	current.atRest = -1;
 	self->BecomeActive( TH_PHYSICS );
 }
@@ -50,7 +50,7 @@ void idPhysics_Parametric::Activate( void ) {
 idPhysics_Parametric::TestIfAtRest
 ================
 */
-bool idPhysics_Parametric::TestIfAtRest( void ) const {
+bool idPhysics_Parametric::TestIfAtRest() const {
 
 	if ( ( current.linearExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP ) == EXTRAPOLATION_NONE &&
 			( current.angularExtrapolation.GetExtrapolationType() & ~EXTRAPOLATION_NOSTOP ) == EXTRAPOLATION_NONE &&
@@ -88,7 +88,7 @@ bool idPhysics_Parametric::TestIfAtRest( void ) const {
 idPhysics_Parametric::Rest
 ================
 */
-void idPhysics_Parametric::Rest( void ) {
+void idPhysics_Parametric::Rest() {
 	current.atRest = gameLocal.time;
 	self->BecomeInactive( TH_PHYSICS );
 }
@@ -98,7 +98,7 @@ void idPhysics_Parametric::Rest( void ) {
 idPhysics_Parametric::idPhysics_Parametric
 ================
 */
-idPhysics_Parametric::idPhysics_Parametric( void ) {
+idPhysics_Parametric::idPhysics_Parametric() {
 
 	current.time = gameLocal.time;
 	current.atRest = -1;
@@ -132,7 +132,7 @@ idPhysics_Parametric::idPhysics_Parametric( void ) {
 idPhysics_Parametric::~idPhysics_Parametric
 ================
 */
-idPhysics_Parametric::~idPhysics_Parametric( void ) {
+idPhysics_Parametric::~idPhysics_Parametric() {
 	if ( clipModel != NULL ) {
 		delete clipModel;
 		clipModel = NULL;
@@ -322,7 +322,7 @@ void idPhysics_Parametric::SetPusher( int flags ) {
 idPhysics_Parametric::IsPusher
 ================
 */
-bool idPhysics_Parametric::IsPusher( void ) const {
+bool idPhysics_Parametric::IsPusher() const {
 	return isPusher;
 }
 
@@ -355,7 +355,7 @@ void idPhysics_Parametric::SetAngularExtrapolation( extrapolation_t type, int ti
 idPhysics_Parametric::GetLinearExtrapolationType
 ================
 */
-extrapolation_t idPhysics_Parametric::GetLinearExtrapolationType( void ) const {
+extrapolation_t idPhysics_Parametric::GetLinearExtrapolationType() const {
 	return current.linearExtrapolation.GetExtrapolationType();
 }
 
@@ -364,7 +364,7 @@ extrapolation_t idPhysics_Parametric::GetLinearExtrapolationType( void ) const {
 idPhysics_Parametric::GetAngularExtrapolationType
 ================
 */
-extrapolation_t idPhysics_Parametric::GetAngularExtrapolationType( void ) const {
+extrapolation_t idPhysics_Parametric::GetAngularExtrapolationType() const {
 	return current.angularExtrapolation.GetExtrapolationType();
 }
 
@@ -418,7 +418,7 @@ void idPhysics_Parametric::SetSpline( idCurve_Spline<idVec3> *spline, int accelT
 idPhysics_Parametric::GetSpline
 ================
 */
-idCurve_Spline<idVec3> *idPhysics_Parametric::GetSpline( void ) const {
+idCurve_Spline<idVec3> *idPhysics_Parametric::GetSpline() const {
 	return current.spline;
 }
 
@@ -427,7 +427,7 @@ idCurve_Spline<idVec3> *idPhysics_Parametric::GetSpline( void ) const {
 idPhysics_Parametric::GetSplineAcceleration
 ================
 */
-int idPhysics_Parametric::GetSplineAcceleration( void ) const {
+int idPhysics_Parametric::GetSplineAcceleration() const {
 	return current.splineInterpolate.GetAcceleration();
 }
 
@@ -436,7 +436,7 @@ int idPhysics_Parametric::GetSplineAcceleration( void ) const {
 idPhysics_Parametric::GetSplineDeceleration
 ================
 */
-int idPhysics_Parametric::GetSplineDeceleration( void ) const {
+int idPhysics_Parametric::GetSplineDeceleration() const {
 	return current.splineInterpolate.GetDeceleration();
 }
 
@@ -445,7 +445,7 @@ int idPhysics_Parametric::GetSplineDeceleration( void ) const {
 idPhysics_Parametric::UsingSplineAngles
 ================
 */
-bool idPhysics_Parametric::UsingSplineAngles( void ) const {
+bool idPhysics_Parametric::UsingSplineAngles() const {
 	return current.useSplineAngles;
 }
 
@@ -498,7 +498,7 @@ idClipModel *idPhysics_Parametric::GetClipModel( int id ) const {
 idPhysics_Parametric::GetNumClipModels
 ================
 */
-int idPhysics_Parametric::GetNumClipModels( void ) const {
+int idPhysics_Parametric::GetNumClipModels() const {
 	return ( clipModel != NULL );
 }
 
@@ -628,7 +628,9 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec ) {
 
 		gameLocal.push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
 		if ( pushResults.fraction < 1.0f ) {
-			clipModel->Link( gameLocal.clip, self, 0, oldOrigin, oldAxis );
+			if ( clipModel ) {
+				clipModel->Link( gameLocal.clip, self, 0, oldOrigin, oldAxis );
+			}
 			current.localOrigin = oldLocalOrigin;
 			current.origin = oldOrigin;
 			current.localAngles = oldLocalAngles;
@@ -656,6 +658,31 @@ bool idPhysics_Parametric::Evaluate( int timeStepMSec, int endTimeMSec ) {
 
 /*
 ================
+Sets the currentInterpolated state based on previous, next, and the fraction.
+================
+*/
+bool idPhysics_Parametric::Interpolate( const float fraction ) {
+
+	if( self->GetNumSnapshotsReceived() <= 1 ) {
+		return false;
+	}
+
+	idVec3 oldOrigin = current.origin;
+	idMat3 oldAxis = current.axis;
+
+	const bool hasChanged = InterpolatePhysicsState( current, previous, next, fraction );
+	
+	gameLocal.push.ClipPush( pushResults, self, pushFlags, oldOrigin, oldAxis, current.origin, current.axis );
+
+	if ( clipModel ) {
+		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+	}
+
+	return hasChanged;
+}
+
+/*
+================
 idPhysics_Parametric::UpdateTime
 ================
 */
@@ -679,7 +706,7 @@ void idPhysics_Parametric::UpdateTime( int endTimeMSec ) {
 idPhysics_Parametric::GetTime
 ================
 */
-int idPhysics_Parametric::GetTime( void ) const {
+int idPhysics_Parametric::GetTime() const {
 	return current.time;
 }
 
@@ -688,7 +715,7 @@ int idPhysics_Parametric::GetTime( void ) const {
 idPhysics_Parametric::IsAtRest
 ================
 */
-bool idPhysics_Parametric::IsAtRest( void ) const {
+bool idPhysics_Parametric::IsAtRest() const {
 	return current.atRest >= 0;
 }
 
@@ -697,7 +724,7 @@ bool idPhysics_Parametric::IsAtRest( void ) const {
 idPhysics_Parametric::GetRestStartTime
 ================
 */
-int idPhysics_Parametric::GetRestStartTime( void ) const {
+int idPhysics_Parametric::GetRestStartTime() const {
 	return current.atRest;
 }
 
@@ -706,7 +733,7 @@ int idPhysics_Parametric::GetRestStartTime( void ) const {
 idPhysics_Parametric::IsPushable
 ================
 */
-bool idPhysics_Parametric::IsPushable( void ) const {
+bool idPhysics_Parametric::IsPushable() const {
 	return false;
 }
 
@@ -715,7 +742,7 @@ bool idPhysics_Parametric::IsPushable( void ) const {
 idPhysics_Parametric::SaveState
 ================
 */
-void idPhysics_Parametric::SaveState( void ) {
+void idPhysics_Parametric::SaveState() {
 	saved = current;
 }
 
@@ -724,7 +751,7 @@ void idPhysics_Parametric::SaveState( void ) {
 idPhysics_Parametric::RestoreState
 ================
 */
-void idPhysics_Parametric::RestoreState( void ) {
+void idPhysics_Parametric::RestoreState() {
 
 	current = saved;
 
@@ -893,7 +920,7 @@ const idVec3 &idPhysics_Parametric::GetAngularVelocity( int id ) const {
 idPhysics_Parametric::DisableClip
 ================
 */
-void idPhysics_Parametric::DisableClip( void ) {
+void idPhysics_Parametric::DisableClip() {
 	if ( clipModel ) {
 		clipModel->Disable();
 	}
@@ -904,7 +931,7 @@ void idPhysics_Parametric::DisableClip( void ) {
 idPhysics_Parametric::EnableClip
 ================
 */
-void idPhysics_Parametric::EnableClip( void ) {
+void idPhysics_Parametric::EnableClip() {
 	if ( clipModel ) {
 		clipModel->Enable();
 	}
@@ -915,7 +942,7 @@ void idPhysics_Parametric::EnableClip( void ) {
 idPhysics_Parametric::UnlinkClip
 ================
 */
-void idPhysics_Parametric::UnlinkClip( void ) {
+void idPhysics_Parametric::UnlinkClip() {
 	if ( clipModel ) {
 		clipModel->Unlink();
 	}
@@ -926,7 +953,7 @@ void idPhysics_Parametric::UnlinkClip( void ) {
 idPhysics_Parametric::LinkClip
 ================
 */
-void idPhysics_Parametric::LinkClip( void ) {
+void idPhysics_Parametric::LinkClip() {
 	if ( clipModel ) {
 		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
 	}
@@ -937,7 +964,7 @@ void idPhysics_Parametric::LinkClip( void ) {
 idPhysics_Parametric::GetBlockingInfo
 ================
 */
-const trace_t *idPhysics_Parametric::GetBlockingInfo( void ) const {
+const trace_t *idPhysics_Parametric::GetBlockingInfo() const {
 	return ( isBlocked ? &pushResults : NULL );
 }
 
@@ -946,7 +973,7 @@ const trace_t *idPhysics_Parametric::GetBlockingInfo( void ) const {
 idPhysics_Parametric::GetBlockingEntity
 ================
 */
-idEntity *idPhysics_Parametric::GetBlockingEntity( void ) const {
+idEntity *idPhysics_Parametric::GetBlockingEntity() const {
 	if ( isBlocked ) {
 		return gameLocal.entities[ pushResults.c.entityNum ];
 	}
@@ -998,7 +1025,7 @@ void idPhysics_Parametric::SetMaster( idEntity *master, const bool orientated ) 
 idPhysics_Parametric::GetLinearEndTime
 ================
 */
-int idPhysics_Parametric::GetLinearEndTime( void ) const {
+int idPhysics_Parametric::GetLinearEndTime() const {
 	if ( current.spline != NULL ) {
 		if ( current.spline->GetBoundaryType() != idCurve_Spline<idVec3>::BT_CLOSED ) {
 			return current.spline->GetTime( current.spline->GetNumValues() - 1 );
@@ -1017,7 +1044,7 @@ int idPhysics_Parametric::GetLinearEndTime( void ) const {
 idPhysics_Parametric::GetAngularEndTime
 ================
 */
-int idPhysics_Parametric::GetAngularEndTime( void ) const {
+int idPhysics_Parametric::GetAngularEndTime() const {
 	if ( current.angularInterpolation.GetDuration() != 0 ) {
 		return current.angularInterpolation.GetEndTime();
 	} else {
@@ -1030,69 +1057,12 @@ int idPhysics_Parametric::GetAngularEndTime( void ) const {
 idPhysics_Parametric::WriteToSnapshot
 ================
 */
-void idPhysics_Parametric::WriteToSnapshot( idBitMsgDelta &msg ) const {
-	msg.WriteLong( current.time );
-	msg.WriteLong( current.atRest );
-	msg.WriteFloat( current.origin[0] );
-	msg.WriteFloat( current.origin[1] );
-	msg.WriteFloat( current.origin[2] );
-	msg.WriteFloat( current.angles[0] );
-	msg.WriteFloat( current.angles[1] );
-	msg.WriteFloat( current.angles[2] );
-	msg.WriteDeltaFloat( current.origin[0], current.localOrigin[0] );
-	msg.WriteDeltaFloat( current.origin[1], current.localOrigin[1] );
-	msg.WriteDeltaFloat( current.origin[2], current.localOrigin[2] );
-	msg.WriteDeltaFloat( current.angles[0], current.localAngles[0] );
-	msg.WriteDeltaFloat( current.angles[1], current.localAngles[1] );
-	msg.WriteDeltaFloat( current.angles[2], current.localAngles[2] );
+void idPhysics_Parametric::WriteToSnapshot( idBitMsg &msg ) const {
 
-	msg.WriteBits( current.linearExtrapolation.GetExtrapolationType(), 8 );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetStartTime() );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetDuration() );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetStartValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetStartValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetStartValue()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetSpeed()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetSpeed()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetSpeed()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetBaseSpeed()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetBaseSpeed()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.linearExtrapolation.GetBaseSpeed()[2] );
-
-	msg.WriteBits( current.angularExtrapolation.GetExtrapolationType(), 8 );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetStartTime() );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetDuration() );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetStartValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetStartValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetStartValue()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetSpeed()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetSpeed()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetSpeed()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetBaseSpeed()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetBaseSpeed()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.angularExtrapolation.GetBaseSpeed()[2] );
-
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetStartTime() );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetAcceleration() );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetDeceleration() );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetDuration() );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetStartValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetStartValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetStartValue()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetEndValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetEndValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.linearInterpolation.GetEndValue()[2] );
-
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetStartTime() );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetAcceleration() );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetDeceleration() );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetDuration() );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetStartValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetStartValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetStartValue()[2] );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetEndValue()[0] );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetEndValue()[1] );
-	msg.WriteDeltaFloat( 0.0f, current.angularInterpolation.GetEndValue()[2] );
+	const idQuat currentQuat = current.axis.ToQuat();
+	
+	WriteFloatArray( msg, current.origin );
+	WriteFloatArray( msg, currentQuat );
 }
 
 /*
@@ -1100,82 +1070,17 @@ void idPhysics_Parametric::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_Parametric::ReadFromSnapshot
 ================
 */
-void idPhysics_Parametric::ReadFromSnapshot( const idBitMsgDelta &msg ) {
-	extrapolation_t linearType, angularType;
-	float startTime, duration, accelTime, decelTime;
-	idVec3 linearStartValue, linearSpeed, linearBaseSpeed, startPos, endPos;
-	idAngles angularStartValue, angularSpeed, angularBaseSpeed, startAng, endAng;
+void idPhysics_Parametric::ReadFromSnapshot( const idBitMsg &msg ) {
 
-	current.time = msg.ReadLong();
-	current.atRest = msg.ReadLong();
-	current.origin[0] = msg.ReadFloat();
-	current.origin[1] = msg.ReadFloat();
-	current.origin[2] = msg.ReadFloat();
-	current.angles[0] = msg.ReadFloat();
-	current.angles[1] = msg.ReadFloat();
-	current.angles[2] = msg.ReadFloat();
-	current.localOrigin[0] = msg.ReadDeltaFloat( current.origin[0] );
-	current.localOrigin[1] = msg.ReadDeltaFloat( current.origin[1] );
-	current.localOrigin[2] = msg.ReadDeltaFloat( current.origin[2] );
-	current.localAngles[0] = msg.ReadDeltaFloat( current.angles[0] );
-	current.localAngles[1] = msg.ReadDeltaFloat( current.angles[1] );
-	current.localAngles[2] = msg.ReadDeltaFloat( current.angles[2] );
+	previous = next;
 
-	linearType = (extrapolation_t) msg.ReadBits( 8 );
-	startTime = msg.ReadDeltaFloat( 0.0f );
-	duration = msg.ReadDeltaFloat( 0.0f );
-	linearStartValue[0] = msg.ReadDeltaFloat( 0.0f );
-	linearStartValue[1] = msg.ReadDeltaFloat( 0.0f );
-	linearStartValue[2] = msg.ReadDeltaFloat( 0.0f );
-	linearSpeed[0] = msg.ReadDeltaFloat( 0.0f );
-	linearSpeed[1] = msg.ReadDeltaFloat( 0.0f );
-	linearSpeed[2] = msg.ReadDeltaFloat( 0.0f );
-	linearBaseSpeed[0] = msg.ReadDeltaFloat( 0.0f );
-	linearBaseSpeed[1] = msg.ReadDeltaFloat( 0.0f );
-	linearBaseSpeed[2] = msg.ReadDeltaFloat( 0.0f );
-	current.linearExtrapolation.Init( startTime, duration, linearStartValue, linearBaseSpeed, linearSpeed, linearType );
+	next.origin = ReadFloatArray< idVec3 >( msg );
+	next.axis = ReadFloatArray< idQuat >( msg );
 
-	angularType = (extrapolation_t) msg.ReadBits( 8 );
-	startTime = msg.ReadDeltaFloat( 0.0f );
-	duration = msg.ReadDeltaFloat( 0.0f );
-	angularStartValue[0] = msg.ReadDeltaFloat( 0.0f );
-	angularStartValue[1] = msg.ReadDeltaFloat( 0.0f );
-	angularStartValue[2] = msg.ReadDeltaFloat( 0.0f );
-	angularSpeed[0] = msg.ReadDeltaFloat( 0.0f );
-	angularSpeed[1] = msg.ReadDeltaFloat( 0.0f );
-	angularSpeed[2] = msg.ReadDeltaFloat( 0.0f );
-	angularBaseSpeed[0] = msg.ReadDeltaFloat( 0.0f );
-	angularBaseSpeed[1] = msg.ReadDeltaFloat( 0.0f );
-	angularBaseSpeed[2] = msg.ReadDeltaFloat( 0.0f );
-	current.angularExtrapolation.Init( startTime, duration, angularStartValue, angularBaseSpeed, angularSpeed, angularType );
-
-	startTime = msg.ReadDeltaFloat( 0.0f );
-	accelTime = msg.ReadDeltaFloat( 0.0f );
-	decelTime = msg.ReadDeltaFloat( 0.0f );
-	duration = msg.ReadDeltaFloat( 0.0f );
-	startPos[0] = msg.ReadDeltaFloat( 0.0f );
-	startPos[1] = msg.ReadDeltaFloat( 0.0f );
-	startPos[2] = msg.ReadDeltaFloat( 0.0f );
-	endPos[0] = msg.ReadDeltaFloat( 0.0f );
-	endPos[1] = msg.ReadDeltaFloat( 0.0f );
-	endPos[2] = msg.ReadDeltaFloat( 0.0f );
-	current.linearInterpolation.Init( startTime, accelTime, decelTime, duration, startPos, endPos );
-
-	startTime = msg.ReadDeltaFloat( 0.0f );
-	accelTime = msg.ReadDeltaFloat( 0.0f );
-	decelTime = msg.ReadDeltaFloat( 0.0f );
-	duration = msg.ReadDeltaFloat( 0.0f );
-	startAng[0] = msg.ReadDeltaFloat( 0.0f );
-	startAng[1] = msg.ReadDeltaFloat( 0.0f );
-	startAng[2] = msg.ReadDeltaFloat( 0.0f );
-	endAng[0] = msg.ReadDeltaFloat( 0.0f );
-	endAng[1] = msg.ReadDeltaFloat( 0.0f );
-	endAng[2] = msg.ReadDeltaFloat( 0.0f );
-	current.angularInterpolation.Init( startTime, accelTime, decelTime, duration, startAng, endAng );
-
-	current.axis = current.angles.ToMat3();
-
-	if ( clipModel ) {
-		clipModel->Link( gameLocal.clip, self, 0, current.origin, current.axis );
+	if( self->GetNumSnapshotsReceived() <= 1 ) {
+		current.origin = next.origin;
+		previous.origin = next.origin;
+		current.axis = next.axis.ToMat3();
+		previous.axis = next.axis;
 	}
 }

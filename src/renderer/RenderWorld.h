@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -41,8 +41,6 @@ If you have questions concerning this license or the applicable additional terms
 #define	PROC_FILE_ID				"mapProcFile003"
 
 // shader parms
-const int MAX_GLOBAL_SHADER_PARMS	= 12;
-
 const int SHADERPARM_RED			= 0;
 const int SHADERPARM_GREEN			= 1;
 const int SHADERPARM_BLUE			= 2;
@@ -54,8 +52,6 @@ const int SHADERPARM_MODE			= 7;	// for selecting which shader passes to enable
 const int SHADERPARM_TIME_OF_DEATH	= 7;	// for the monster skin-burn-away effect enable and time offset
 
 // model parms
-const int SHADERPARM_MD5_SKINSCALE	= 8;	// for scaling vertex offsets on md5 models (jack skellington effect)
-
 const int SHADERPARM_MD3_FRAME		= 8;
 const int SHADERPARM_MD3_LASTFRAME	= 9;
 const int SHADERPARM_MD3_BACKLERP	= 10;
@@ -73,6 +69,9 @@ const int SHADERPARM_PARTICLE_STOPTIME = 8;	// don't spawn any more particles af
 // guis
 const int MAX_RENDERENTITY_GUI		= 3;
 
+// the renderEntity_s::joints array needs to point at enough memory to store the number of joints rounded up to two for SIMD
+ID_INLINE int SIMD_ROUND_JOINTS( int numJoints )							{ return ( ( numJoints + 1 ) & ~1 ); }
+ID_INLINE void SIMD_INIT_LAST_JOINT( idJointMat * joints, int numJoints )	{ if ( numJoints & 1 ) { joints[numJoints] = joints[numJoints - 1]; } }
 
 typedef bool(*deferredEntityCallback_t)( renderEntity_s *, const renderView_s * );
 
@@ -148,6 +147,8 @@ typedef struct renderEntity_s {
 
 	bool					weaponDepthHack;		// squash depth range so view weapons don't poke into walls
 													// this automatically implies noShadow
+	bool					noOverlays;				// force no overlays on this model
+	bool					skipMotionBlur;			// Mask out this object during motion blur
 	int						forceUpdate;			// force an update (NOTE: not a bool to keep this struct a multiple of 4 bytes)
 	int						timeGroup;
 	int						xrayIndex;
@@ -170,6 +171,7 @@ typedef struct renderLight_s {
 	// I am sticking the four bools together so there are no unused gaps in
 	// the padded structure, which could confuse the memcmp that checks for redundant
 	// updates
+	bool					forceShadows;		// Used to override the material parameters
 	bool					noShadows;			// (should we replace this with material parameters on the shader?)
 	bool					noSpecular;			// (should we replace this with material parameters on the shader?)
 
@@ -208,20 +210,23 @@ typedef struct renderView_s {
 	// subviews (mirrors, cameras, etc) will always clear it to zero
 	int						viewID;
 
-	// sized from 0 to SCREEN_WIDTH / SCREEN_HEIGHT (640/480), not actual resolution
-	int						x, y, width, height;
-
-	float					fov_x, fov_y;
-	idVec3					vieworg;
+	float					fov_x, fov_y;		// in degrees
+	idVec3					vieworg;			// has already been adjusted for stereo world seperation
+	idVec3					vieworg_weapon;		// has already been adjusted for stereo world seperation
 	idMat3					viewaxis;			// transformation matrix, view looks down the positive X axis
 
 	bool					cramZNear;			// for cinematics, we want to set ZNear much lower
+	bool					flipProjection;
 	bool					forceUpdate;		// for an update 
 
 	// time in milliseconds for shader effects and other time dependent rendering issues
-	int						time;
+	int						time[2];
 	float					shaderParms[MAX_GLOBAL_SHADER_PARMS];		// can be used in any way by shader
 	const idMaterial		*globalMaterial;							// used to override everything draw
+
+	// the viewEyeBuffer may be of a different polarity than stereoScreenSeparation if the eyes have been swapped
+	int						viewEyeBuffer;				// -1 = left eye, 1 = right eye, 0 = monoscopic view or GUI
+	float					stereoScreenSeparation;		// projection matrix horizontal offset, positive or negative based on camera eye
 } renderView_t;
 
 
@@ -273,6 +278,11 @@ public:
 	// a NULL or empty mapName will create an empty, single area world
 	virtual bool			InitFromMap( const char *mapName ) = 0;
 
+	// This fixes a crash when switching between expansion packs in the same game session
+	// the modelManager gets reset, which deletes all render models without resetting the localModels list inside renderWorldLocal.
+	// Now we'll have a hook to reset the list from here.
+	virtual void			ResetLocalRenderModels() = 0;
+
 	//-------------- Entity and Light Defs -----------------
 
 	// entityDefs and lightDefs are added to a given world to determine
@@ -308,7 +318,7 @@ public:
 	virtual void			ProjectDecal( qhandle_t entityHandle, const idFixedWinding &winding, const idVec3 &projectionOrigin, const bool parallel, const float fadeDepth, const idMaterial *material, const int startTime ) = 0;
 
 	// Creates overlays on dynamic models.
-	virtual void			ProjectOverlay( qhandle_t entityHandle, const idPlane localTextureAxis[2], const idMaterial *material ) = 0;
+	virtual void			ProjectOverlay( qhandle_t entityHandle, const idPlane localTextureAxis[2], const idMaterial *material, const int startTime ) = 0;
 
 	// Removes all decals and overlays from the given entity def.
 	virtual void			RemoveDecals( qhandle_t entityHandle ) = 0;
@@ -327,7 +337,7 @@ public:
 	//-------------- Portal Area Information -----------------
 
 	// returns the number of portals
-	virtual int				NumPortals( void ) const = 0;
+	virtual int				NumPortals() const = 0;
 
 	// returns 0 if no portal contacts the bounds
 	// This is used by the game to identify portals that are contained
@@ -342,11 +352,11 @@ public:
 
 	// returns true only if a chain of portals without the given connection bits set
 	// exists between the two areas (a door doesn't separate them, etc)
-	virtual	bool			AreasAreConnected( int areaNum1, int areaNum2, portalConnection_t connection ) = 0;
+	virtual	bool			AreasAreConnected( int areaNum1, int areaNum2, portalConnection_t connection ) const = 0;
 
 	// returns the number of portal areas in a map, so game code can build information
 	// tables for the different areas
-	virtual	int				NumAreas( void ) const = 0;
+	virtual	int				NumAreas() const = 0;
 
 	// Will return -1 if the point is not in an area, otherwise
 	// it will return 0 <= value < NumAreas()
@@ -409,7 +419,6 @@ public:
 	virtual void			DebugSphere( const idVec4 &color, const idSphere &sphere, const int lifetime = 0, bool depthTest = false ) = 0;
 	virtual void			DebugBounds( const idVec4 &color, const idBounds &bounds, const idVec3 &org = vec3_origin, const int lifetime = 0 ) = 0;
 	virtual void			DebugBox( const idVec4 &color, const idBox &box, const int lifetime = 0 ) = 0;
-	virtual void			DebugFrustum( const idVec4 &color, const idFrustum &frustum, const bool showFromOrigin = false, const int lifetime = 0 ) = 0;
 	virtual void			DebugCone( const idVec4 &color, const idVec3 &apex, const idVec3 &dir, float radius1, float radius2, const int lifetime = 0 ) = 0;
 	virtual void			DebugAxis( const idVec3 &origin, const idMat3 &axis ) = 0;
 

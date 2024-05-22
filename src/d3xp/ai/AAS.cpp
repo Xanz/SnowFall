@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "AAS_local.h"
 
@@ -36,8 +37,8 @@ If you have questions concerning this license or the applicable additional terms
 idAAS::Alloc
 ============
 */
-idAAS *idAAS::Alloc( void ) {
-	return new idAASLocal;
+idAAS *idAAS::Alloc() {
+	return new (TAG_AAS) idAASLocal;
 }
 
 /*
@@ -45,7 +46,7 @@ idAAS *idAAS::Alloc( void ) {
 idAAS::idAAS
 ============
 */
-idAAS::~idAAS( void ) {
+idAAS::~idAAS() {
 }
 
 /*
@@ -53,7 +54,7 @@ idAAS::~idAAS( void ) {
 idAASLocal::idAASLocal
 ============
 */
-idAASLocal::idAASLocal( void ) {
+idAASLocal::idAASLocal() {
 	file = NULL;
 }
 
@@ -62,7 +63,7 @@ idAASLocal::idAASLocal( void ) {
 idAASLocal::~idAASLocal
 ============
 */
-idAASLocal::~idAASLocal( void ) {
+idAASLocal::~idAASLocal() {
 	Shutdown();
 }
 
@@ -94,7 +95,7 @@ bool idAASLocal::Init( const idStr &mapName, unsigned int mapFileCRC ) {
 idAASLocal::Shutdown
 ============
 */
-void idAASLocal::Shutdown( void ) {
+void idAASLocal::Shutdown() {
 	if ( file ) {
 		ShutdownRouting();
 		RemoveAllObstacles();
@@ -108,7 +109,7 @@ void idAASLocal::Shutdown( void ) {
 idAASLocal::Stats
 ============
 */
-void idAASLocal::Stats( void ) const {
+void idAASLocal::Stats() const {
 	if ( !file ) {
 		return;
 	}
@@ -122,7 +123,7 @@ void idAASLocal::Stats( void ) const {
 idAASLocal::GetSettings
 ============
 */
-const idAASSettings *idAASLocal::GetSettings( void ) const {
+const idAASSettings *idAASLocal::GetSettings() const {
 	if ( !file ) {
 		return NULL;
 	}
@@ -254,8 +255,8 @@ void idAASLocal::GetEdgeVertexNumbers( int edgeNum, int verts[2] ) const {
 		return;
 	}
 	const int *v = file->GetEdge( abs(edgeNum) ).vertexNum;
-	verts[0] = v[INTSIGNBITSET(edgeNum)];
-	verts[1] = v[INTSIGNBITNOTSET(edgeNum)];
+	verts[0] = v[INT32_SIGNBITSET(edgeNum)];
+	verts[1] = v[INT32_SIGNBITNOTSET(edgeNum)];
 }
 
 /*
@@ -270,6 +271,6 @@ void idAASLocal::GetEdge( int edgeNum, idVec3 &start, idVec3 &end ) const {
 		return;
 	}
 	const int *v = file->GetEdge( abs(edgeNum) ).vertexNum;
-	start = file->GetVertex( v[INTSIGNBITSET(edgeNum)] );
-	end = file->GetVertex( v[INTSIGNBITNOTSET(edgeNum)] );
+	start = file->GetVertex( v[INT32_SIGNBITSET(edgeNum)] );
+	end = file->GetVertex( v[INT32_SIGNBITNOTSET(edgeNum)] );
 }

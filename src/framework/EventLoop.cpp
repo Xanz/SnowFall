@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -40,7 +40,7 @@ idEventLoop *eventLoop = &eventLoopLocal;
 idEventLoop::idEventLoop
 =================
 */
-idEventLoop::idEventLoop( void ) {
+idEventLoop::idEventLoop() {
 	com_journalFile = NULL;
 	com_journalDataFile = NULL;
 	initialTimeOffset = 0;
@@ -51,7 +51,7 @@ idEventLoop::idEventLoop( void ) {
 idEventLoop::~idEventLoop
 =================
 */
-idEventLoop::~idEventLoop( void ) {
+idEventLoop::~idEventLoop() {
 }
 
 /*
@@ -59,7 +59,7 @@ idEventLoop::~idEventLoop( void ) {
 idEventLoop::GetRealEvent
 =================
 */
-sysEvent_t	idEventLoop::GetRealEvent( void ) {
+sysEvent_t	idEventLoop::GetRealEvent() {
 	int			r;
 	sysEvent_t	ev;
 
@@ -70,7 +70,7 @@ sysEvent_t	idEventLoop::GetRealEvent( void ) {
 			common->FatalError( "Error reading from journal file" );
 		}
 		if ( ev.evPtrLength ) {
-			ev.evPtr = Mem_ClearedAlloc( ev.evPtrLength );
+			ev.evPtr = Mem_ClearedAlloc( ev.evPtrLength, TAG_EVENTS );
 			r = com_journalFile->Read( ev.evPtr, ev.evPtrLength );
 			if ( r != ev.evPtrLength ) {
 				common->FatalError( "Error reading from journal file" );
@@ -133,7 +133,7 @@ void idEventLoop::PushEvent( sysEvent_t *event ) {
 idEventLoop::GetEvent
 =================
 */
-sysEvent_t idEventLoop::GetEvent( void ) {
+sysEvent_t idEventLoop::GetEvent() {
 	if ( com_pushedEventsHead > com_pushedEventsTail ) {
 		com_pushedEventsTail++;
 		return com_pushedEvents[ (com_pushedEventsTail-1) & (MAX_PUSHED_EVENTS-1) ];
@@ -157,7 +157,7 @@ void idEventLoop::ProcessEvent( sysEvent_t ev ) {
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, (char *)ev.evPtr );
 		cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "\n" );
 	} else {
-		session->ProcessEvent( &ev );
+		common->ProcessEvent( &ev );
 	}
 
 	// free any block data
@@ -198,11 +198,11 @@ int idEventLoop::RunEventLoop( bool commandExecution ) {
 idEventLoop::Init
 =============
 */
-void idEventLoop::Init( void ) {
+void idEventLoop::Init() {
 
 	initialTimeOffset = Sys_Milliseconds();
 
-	common->StartupVariable( "journal", false );
+	common->StartupVariable( "journal" );
 
 	if ( com_journal.GetInteger() == 1 ) {
 		common->Printf( "Journaling events\n" );
@@ -227,7 +227,7 @@ void idEventLoop::Init( void ) {
 idEventLoop::Shutdown
 =============
 */
-void idEventLoop::Shutdown( void ) {
+void idEventLoop::Shutdown() {
 	if ( com_journalFile ) {
 		fileSystem->CloseFile( com_journalFile );
 		com_journalFile = NULL;
@@ -245,7 +245,7 @@ idEventLoop::Milliseconds
 Can be used for profiling, but will be journaled accurately
 ================
 */
-int idEventLoop::Milliseconds( void ) {
+int idEventLoop::Milliseconds() {
 #if 1	// FIXME!
 	return Sys_Milliseconds() - initialTimeOffset;
 #else
@@ -269,6 +269,6 @@ int idEventLoop::Milliseconds( void ) {
 idEventLoop::JournalLevel
 ================
 */
-int idEventLoop::JournalLevel( void ) const {
+int idEventLoop::JournalLevel() const {
 	return com_journal.GetInteger();
 }

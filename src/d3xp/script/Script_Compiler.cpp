@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -38,7 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 #define TOP_PRIORITY		7
 
 bool idCompiler::punctuationValid[ 256 ];
-const char *idCompiler::punctuation[] = {
+char *idCompiler::punctuation[] = {
 	"+=", "-=", "*=", "/=", "%=", "&=", "|=", "++", "--",
 	"&&", "||", "<=", ">=", "==", "!=", "::", ";",  ",",
 	"~",  "!",  "*",  "/",  "%",  "(",   ")",  "-", "+",
@@ -213,7 +214,6 @@ idCompiler::idCompiler() {
 	// make sure we have the right # of opcodes in the table
 	assert( ( sizeof( opcodes ) / sizeof( opcodes[ 0 ] ) ) == ( NUM_OPCODES + 1 ) );
 
-	eof	= true;
 	parserPtr = &parser;
 
 	callthread			= false;
@@ -364,7 +364,6 @@ idCompiler::Divide
 ID_INLINE float idCompiler::Divide( float numerator, float denominator ) {
 	if ( denominator == 0 ) {
 		Error( "Divide by zero" );
-		return 0;
 	}
 
 	return numerator / denominator;
@@ -487,10 +486,10 @@ idVarDef *idCompiler::OptimizeOpcode( const opcode_t *op, idVarDef *var_a, idVar
 	eval_t		c;
 	idTypeDef	*type;
 
-	if ( var_a && var_a->initialized != idVarDef::initializedConstant ) {
+	if ( var_a == NULL || var_a->initialized != idVarDef::initializedConstant ) {
 		return NULL;
 	}
-	if ( var_b && var_b->initialized != idVarDef::initializedConstant ) {
+	if ( var_b == NULL || var_b->initialized != idVarDef::initializedConstant ) {
 		return NULL;
 	}
 
@@ -661,7 +660,7 @@ idCompiler::NextToken
 Sets token, immediateType, and possibly immediate
 ==============
 */
-void idCompiler::NextToken( void ) {
+void idCompiler::NextToken() {
 	int i;
 
 	// reset our type
@@ -817,7 +816,7 @@ idCompiler::SkipOutOfFunction
 For error recovery, pops out of nested braces
 ============
 */
-void idCompiler::SkipOutOfFunction( void ) {
+void idCompiler::SkipOutOfFunction() {
 	while( braceDepth ) {
 		parserPtr->SkipBracedSection( false );
 		braceDepth--;
@@ -832,7 +831,7 @@ idCompiler::SkipToSemicolon
 For error recovery
 ============
 */
-void idCompiler::SkipToSemicolon( void ) {
+void idCompiler::SkipToSemicolon() {
 	do {
 		if ( CheckToken( ";" ) ) {
 			return;
@@ -849,7 +848,7 @@ idCompiler::CheckType
 Parses a variable type, including functions types
 ============
 */
-idTypeDef *idCompiler::CheckType( void ) {
+idTypeDef *idCompiler::CheckType() {
 	idTypeDef *type;
 	
 	if ( token == "float" ) {
@@ -872,7 +871,7 @@ idTypeDef *idCompiler::CheckType( void ) {
 		type = &type_scriptevent;
 	} else {
 		type = gameLocal.program.FindType( token.c_str() );
-		if ( type && !type->Inherits( &type_object ) ) {
+		if ( type != NULL && !type->Inherits( &type_object ) ) {
 			type = NULL;
 		}
 	}
@@ -887,7 +886,7 @@ idCompiler::ParseType
 Parses a variable type, including functions types
 ============
 */
-idTypeDef *idCompiler::ParseType( void ) {
+idTypeDef *idCompiler::ParseType() {
 	idTypeDef *type;
 	
 	type = CheckType();
@@ -915,7 +914,7 @@ idCompiler::ParseImmediate
 Looks for a preexisting constant
 ============
 */
-idVarDef *idCompiler::ParseImmediate( void ) {
+idVarDef *idCompiler::ParseImmediate() {
 	idVarDef *def;
 
 	def = GetImmediate( immediateType, &immediate, token.c_str() );
@@ -1023,10 +1022,9 @@ idVarDef *idCompiler::EmitFunctionParms( int op, idVarDef *func, int startarg, i
 			break;
 
 		default :
-			Error( "Invalid return type for function '%s'", func->Name() );
 			// shut up compiler
 			resultOp = OP_STORE_OBJ;
-			break;
+			Error( "Invalid return type for function '%s'", func->Name() );
 		}
 	}
 
@@ -1145,10 +1143,11 @@ idVarDef *idCompiler::ParseSysObjectCall( idVarDef *funcDef ) {
 		Error( "'%s' is not a function", funcDef->Name() );
 	}
 
-	if ( !funcDef->value.functionPtr->eventdef ) {
+	if ( funcDef->value.functionPtr->eventdef == NULL ) {
 		Error( "\"%s\" cannot be called with object notation", funcDef->Name() );
 	}
 
+	assert( funcDef->value.functionPtr->eventdef != NULL ); // to remove stupid analyze warning
 	if ( !idThread::Type.RespondsTo( *funcDef->value.functionPtr->eventdef ) ) {
 		Error( "\"%s\" is not callable as a 'sys' function", funcDef->Name() );
 	}
@@ -1252,7 +1251,7 @@ idCompiler::ParseValue
 Returns the def for the current token
 ============
 */
-idVarDef *idCompiler::ParseValue( void ) {
+idVarDef *idCompiler::ParseValue() {
 	idVarDef	*def;
 	idVarDef	*namespaceDef;
 	idStr		name;
@@ -1273,7 +1272,7 @@ idVarDef *idCompiler::ParseValue( void ) {
 
 	ParseName( name );
 	def = LookupDef( name, basetype );
-	if ( !def ) {
+	if ( def == NULL ) {
 		if ( basetype ) {
 			Error( "%s is not a member of %s", name.c_str(), basetype->TypeDef()->Name() );
 		} else {
@@ -1286,8 +1285,13 @@ idVarDef *idCompiler::ParseValue( void ) {
 			ParseName( name );
 			namespaceDef = def;
 			def = gameLocal.program.GetDef( NULL, name, namespaceDef );
-			if ( !def ) {
-				Error( "Unknown value \"%s::%s\"", namespaceDef->GlobalName(), name.c_str() );
+			if ( def == NULL ) {
+				if ( namespaceDef != NULL ) {
+					Error( "Unknown value \"%s::%s\"", namespaceDef->GlobalName(), name.c_str() );
+				} else {
+					Error( "Unknown value \"%s\"", name.c_str() );
+				}
+				break;
 			}
 		}
 		//def = LookupDef( name, basetype );
@@ -1301,7 +1305,7 @@ idVarDef *idCompiler::ParseValue( void ) {
 idCompiler::GetTerm
 ============
 */
-idVarDef *idCompiler::GetTerm( void ) {
+idVarDef *idCompiler::GetTerm() {
 	idVarDef	*e;
 	int 		op;
 	
@@ -1313,11 +1317,9 @@ idVarDef *idCompiler::GetTerm( void ) {
 			break;
 
 		default :
-			Error( "type mismatch for ~" );
-
 			// shut up compiler
 			op = OP_COMP_F;
-			break;
+			Error( "type mismatch for ~" );
 		}
 
 		return EmitOpcode( op, e, 0 );
@@ -1347,22 +1349,18 @@ idVarDef *idCompiler::GetTerm( void ) {
 			break;
 
 		case ev_function :
-			Error( "Invalid type for !" );
-
 			// shut up compiler
 			op = OP_NOT_F;
+			Error( "Invalid type for !" );
 			break;
-
 		case ev_object :
 			op = OP_NOT_ENT;
 			break;
 
 		default :
-			Error( "type mismatch for !" );
-
 			// shut up compiler
 			op = OP_NOT_F;
-			break;
+			Error( "type mismatch for !" );
 		}
 
 		return EmitOpcode( op, e, 0 );
@@ -1390,11 +1388,9 @@ idVarDef *idCompiler::GetTerm( void ) {
 				op = OP_NEG_V;
 				break;
 			default :
-				Error( "type mismatch for -" );
-
 				// shut up compiler
 				op = OP_NEG_F;
-				break;
+				Error( "type mismatch for -" );
 			}
 			return EmitOpcode( &opcodes[ op ], e, 0 );
 		}
@@ -1673,7 +1669,7 @@ void idCompiler::PatchLoop( int start, int continuePos ) {
 idCompiler::ParseReturnStatement
 ================
 */
-void idCompiler::ParseReturnStatement( void ) {
+void idCompiler::ParseReturnStatement() {
 	idVarDef	*e;
 	etype_t 	type_a;
 	etype_t 	type_b;
@@ -1729,7 +1725,7 @@ void idCompiler::ParseReturnStatement( void ) {
 idCompiler::ParseWhileStatement
 ================
 */
-void idCompiler::ParseWhileStatement( void ) {
+void idCompiler::ParseWhileStatement() {
 	idVarDef	*e;
 	int			patch1;
 	int			patch2;
@@ -1799,7 +1795,7 @@ process:
 end:
 ================
 */
-void idCompiler::ParseForStatement( void ) {
+void idCompiler::ParseForStatement() {
 	idVarDef	*e;
 	int			start;
 	int			patch1;
@@ -1871,7 +1867,7 @@ void idCompiler::ParseForStatement( void ) {
 idCompiler::ParseDoWhileStatement
 ================
 */
-void idCompiler::ParseDoWhileStatement( void ) {
+void idCompiler::ParseDoWhileStatement() {
 	idVarDef	*e;
 	int			patch1;
 
@@ -1898,7 +1894,7 @@ void idCompiler::ParseDoWhileStatement( void ) {
 idCompiler::ParseIfStatement
 ================
 */
-void idCompiler::ParseIfStatement( void ) {
+void idCompiler::ParseIfStatement() {
 	idVarDef	*e;
 	int			patch1;
 	int			patch2;
@@ -1929,7 +1925,7 @@ void idCompiler::ParseIfStatement( void ) {
 idCompiler::ParseStatement
 ============
 */
-void idCompiler::ParseStatement( void ) {
+void idCompiler::ParseStatement() {
 	if ( CheckToken( ";" ) ) {
 		// skip semicolons, which are harmless and ok syntax
 		return;
@@ -2406,14 +2402,16 @@ void idCompiler::ParseEventDef( idTypeDef *returnType, const char *name ) {
 	idStr			parmName;
 
 	ev = idEventDef::FindEvent( name );
-	if ( !ev ) {
+	if ( ev == NULL ) {
 		Error( "Unknown event '%s'", name );
+		return;
 	}
 
 	// set the return type
 	expectedType = GetTypeForEventArg( ev->GetReturnType() );
-	if ( !expectedType ) {
+	if ( expectedType == NULL ) {
 		Error( "Invalid return type '%c' in definition of '%s' event.", ev->GetReturnType(), name );
+		return;
 	}
 	if ( returnType != expectedType ) {
 		Error( "Return type doesn't match internal return type '%s'", expectedType->Name() );
@@ -2427,8 +2425,9 @@ void idCompiler::ParseEventDef( idTypeDef *returnType, const char *name ) {
 	num = strlen( format );
 	for( i = 0; i < num; i++ ) {
 		expectedType = GetTypeForEventArg( format[ i ] );
-		if ( !expectedType || ( expectedType == &type_void ) ) {
+		if ( expectedType == NULL || ( expectedType == &type_void ) ) {
 			Error( "Invalid parameter '%c' in definition of '%s' event.", format[ i ], name );
+			return;
 		}
 
 		argType = ParseType();
@@ -2482,7 +2481,7 @@ idCompiler::ParseDefs
 Called at the outer layer and when a local statement is hit
 ================
 */
-void idCompiler::ParseDefs( void ) {
+void idCompiler::ParseDefs() {
 	idStr 		name;
 	idTypeDef	*type;
 	idVarDef	*def;
@@ -2630,9 +2629,9 @@ void idCompiler::CompileFile( const char *text, const char *filename, bool toCon
 
 		if ( console ) {
 			// don't print line number of an error if were calling script from the console using the "script" command
-			sprintf( error, "Error: %s\n", err.error );
+			sprintf( error, "Error: %s\n", err.GetError() );
 		} else {
-			sprintf( error, "Error: file %s, line %d: %s\n", gameLocal.program.GetFilename( currentFileNumber ), currentLineNumber, err.error );
+			sprintf( error, "Error: file %s, line %d: %s\n", gameLocal.program.GetFilename( currentFileNumber ), currentLineNumber, err.GetError() );
 		}
 
 		parser.FreeSource();

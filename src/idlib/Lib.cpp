@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -48,21 +48,25 @@ idCommon *		idLib::common		= NULL;
 idCVarSystem *	idLib::cvarSystem	= NULL;
 idFileSystem *	idLib::fileSystem	= NULL;
 int				idLib::frameNumber	= 0;
+bool			idLib::mainThreadInitialized = 0;
+ID_TLS			idLib::isMainThread = 0;
+
+char idException::error[2048];
 
 /*
 ================
 idLib::Init
 ================
 */
-void idLib::Init( void ) {
+void idLib::Init() {
 
 	assert( sizeof( bool ) == 1 );
 
+	isMainThread = 1;
+	mainThreadInitialized = 1;	// note that the thread-local isMainThread is now valid
+
 	// initialize little/big endian conversion
 	Swap_Init();
-
-	// initialize memory manager
-	Mem_Init();
 
 	// init string memory allocator
 	idStr::InitMemory();
@@ -77,7 +81,9 @@ void idLib::Init( void ) {
 	//idMatX::Test();
 
 	// test idPolynomial
+#ifdef _DEBUG
 	idPolynomial::Test();
+#endif
 
 	// initialize the dictionary string pools
 	idDict::Init();
@@ -88,7 +94,7 @@ void idLib::Init( void ) {
 idLib::ShutDown
 ================
 */
-void idLib::ShutDown( void ) {
+void idLib::ShutDown() {
 
 	// shut down the dictionary string pools
 	idDict::Shutdown();
@@ -98,9 +104,6 @@ void idLib::ShutDown( void ) {
 
 	// shut down the SIMD engine
 	idSIMD::Shutdown();
-
-	// shut down the memory manager
-	Mem_Shutdown();
 }
 
 
@@ -128,37 +131,17 @@ idVec4	colorLtGrey	= idVec4( 0.75f, 0.75f, 0.75f, 1.00f );
 idVec4	colorMdGrey	= idVec4( 0.50f, 0.50f, 0.50f, 1.00f );
 idVec4	colorDkGrey	= idVec4( 0.25f, 0.25f, 0.25f, 1.00f );
 
-static dword colorMask[2] = { 255, 0 };
-
-/*
-================
-ColorFloatToByte
-================
-*/
-ID_INLINE static byte ColorFloatToByte( float c ) {
-	return (byte) ( ( (dword) ( c * 255.0f ) ) & colorMask[FLOATSIGNBITSET(c)] );
-}
-
 /*
 ================
 PackColor
 ================
 */
 dword PackColor( const idVec4 &color ) {
-	dword dw, dx, dy, dz;
-
-	dx = ColorFloatToByte( color.x );
-	dy = ColorFloatToByte( color.y );
-	dz = ColorFloatToByte( color.z );
-	dw = ColorFloatToByte( color.w );
-
-#if defined(_WIN32) || defined(__linux__) || (defined(MACOS_X) && defined(__i386__))
+	byte dx = idMath::Ftob( color.x * 255.0f );
+	byte dy = idMath::Ftob( color.y * 255.0f );
+	byte dz = idMath::Ftob( color.z * 255.0f );
+	byte dw = idMath::Ftob( color.w * 255.0f );
 	return ( dx << 0 ) | ( dy << 8 ) | ( dz << 16 ) | ( dw << 24 );
-#elif (defined(MACOS_X) && defined(__ppc__))
-	return ( dx << 24 ) | ( dy << 16 ) | ( dz << 8 ) | ( dw << 0 );
-#else
-#error OS define is required!
-#endif
 }
 
 /*
@@ -167,19 +150,10 @@ UnpackColor
 ================
 */
 void UnpackColor( const dword color, idVec4 &unpackedColor ) {
-#if defined(_WIN32) || defined(__linux__) || (defined(MACOS_X) && defined(__i386__))
 	unpackedColor.Set( ( ( color >> 0 ) & 255 ) * ( 1.0f / 255.0f ),
 						( ( color >> 8 ) & 255 ) * ( 1.0f / 255.0f ), 
 						( ( color >> 16 ) & 255 ) * ( 1.0f / 255.0f ),
 						( ( color >> 24 ) & 255 ) * ( 1.0f / 255.0f ) );
-#elif (defined(MACOS_X) && defined(__ppc__))
-	unpackedColor.Set( ( ( color >> 24 ) & 255 ) * ( 1.0f / 255.0f ),
-						( ( color >> 16 ) & 255 ) * ( 1.0f / 255.0f ), 
-						( ( color >> 8 ) & 255 ) * ( 1.0f / 255.0f ),
-						( ( color >> 0 ) & 255 ) * ( 1.0f / 255.0f ) );
-#else
-#error OS define is required!
-#endif
 }
 
 /*
@@ -188,19 +162,10 @@ PackColor
 ================
 */
 dword PackColor( const idVec3 &color ) {
-	dword dx, dy, dz;
-
-	dx = ColorFloatToByte( color.x );
-	dy = ColorFloatToByte( color.y );
-	dz = ColorFloatToByte( color.z );
-
-#if defined(_WIN32) || defined(__linux__) || (defined(MACOS_X) && defined(__i386__))
+	byte dx = idMath::Ftob( color.x * 255.0f );
+	byte dy = idMath::Ftob( color.y * 255.0f );
+	byte dz = idMath::Ftob( color.z * 255.0f );
 	return ( dx << 0 ) | ( dy << 8 ) | ( dz << 16 );
-#elif (defined(MACOS_X) && defined(__ppc__))
-	return ( dy << 16 ) | ( dz << 8 ) | ( dx << 0 );
-#else
-#error OS define is required!
-#endif
 }
 
 /*
@@ -209,17 +174,25 @@ UnpackColor
 ================
 */
 void UnpackColor( const dword color, idVec3 &unpackedColor ) {
-#if defined(_WIN32) || defined(__linux__) || (defined(MACOS_X) && defined(__i386__))
 	unpackedColor.Set( ( ( color >> 0 ) & 255 ) * ( 1.0f / 255.0f ),
 						( ( color >> 8 ) & 255 ) * ( 1.0f / 255.0f ), 
 						( ( color >> 16 ) & 255 ) * ( 1.0f / 255.0f ) );
-#elif (defined(MACOS_X) && defined(__ppc__))
-	unpackedColor.Set( ( ( color >> 16 ) & 255 ) * ( 1.0f / 255.0f ),
-						( ( color >> 8 ) & 255 ) * ( 1.0f / 255.0f ),
-						( ( color >> 0 ) & 255 ) * ( 1.0f / 255.0f ) );
-#else
-#error OS define is required!
-#endif
+}
+
+/*
+===============
+idLib::FatalError
+===============
+*/
+void idLib::FatalError( const char *fmt, ... ) {
+	va_list		argptr;
+	char		text[MAX_STRING_CHARS];
+
+	va_start( argptr, fmt );
+	idStr::vsnPrintf( text, sizeof( text ), fmt, argptr );
+	va_end( argptr );
+
+	common->FatalError( "%s", text );
 }
 
 /*
@@ -252,6 +225,56 @@ void idLib::Warning( const char *fmt, ... ) {
 	va_end( argptr );
 
 	common->Warning( "%s", text );
+}
+
+/*
+===============
+idLib::WarningIf
+===============
+*/
+void idLib::WarningIf( const bool test, const char *fmt, ... ) {
+	if ( !test ) {
+		return;
+	}
+
+	va_list		argptr;
+	char		text[MAX_STRING_CHARS];
+
+	va_start( argptr, fmt );
+	idStr::vsnPrintf( text, sizeof( text ), fmt, argptr );
+	va_end( argptr );
+
+	common->Warning( "%s", text );
+}
+
+/*
+===============
+idLib::Printf
+===============
+*/
+void idLib::Printf( const char *fmt, ... ) {
+	va_list		argptr;
+	va_start( argptr, fmt );
+	if ( common ) {
+		common->VPrintf( fmt, argptr );
+	}
+	va_end( argptr );
+}
+
+/*
+===============
+idLib::PrintfIf
+===============
+*/
+void idLib::PrintfIf( const bool test, const char *fmt, ... ) {
+	if ( !test ) {
+		return;
+	}
+
+	va_list		argptr;
+	va_start( argptr, fmt );
+	common->VPrintf( fmt, argptr );
+	va_end( argptr );
 }
 
 /*
@@ -432,7 +455,7 @@ void RevBitFieldSwap( void *bp, int elsize) {
 	while ( elsize-- ) {
 		v = *p;
 		t = 0;
-		for (i = 7; i; i--) {
+		for (i = 7; i>=0; i--) {
 			t <<= 1;
 			v >>= 1;
 			t |= v & 1;
@@ -522,7 +545,7 @@ int IntForSixtetsBig( byte *in ) {
 Swap_Init
 ================
 */
-void Swap_Init( void ) {
+void Swap_Init() {
 	byte	swaptest[2] = {1,0};
 
 	// set the byte swapping variables in a portable manner	
@@ -560,26 +583,26 @@ void Swap_Init( void ) {
 Swap_IsBigEndian
 ==========
 */
-bool Swap_IsBigEndian( void ) {
+bool Swap_IsBigEndian() {
 	byte	swaptest[2] = {1,0};
 	return *(short *)swaptest != 1;
 }
 
+
 /*
-===============================================================================
+========================
+BreakOnListGrowth
 
-	Assertion
-
-===============================================================================
+debug tool to find uses of idlist that are dynamically growing
+========================
 */
+void BreakOnListGrowth() {
+}
 
-void AssertFailed( const char *file, int line, const char *expression ) {
-	idLib::sys->DebugPrintf( "\n\nASSERTION FAILED!\n%s(%d): '%s'\n", file, line, expression );
-#ifdef _WIN32
-	__asm int 0x03
-#elif defined( __linux__ )
-	__asm__ __volatile__ ("int $0x03");
-#elif defined( MACOS_X )
-	kill( getpid(), SIGINT );
-#endif
+/*
+========================
+BreakOnListDefault
+========================
+*/
+void BreakOnListDefault() {
 }

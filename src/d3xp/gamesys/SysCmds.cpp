@@ -1,37 +1,36 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
-
-#include "TypeInfo.h"
 
 /*
 ==================
@@ -129,7 +128,7 @@ void Cmd_ListSpawnArgs_f( const idCmdArgs &args ) {
 
 	for ( i = 0; i < ent->spawnArgs.GetNumKeyVals(); i++ ) {
 		const idKeyValue *kv = ent->spawnArgs.GetKeyVal( i );
-		gameLocal.Printf( "\"%s\"  "S_COLOR_WHITE"\"%s\"\n", kv->GetKey().c_str(), kv->GetValue().c_str() );
+		gameLocal.Printf( "\"%s\"  " S_COLOR_WHITE "\"%s\"\n", kv->GetKey().c_str(), kv->GetValue().c_str() );
 	}
 }
 
@@ -145,28 +144,26 @@ void Cmd_ReloadScript_f( const idCmdArgs &args ) {
 	// recompile the scripts
 	gameLocal.program.Startup( SCRIPT_DEFAULT );
 
-#ifdef _D3XP
-	// loads a game specific main script file
-	idStr gamedir;
-	int i;
-	for ( i = 0; i < 2; i++ ) {
-		if ( i == 0 ) {
-			gamedir = cvarSystem->GetCVarString( "fs_game_base" );
-		} else if ( i == 1 ) {
-			gamedir = cvarSystem->GetCVarString( "fs_game" );
-		}
-		if ( gamedir.Length() > 0 ) {
-			idStr scriptFile = va( "script/%s_main.script", gamedir.c_str() );
-			if ( fileSystem->ReadFile(scriptFile.c_str(), NULL) > 0 ) {
-				gameLocal.program.CompileFile( scriptFile.c_str() );
-				gameLocal.program.FinishCompilation();
-			}
-		}
+	if ( fileSystem->ReadFile("doom_main.script", NULL) > 0 ) {
+		gameLocal.program.CompileFile( "doom_main.script" );
+		gameLocal.program.FinishCompilation();
 	}
-#endif
 
 	// error out so that the user can rerun the scripts
 	gameLocal.Error( "Exiting map to reload scripts" );
+}
+
+CONSOLE_COMMAND( reloadScript2, "Doesn't thow an error...  Use this when switching game modes", 0 ) {
+	// shutdown the map because entities may point to script objects
+	gameLocal.MapShutdown();
+
+	// recompile the scripts
+	gameLocal.program.Startup( SCRIPT_DEFAULT );
+
+	if ( fileSystem->ReadFile("doom_main.script", NULL) > 0 ) {
+		gameLocal.program.CompileFile( "doom_main.script" );
+		gameLocal.program.FinishCompilation();
+	}
 }
 
 /*
@@ -335,7 +332,7 @@ void Cmd_Give_f( const idCmdArgs &args ) {
 	}
 
 	if ( give_all || idStr::Icmp( name, "weapons" ) == 0 ) {
-		player->inventory.weapons = BIT( MAX_WEAPONS ) - 1;
+		player->inventory.weapons = (int)( BIT( MAX_WEAPONS ) - 1 );
 		player->CacheWeapons();
 
 		if ( !give_all ) {
@@ -345,7 +342,7 @@ void Cmd_Give_f( const idCmdArgs &args ) {
 
 	if ( give_all || idStr::Icmp( name, "ammo" ) == 0 ) {
 		for ( i = 0 ; i < AMMO_NUMTYPES; i++ ) {
-			player->inventory.ammo[ i ] = player->inventory.MaxAmmoForAmmoClass( player, idWeapon::GetAmmoNameForNum( ( ammo_t )i ) );
+			player->inventory.SetInventoryAmmoForType( i, player->inventory.MaxAmmoForAmmoClass( player, idWeapon::GetAmmoNameForNum( ( ammo_t )i ) ) );
 		}
 		if ( !give_all ) {
 			return;
@@ -360,57 +357,75 @@ void Cmd_Give_f( const idCmdArgs &args ) {
 	}
 
 	if ( idStr::Icmp( name, "berserk" ) == 0 ) {
-		player->GivePowerUp( BERSERK, SEC2MS( 30.0f ) );
+		player->GivePowerUp( BERSERK, SEC2MS( 30.0f ), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		return;
 	}
 
 	if ( idStr::Icmp( name, "invis" ) == 0 ) {
-		player->GivePowerUp( INVISIBILITY, SEC2MS( 30.0f ) );
+		player->GivePowerUp( INVISIBILITY, SEC2MS( 30.0f ), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		return;
 	}
 
-#ifdef _D3XP
 	if ( idStr::Icmp( name, "invulnerability" ) == 0 ) {
 		if ( args.Argc() > 2 ) {
-			player->GivePowerUp( INVULNERABILITY, atoi( args.Argv( 2 ) ) );
+			player->GivePowerUp( INVULNERABILITY, atoi( args.Argv( 2 ) ), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		else {
-			player->GivePowerUp( INVULNERABILITY, 30000 );
+			player->GivePowerUp( INVULNERABILITY, 30000, ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		return;
 	}
 
 	if ( idStr::Icmp( name, "helltime" ) == 0 ) {
 		if ( args.Argc() > 2 ) {
-			player->GivePowerUp( HELLTIME, atoi( args.Argv( 2 ) ) );
+			player->GivePowerUp( HELLTIME, atoi( args.Argv( 2 ) ), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		else {
-			player->GivePowerUp( HELLTIME, 30000 );
+			player->GivePowerUp( HELLTIME, 30000, ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		return;
 	}
 
 	if ( idStr::Icmp( name, "envirosuit" ) == 0 ) {
 		if ( args.Argc() > 2 ) {
-			player->GivePowerUp( ENVIROSUIT, atoi( args.Argv( 2 ) ) );
+			player->GivePowerUp( ENVIROSUIT, atoi( args.Argv( 2 ) ), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		else {
-			player->GivePowerUp( ENVIROSUIT, 30000 );
+			player->GivePowerUp( ENVIROSUIT, 30000, ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE );
 		}
 		return;
 	}
-#endif
 	if ( idStr::Icmp( name, "pda" ) == 0 ) {
-		player->GivePDA( args.Argv(2), NULL );
+		if ( args.Argc() == 2 ) {
+			player->GivePDA( NULL, NULL );
+		} else if ( idStr::Icmp( args.Argv(2), "all" ) == 0 ) {
+			// Give the personal PDA first
+			player->GivePDA( NULL, NULL );
+			for ( int i = 0; i < declManager->GetNumDecls( DECL_PDA ); i++ ) {
+				player->GivePDA( static_cast<const idDeclPDA *>( declManager->DeclByIndex( DECL_PDA, i ) ), NULL );
+			}
+		} else {
+			const idDeclPDA * pda = static_cast<const idDeclPDA *>( declManager->FindType( DECL_PDA, args.Argv(2), false ) );
+			if ( pda == NULL ) {
+				gameLocal.Printf( "Unknown PDA %s\n", args.Argv(2) );
+			} else {
+				player->GivePDA( pda, NULL );
+			}
+		}
 		return;
 	}
 
 	if ( idStr::Icmp( name, "video" ) == 0 ) {
-		player->GiveVideo( args.Argv(2), NULL );
+		const idDeclVideo * video = static_cast<const idDeclVideo *>( declManager->FindType( DECL_VIDEO, args.Argv(2), false ) );
+		if ( video == NULL ) {
+			gameLocal.Printf( "Unknown video %s\n", args.Argv(2) );
+		} else {
+			player->GiveVideo( video, NULL );
+		}
 		return;
 	}
 
-	if ( !give_all && !player->Give( args.Argv(1), args.Argv(2) ) ) {
+	if ( !give_all && !player->Give( args.Argv(1), args.Argv(2), ITEM_GIVE_FEEDBACK | ITEM_GIVE_UPDATE_STATE ) ) {
 		gameLocal.Printf( "unknown item\n" );
 	}
 }
@@ -446,7 +461,7 @@ argv(0) god
 ==================
 */
 void Cmd_God_f( const idCmdArgs &args ) {
-	const char	*msg;
+	char		*msg;
 	idPlayer	*player;
 
 	player = gameLocal.GetLocalPlayer();
@@ -475,7 +490,7 @@ argv(0) notarget
 ==================
 */
 void Cmd_Notarget_f( const idCmdArgs &args ) {
-	const char	*msg;
+	char		*msg;
 	idPlayer	*player;
 
 	player = gameLocal.GetLocalPlayer();
@@ -502,7 +517,7 @@ argv(0) noclip
 ==================
 */
 void Cmd_Noclip_f( const idCmdArgs &args ) {
-	const char	*msg;
+	char		*msg;
 	idPlayer	*player;
 
 	player = gameLocal.GetLocalPlayer();
@@ -518,39 +533,6 @@ void Cmd_Noclip_f( const idCmdArgs &args ) {
 	player->noclip = !player->noclip;
 
 	gameLocal.Printf( "%s", msg );
-}
-
-/*
-=================
-Cmd_Kill_f
-=================
-*/
-void Cmd_Kill_f( const idCmdArgs &args ) {
-	idPlayer	*player;
-
-	if ( gameLocal.isMultiplayer ) {
-		if ( gameLocal.isClient ) {
-			idBitMsg	outMsg;
-			byte		msgBuf[ MAX_GAME_MESSAGE_SIZE ];
-			outMsg.Init( msgBuf, sizeof( msgBuf ) );
-			outMsg.WriteByte( GAME_RELIABLE_MESSAGE_KILL );
-			networkSystem->ClientSendReliableMessage( outMsg );
-		} else {
-			player = gameLocal.GetClientByCmdArgs( args );
-			if ( !player ) {
-				common->Printf( "kill <client nickname> or kill <client index>\n" );
-				return;
-			}
-			player->Kill( false, false );
-			cmdSystem->BufferCommandText( CMD_EXEC_NOW, va( "say killed client %d '%s^0'\n", player->entityNumber, gameLocal.userInfo[ player->entityNumber ].GetString( "ui_name" ) ) );
-		}
-	} else {
-		player = gameLocal.GetLocalPlayer();
-		if ( !player ) {
-			return;
-		}
-		player->Kill( false, false );
-	}
 }
 
 /*
@@ -588,11 +570,9 @@ Cmd_Say
 ==================
 */
 static void Cmd_Say( bool team, const idCmdArgs &args ) {
-	const char *name;
-	idStr text;
 	const char *cmd = team ? "sayTeam" : "say" ;
 
-	if ( !gameLocal.isMultiplayer ) {
+	if ( !common->IsMultiplayer() ) {
 		gameLocal.Printf( "%s can only be used in a multiplayer game\n", cmd );
 		return;
 	}
@@ -602,7 +582,7 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
 		return;
 	}
 
-	text = args.Args();
+	idStr text = args.Args();
 	if ( text.Length() == 0 ) {
 		return;
 	}
@@ -610,20 +590,16 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
 	if ( text[ text.Length() - 1 ] == '\n' ) {
 		text[ text.Length() - 1 ] = '\0';
 	}
-	name = "player";
+	const char * name = "player";
 
-	idPlayer *	player;
-
-	// here we need to special case a listen server to use the real client name instead of "server"
 	// "server" will only appear on a dedicated server
-	if ( gameLocal.isClient || cvarSystem->GetCVarInteger( "net_serverDedicated" ) == 0 ) {
-		player = gameLocal.localClientNum >= 0 ? static_cast<idPlayer *>( gameLocal.entities[ gameLocal.localClientNum ] ) : NULL;
-		if ( player ) {
-			name = player->GetUserInfo()->GetString( "ui_name", "player" );
-		}
+	if ( common->IsServer() && gameLocal.GetLocalClientNum() == -1 ) {
+		name = "server";
+	} else {
+		name = session->GetActingGameStateLobbyBase().GetLobbyUserName( gameLocal.lobbyUserIDs[ gameLocal.GetLocalClientNum() ] );
 
-#ifdef CTF
-        // Append the player's location to team chat messages in CTF
+	    // Append the player's location to team chat messages in CTF
+		idPlayer * player = static_cast<idPlayer *>( gameLocal.entities[ gameLocal.GetLocalClientNum() ] );
         if ( gameLocal.mpGame.IsGametypeFlagBased() && team && player ) {
             idLocationEntity *locationEntity = gameLocal.LocationForPoint( player->GetEyePosition() );
             
@@ -636,23 +612,17 @@ static void Cmd_Say( bool team, const idCmdArgs &args ) {
             }
             
         }
-#endif
-
-        
-	} else {
-		name = "server";
 	}
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		idBitMsg	outMsg;
 		byte		msgBuf[ 256 ];
-		outMsg.Init( msgBuf, sizeof( msgBuf ) );
-		outMsg.WriteByte( team ? GAME_RELIABLE_MESSAGE_TCHAT : GAME_RELIABLE_MESSAGE_CHAT );
+		outMsg.InitWrite( msgBuf, sizeof( msgBuf ) );
 		outMsg.WriteString( name );
 		outMsg.WriteString( text, -1, false );
-		networkSystem->ClientSendReliableMessage( outMsg );
+		session->GetActingGameStateLobbyBase().SendReliableToHost( team ? GAME_RELIABLE_MESSAGE_TCHAT : GAME_RELIABLE_MESSAGE_CHAT, outMsg );
 	} else {
-		gameLocal.mpGame.ProcessChatMessage( gameLocal.localClientNum, team, name, text, NULL );
+		gameLocal.mpGame.ProcessChatMessage( gameLocal.GetLocalClientNum(), team, name, text, NULL );
 	}
 }
 
@@ -681,33 +651,6 @@ Cmd_AddChatLine_f
 */
 static void Cmd_AddChatLine_f( const idCmdArgs &args ) {
 	gameLocal.mpGame.AddChatLine( args.Argv( 1 ) );
-}
-
-/*
-==================
-Cmd_Kick_f
-==================
-*/
-static void Cmd_Kick_f( const idCmdArgs &args ) {
-	idPlayer *player;
-
-	if ( !gameLocal.isMultiplayer ) {
-		gameLocal.Printf( "kick can only be used in a multiplayer game\n" );
-		return;
-	}
-
-	if ( gameLocal.isClient ) {
-		gameLocal.Printf( "You have no such power. This is a server command\n" );
-		return;
-	}
-
-	player = gameLocal.GetClientByCmdArgs( args );
-	if ( !player ) {
-		gameLocal.Printf( "usage: kick <client nickname> or kick <client index>\n" );
-		return;
-	}
-	cmdSystem->BufferCommandText( CMD_EXEC_NOW, va( "say kicking out client %d '%s^0'\n", player->entityNumber, gameLocal.userInfo[ player->entityNumber ].GetString( "ui_name" ) ) );
-	cmdSystem->BufferCommandText( CMD_EXEC_NOW, va( "kick %d\n", player->entityNumber ) );
 }
 
 /*
@@ -936,8 +879,8 @@ Cmd_TestLight_f
 void Cmd_TestLight_f( const idCmdArgs &args ) {
 	int			i;
 	idStr		filename;
-	const char *key, *value, *name;
-	idPlayer *	player;
+	const char *key = NULL, *value = NULL, *name = NULL;
+	idPlayer *	player = NULL;
 	idDict		dict;
 
 	player = gameLocal.GetLocalPlayer();
@@ -993,9 +936,9 @@ Cmd_TestPointLight_f
 ===================
 */
 void Cmd_TestPointLight_f( const idCmdArgs &args ) {
-	const char *key, *value, *name;
+	const char *key = NULL, *value = NULL, *name = NULL;
 	int			i;
-	idPlayer	*player;
+	idPlayer	*player = NULL;
 	idDict		dict;
 
 	player = gameLocal.GetLocalPlayer();
@@ -1322,7 +1265,7 @@ static void Cmd_ListDebugLines_f( const idCmdArgs &args ) {
 D_DrawDebugLines
 ==================
 */
-void D_DrawDebugLines( void ) {
+void D_DrawDebugLines() {
 	int i;
 	idVec3 forward, right, up, p1, p2;
 	idVec4 color;
@@ -1391,58 +1334,6 @@ static void Cmd_CollisionModelInfo_f( const idCmdArgs &args ) {
 	} else {
 		collisionModelManager->ModelInfo( atoi(value) );
 	}
-}
-
-/*
-==================
-Cmd_ExportModels_f
-==================
-*/
-static void Cmd_ExportModels_f( const idCmdArgs &args ) {
-	idModelExport	exporter;
-	idStr			name;
-
-	// don't allow exporting models when cheats are disabled,
-	// but if we're not in the game, it's ok
-	if ( gameLocal.GetLocalPlayer() && !gameLocal.CheatsOk( false ) ) {
-		return;
-	}
-
-	if ( args.Argc() < 2 ) {
-		exporter.ExportModels( "def", ".def" );
-	} else {
-		name = args.Argv( 1 );
-		name = "def/" + name;
-		name.DefaultFileExtension( ".def" );
-		exporter.ExportDefFile( name );
-	}
-}
-
-/*
-==================
-Cmd_ReexportModels_f
-==================
-*/
-static void Cmd_ReexportModels_f( const idCmdArgs &args ) {
-	idModelExport	exporter;
-	idStr			name;
-
-	// don't allow exporting models when cheats are disabled,
-	// but if we're not in the game, it's ok
-	if ( gameLocal.GetLocalPlayer() && !gameLocal.CheatsOk( false ) ) {
-		return;
-	}
-
-	idAnimManager::forceExport = true;
-	if ( args.Argc() < 2 ) {
-		exporter.ExportModels( "def", ".def" );
-	} else {
-		name = args.Argv( 1 );
-		name = "def/" + name;
-		name.DefaultFileExtension( ".def" );
-		exporter.ExportDefFile( name );
-	}
-	idAnimManager::forceExport = false;
 }
 
 /*
@@ -1643,13 +1534,13 @@ Cmd_SaveSelected_f
 */
 static void Cmd_SaveSelected_f( const idCmdArgs &args ) {
 	int i;
-	idPlayer *player;
-	idEntity *s;
+	idPlayer *player = NULL;
+	idEntity *s = NULL;
 	idMapEntity *mapEnt;
 	idMapFile *mapFile = gameLocal.GetLevelMap();
 	idDict dict;
 	idStr mapName;
-	const char *name;
+	const char *name = NULL;
 
 	player = gameLocal.GetLocalPlayer();
 	if ( !player || !gameLocal.CheatsOk() ) {
@@ -1674,7 +1565,7 @@ static void Cmd_SaveSelected_f( const idCmdArgs &args ) {
 	mapEnt = mapFile->FindEntity( s->name );
 	// create new map file entity if there isn't one for this articulated figure
 	if ( !mapEnt ) {
-		mapEnt = new idMapEntity();
+		mapEnt = new (TAG_SYSTEM) idMapEntity();
 		mapFile->AddEntity( mapEnt );
 		for ( i = 0; i < 9999; i++ ) {
 			name = va( "%s_%d", s->GetEntityDefName(), i );
@@ -1728,11 +1619,11 @@ Cmd_SaveMoveables_f
 */
 static void Cmd_SaveMoveables_f( const idCmdArgs &args ) {
 	int e, i;
-	idMoveable *m;
-	idMapEntity *mapEnt;
+	idMoveable *m = NULL;
+	idMapEntity *mapEnt = NULL;
 	idMapFile *mapFile = gameLocal.GetLevelMap();
 	idStr mapName;
-	const char *name;
+	const char *name = NULL;
 
 	if ( !gameLocal.CheatsOk() ) {
 		return;
@@ -1782,7 +1673,7 @@ static void Cmd_SaveMoveables_f( const idCmdArgs &args ) {
 		mapEnt = mapFile->FindEntity( m->name );
 		// create new map file entity if there isn't one for this articulated figure
 		if ( !mapEnt ) {
-			mapEnt = new idMapEntity();
+			mapEnt = new (TAG_SYSTEM) idMapEntity();
 			mapFile->AddEntity( mapEnt );
 			for ( i = 0; i < 9999; i++ ) {
 				name = va( "%s_%d", m->GetEntityDefName(), i );
@@ -1810,12 +1701,12 @@ Cmd_SaveRagdolls_f
 */
 static void Cmd_SaveRagdolls_f( const idCmdArgs &args ) {
 	int e, i;
-	idAFEntity_Base *af;
-	idMapEntity *mapEnt;
+	idAFEntity_Base *af = NULL;
+	idMapEntity *mapEnt = NULL;
 	idMapFile *mapFile = gameLocal.GetLevelMap();
 	idDict dict;
 	idStr mapName;
-	const char *name;
+	const char *name = NULL;
 
 	if ( !gameLocal.CheatsOk() ) {
 		return;
@@ -1855,7 +1746,7 @@ static void Cmd_SaveRagdolls_f( const idCmdArgs &args ) {
 		mapEnt = mapFile->FindEntity( af->name );
 		// create new map file entity if there isn't one for this articulated figure
 		if ( !mapEnt ) {
-			mapEnt = new idMapEntity();
+			mapEnt = new (TAG_SYSTEM) idMapEntity();
 			mapFile->AddEntity( mapEnt );
 			for ( i = 0; i < 9999; i++ ) {
 				name = va( "%s_%d", af->GetEntityDefName(), i );
@@ -1927,12 +1818,12 @@ Cmd_SaveLights_f
 */
 static void Cmd_SaveLights_f( const idCmdArgs &args ) {
 	int e, i;
-	idLight *light;
-	idMapEntity *mapEnt;
+	idLight *light = NULL;
+	idMapEntity *mapEnt = NULL;
 	idMapFile *mapFile = gameLocal.GetLevelMap();
 	idDict dict;
 	idStr mapName;
-	const char *name;
+	const char *name = NULL;
 
 	if ( !gameLocal.CheatsOk() ) {
 		return;
@@ -1960,7 +1851,7 @@ static void Cmd_SaveLights_f( const idCmdArgs &args ) {
 		mapEnt = mapFile->FindEntity( light->name );
 		// create new map file entity if there isn't one for this light
 		if ( !mapEnt ) {
-			mapEnt = new idMapEntity();
+			mapEnt = new (TAG_SYSTEM) idMapEntity();
 			mapFile->AddEntity( mapEnt );
 			for ( i = 0; i < 9999; i++ ) {
 				name = va( "%s_%d", light->GetEntityDefName(), i );
@@ -2051,10 +1942,11 @@ Cmd_TestSave_f
 ==================
 */
 static void Cmd_TestSave_f( const idCmdArgs &args ) {
-	idFile *f;
+	idFile *f, *strings;
 
 	f = fileSystem->OpenFileWrite( "test.sav" );
-	gameLocal.SaveGame( f );
+	strings = NULL;
+	gameLocal.SaveGame( f, strings );
 	fileSystem->CloseFile( f );
 }
 
@@ -2086,11 +1978,7 @@ static void Cmd_RecordViewNotes_f( const idCmdArgs &args ) {
 	idStr str = args.Argv(1);
 	str.SetFileExtension( ".txt" );
 
-#ifdef _D3XP
-	idFile *file = fileSystem->OpenFileAppend( str, false, "fs_cdpath" );
-#else
 	idFile *file = fileSystem->OpenFileAppend( str );
-#endif
 
 	if ( file ) {
 		file->WriteFloatString( "\"view\"\t( %s )\t( %s )\r\n", origin.ToString(), axis.ToString() );
@@ -2104,8 +1992,10 @@ static void Cmd_RecordViewNotes_f( const idCmdArgs &args ) {
 	viewComments += origin.ToString();
 	viewComments += "\n";
 	viewComments += args.Argv(3);
-	player->hud->SetStateString( "viewcomments", viewComments );
-	player->hud->HandleNamedEvent( "showViewComments" );
+
+	// TODO_SPARTY: removed old hud need to find a way of doing this with the new hud
+	//player->hud->SetStateString( "viewcomments", viewComments );
+	//player->hud->HandleNamedEvent( "showViewComments" );
 }
 
 /*
@@ -2120,8 +2010,9 @@ static void Cmd_CloseViewNotes_f( const idCmdArgs &args ) {
 		return;
 	}
 	
-	player->hud->SetStateString( "viewcomments", "" );
-	player->hud->HandleNamedEvent( "hideViewComments" );
+	// TODO_SPARTY: removed old hud need to find a way of doing this with the new hud
+	//player->hud->SetStateString( "viewcomments", "" );
+	//player->hud->HandleNamedEvent( "hideViewComments" );
 }
 
 /*
@@ -2161,12 +2052,15 @@ static void Cmd_ShowViewNotes_f( const idCmdArgs &args ) {
 
 	if ( parser.ExpectTokenString( "view" ) && parser.Parse1DMatrix( 3, origin.ToFloatPtr() ) && 
 		parser.Parse1DMatrix( 9, axis.ToFloatPtr() ) && parser.ExpectTokenString( "comments" ) && parser.ReadToken( &token ) ) {
-		player->hud->SetStateString( "viewcomments", token );
-		player->hud->HandleNamedEvent( "showViewComments" );
+
+		// TODO_SPARTY: removed old hud need to find a way of doing this with the new hud
+		//player->hud->SetStateString( "viewcomments", token );
+		//player->hud->HandleNamedEvent( "showViewComments" );
 		player->Teleport( origin, axis.ToAngles(), NULL );
 	} else {
 		parser.FreeSource();
-		player->hud->HandleNamedEvent( "hideViewComments" );
+		// TODO_SPARTY: removed old hud need to find a way of doing this with the new hud
+		//player->hud->HandleNamedEvent( "hideViewComments" );
 		return;
 	}
 }
@@ -2230,7 +2124,6 @@ void Cmd_NextGUI_f( const idCmdArgs &args ) {
 	renderEntity_t			*renderEnt;
 	int						surfIndex;
 	srfTriangles_t			*geom;
-	idMat4					modelMatrix;
 	idVec3					normal;
 	idVec3					center;
 	const modelSurface_t	*surfaces[ MAX_RENDERENTITY_GUI ];
@@ -2315,11 +2208,14 @@ void Cmd_NextGUI_f( const idCmdArgs &args ) {
 		return;
 	}
 
-	assert( geom->facePlanes != NULL );
+	const idVec3 & v0 = geom->verts[geom->indexes[0]].xyz;
+	const idVec3 & v1 = geom->verts[geom->indexes[1]].xyz;
+	const idVec3 & v2 = geom->verts[geom->indexes[2]].xyz;
 
-	modelMatrix = idMat4( renderEnt->axis, renderEnt->origin );	
-	normal = geom->facePlanes[ 0 ].Normal() * renderEnt->axis;
-	center = geom->bounds.GetCenter() * modelMatrix;
+	const idPlane plane( v0, v1, v2 );
+
+	normal = plane.Normal() * renderEnt->axis;
+	center = geom->bounds.GetCenter() * renderEnt->axis + renderEnt->origin;
 
 	origin = center + (normal * 32.0f);
 	origin.z -= player->EyeHeight();
@@ -2331,7 +2227,6 @@ void Cmd_NextGUI_f( const idCmdArgs &args ) {
 	player->Teleport( origin, angles, NULL );
 }
 
-#ifdef _D3XP
 void Cmd_SetActorState_f( const idCmdArgs &args ) {
 
 	if ( args.Argc() != 3 ) {
@@ -2355,11 +2250,13 @@ void Cmd_SetActorState_f( const idCmdArgs &args ) {
 	idActor* actor = (idActor*)ent;
 	actor->PostEventMS(&AI_SetState, 0, args.Argv(2));
 }
-#endif
 
+#if 0
+// not used
 static void ArgCompletion_DefFile( const idCmdArgs &args, void(*callback)( const char *s ) ) {
 	cmdSystem->ArgCompletion_FolderExtension( args, callback, "def/", true, ".def", NULL );
 }
+#endif
 
 /*
 ===============
@@ -2381,8 +2278,9 @@ void Cmd_TestId_f( const idCmdArgs &args ) {
 	if ( idStr::Cmpn( id, STRTABLE_ID, STRTABLE_ID_LENGTH ) != 0 ) {
 		id = STRTABLE_ID + id;
 	}
-	gameLocal.mpGame.AddChatLine( common->GetLanguageDict()->GetString( id ), "<nothing>", "<nothing>", "<nothing>" );	
+	gameLocal.mpGame.AddChatLine( idLocalization::GetString( id ), "<nothing>", "<nothing>", "<nothing>" );	
 }
+
 
 /*
 =================
@@ -2392,10 +2290,7 @@ Let the system know about all of our commands
 so it can perform tab completion
 =================
 */
-void idGameLocal::InitConsoleCommands( void ) {
-	cmdSystem->AddCommand( "listTypeInfo",			ListTypeInfo_f,				CMD_FL_GAME,				"list type info" );
-	cmdSystem->AddCommand( "writeGameState",		WriteGameState_f,			CMD_FL_GAME,				"write game state" );
-	cmdSystem->AddCommand( "testSaveGame",			TestSaveGame_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"test a save game for a level" );
+void idGameLocal::InitConsoleCommands() {
 	cmdSystem->AddCommand( "game_memory",			idClass::DisplayInfo_f,		CMD_FL_GAME,				"displays game class info" );
 	cmdSystem->AddCommand( "listClasses",			idClass::ListClasses_f,		CMD_FL_GAME,				"lists game classes" );
 	cmdSystem->AddCommand( "listThreads",			idThread::ListThreads_f,	CMD_FL_GAME|CMD_FL_CHEAT,	"lists script threads" );
@@ -2406,13 +2301,11 @@ void idGameLocal::InitConsoleCommands( void ) {
 	cmdSystem->AddCommand( "say",					Cmd_Say_f,					CMD_FL_GAME,				"text chat" );
 	cmdSystem->AddCommand( "sayTeam",				Cmd_SayTeam_f,				CMD_FL_GAME,				"team text chat" );
 	cmdSystem->AddCommand( "addChatLine",			Cmd_AddChatLine_f,			CMD_FL_GAME,				"internal use - core to game chat lines" );
-	cmdSystem->AddCommand( "gameKick",				Cmd_Kick_f,					CMD_FL_GAME,				"same as kick, but recognizes player names" );
 	cmdSystem->AddCommand( "give",					Cmd_Give_f,					CMD_FL_GAME|CMD_FL_CHEAT,	"gives one or more items" );
 	cmdSystem->AddCommand( "centerview",			Cmd_CenterView_f,			CMD_FL_GAME,				"centers the view" );
 	cmdSystem->AddCommand( "god",					Cmd_God_f,					CMD_FL_GAME|CMD_FL_CHEAT,	"enables god mode" );
 	cmdSystem->AddCommand( "notarget",				Cmd_Notarget_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"disables the player as a target" );
 	cmdSystem->AddCommand( "noclip",				Cmd_Noclip_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"disables collision detection for the player" );
-	cmdSystem->AddCommand( "kill",					Cmd_Kill_f,					CMD_FL_GAME,				"kills the player" );
 	cmdSystem->AddCommand( "where",					Cmd_GetViewpos_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"prints the current view position" );
 	cmdSystem->AddCommand( "getviewpos",			Cmd_GetViewpos_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"prints the current view position" );
 	cmdSystem->AddCommand( "setviewpos",			Cmd_SetViewpos_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"sets the current view position" );
@@ -2452,7 +2345,6 @@ void idGameLocal::InitConsoleCommands( void ) {
 	cmdSystem->AddCommand( "script",				Cmd_Script_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"executes a line of script" );
 	cmdSystem->AddCommand( "listCollisionModels",	Cmd_ListCollisionModels_f,	CMD_FL_GAME,				"lists collision models" );
 	cmdSystem->AddCommand( "collisionModelInfo",	Cmd_CollisionModelInfo_f,	CMD_FL_GAME,				"shows collision model info" );
-	cmdSystem->AddCommand( "reexportmodels",		Cmd_ReexportModels_f,		CMD_FL_GAME|CMD_FL_CHEAT,	"reexports models", ArgCompletion_DefFile );
 	cmdSystem->AddCommand( "reloadanims",			Cmd_ReloadAnims_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"reloads animations" );
 	cmdSystem->AddCommand( "listAnims",				Cmd_ListAnims_f,			CMD_FL_GAME,				"lists all animations" );
 	cmdSystem->AddCommand( "aasStats",				Cmd_AASStats_f,				CMD_FL_GAME,				"shows AAS stats" );
@@ -2469,15 +2361,13 @@ void idGameLocal::InitConsoleCommands( void ) {
 	cmdSystem->AddCommand( "clearLights",			Cmd_ClearLights_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"clears all lights" );
 	cmdSystem->AddCommand( "gameError",				Cmd_GameError_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"causes a game error" );
 
-#ifndef	ID_DEMO_BUILD
 	cmdSystem->AddCommand( "disasmScript",			Cmd_DisasmScript_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"disassembles script" );
 	cmdSystem->AddCommand( "recordViewNotes",		Cmd_RecordViewNotes_f,		CMD_FL_GAME|CMD_FL_CHEAT,	"record the current view position with notes" );
 	cmdSystem->AddCommand( "showViewNotes",			Cmd_ShowViewNotes_f,		CMD_FL_GAME|CMD_FL_CHEAT,	"show any view notes for the current map, successive calls will cycle to the next note" );
 	cmdSystem->AddCommand( "closeViewNotes",		Cmd_CloseViewNotes_f,		CMD_FL_GAME|CMD_FL_CHEAT,	"close the view showing any notes for this map" );
-	cmdSystem->AddCommand( "exportmodels",			Cmd_ExportModels_f,			CMD_FL_GAME|CMD_FL_CHEAT,	"exports models", ArgCompletion_DefFile );
 
 	// multiplayer client commands ( replaces old impulses stuff )
-	cmdSystem->AddCommand( "clientDropWeapon",		idMultiplayerGame::DropWeapon_f, CMD_FL_GAME,			"drop current weapon" );
+	//cmdSystem->AddCommand( "clientDropWeapon",		idMultiplayerGame::DropWeapon_f, CMD_FL_GAME,			"drop current weapon" );
 	cmdSystem->AddCommand( "clientMessageMode",		idMultiplayerGame::MessageMode_f, CMD_FL_GAME,			"ingame gui message mode" );
 	// FIXME: implement
 //	cmdSystem->AddCommand( "clientVote",			idMultiplayerGame::Vote_f,	CMD_FL_GAME,				"cast your vote: clientVote yes | no" );
@@ -2487,17 +2377,12 @@ void idGameLocal::InitConsoleCommands( void ) {
 
 	// multiplayer server commands
 	cmdSystem->AddCommand( "serverMapRestart",		idGameLocal::MapRestart_f,	CMD_FL_GAME,				"restart the current game" );
-	cmdSystem->AddCommand( "serverForceReady",	idMultiplayerGame::ForceReady_f,CMD_FL_GAME,				"force all players ready" );
-	cmdSystem->AddCommand( "serverNextMap",			idGameLocal::NextMap_f,		CMD_FL_GAME,				"change to the next map" );
-#endif
 
 	// localization help commands
 	cmdSystem->AddCommand( "nextGUI",				Cmd_NextGUI_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"teleport the player to the next func_static with a gui" );
 	cmdSystem->AddCommand( "testid",				Cmd_TestId_f,				CMD_FL_GAME|CMD_FL_CHEAT,	"output the string for the specified id." );
 
-#ifdef _D3XP
 	cmdSystem->AddCommand( "setActorState",			Cmd_SetActorState_f,		CMD_FL_GAME|CMD_FL_CHEAT,	"Manually sets an actors script state", idGameLocal::ArgCompletion_EntityName );
-#endif
 }
 
 /*
@@ -2505,6 +2390,6 @@ void idGameLocal::InitConsoleCommands( void ) {
 idGameLocal::ShutdownConsoleCommands
 =================
 */
-void idGameLocal::ShutdownConsoleCommands( void ) {
+void idGameLocal::ShutdownConsoleCommands() {
 	cmdSystem->RemoveFlaggedCommands( CMD_FL_GAME );
 }

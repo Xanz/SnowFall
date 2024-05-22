@@ -1,34 +1,32 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
-#include "../idlib/precompiled.h"
 #pragma hdrstop
-
-#include "../framework/Session_local.h"
+#include "../idlib/precompiled.h"
 
 #include "DeviceContext.h"
 #include "Window.h"
@@ -187,7 +185,7 @@ void BSEntity::Update( float timeslice ) {
 BSEntity::Draw
 ======================
 */
-void BSEntity::Draw(idDeviceContext *dc) {
+void BSEntity::Draw() {
 	if ( visible ) {
 		dc->DrawMaterialRotated( position.x, position.y, width, height, material, entColor, 1.0f, 1.0f, DEG2RAD(rotation) );
 	}
@@ -198,11 +196,6 @@ void BSEntity::Draw(idDeviceContext *dc) {
 * idGameBearShootWindow
 ****************************************************************************
 */
-idGameBearShootWindow::idGameBearShootWindow(idDeviceContext *d, idUserInterfaceLocal *g) : idWindow(d, g) {
-	dc = d;
-	gui = g;
-	CommonInit();
-}
 
 idGameBearShootWindow::idGameBearShootWindow(idUserInterfaceLocal *g) : idWindow(g) {
 	gui = g;
@@ -308,7 +301,7 @@ void idGameBearShootWindow::ReadFromSaveGame( idFile *savefile ) {
 	for ( int i=0; i<numberOfEnts; i++ ) {
 		BSEntity *ent;
 
-		ent = new BSEntity( this );
+		ent = new (TAG_OLD_UI) BSEntity( this );
 		ent->ReadFromSaveGame( savefile, this );
 		entities.Append( ent );
 	}
@@ -378,7 +371,7 @@ void idGameBearShootWindow::CommonInit() {
 
 	ResetGameState();
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	turret = ent;
 	ent->SetMaterial( "game/bearshoot/turret" );
 	ent->SetSize( 272, 144 );
@@ -386,14 +379,14 @@ void idGameBearShootWindow::CommonInit() {
 	ent->position.y = 260;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	ent->SetMaterial( "game/bearshoot/turret_base" );
 	ent->SetSize( 144, 160 );
 	ent->position.x = 16;
 	ent->position.y = 280;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	bear = ent;
 	ent->SetMaterial( "game/bearshoot/bear" );
 	ent->SetSize( BEAR_SIZE, BEAR_SIZE );
@@ -402,7 +395,7 @@ void idGameBearShootWindow::CommonInit() {
 	ent->position.y = 0;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	helicopter = ent;
 	ent->SetMaterial( "game/bearshoot/helicopter" );
 	ent->SetSize( 64, 64 );
@@ -410,7 +403,7 @@ void idGameBearShootWindow::CommonInit() {
 	ent->position.y = 100;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	goal = ent;
 	ent->SetMaterial( "game/bearshoot/goal" );
 	ent->SetSize( 64, 64 );
@@ -418,7 +411,7 @@ void idGameBearShootWindow::CommonInit() {
 	ent->position.y = 164;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	wind = ent;
 	ent->SetMaterial( "game/bearshoot/wind" );
 	ent->SetSize( 100, 40 );
@@ -426,7 +419,7 @@ void idGameBearShootWindow::CommonInit() {
 	ent->position.y = 430;
 	entities.Append( ent );
 
-	ent = new BSEntity( this );
+	ent = new (TAG_OLD_UI) BSEntity( this );
 	gunblast = ent;
 	ent->SetMaterial( "game/bearshoot/gun_blast" );
 	ent->SetSize( 64, 64 );
@@ -465,7 +458,7 @@ const char *idGameBearShootWindow::HandleEvent(const sysEvent_t *event, bool *up
 idGameBearShootWindow::ParseInternalVar
 =============================
 */
-bool idGameBearShootWindow::ParseInternalVar(const char *_name, idParser *src) {
+bool idGameBearShootWindow::ParseInternalVar(const char *_name, idTokenParser *src) {
 	if ( idStr::Icmp(_name, "gamerunning") == 0 ) {
 		gamerunning = src->ParseBool();
 		return true;
@@ -532,7 +525,7 @@ void idGameBearShootWindow::Draw(int time, float x, float y) {
 	UpdateGame();
 
 	for( i = entities.Num()-1; i >= 0; i-- ) {
-		entities[i]->Draw(dc);
+		entities[i]->Draw();
 	}
 }
 
@@ -607,7 +600,7 @@ void idGameBearShootWindow::UpdateBear() {
 			helicopter->SetMaterial( "game/bearshoot/helicopter_broken" );
 			helicopter->velocity.y = 230.f;
 			goal->velocity.y = 230.f;
-			session->sw->PlayShaderDirectly( "arcade_balloonpop" );
+			common->SW()->PlayShaderDirectly( "arcade_balloonpop" );
 
 			bear->SetVisible( false );
 			if ( bear->velocity.x > 0 ) {
@@ -633,7 +626,7 @@ void idGameBearShootWindow::UpdateBear() {
 			bear->velocity *= 0.5f;
 
 			if ( bearScale ) {
-				session->sw->PlayShaderDirectly( "arcade_balloonpop" );
+				common->SW()->PlayShaderDirectly( "arcade_balloonpop" );
 			}
 		}
 	}
@@ -710,7 +703,7 @@ void idGameBearShootWindow::UpdateHelicopter() {
 
 			helicopter->SetVisible( false );
 			goal->SetMaterial( "game/bearshoot/goal_dead" );
-			session->sw->PlayShaderDirectly( "arcade_beargroan", 1 );
+			common->SW()->PlayShaderDirectly( "arcade_beargroan", 1 );
 
 			helicopter->fadeOut = true;
 			goal->fadeOut = true;
@@ -740,7 +733,7 @@ void idGameBearShootWindow::UpdateButtons() {
 		idVec2 vec;
 
 		gui->HandleNamedEvent( "DisableFireButton" );
-		session->sw->PlayShaderDirectly( "arcade_sargeshoot" );
+		common->SW()->PlayShaderDirectly( "arcade_sargeshoot" );
 
 		bear->SetVisible( true );
 		bearScale = 1.f;
@@ -789,7 +782,7 @@ void idGameBearShootWindow::UpdateScore() {
 	if ( !(goalsHit % 5) ) {
 		currentLevel++;
 		gui->SetStateString( "current_level", va("%i", currentLevel ) );
-		session->sw->PlayShaderDirectly( "arcade_levelcomplete1", 3 );
+		common->SW()->PlayShaderDirectly( "arcade_levelcomplete1", 3 );
 
 		timeRemaining += 30;
 	}
@@ -805,14 +798,19 @@ void idGameBearShootWindow::UpdateGame() {
 
 	if ( onNewGame ) {
 		ResetGameState();
-
-		goal->position.x = 550;
-		goal->position.y = 164;
-		goal->velocity.Zero();
-		helicopter->position.x = 550;
-		helicopter->position.y = 100;
-		helicopter->velocity.Zero();
-		bear->SetVisible( false );
+		if ( goal ) {
+			goal->position.x = 550;
+			goal->position.y = 164;
+			goal->velocity.Zero();
+		}
+		if ( helicopter ) {
+			helicopter->position.x = 550;
+			helicopter->position.y = 100;
+			helicopter->velocity.Zero();
+		}
+		if ( bear ) {
+			bear->SetVisible( false );
+		}
 
 		bearTurretAngle.SetFloat( 0.f );
 		bearTurretForce.SetFloat( 200.f );

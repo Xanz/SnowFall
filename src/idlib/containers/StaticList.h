@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -28,6 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef __STATICLIST_H__
 #define __STATICLIST_H__
+
+#include "List.h"
 
 /*
 ===============================================================================
@@ -44,39 +46,49 @@ public:
 
 						idStaticList();
 						idStaticList( const idStaticList<type,size> &other );
-						~idStaticList<type,size>( void );
+						~idStaticList<type,size>();
 
-	void				Clear( void );										// marks the list as empty.  does not deallocate or intialize data.
-	int					Num( void ) const;									// returns number of elements in list
-	int					Max( void ) const;									// returns the maximum number of elements in the list
+	void				Clear();										// marks the list as empty.  does not deallocate or intialize data.
+	int					Num() const;									// returns number of elements in list
+	int					Max() const;									// returns the maximum number of elements in the list
 	void				SetNum( int newnum );								// set number of elements in list
 
-	size_t				Allocated( void ) const;							// returns total size of allocated memory
-	size_t				Size( void ) const;									// returns total size of allocated memory including size of list type
-	size_t				MemoryUsed( void ) const;							// returns size of the used elements in the list
+	// sets the number of elements in list and initializes any newly allocated elements to the given value
+	void				SetNum( int newNum, const type & initValue );
+
+	size_t				Allocated() const;							// returns total size of allocated memory
+	size_t				Size() const;									// returns total size of allocated memory including size of list type
+	size_t				MemoryUsed() const;							// returns size of the used elements in the list
 
 	const type &		operator[]( int index ) const;
 	type &				operator[]( int index );
 
-	type *				Ptr( void );										// returns a pointer to the list
-	const type *		Ptr( void ) const;									// returns a pointer to the list
-	type *				Alloc( void );										// returns reference to a new data element at the end of the list.  returns NULL when full.
+	type *				Ptr();										// returns a pointer to the list
+	const type *		Ptr() const;									// returns a pointer to the list
+	type *				Alloc();										// returns reference to a new data element at the end of the list.  returns NULL when full.
 	int					Append( const type & obj );							// append element
 	int					Append( const idStaticList<type,size> &other );		// append list
 	int					AddUnique( const type & obj );						// add unique element
-	int					Insert( const type & obj, int index );				// insert the element at the given index
+	int					Insert( const type & obj, int index = 0 );				// insert the element at the given index
 	int					FindIndex( const type & obj ) const;				// find the index for the given element
 	type *				Find( type const & obj ) const;						// find pointer to the given element
-	int					FindNull( void ) const;								// find the index for the first NULL pointer in the list
+	int					FindNull() const;								// find the index for the first NULL pointer in the list
 	int					IndexOf( const type *obj ) const;					// returns the index for the pointer to an element in the list
 	bool				RemoveIndex( int index );							// remove the element at the given index
+	bool				RemoveIndexFast( int index );							// remove the element at the given index
 	bool				Remove( const type & obj );							// remove the element
 	void				Swap( idStaticList<type,size> &other );				// swap the contents of the lists
 	void				DeleteContents( bool clear );						// delete the contents of the list
 
+	void				Sort( const idSort<type> & sort = idSort_QuickDefault<type>() );
+
 private:
 	int					num;
 	type 				list[ size ];
+
+private:
+	// resizes list to the given number of elements
+	void				Resize( int newsize );
 };
 
 /*
@@ -105,7 +117,7 @@ idStaticList<type,size>::~idStaticList<type,size>
 ================
 */
 template<class type,int size>
-ID_INLINE idStaticList<type,size>::~idStaticList( void ) {
+ID_INLINE idStaticList<type,size>::~idStaticList() {
 }
 
 /*
@@ -116,8 +128,26 @@ Sets the number of elements in the list to 0.  Assumes that type automatically h
 ================
 */
 template<class type,int size>
-ID_INLINE void idStaticList<type,size>::Clear( void ) {
+ID_INLINE void idStaticList<type,size>::Clear() {
 	num	= 0;
+}
+
+/*
+========================
+idList<_type_,_tag_>::Sort
+
+Performs a QuickSort on the list using the supplied sort algorithm.  
+
+Note:	The data is merely moved around the list, so any pointers to data within the list may 
+		no longer be valid.
+========================
+*/
+template< class type,int size >
+ID_INLINE void idStaticList<type,size>::Sort( const idSort<type> & sort ) {
+	if ( list == NULL ) {
+		return;
+	}
+	sort.Sort( Ptr(), Num() );
 }
 
 /*
@@ -136,7 +166,7 @@ template<class type,int size>
 ID_INLINE void idStaticList<type,size>::DeleteContents( bool clear ) {
 	int i;
 
-	for( i = 0; i < size; i++ ) {
+	for( i = 0; i < num; i++ ) {
 		delete list[ i ];
 		list[ i ] = NULL;
 	}
@@ -156,7 +186,7 @@ Returns the number of elements currently contained in the list.
 ================
 */
 template<class type,int size>
-ID_INLINE int idStaticList<type,size>::Num( void ) const {
+ID_INLINE int idStaticList<type,size>::Num() const {
 	return num;
 }
 
@@ -168,7 +198,7 @@ Returns the maximum number of elements in the list.
 ================
 */
 template<class type,int size>
-ID_INLINE int idStaticList<type,size>::Max( void ) const {
+ID_INLINE int idStaticList<type,size>::Max() const {
 	return size;
 }
 
@@ -178,7 +208,7 @@ idStaticList<type>::Allocated
 ================
 */
 template<class type,int size>
-ID_INLINE size_t idStaticList<type,size>::Allocated( void ) const {
+ID_INLINE size_t idStaticList<type,size>::Allocated() const {
 	return size * sizeof( type );
 }
 
@@ -188,7 +218,7 @@ idStaticList<type>::Size
 ================
 */
 template<class type,int size>
-ID_INLINE size_t idStaticList<type,size>::Size( void ) const {
+ID_INLINE size_t idStaticList<type,size>::Size() const {
 	return sizeof( idStaticList<type,size> ) + Allocated();
 }
 
@@ -198,7 +228,7 @@ idStaticList<type,size>::Num
 ================
 */
 template<class type,int size>
-ID_INLINE size_t idStaticList<type,size>::MemoryUsed( void ) const {
+ID_INLINE size_t idStaticList<type,size>::MemoryUsed() const {
 	return num * sizeof( list[ 0 ] );
 }
 
@@ -214,6 +244,22 @@ ID_INLINE void idStaticList<type,size>::SetNum( int newnum ) {
 	assert( newnum >= 0 );
 	assert( newnum <= size );
 	num = newnum;
+}
+
+/*
+========================
+idStaticList<_type_,_tag_>::SetNum
+========================
+*/
+template< class type,int size >
+ID_INLINE void idStaticList<type,size>::SetNum( int newNum, const type &initValue ) {
+	assert( newNum >= 0 );
+	newNum = Min( newNum, size );
+	assert( newNum <= size );
+	for ( int i = num; i < newNum; i++ ) {
+		list[i] = initValue;
+	}
+	num = newNum;
 }
 
 /*
@@ -260,7 +306,7 @@ FIXME: Create an iterator template for this kind of thing.
 ================
 */
 template<class type,int size>
-ID_INLINE type *idStaticList<type,size>::Ptr( void ) {
+ID_INLINE type *idStaticList<type,size>::Ptr() {
 	return &list[ 0 ];
 }
 
@@ -276,7 +322,7 @@ FIXME: Create an iterator template for this kind of thing.
 ================
 */
 template<class type,int size>
-ID_INLINE const type *idStaticList<type,size>::Ptr( void ) const {
+ID_INLINE const type *idStaticList<type,size>::Ptr() const {
 	return &list[ 0 ];
 }
 
@@ -288,7 +334,7 @@ Returns a pointer to a new data element at the end of the list.
 ================
 */
 template<class type,int size>
-ID_INLINE type *idStaticList<type,size>::Alloc( void ) {
+ID_INLINE type *idStaticList<type,size>::Alloc() {
 	if ( num >= size ) {
 		return NULL;
 	}
@@ -430,7 +476,7 @@ ID_INLINE type *idStaticList<type,size>::Find( type const & obj ) const {
 
 	i = FindIndex( obj );
 	if ( i >= 0 ) {
-		return &list[ i ];
+		return (type *) &list[ i ];
 	}
 
 	return NULL;
@@ -447,7 +493,7 @@ on non-pointer lists will cause a compiler error.
 ================
 */
 template<class type,int size>
-ID_INLINE int idStaticList<type,size>::FindNull( void ) const {
+ID_INLINE int idStaticList<type,size>::FindNull() const {
 	int i;
 
 	for( i = 0; i < num; i++ ) {
@@ -511,6 +557,35 @@ ID_INLINE bool idStaticList<type,size>::RemoveIndex( int index ) {
 }
 
 /*
+========================
+idList<_type_,_tag_>::RemoveIndexFast
+
+Removes the element at the specified index and moves the last element into its spot, rather 
+than moving the whole array down by one. Of course, this doesn't maintain the order of 
+elements! The number of elements in the list is reduced by one.  
+
+return:	bool	- false if the data is not found in the list.  
+
+NOTE:	The element is not destroyed, so any memory used by it may not be freed until the 
+		destruction of the list.
+========================
+*/
+template< typename _type_,int size >
+ID_INLINE bool idStaticList<_type_,size>::RemoveIndexFast( int index ) {
+
+	if ( ( index < 0 ) || ( index >= num ) ) {
+		return false;
+	}
+
+	num--;
+	if ( index != num ) {
+		list[ index ] = list[ num ];
+	}
+
+	return true;
+}
+
+/*
 ================
 idStaticList<type,size>::Remove
 
@@ -545,4 +620,37 @@ ID_INLINE void idStaticList<type,size>::Swap( idStaticList<type,size> &other ) {
 	other = temp;
 }
 
+// debug tool to find uses of idlist that are dynamically growing
+// Ideally, most lists on shipping titles will explicitly set their size correctly
+// instead of relying on allocate-on-add
+void BreakOnListGrowth();
+void BreakOnListDefault();
+
+/*
+========================
+idList<_type_,_tag_>::Resize
+
+Allocates memory for the amount of elements requested while keeping the contents intact.
+Contents are copied using their = operator so that data is correctly instantiated.
+========================
+*/
+template< class type,int size >
+ID_INLINE void idStaticList<type,size>::Resize( int newsize ) {
+
+	assert( newsize >= 0 );
+
+	// free up the list if no data is being reserved
+	if ( newsize <= 0 ) {
+		Clear();
+		return;
+	}
+
+	if ( newsize == size ) {
+		// not changing the size, so just exit
+		return;
+	}
+
+	assert( newsize < size );
+	return;
+}
 #endif /* !__STATICLIST_H__ */

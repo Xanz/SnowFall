@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -28,7 +28,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "../idlib/precompiled.h"
 #pragma hdrstop
 
-#ifdef _D3XP
 
 #include "Game_local.h"
 #include "Misc.h"
@@ -58,12 +57,12 @@ END_CLASS
 idGrabber::idGrabber
 ==============
 */
-idGrabber::idGrabber( void ) {
+idGrabber::idGrabber() {
 	dragEnt = NULL;
 	owner = NULL;
 	beam = NULL;
 	beamTarget = NULL;
-	oldUcmdFlags = 0;
+	oldImpulseSequence = 0;
 	shakeForceFlip = false;
 	holdingAF = false;
 	endTime = 0;
@@ -79,7 +78,7 @@ idGrabber::idGrabber( void ) {
 idGrabber::~idGrabber
 ==============
 */
-idGrabber::~idGrabber( void ) {
+idGrabber::~idGrabber() {
 	StopDrag( true );
 	if ( beam ) {
 		delete beam;
@@ -169,8 +168,8 @@ void idGrabber::Restore( idRestoreGame *savefile ) {
 idGrabber::Initialize
 ==============
 */
-void idGrabber::Initialize( void ) {
-	if ( !gameLocal.isMultiplayer ) {
+void idGrabber::Initialize() {
+	if ( !common->IsMultiplayer() ) {
 		idDict args;
 
 		if ( !beamTarget ) {
@@ -224,7 +223,7 @@ void idGrabber::StartDrag( idEntity *grabEnt, int id ) {
 	dragFailTime = gameLocal.slow.time;
 	startDragTime = gameLocal.slow.time;
 
-	oldUcmdFlags = thePlayer->usercmd.flags;
+	oldImpulseSequence = thePlayer->usercmd.impulseSequence;
 
 	// set grabbed state for networking
 	grabEnt->SetGrabbedState( true );
@@ -276,7 +275,7 @@ void idGrabber::StartDrag( idEntity *grabEnt, int id ) {
 			aiEnt->StartRagdoll();
 		}
 	} else if ( grabEnt->IsType( idMoveableItem::Type ) ) {
-		grabEnt->PostEventMS( &EV_Touch, 250, thePlayer, 0 );
+		grabEnt->PostEventMS( &EV_Touch, 250, thePlayer, NULL );
 	}
 
 	// Get the current physics object to manipulate
@@ -380,6 +379,11 @@ void idGrabber::StopDrag( bool dropOnly ) {
 				ent->GetPhysics()->SetContents( savedContents );
 				ent->GetPhysics()->SetClipMask( savedClipmask );
 
+				idProjectile *projectile = static_cast< idProjectile* >( ent );
+				if ( projectile != NULL ) {
+					projectile->SetLaunchedFromGrabber( true );
+				}
+
 			} else if ( ent->IsType( idMoveable::Type ) ) {
 				// Turn on damage for this object
 				idMoveable *obj = static_cast<idMoveable*>(ent);
@@ -444,11 +448,11 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 				abort = true;
 			}
 		}
-		if ( !abort && dragEnt.GetEntity()->IsHidden() ) {
+		if ( !abort && dragEnt.GetEntity() && dragEnt.GetEntity()->IsHidden() ) {
 			abort = true;
 		}
 		// Not in multiplayer :: Pressing "reload" lets you carefully drop an item
-		if ( !gameLocal.isMultiplayer && !abort && (( player->usercmd.flags & UCF_IMPULSE_SEQUENCE ) != ( oldUcmdFlags & UCF_IMPULSE_SEQUENCE )) && (player->usercmd.impulse == IMPULSE_13) ) {
+		if ( !common->IsMultiplayer() && !abort && ( player->usercmd.impulseSequence != oldImpulseSequence ) && (player->usercmd.impulse == IMPULSE_13) ) {
 			abort = true;
 		}
         
@@ -474,7 +478,7 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 			newEnt = gameLocal.entities[ trace.c.entityNum ];
 
 			// if entity is already being grabbed then bypass
-			if ( gameLocal.isMultiplayer && newEnt->IsGrabbed() ) {
+			if ( common->IsMultiplayer() && newEnt && newEnt->IsGrabbed() ) {
 				return 0;
 			}
 
@@ -482,7 +486,8 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 			if ( newEnt && ( newEnt->IsType( idMoveable::Type ) ||
 					newEnt->IsType( idMoveableItem::Type ) ||
 					newEnt->IsType( idProjectile::Type ) ||
-					newEnt->IsType( idAFEntity_Gibbable::Type ) ) &&
+					newEnt->IsType( idAFEntity_Gibbable::Type )
+					) &&
 					newEnt->noGrab == false &&
 					newEnt->GetPhysics()->GetBounds().GetRadius() < MAX_PICKUP_SIZE &&
 					newEnt->GetPhysics()->GetLinearVelocity().LengthSqr() < MAX_PICKUP_VELOCITY ) {
@@ -516,7 +521,7 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 	// check backwards server time in multiplayer
 	bool allow = true;
 
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 
 		// if we've marched backwards
 		if ( gameLocal.slow.time < startDragTime ) {
@@ -561,7 +566,7 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 		}
 
 		// Shake the object at the end of the hold
-		if ( g_grabberEnableShake.GetBool() && !gameLocal.isMultiplayer ) {
+		if ( g_grabberEnableShake.GetBool() && !common->IsMultiplayer() ) {
 			ApplyShake();
 		}
 
@@ -642,7 +647,7 @@ int idGrabber::Update( idPlayer *player, bool hide ) {
 idGrabber::UpdateBeams
 ======================
 */
-void idGrabber::UpdateBeams( void ) {
+void idGrabber::UpdateBeams() {
 	jointHandle_t	muzzle_joint;
 	idVec3	muzzle_origin;
 	idMat3	muzzle_axis;
@@ -680,7 +685,7 @@ void idGrabber::UpdateBeams( void ) {
 idGrabber::ApplyShake
 ==============
 */
-void idGrabber::ApplyShake( void ) {
+void idGrabber::ApplyShake() {
 	float u = 1 - (float)( endTime - gameLocal.time ) / ( g_grabberHoldSeconds.GetFloat() * 1000 );
 
 	if ( u >= 0.8f ) {
@@ -732,4 +737,3 @@ bool idGrabber::grabbableAI( const char *aiName ) {
 	return false;
 }
 
-#endif

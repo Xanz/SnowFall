@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -28,6 +28,12 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../idlib/precompiled.h"
 #pragma hdrstop
+
+#ifdef ID_RETAIL
+idCVar net_allowCheats( "net_allowCheats", "0", CVAR_BOOL | CVAR_ROM, "Allow cheats in multiplayer" );
+#else
+idCVar net_allowCheats( "net_allowCheats", "0", CVAR_BOOL | CVAR_NOCHEAT, "Allow cheats in multiplayer" );
+#endif
 
 /*
 ===============================================================================
@@ -46,11 +52,15 @@ typedef struct commandDef_s {
 	char *					description;
 } commandDef_t;
 
-
+/*
+================================================
+idCmdSystemLocal 
+================================================
+*/
 class idCmdSystemLocal : public idCmdSystem {
 public:
-	virtual void			Init( void );
-	virtual void			Shutdown( void );
+	virtual void			Init();
+	virtual void			Shutdown();
 
 	virtual void			AddCommand( const char *cmdName, cmdFunction_t function, int flags, const char *description, argCompletion_t argCompletion = NULL );
 	virtual void			RemoveCommand( const char *cmdName );
@@ -58,9 +68,11 @@ public:
 
 	virtual void			CommandCompletion( void(*callback)( const char *s ) );
 	virtual void			ArgCompletion( const char *cmdString, void(*callback)( const char *s ) );
+	virtual void			ExecuteCommandText( const char * text );
+	virtual void			AppendCommandText( const char * text );
 
 	virtual void			BufferCommandText( cmdExecution_t exec, const char *text );
-	virtual void			ExecuteCommandBuffer( void );
+	virtual void			ExecuteCommandBuffer();
 
 	virtual void			ArgCompletion_FolderExtension( const idCmdArgs &args, void(*callback)( const char *s ), const char *folder, bool stripFolder, ... );
 	virtual void			ArgCompletion_DeclName( const idCmdArgs &args, void(*callback)( const char *s ), int type );
@@ -68,10 +80,10 @@ public:
 	virtual void			BufferCommandArgs( cmdExecution_t exec, const idCmdArgs &args );
 
 	virtual void			SetupReloadEngine( const idCmdArgs &args );
-	virtual bool			PostReloadEngine( void );
+	virtual bool			PostReloadEngine();
 
 	void					SetWait( int numFrames ) { wait = numFrames; }
-	commandDef_t *			GetCommands( void ) const { return commands; }
+	commandDef_t *			GetCommands() const { return commands; }
 
 private:
 	static const int		MAX_CMD_BUFFER = 0x10000;
@@ -93,9 +105,7 @@ private:
 
 private:	
 	void					ExecuteTokenizedString( const idCmdArgs &args );
-	void					ExecuteCommandText( const char *text );
 	void					InsertCommandText( const char *text );
-	void					AppendCommandText( const char *text );
 
 	static void				ListByFlags( const idCmdArgs &args, cmdFlags_t flags );
 	static void				List_f( const idCmdArgs &args );
@@ -115,18 +125,21 @@ private:
 idCmdSystemLocal			cmdSystemLocal;
 idCmdSystem *				cmdSystem = &cmdSystemLocal;
 
+/*
+================================================
+idSort_CommandDef 
+================================================
+*/
+class idSort_CommandDef : public idSort_Quick< commandDef_t, idSort_CommandDef > {
+public:
+	int Compare( const commandDef_t & a, const commandDef_t & b ) const { return idStr::Icmp( a.name, b.name ); }
+};
 
 /*
 ============
 idCmdSystemLocal::ListByFlags
 ============
 */
-// NOTE: the const wonkyness is required to make msvc happy
-template<>
-ID_INLINE int idListSortCompare( const commandDef_t * const *a, const commandDef_t * const *b ) {
-	return idStr::Icmp( (*a)->name, (*b)->name );
-}
-
 void idCmdSystemLocal::ListByFlags( const idCmdArgs &args, cmdFlags_t flags ) {
 	int i;
 	idStr match;
@@ -151,7 +164,7 @@ void idCmdSystemLocal::ListByFlags( const idCmdArgs &args, cmdFlags_t flags ) {
 		cmdList.Append( cmd );
 	}
 
-	cmdList.Sort();
+	//cmdList.SortWithTemplate( idSort_CommandDef() );
 
 	for ( i = 0; i < cmdList.Num(); i++ ) {
 		cmd = cmdList[i];
@@ -316,7 +329,7 @@ void idCmdSystemLocal::Parse_f( const idCmdArgs &args ) {
 idCmdSystemLocal::Init
 ============
 */
-void idCmdSystemLocal::Init( void ) {
+void idCmdSystemLocal::Init() {
 
 	AddCommand( "listCmds", List_f, CMD_FL_SYSTEM, "lists commands" );
 	AddCommand( "listSystemCmds", SystemList_f, CMD_FL_SYSTEM, "lists system commands" );
@@ -330,6 +343,11 @@ void idCmdSystemLocal::Init( void ) {
 	AddCommand( "parse", Parse_f, CMD_FL_SYSTEM, "prints tokenized string" );
 	AddCommand( "wait", Wait_f, CMD_FL_SYSTEM, "delays remaining buffered commands one or more frames" );
 
+	// link in all the commands declared with static idCommandLink variables or CONSOLE_COMMAND macros
+	for ( idCommandLink * link = CommandLinks(); link != NULL; link = link->next ) {
+		AddCommand( link->cmdName_, link->function_, CMD_FL_SYSTEM, link->description_, link->argCompletion_ );
+	}
+
 	completionString = "*";
 
 	textLength = 0;
@@ -340,7 +358,7 @@ void idCmdSystemLocal::Init( void ) {
 idCmdSystemLocal::Shutdown
 ============
 */
-void idCmdSystemLocal::Shutdown( void ) {
+void idCmdSystemLocal::Shutdown() {
 	commandDef_t *cmd;
 
 	for ( cmd = commands; cmd; cmd = commands ) {
@@ -374,7 +392,7 @@ void idCmdSystemLocal::AddCommand( const char *cmdName, cmdFunction_t function, 
 		}
 	}
 
-	cmd = new commandDef_t;
+	cmd = new (TAG_SYSTEM) commandDef_t;
 	cmd->name = Mem_CopyString( cmdName );
 	cmd->function = function;
 	cmd->argCompletion = argCompletion;
@@ -482,7 +500,7 @@ void idCmdSystemLocal::ExecuteTokenizedString( const idCmdArgs &args ) {
 			cmd->next = commands;
 			commands = cmd;
 
-			if ( ( cmd->flags & (CMD_FL_CHEAT|CMD_FL_TOOL) ) && session && session->IsMultiplayer() && !cvarSystem->GetCVarBool( "net_allowCheats" ) ) {
+			if ( ( cmd->flags & (CMD_FL_CHEAT|CMD_FL_TOOL) ) && common->IsMultiplayer() && !net_allowCheats.GetBool() ) {
 				common->Printf( "Command '%s' not valid in multiplayer mode.\n", cmd->name );
 				return;
 			}
@@ -619,7 +637,7 @@ void idCmdSystemLocal::BufferCommandArgs( cmdExecution_t exec, const idCmdArgs &
 idCmdSystemLocal::ExecuteCommandBuffer
 ============
 */
-void idCmdSystemLocal::ExecuteCommandBuffer( void ) {
+void idCmdSystemLocal::ExecuteCommandBuffer() {
 	int			i;
 	char *		text;
 	int			quotes;
@@ -773,7 +791,7 @@ void idCmdSystemLocal::SetupReloadEngine( const idCmdArgs &args ) {
 idCmdSystemLocal::PostReloadEngine
 ============
 */
-bool idCmdSystemLocal::PostReloadEngine( void ) {
+bool idCmdSystemLocal::PostReloadEngine() {
 	if ( !postReload.Argc() ) {
 		return false;
 	}

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -136,7 +136,7 @@ void idAnimState::Init( idActor *owner, idAnimator *_animator, int animchannel )
 idAnimState::Shutdown
 =====================
 */
-void idAnimState::Shutdown( void ) {
+void idAnimState::Shutdown() {
 	delete thread;
 	thread = NULL;
 }
@@ -210,7 +210,7 @@ void idAnimState::CycleAnim( int anim ) {
 idAnimState::BecomeIdle
 =====================
 */
-void idAnimState::BecomeIdle( void ) {
+void idAnimState::BecomeIdle() {
 	idleAnim = true;
 }
 
@@ -219,7 +219,7 @@ void idAnimState::BecomeIdle( void ) {
 idAnimState::Disabled
 =====================
 */
-bool idAnimState::Disabled( void ) const {
+bool idAnimState::Disabled() const {
 	return disabled;
 }
 
@@ -247,7 +247,7 @@ bool idAnimState::AnimDone( int blendFrames ) const {
 idAnimState::IsIdle
 =====================
 */
-bool idAnimState::IsIdle( void ) const {
+bool idAnimState::IsIdle() const {
 	return disabled || idleAnim;
 }
 
@@ -256,7 +256,7 @@ bool idAnimState::IsIdle( void ) const {
 idAnimState::GetAnimFlags
 =====================
 */
-animFlags_t idAnimState::GetAnimFlags( void ) const {
+animFlags_t idAnimState::GetAnimFlags() const {
 	animFlags_t flags;
 
 	memset( &flags, 0, sizeof( flags ) );
@@ -288,7 +288,7 @@ void idAnimState::Enable( int blendFrames ) {
 idAnimState::Disable
 =====================
 */
-void idAnimState::Disable( void ) {
+void idAnimState::Disable() {
 	disabled = true;
 	idleAnim = false;
 }
@@ -298,7 +298,7 @@ void idAnimState::Disable( void ) {
 idAnimState::UpdateState
 =====================
 */
-bool idAnimState::UpdateState( void ) {
+bool idAnimState::UpdateState() {
 	if ( disabled ) {
 		return false;
 	}
@@ -360,14 +360,12 @@ const idEventDef AI_SetNextState( "setNextState", "s" );
 const idEventDef AI_SetState( "setState", "s" );
 const idEventDef AI_GetState( "getState", NULL, 's' );
 const idEventDef AI_GetHead( "getHead", NULL, 'e' );
-#ifdef _D3XP
 const idEventDef EV_SetDamageGroupScale( "setDamageGroupScale", "sf" );
 const idEventDef EV_SetDamageGroupScaleAll( "setDamageGroupScaleAll", "f" );
 const idEventDef EV_GetDamageGroupScale( "getDamageGroupScale", "s", 'f' );
 const idEventDef EV_SetDamageCap( "setDamageCap", "f" );
 const idEventDef EV_SetWaitState( "setWaitState" , "s" );
 const idEventDef EV_GetWaitState( "getWaitState", NULL, 's' );
-#endif
 
 CLASS_DECLARATION( idAFEntity_Gibbable, idActor )
 	EVENT( AI_EnableEyeFocus,			idActor::Event_EnableEyeFocus )
@@ -411,14 +409,12 @@ CLASS_DECLARATION( idAFEntity_Gibbable, idActor )
 	EVENT( AI_SetState,					idActor::Event_SetState )
 	EVENT( AI_GetState,					idActor::Event_GetState )
 	EVENT( AI_GetHead,					idActor::Event_GetHead )
-#ifdef _D3XP
 	EVENT( EV_SetDamageGroupScale,		idActor::Event_SetDamageGroupScale )
 	EVENT( EV_SetDamageGroupScaleAll,	idActor::Event_SetDamageGroupScaleAll )
 	EVENT( EV_GetDamageGroupScale,		idActor::Event_GetDamageGroupScale )
 	EVENT( EV_SetDamageCap,				idActor::Event_SetDamageCap )
 	EVENT( EV_SetWaitState,				idActor::Event_SetWaitState )
 	EVENT( EV_GetWaitState,				idActor::Event_GetWaitState )
-#endif
 END_CLASS
 
 /*
@@ -426,7 +422,7 @@ END_CLASS
 idActor::idActor
 =====================
 */
-idActor::idActor( void ) {
+idActor::idActor() {
 	viewAxis.Identity();
 
 	scriptThread		= NULL;		// initialized by ConstructScriptObject, which is called by idEntity::Spawn
@@ -458,21 +454,23 @@ idActor::idActor( void ) {
 
 	waitState			= "";
 	
-	blink_anim			= 0;
+	blink_anim			= NULL;
 	blink_time			= 0;
 	blink_min			= 0;
 	blink_max			= 0;
 
 	finalBoss			= false;
+	damageNotByFists	= false;		// for killed by fists achievement
 
 	attachments.SetGranularity( 1 );
 
 	enemyNode.SetOwner( this );
 	enemyList.SetOwner( this );
 
-#ifdef _D3XP
+	aimAssistNode.SetOwner( this );
+	aimAssistNode.AddToEnd( gameLocal.aimAssistEntities );
+
 	damageCap = -1;
-#endif
 }
 
 /*
@@ -480,7 +478,7 @@ idActor::idActor( void ) {
 idActor::~idActor
 =====================
 */
-idActor::~idActor( void ) {
+idActor::~idActor() {
 	int i;
 	idEntity *ent;
 
@@ -505,6 +503,8 @@ idActor::~idActor( void ) {
 		}
 	}
 
+	aimAssistNode.Remove();
+
 	ShutdownThreads();
 }
 
@@ -513,7 +513,7 @@ idActor::~idActor( void ) {
 idActor::Spawn
 =====================
 */
-void idActor::Spawn( void ) {
+void idActor::Spawn() {
 	idEntity		*ent;
 	idStr			jointName;
 	float			fovDegrees;
@@ -650,7 +650,7 @@ void idActor::Spawn( void ) {
 idActor::FinishSetup
 ================
 */
-void idActor::FinishSetup( void ) {
+void idActor::FinishSetup() {
 	const char	*scriptObjectName;
 
 	// setup script object
@@ -670,7 +670,7 @@ void idActor::FinishSetup( void ) {
 idActor::SetupHead
 ================
 */
-void idActor::SetupHead( void ) {
+void idActor::SetupHead() {
 	idAFAttachment		*headEnt;
 	idStr				jointName;
 	const char			*headModel;
@@ -679,7 +679,7 @@ void idActor::SetupHead( void ) {
 	int					i;
 	const idKeyValue	*sndKV;
 
-	if ( gameLocal.isClient ) {
+	if ( common->IsClient() ) {
 		return;
 	}
 
@@ -708,10 +708,8 @@ void idActor::SetupHead( void ) {
 			sndKV = spawnArgs.MatchPrefix( "snd_", sndKV );
 		}
 
-#ifdef _D3XP
 		// copy slowmo param to the head
 		args.SetBool( "slowmo", spawnArgs.GetBool("slowmo", "1") );
-#endif
 
 
 		headEnt = static_cast<idAFAttachment *>( gameLocal.SpawnEntityType( idAFAttachment::Type, &args ) );
@@ -719,13 +717,11 @@ void idActor::SetupHead( void ) {
 		headEnt->SetBody( this, headModel, damageJoint );
 		head = headEnt;
 
-#ifdef _D3XP
 		idStr xSkin;
 		if ( spawnArgs.GetString( "skin_head_xray", "", xSkin ) ) {
 			headEnt->xraySkin = declManager->FindSkin( xSkin.c_str() );
 			headEnt->UpdateModel();
 		}
-#endif
 
 		idVec3		origin;
 		idMat3		axis;
@@ -745,7 +741,7 @@ void idActor::SetupHead( void ) {
 idActor::CopyJointsFromBodyToHead
 ================
 */
-void idActor::CopyJointsFromBodyToHead( void ) {
+void idActor::CopyJointsFromBodyToHead() {
 	idEntity	*headEnt = head.GetEntity();
 	idAnimator	*headAnimator;
 	int			i;
@@ -780,7 +776,7 @@ void idActor::CopyJointsFromBodyToHead( void ) {
 idActor::Restart
 ================
 */
-void idActor::Restart( void ) {
+void idActor::Restart() {
 	assert( !head.GetEntity() );
 	SetupHead();
 	FinishSetup();
@@ -898,9 +894,7 @@ void idActor::Save( idSaveGame *savefile ) const {
 		savefile->WriteString( "" );
 	}
 
-#ifdef _D3XP
 	savefile->WriteInt(damageCap);
-#endif
 
 }
 
@@ -1011,9 +1005,7 @@ void idActor::Restore( idRestoreGame *savefile ) {
 		idealState = GetScriptFunction( statename );
 	}
 
-#ifdef _D3XP
 	savefile->ReadInt(damageCap);
-#endif
 }
 
 /*
@@ -1021,7 +1013,7 @@ void idActor::Restore( idRestoreGame *savefile ) {
 idActor::Hide
 ================
 */
-void idActor::Hide( void ) {
+void idActor::Hide() {
 	idEntity *ent;
 	idEntity *next;
 
@@ -1047,7 +1039,7 @@ void idActor::Hide( void ) {
 idActor::Show
 ================
 */
-void idActor::Show( void ) {
+void idActor::Show() {
 	idEntity *ent;
 	idEntity *next;
 
@@ -1060,11 +1052,9 @@ void idActor::Show( void ) {
 		if ( ent->GetBindMaster() == this ) {
 			ent->Show();
 			if ( ent->IsType( idLight::Type ) ) {
-#ifdef _D3XP
 				if(!spawnArgs.GetBool("lights_off", "0")) {
 					static_cast<idLight *>( ent )->On();
 				}
-#endif
 				
 
 			}
@@ -1078,7 +1068,7 @@ void idActor::Show( void ) {
 idActor::GetDefaultSurfaceType
 ==============
 */
-int	idActor::GetDefaultSurfaceType( void ) const {
+int	idActor::GetDefaultSurfaceType() const {
 	return SURFTYPE_FLESH;
 }
 
@@ -1108,7 +1098,7 @@ void idActor::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float siz
 idActor::LoadAF
 ================
 */
-bool idActor::LoadAF( void ) {
+bool idActor::LoadAF() {
 	idStr fileName;
 
 	if ( !spawnArgs.GetString( "ragdoll", "*unknown*", fileName ) || !fileName.Length() ) {
@@ -1123,7 +1113,7 @@ bool idActor::LoadAF( void ) {
 idActor::SetupBody
 =====================
 */
-void idActor::SetupBody( void ) {
+void idActor::SetupBody() {
 	const char *jointname;
 
 	animator.ClearAllAnims( gameLocal.time, 0 );
@@ -1194,7 +1184,7 @@ void idActor::SetupBody( void ) {
 idActor::CheckBlink
 =====================
 */
-void idActor::CheckBlink( void ) {
+void idActor::CheckBlink() {
 	// check if it's time to blink
 	if ( !blink_anim || ( health <= 0 ) || !allowEyeFocus || ( blink_time > gameLocal.time ) ) {
 		return;
@@ -1254,7 +1244,7 @@ bool idActor::GetPhysicsToSoundTransform( idVec3 &origin, idMat3 &axis ) {
 idActor::ShutdownThreads
 ================
 */
-void idActor::ShutdownThreads( void ) {
+void idActor::ShutdownThreads() {
 	headAnim.Shutdown();
 	torsoAnim.Shutdown();
 	legsAnim.Shutdown();
@@ -1275,7 +1265,7 @@ Called during idEntity::Spawn to see if it should construct the script object or
 Overridden by subclasses that need to spawn the script object themselves.
 ================
 */
-bool idActor::ShouldConstructScriptObjectAtSpawn( void ) const {
+bool idActor::ShouldConstructScriptObjectAtSpawn() const {
 	return false;
 }
 
@@ -1287,7 +1277,7 @@ Called during idEntity::Spawn.  Calls the constructor on the script object.
 Can be overridden by subclasses when a thread doesn't need to be allocated.
 ================
 */
-idThread *idActor::ConstructScriptObject( void ) {
+idThread *idActor::ConstructScriptObject() {
 	const function_t *constructor;
 
 	// make sure we have a scriptObject
@@ -1342,8 +1332,9 @@ idActor::SetState
 =====================
 */
 void idActor::SetState( const function_t *newState ) {
-	if ( !newState ) {
+	if ( newState == NULL ) {
 		gameLocal.Error( "idActor::SetState: Null state" );
+		return;
 	}
 
 	if ( ai_debugScript.GetInteger() == entityNumber ) {
@@ -1372,7 +1363,7 @@ void idActor::SetState( const char *statename ) {
 idActor::UpdateScript
 =====================
 */
-void idActor::UpdateScript( void ) {
+void idActor::UpdateScript() {
 	int	i;
 
 	if ( ai_debugScript.GetInteger() == entityNumber ) {
@@ -1433,7 +1424,7 @@ void idActor::SetEyeHeight( float height ) {
 idActor::EyeHeight
 =====================
 */
-float idActor::EyeHeight( void ) const {
+float idActor::EyeHeight() const {
 	return eyeOffset.z;
 }
 
@@ -1442,7 +1433,7 @@ float idActor::EyeHeight( void ) const {
 idActor::EyeOffset
 =====================
 */
-idVec3 idActor::EyeOffset( void ) const {
+idVec3 idActor::EyeOffset() const {
 	return GetPhysics()->GetGravityNormal() * -eyeOffset.z;
 }
 
@@ -1451,7 +1442,7 @@ idVec3 idActor::EyeOffset( void ) const {
 idActor::GetEyePosition
 =====================
 */
-idVec3 idActor::GetEyePosition( void ) const {
+idVec3 idActor::GetEyePosition() const {
 	return GetPhysics()->GetOrigin() + ( GetPhysics()->GetGravityNormal() * -eyeOffset.z );
 }
 
@@ -1578,7 +1569,7 @@ renderView_t *idActor::GetRenderView() {
 idActor::SetCombatModel
 ================
 */
-void idActor::SetCombatModel( void ) {
+void idActor::SetCombatModel() {
 	idAFAttachment *headEnt;
 
 	if ( !use_combat_bbox ) {
@@ -1586,7 +1577,7 @@ void idActor::SetCombatModel( void ) {
 			combatModel->Unlink();
 			combatModel->LoadModel( modelDefHandle );
 		} else {
-			combatModel = new idClipModel( modelDefHandle );
+			combatModel = new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( modelDefHandle );
 		}
 
 		headEnt = head.GetEntity();
@@ -1601,7 +1592,7 @@ void idActor::SetCombatModel( void ) {
 idActor::GetCombatModel
 ================
 */
-idClipModel *idActor::GetCombatModel( void ) const {
+idClipModel *idActor::GetCombatModel() const {
 	return combatModel;
 }
 
@@ -1610,7 +1601,7 @@ idClipModel *idActor::GetCombatModel( void ) const {
 idActor::LinkCombat
 ================
 */
-void idActor::LinkCombat( void ) {
+void idActor::LinkCombat() {
 	idAFAttachment *headEnt;
 
 	if ( fl.hidden || use_combat_bbox ) {
@@ -1631,7 +1622,7 @@ void idActor::LinkCombat( void ) {
 idActor::UnlinkCombat
 ================
 */
-void idActor::UnlinkCombat( void ) {
+void idActor::UnlinkCombat() {
 	idAFAttachment *headEnt;
 
 	if ( combatModel ) {
@@ -1648,7 +1639,7 @@ void idActor::UnlinkCombat( void ) {
 idActor::StartRagdoll
 ================
 */
-bool idActor::StartRagdoll( void ) {
+bool idActor::StartRagdoll() {
 	float slomoStart, slomoEnd;
 	float jointFrictionDent, jointFrictionDentStart, jointFrictionDentEnd;
 	float contactFrictionDent, contactFrictionDentStart, contactFrictionDentEnd;
@@ -1705,7 +1696,7 @@ bool idActor::StartRagdoll( void ) {
 idActor::StopRagdoll
 ================
 */
-void idActor::StopRagdoll( void ) {
+void idActor::StopRagdoll() {
 	if ( af.IsActive() ) {
 		af.Stop();
 	}
@@ -1716,7 +1707,7 @@ void idActor::StopRagdoll( void ) {
 idActor::UpdateAnimationControllers
 ================
 */
-bool idActor::UpdateAnimationControllers( void ) {
+bool idActor::UpdateAnimationControllers() {
 
 	if ( af.IsActive() ) {
 		return idAFEntity_Base::UpdateAnimationControllers();
@@ -1737,14 +1728,14 @@ bool idActor::UpdateAnimationControllers( void ) {
 idActor::RemoveAttachments
 ================
 */
-void idActor::RemoveAttachments( void ) {
+void idActor::RemoveAttachments() {
 	int i;
 	idEntity *ent;
 
 	// remove any attached entities
 	for( i = 0; i < attachments.Num(); i++ ) {
 		ent = attachments[ i ].ent.GetEntity();
-		if ( ent && ent->spawnArgs.GetBool( "remove" ) ) {
+		if ( ent != NULL && ent->spawnArgs.GetBool( "remove" ) ) {
 			ent->PostEventMS( &EV_Remove, 0 );
 		}
 	}
@@ -1809,7 +1800,7 @@ void idActor::Teleport( const idVec3 &origin, const idAngles &angles, idEntity *
 idActor::GetDeltaViewAngles
 ================
 */
-const idAngles &idActor::GetDeltaViewAngles( void ) const {
+const idAngles &idActor::GetDeltaViewAngles() const {
 	return deltaViewAngles;
 }
 
@@ -1827,7 +1818,7 @@ void idActor::SetDeltaViewAngles( const idAngles &delta ) {
 idActor::HasEnemies
 ================
 */
-bool idActor::HasEnemies( void ) const {
+bool idActor::HasEnemies() const {
 	idActor *ent;
 
 	for( ent = enemyList.Next(); ent != NULL; ent = ent->enemyNode.Next() ) {
@@ -1893,7 +1884,7 @@ idActor *idActor::EnemyWithMostHealth() {
 idActor::OnLadder
 ================
 */
-bool idActor::OnLadder( void ) const {
+bool idActor::OnLadder() const {
 	return false;
 }
 
@@ -2033,7 +2024,7 @@ bool idActor::InAnimState( int channel, const char *statename ) const {
 idActor::WaitState
 =====================
 */
-const char *idActor::WaitState( void ) const {
+const char *idActor::WaitState() const {
 	if ( waitState.Length() ) {
 		return waitState;
 	} else {
@@ -2055,7 +2046,7 @@ void idActor::SetWaitState( const char *_waitstate ) {
 idActor::UpdateAnimState
 =====================
 */
-void idActor::UpdateAnimState( void ) {
+void idActor::UpdateAnimState() {
 	headAnim.UpdateState();
 	torsoAnim.UpdateState();
 	legsAnim.UpdateState();
@@ -2166,7 +2157,7 @@ idActor::Gib
 */
 void idActor::Gib( const idVec3 &dir, const char *damageDefName ) {
 	// no gibbing in multiplayer - by self damage or by moving objects
-	if ( gameLocal.isMultiplayer ) {
+	if ( common->IsMultiplayer() ) {
 		return;
 	}
 	// only gib once
@@ -2200,9 +2191,10 @@ Bleeding wounds and surface overlays are applied in the collision code that
 calls Damage()
 ============
 */
+idCVar actor_noDamage(		"actor_noDamage",			"0",		CVAR_BOOL, "actors don't take damage -- for testing" );
 void idActor::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir, 
 					  const char *damageDefName, const float damageScale, const int location ) {
-	if ( !fl.takedamage ) {
+	if ( !fl.takedamage || actor_noDamage.GetBool() ) {
 		return;
 	}
 
@@ -2213,11 +2205,19 @@ void idActor::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir
 		attacker = gameLocal.world;
 	}
 
-#ifdef _D3XP
+	if ( finalBoss && idStr::FindText( GetEntityDefName(), "monster_boss_cyberdemon" ) == 0 && !inflictor->IsType( idSoulCubeMissile::Type ) ) {
+		return;
+	}
+
+	// for killed by fists achievement
+	if ( attacker->IsType( idPlayer::Type ) && idStr::Cmp( "damage_fists", damageDefName ) ) {
+		damageNotByFists = true;
+	}
+	
 	SetTimeState ts( timeGroup );
 
 	// Helltime boss is immune to all projectiles except the helltime killer
-	if ( finalBoss && idStr::Icmp(inflictor->GetEntityDefName(), "projectile_helltime_killer") ) {
+	if ( finalBoss && idStr::Icmp( GetEntityDefName(), "monster_hunter_helltime" ) == 0 &&  idStr::Icmp(inflictor->GetEntityDefName(), "projectile_helltime_killer") ) {
 		return;
 	}
 
@@ -2226,36 +2226,112 @@ void idActor::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir
 		(!idStr::Icmp( damageDefName, "damage_maledict_asteroid" ) || !idStr::Icmp( damageDefName, "damage_maledict_asteroid_splash" ) ) ) {
 		return;
 	}
-#else
-	if ( finalBoss && !inflictor->IsType( idSoulCubeMissile::Type ) ) {
-		return;
-	}
-#endif
 
 	const idDict *damageDef = gameLocal.FindEntityDefDict( damageDefName );
-	if ( !damageDef ) {
+	if ( damageDef == NULL ) {
 		gameLocal.Error( "Unknown damageDef '%s'", damageDefName );
+		return;
 	}
 
 	int	damage = damageDef->GetInt( "damage" ) * damageScale;
 	damage = GetDamageForLocation( damage, location );
 
 	// inform the attacker that they hit someone
-	attacker->DamageFeedback( this, inflictor, damage );
+	if ( attacker ) {
+		attacker->DamageFeedback( this, inflictor, damage );
+	}
 	if ( damage > 0 ) {
+		int oldHealth = health;
 		health -= damage;
 
-#ifdef _D3XP
 		//Check the health against any damage cap that is currently set
 		if(damageCap >= 0 && health < damageCap) {
 			health = damageCap;
 		}
-#endif
 
 		if ( health <= 0 ) {
 			if ( health < -999 ) {
 				health = -999;
 			}
+
+			if ( oldHealth > 0 ) {
+				idPlayer *player = NULL;
+				if ( ( attacker && attacker->IsType( idPlayer::Type ) ) ) {
+					player = static_cast< idPlayer* >( attacker );
+				}
+
+				if ( player != NULL ) {
+					if ( !damageNotByFists && player->GetExpansionType() == GAME_BASE ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_KILL_20_ENEMY_FISTS_HANDS );
+					}
+					if ( player->PowerUpActive( HELLTIME ) ) {
+						player->GetAchievementManager().IncrementHellTimeKills();
+					}
+					if ( player->PowerUpActive( BERSERK ) && player->GetExpansionType() == GAME_D3XP && !damageNotByFists ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_ARTIFACT_WITH_BERSERK_PUNCH_20 );
+					}
+					if ( player->GetCurrentWeaponSlot() == player->weapon_chainsaw ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_KILL_20_ENEMY_WITH_CHAINSAW );
+					}
+					if ( ( !name.Find( "monster_boss_vagary") || !name.Find( "vagaryaftercin") ) && player->GetExpansionType() == GAME_BASE ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_VAGARY_BOSS );
+					}
+					if ( !name.Find( "monster_boss_sabaoth") ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_SABAOTH_BOSS );
+					}
+					if ( !name.Find( "monster_boss_cyberdemon") ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_CYBERDEMON_BOSS );
+					}
+					if ( name.Icmp( "hunter_berzerk") == 0 ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_BERSERK_HUNTER );
+					}
+					if ( !name.Find( "monster_hunter_helltime") ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_HELLTIME_HUNTER );
+					}
+					if ( name.Icmp( "hunter") == 0 ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_INVULNERABILITY_HUNTER );
+					}
+					if ( inflictor && inflictor->IsType( idSoulCubeMissile::Type ) ) {
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_USE_SOUL_CUBE_TO_DEFEAT_20_ENEMY );
+					}
+					if ( inflictor && inflictor->IsType( idMoveable::Type ) ) {
+						idMoveable * moveable = static_cast< idMoveable * >( inflictor );
+						// if a moveable is doing damage
+						// AND it has an attacker (set when the grabber picks up a moveable )
+						// AND the moveable's attacker is the attacker here (the player)
+						// then the player has killed an enemy with a launched moveable from the Grabber
+						if ( moveable != NULL && moveable->GetAttacker() != NULL && moveable->GetAttacker()->IsType( idPlayer::Type ) && moveable->GetAttacker() == attacker && player->GetExpansionType() == GAME_D3XP && team != player->team ) {
+							player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_GRABBER_KILL_20_ENEMY );
+						}
+					}
+
+					idProjectile *projectile = NULL;
+					if ( inflictor != NULL && inflictor->IsType( idProjectile::Type ) ) {
+						projectile = static_cast< idProjectile* >( inflictor );
+						if ( projectile != NULL ) {
+							if ( projectile->GetLaunchedFromGrabber() && player->GetExpansionType() == GAME_D3XP && team != player->team ) {
+								player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_GRABBER_KILL_20_ENEMY );
+							}
+							if ( renderEntity.hModel && idStr::Icmp( renderEntity.hModel->Name(), "models/md5/monsters/imp/imp.md5mesh" ) == 0 ) {
+								if ( idStr::FindText( inflictor->GetName(), "shotgun" ) > -1 ) {
+									idStr impName;
+									int	  lastKilledImpTime = player->GetAchievementManager().GetLastImpKilledTime();
+									if ( ( gameLocal.GetTime() - lastKilledImpTime ) <= 100 && ( impName.Icmp( name ) != 0 ) ) {
+										player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_KILL_TWO_IMPS_ONE_SHOTGUN );
+									} else {
+										player->GetAchievementManager().SetLastImpKilledTime( gameLocal.GetTime() );
+									}
+								}
+							}
+						}
+					}
+
+					if ( player->health == 1 && player->team != this->team ) {	// make sure it doesn't unlock if you kill a friendly dude when you have 1 heath....
+						player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_KILL_MONSTER_WITH_1_HEALTH_LEFT );
+					}
+				}
+			}
+
 			Killed( inflictor, attacker, damage, dir, location );
 			if ( ( health < -20 ) && spawnArgs.GetBool( "gib" ) && damageDef->GetBool( "gib" ) ) {
 				Gib( dir, damageDefName );
@@ -2280,7 +2356,7 @@ void idActor::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir
 idActor::ClearPain
 =====================
 */
-void idActor::ClearPain( void ) {
+void idActor::ClearPain() {
 	pain_debounce_time = 0;
 }
 
@@ -2384,7 +2460,7 @@ idActor::SetupDamageGroups
 FIXME: only store group names once and store an index for each joint
 =====================
 */
-void idActor::SetupDamageGroups( void ) {
+void idActor::SetupDamageGroups() {
 	int						i;
 	const idKeyValue		*arg;
 	idStr					groupname;
@@ -2466,7 +2542,7 @@ const char *idActor::GetDamageGroup( int location ) {
 idActor::Event_EnableEyeFocus
 =====================
 */
-void idActor::PlayFootStepSound( void ) {
+void idActor::PlayFootStepSound() {
 	const char *sound = NULL;
 	const idMaterial *material;
 
@@ -2479,10 +2555,10 @@ void idActor::PlayFootStepSound( void ) {
 	if ( material != NULL ) {
 		sound = spawnArgs.GetString( va( "snd_footstep_%s", gameLocal.sufaceTypeNames[ material->GetSurfaceType() ] ) );
 	}
-	if ( *sound == '\0' ) {
+	if ( sound != NULL && *sound == '\0' ) {
 		sound = spawnArgs.GetString( "snd_footstep" );
 	}
-	if ( *sound != '\0' ) {
+	if ( sound != NULL && *sound != '\0' ) {
 		StartSoundShader( declManager->FindSound( sound ), SND_CHANNEL_BODY, 0, false, NULL );
 	}
 }
@@ -2492,7 +2568,7 @@ void idActor::PlayFootStepSound( void ) {
 idActor::Event_EnableEyeFocus
 =====================
 */
-void idActor::Event_EnableEyeFocus( void ) {
+void idActor::Event_EnableEyeFocus() {
 	allowEyeFocus = true;
 	blink_time = gameLocal.time + blink_min + gameLocal.random.RandomFloat() * ( blink_max - blink_min );
 }
@@ -2502,7 +2578,7 @@ void idActor::Event_EnableEyeFocus( void ) {
 idActor::Event_DisableEyeFocus
 =====================
 */
-void idActor::Event_DisableEyeFocus( void ) {
+void idActor::Event_DisableEyeFocus() {
 	allowEyeFocus = false;
 	
 	idEntity *headEnt = head.GetEntity();
@@ -2518,7 +2594,7 @@ void idActor::Event_DisableEyeFocus( void ) {
 idActor::Event_Footstep
 ===============
 */
-void idActor::Event_Footstep( void ) {
+void idActor::Event_Footstep() {
 	PlayFootStepSound();
 }
 
@@ -2527,7 +2603,7 @@ void idActor::Event_Footstep( void ) {
 idActor::Event_EnableWalkIK
 =====================
 */
-void idActor::Event_EnableWalkIK( void ) {
+void idActor::Event_EnableWalkIK() {
 	walkIK.EnableAll();
 }
 
@@ -2536,7 +2612,7 @@ void idActor::Event_EnableWalkIK( void ) {
 idActor::Event_DisableWalkIK
 =====================
 */
-void idActor::Event_DisableWalkIK( void ) {
+void idActor::Event_DisableWalkIK() {
 	walkIK.DisableAll();
 }
 
@@ -2572,7 +2648,7 @@ void idActor::Event_PreventPain( float duration ) {
 idActor::Event_DisablePain
 ===============
 */
-void idActor::Event_DisablePain( void ) {
+void idActor::Event_DisablePain() {
 	allowPain = false;
 }
 
@@ -2581,7 +2657,7 @@ void idActor::Event_DisablePain( void ) {
 idActor::Event_EnablePain
 ===============
 */
-void idActor::Event_EnablePain( void ) {
+void idActor::Event_EnablePain() {
 	allowPain = true;
 }
 
@@ -2590,7 +2666,7 @@ void idActor::Event_EnablePain( void ) {
 idActor::Event_GetPainAnim
 =====================
 */
-void idActor::Event_GetPainAnim( void ) {
+void idActor::Event_GetPainAnim() {
 	if ( !painAnim.Length() ) {
 		idThread::ReturnString( "pain" );
 	} else {
@@ -3134,7 +3210,7 @@ idActor::Event_HasAnim
 ================
 */
 void idActor::Event_HasAnim( int channel, const char *animname ) {
-	if ( GetAnim( channel, animname ) ) {
+	if ( GetAnim( channel, animname ) != NULL ) {
 		idThread::ReturnFloat( 1.0f );
 	} else {
 		idThread::ReturnFloat( 0.0f );
@@ -3233,7 +3309,7 @@ void idActor::Event_AnimDistance( int channel, const char *animname ) {
 idActor::Event_HasEnemies
 ================
 */
-void idActor::Event_HasEnemies( void ) {
+void idActor::Event_HasEnemies() {
 	bool hasEnemy;
 
 	hasEnemy = HasEnemies();
@@ -3326,7 +3402,7 @@ void idActor::Event_SetState( const char *name ) {
 idActor::Event_GetState
 =====================
 */
-void idActor::Event_GetState( void ) {
+void idActor::Event_GetState() {
 	if ( state ) {
 		idThread::ReturnString( state->Name() );
 	} else {
@@ -3339,11 +3415,10 @@ void idActor::Event_GetState( void ) {
 idActor::Event_GetHead
 =====================
 */
-void idActor::Event_GetHead( void ) {
+void idActor::Event_GetHead() {
 	idThread::ReturnEntity( head.GetEntity() );
 }
 
-#ifdef _D3XP
 /*
 ================
 idActor::Event_SetDamageGroupScale
@@ -3397,4 +3472,3 @@ void idActor::Event_GetWaitState() {
 		idThread::ReturnString("");
 	}
 }
-#endif

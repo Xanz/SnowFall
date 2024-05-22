@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -81,21 +81,21 @@ public:
 	int				flags;								// token flags, used for recursive defines
 
 public:
-					idToken( void );
+					idToken();
 					idToken( const idToken *token );
-					~idToken( void );
+					~idToken();
 
 	void			operator=( const idStr& text );
 	void			operator=( const char *text );
 
-	double			GetDoubleValue( void );				// double value of TT_NUMBER
-	float			GetFloatValue( void );				// float value of TT_NUMBER
-	unsigned long	GetUnsignedLongValue( void );		// unsigned long value of TT_NUMBER
-	int				GetIntValue( void );				// int value of TT_NUMBER
-	int				WhiteSpaceBeforeToken( void ) const;// returns length of whitespace before token
-	void			ClearTokenWhiteSpace( void );		// forget whitespace before token
+	double			GetDoubleValue();				// double value of TT_NUMBER
+	float			GetFloatValue();				// float value of TT_NUMBER
+	unsigned long	GetUnsignedLongValue();		// unsigned long value of TT_NUMBER
+	int				GetIntValue();				// int value of TT_NUMBER
+	int				WhiteSpaceBeforeToken() const;// returns length of whitespace before token
+	void			ClearTokenWhiteSpace();		// forget whitespace before token
 
-	void			NumberValue( void );				// calculate values for a TT_NUMBER
+	void			NumberValue();				// calculate values for a TT_NUMBER
 
 private:
 	unsigned long	intvalue;							// integer value
@@ -107,14 +107,14 @@ private:
 	void			AppendDirty( const char a );		// append character without adding trailing zero
 };
 
-ID_INLINE idToken::idToken( void ) {
+ID_INLINE idToken::idToken() : type(), subtype(), line(), linesCrossed(), flags() {
 }
 
 ID_INLINE idToken::idToken( const idToken *token ) {
 	*this = *token;
 }
 
-ID_INLINE idToken::~idToken( void ) {
+ID_INLINE idToken::~idToken() {
 }
 
 ID_INLINE void idToken::operator=( const char *text) {
@@ -125,7 +125,7 @@ ID_INLINE void idToken::operator=( const idStr& text ) {
 	*static_cast<idStr *>(this) = text;
 }
 
-ID_INLINE double idToken::GetDoubleValue( void ) {
+ID_INLINE double idToken::GetDoubleValue() {
 	if ( type != TT_NUMBER ) {
 		return 0.0;
 	}
@@ -135,11 +135,11 @@ ID_INLINE double idToken::GetDoubleValue( void ) {
 	return floatvalue;
 }
 
-ID_INLINE float idToken::GetFloatValue( void ) {
+ID_INLINE float idToken::GetFloatValue() {
 	return (float) GetDoubleValue();
 }
 
-ID_INLINE unsigned long	idToken::GetUnsignedLongValue( void ) {
+ID_INLINE unsigned long	idToken::GetUnsignedLongValue() {
 	if ( type != TT_NUMBER ) {
 		return 0;
 	}
@@ -149,11 +149,11 @@ ID_INLINE unsigned long	idToken::GetUnsignedLongValue( void ) {
 	return intvalue;
 }
 
-ID_INLINE int idToken::GetIntValue( void ) {
+ID_INLINE int idToken::GetIntValue() {
 	return (int) GetUnsignedLongValue();
 }
 
-ID_INLINE int idToken::WhiteSpaceBeforeToken( void ) const {
+ID_INLINE int idToken::WhiteSpaceBeforeToken() const {
 	return ( whiteSpaceEnd_p > whiteSpaceStart_p );
 }
 

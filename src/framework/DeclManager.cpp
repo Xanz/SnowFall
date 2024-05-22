@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -68,7 +68,7 @@ class idDeclType {
 public:
 	idStr						typeName;
 	declType_t					type;
-	idDecl *					(*allocator)( void );
+	idDecl *					(*allocator)();
 };
 
 class idDeclFolder {
@@ -87,44 +87,44 @@ class idDeclLocal : public idDeclBase {
 public:
 								idDeclLocal();
 	virtual 					~idDeclLocal() {};
-	virtual const char *		GetName( void ) const;
-	virtual declType_t			GetType( void ) const;
-	virtual declState_t			GetState( void ) const;
-	virtual bool				IsImplicit( void ) const;
-	virtual bool				IsValid( void ) const;
-	virtual void				Invalidate( void );
-	virtual void				Reload( void );
-	virtual void				EnsureNotPurged( void );
-	virtual int					Index( void ) const;
-	virtual int					GetLineNum( void ) const;
-	virtual const char *		GetFileName( void ) const;
-	virtual size_t				Size( void ) const;
+	virtual const char *		GetName() const;
+	virtual declType_t			GetType() const;
+	virtual declState_t			GetState() const;
+	virtual bool				IsImplicit() const;
+	virtual bool				IsValid() const;
+	virtual void				Invalidate();
+	virtual void				Reload();
+	virtual void				EnsureNotPurged();
+	virtual int					Index() const;
+	virtual int					GetLineNum() const;
+	virtual const char *		GetFileName() const;
+	virtual size_t				Size() const;
 	virtual void				GetText( char *text ) const;
-	virtual int					GetTextLength( void ) const;
+	virtual int					GetTextLength() const;
 	virtual void				SetText( const char *text );
-	virtual bool				ReplaceSourceFileText( void );
-	virtual bool				SourceFileChanged( void ) const;
-	virtual void				MakeDefault( void );
-	virtual bool				EverReferenced( void ) const;
+	virtual bool				ReplaceSourceFileText();
+	virtual bool				SourceFileChanged() const;
+	virtual void				MakeDefault();
+	virtual bool				EverReferenced() const;
 
 protected:
-	virtual bool				SetDefaultText( void );
-	virtual const char *		DefaultDefinition( void ) const;
-	virtual bool				Parse( const char *text, const int textLength );
-	virtual void				FreeData( void );
-	virtual void				List( void ) const;
-	virtual void				Print( void ) const;
+	virtual bool				SetDefaultText();
+	virtual const char *		DefaultDefinition() const;
+	virtual bool				Parse( const char *text, const int textLength, bool allowBinaryVersion );
+	virtual void				FreeData();
+	virtual void				List() const;
+	virtual void				Print() const;
 
 protected:
-	void						AllocateSelf( void );
+	void						AllocateSelf();
 
 								// Parses the decl definition.
 								// After calling parse, a decl will be guaranteed usable.
-	void						ParseLocal( void );
+	void						ParseLocal();
 
 								// Does a MakeDefualt, but flags the decl so that it
 								// will Parse() the next time the decl is found.
-	void						Purge( void );
+	void						Purge();
 
 								// Set textSource possible with compression.
 	void						SetTextLocal( const char *text, const int length );
@@ -177,15 +177,16 @@ class idDeclManagerLocal : public idDeclManager {
 	friend class idDeclLocal;
 
 public:
-	virtual void				Init( void );
-	virtual void				Shutdown( void );
+	virtual void				Init();
+	virtual void				Init2();
+	virtual void				Shutdown();
 	virtual void				Reload( bool force );
 	virtual void				BeginLevelLoad();
 	virtual void				EndLevelLoad();
-	virtual void				RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)( void ) );
+	virtual void				RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)() );
 	virtual void				RegisterDeclFolder( const char *folder, const char *extension, declType_t defaultType );
-	virtual int					GetChecksum( void ) const;
-	virtual int					GetNumDeclTypes( void ) const;
+	virtual int					GetChecksum() const;
+	virtual int					GetNumDeclTypes() const;
 	virtual int					GetNumDecls( declType_t type );
 	virtual const char *		GetDeclNameFromType( declType_t type ) const;
 	virtual declType_t			GetDeclTypeFromName( const char *typeName ) const;
@@ -203,7 +204,7 @@ public:
 	//BSM Added for the material editors rename capabilities
 	virtual bool				RenameDecl( declType_t type, const char* oldName, const char* newName );
 
-	virtual void				MediaPrint( const char *fmt, ... ) id_attribute((format(printf,2,3)));
+	virtual void				MediaPrint( VERIFY_FORMAT_STRING const char *fmt, ... );
 	virtual void				WritePrecacheCommands( idFile *f );
 
 	virtual const idMaterial *		FindMaterial( const char *name, bool makeDefault = true );
@@ -214,20 +215,26 @@ public:
 	virtual const idDeclSkin *		SkinByIndex( int index, bool forceParse = true );
 	virtual const idSoundShader *	SoundByIndex( int index, bool forceParse = true );
 
+	virtual void					Touch( const idDecl * decl );
+
 public:
 	static void					MakeNameCanonical( const char *name, char *result, int maxLength );
 	idDeclLocal *				FindTypeWithoutParsing( declType_t type, const char *name, bool makeDefault = true );
 
 	idDeclType *				GetDeclType( int type ) const { return declTypes[type]; }
-	const idDeclFile *			GetImplicitDeclFile( void ) const { return &implicitDecls; }
+	const idDeclFile *			GetImplicitDeclFile() const { return &implicitDecls; }
+
+	void						ConvertPDAsToStrings( const idCmdArgs &args );
 
 private:
-	idList<idDeclType *>		declTypes;
-	idList<idDeclFolder *>		declFolders;
+	idSysMutex					mutex;
 
-	idList<idDeclFile *>		loadedFiles;
+	idList<idDeclType *, TAG_IDLIB_LIST_DECL>		declTypes;
+	idList<idDeclFolder *, TAG_IDLIB_LIST_DECL>		declFolders;
+
+	idList<idDeclFile *, TAG_IDLIB_LIST_DECL>		loadedFiles;
 	idHashIndex					hashTables[DECL_MAX_TYPES];
-	idList<idDeclLocal *>		linearLists[DECL_MAX_TYPES];
+	idList<idDeclLocal *, TAG_IDLIB_LIST_DECL>		linearLists[DECL_MAX_TYPES];
 	idDeclFile					implicitDecls;	// this holds all the decls that were created because explicit
 												// text definitions were not found. Decls that became default
 												// because of a parse error are not in this list.
@@ -319,7 +326,7 @@ static int maxHuffmanBits = 0;
 ClearHuffmanFrequencies
 ================
 */
-void ClearHuffmanFrequencies( void ) {
+void ClearHuffmanFrequencies() {
 	int i;
 
 	for( i = 0; i < MAX_HUFFMAN_SYMBOLS; i++ ) {
@@ -409,14 +416,14 @@ int HuffmanHeight_r( huffmanNode_t *node ) {
 SetupHuffman
 ================
 */
-void SetupHuffman( void ) {
+void SetupHuffman() {
 	int i, height;
 	huffmanNode_t *firstNode, *node;
 	huffmanCode_t code;
 
 	firstNode = NULL;
 	for( i = 0; i < MAX_HUFFMAN_SYMBOLS; i++ ) {
-		node = new huffmanNode_t;
+		node = new (TAG_DECL) huffmanNode_t;
 		node->symbol = i;
 		node->frequency = huffmanFrequencies[i];
 		node->next = NULL;
@@ -426,7 +433,7 @@ void SetupHuffman( void ) {
 	}
 
 	for( i = 1; i < MAX_HUFFMAN_SYMBOLS; i++ ) {
-		node = new huffmanNode_t;
+		node = new (TAG_DECL) huffmanNode_t;
 		node->symbol = -1;
 		node->frequency = firstNode->frequency + firstNode->next->frequency;
 		node->next = NULL;
@@ -450,7 +457,7 @@ void SetupHuffman( void ) {
 ShutdownHuffman
 ================
 */
-void ShutdownHuffman( void ) {
+void ShutdownHuffman() {
 	if ( huffmanTree ) {
 		FreeHuffmanTree_r( huffmanTree );
 	}
@@ -467,7 +474,7 @@ int HuffmanCompressText( const char *text, int textLength, byte *compressed, int
 
 	totalUncompressedLength += textLength;
 
-	msg.Init( compressed, maxCompressedSize );
+	msg.InitWrite( compressed, maxCompressedSize );
 	msg.BeginWriting();
 	for ( i = 0; i < textLength; i++ ) {
 		const huffmanCode_t &code = huffmanCodes[(unsigned char)text[i]];
@@ -494,7 +501,7 @@ int HuffmanDecompressText( char *text, int textLength, const byte *compressed, i
 	idBitMsg msg;
 	huffmanNode_t *node;
 
-	msg.Init( compressed, compressedSize );
+	msg.InitRead( compressed, compressedSize );
 	msg.SetSize( compressedSize );
 	msg.BeginReading();
 	for ( i = 0; i < textLength; i++ ) {
@@ -528,6 +535,10 @@ void ListHuffmanFrequencies_f( const idCmdArgs &args ) {
 							huffmanFrequencies[i+6], huffmanFrequencies[i+7]);
 	}
 	common->Printf( "}\n" );
+}
+
+void ConvertPDAsToStrings_f( const idCmdArgs &args ) {
+	declManagerLocal.ConvertPDAsToStrings( args );
 }
 
 /*
@@ -653,7 +664,7 @@ int idDeclFile::LoadAndParse() {
 		numTypes = declManagerLocal.GetNumDeclTypes();
 		for ( i = 0; i < numTypes; i++ ) {
 			idDeclType *typeInfo = declManagerLocal.GetDeclType( i );
-			if ( typeInfo && typeInfo->typeName.Icmp( token ) == 0 ) {
+			if ( typeInfo != NULL && typeInfo->typeName.Icmp( token ) == 0 ) {
 				identifiedType = (declType_t) typeInfo->type;
 				break;
 			}
@@ -788,7 +799,7 @@ const char *listDeclStrings[] = { "current", "all", "ever", NULL };
 idDeclManagerLocal::Init
 ===================
 */
-void idDeclManagerLocal::Init( void ) {
+void idDeclManagerLocal::Init() {
 
 	common->Printf( "----- Initializing Decls -----\n" );
 
@@ -819,8 +830,6 @@ void idDeclManagerLocal::Init( void ) {
 	RegisterDeclType( "audio",				DECL_AUDIO,			idDeclAllocator<idDeclAudio> );
 
 	RegisterDeclFolder( "materials",		".mtr",				DECL_MATERIAL );
-	RegisterDeclFolder( "skins",			".skin",			DECL_SKIN );
-	RegisterDeclFolder( "sound",			".sndshd",			DECL_SOUND );
 
 	// add console commands
 	cmdSystem->AddCommand( "listDecls", ListDecls_f, CMD_FL_SYSTEM, "lists all decls" );
@@ -855,12 +864,19 @@ void idDeclManagerLocal::Init( void ) {
 
 	cmdSystem->AddCommand( "printPDA", idPrintDecls_f<DECL_PDA>, CMD_FL_SYSTEM, "prints an PDA", idCmdSystem::ArgCompletion_Decl<DECL_PDA> );
 	cmdSystem->AddCommand( "printEmail", idPrintDecls_f<DECL_EMAIL>, CMD_FL_SYSTEM, "prints an Email", idCmdSystem::ArgCompletion_Decl<DECL_EMAIL> );
-	cmdSystem->AddCommand( "printVideo", idPrintDecls_f<DECL_VIDEO>, CMD_FL_SYSTEM, "prints a Audio", idCmdSystem::ArgCompletion_Decl<DECL_VIDEO> );
-	cmdSystem->AddCommand( "printAudio", idPrintDecls_f<DECL_AUDIO>, CMD_FL_SYSTEM, "prints an Video", idCmdSystem::ArgCompletion_Decl<DECL_AUDIO> );
+	cmdSystem->AddCommand( "printVideo", idPrintDecls_f<DECL_VIDEO>, CMD_FL_SYSTEM, "prints an Audio", idCmdSystem::ArgCompletion_Decl<DECL_VIDEO> );
+	cmdSystem->AddCommand( "printAudio", idPrintDecls_f<DECL_AUDIO>, CMD_FL_SYSTEM, "prints a Video", idCmdSystem::ArgCompletion_Decl<DECL_AUDIO> );
 
 	cmdSystem->AddCommand( "listHuffmanFrequencies", ListHuffmanFrequencies_f, CMD_FL_SYSTEM, "lists decl text character frequencies" );
 
+	cmdSystem->AddCommand( "convertPDAsToStrings", ConvertPDAsToStrings_f, CMD_FL_SYSTEM, "Converts *.pda files to text which can be plugged into *.lang files." );
+
 	common->Printf( "------------------------------\n" );
+}
+
+void idDeclManagerLocal::Init2() {
+	RegisterDeclFolder( "skins",			".skin",			DECL_SKIN );
+	RegisterDeclFolder( "sound",			".sndshd",			DECL_SOUND );
 }
 
 /*
@@ -868,7 +884,7 @@ void idDeclManagerLocal::Init( void ) {
 idDeclManagerLocal::Shutdown
 ===================
 */
-void idDeclManagerLocal::Shutdown( void ) {
+void idDeclManagerLocal::Shutdown() {
 	int			i, j;
 	idDeclLocal *decl;
 
@@ -949,7 +965,7 @@ void idDeclManagerLocal::EndLevelLoad() {
 idDeclManagerLocal::RegisterDeclType
 ===================
 */
-void idDeclManagerLocal::RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)( void ) ) {
+void idDeclManagerLocal::RegisterDeclType( const char *typeName, declType_t type, idDecl *(*allocator)() ) {
 	idDeclType *declType;
 
 	if ( type < declTypes.Num() && declTypes[(int)type] ) {
@@ -957,7 +973,7 @@ void idDeclManagerLocal::RegisterDeclType( const char *typeName, declType_t type
 		return;
 	}
 
-	declType = new idDeclType;
+	declType = new (TAG_DECL) idDeclType;
 	declType->typeName = typeName;
 	declType->type = type;
 	declType->allocator = allocator;
@@ -989,7 +1005,7 @@ void idDeclManagerLocal::RegisterDeclFolder( const char *folder, const char *ext
 	if ( i < declFolders.Num() ) {
 		declFolder = declFolders[i];
 	} else {
-		declFolder = new idDeclFolder;
+		declFolder = new (TAG_DECL) idDeclFolder;
 		declFolder->folder = folder;
 		declFolder->extension = extension;
 		declFolder->defaultType = defaultType;
@@ -1012,7 +1028,7 @@ void idDeclManagerLocal::RegisterDeclFolder( const char *folder, const char *ext
 		if ( j < loadedFiles.Num() ) {
 			df = loadedFiles[j];
 		} else {
-			df = new idDeclFile( fileName, defaultType );
+			df = new (TAG_DECL) idDeclFile( fileName, defaultType );
 			loadedFiles.Append( df );
 		}
 		df->LoadAndParse();
@@ -1026,7 +1042,7 @@ void idDeclManagerLocal::RegisterDeclFolder( const char *folder, const char *ext
 idDeclManagerLocal::GetChecksum
 ===================
 */
-int idDeclManagerLocal::GetChecksum( void ) const {
+int idDeclManagerLocal::GetChecksum() const {
 	int i, j, total, num;
 	int *checksumData;
 
@@ -1070,7 +1086,7 @@ int idDeclManagerLocal::GetChecksum( void ) const {
 idDeclManagerLocal::GetNumDeclTypes
 ===================
 */
-int idDeclManagerLocal::GetNumDeclTypes( void ) const {
+int idDeclManagerLocal::GetNumDeclTypes() const {
 	return declTypes.Num();
 }
 
@@ -1114,6 +1130,8 @@ External users will always cause the decl to be parsed before returning
 const idDecl *idDeclManagerLocal::FindType( declType_t type, const char *name, bool makeDefault ) {
 	idDeclLocal *decl;
 
+	idScopedCriticalSection cs( mutex );
+
 	if ( !name || !name[0] ) {
 		name = "_emptyName";
 		//common->Warning( "idDeclManager::FindType: empty %s name", GetDeclType( (int)type )->typeName.c_str() );
@@ -1122,12 +1140,17 @@ const idDecl *idDeclManagerLocal::FindType( declType_t type, const char *name, b
 	decl = FindTypeWithoutParsing( type, name, makeDefault );
 	if ( !decl ) {
 		return NULL;
-	}
+	}	
 
 	decl->AllocateSelf();
 
 	// if it hasn't been parsed yet, parse it now
 	if ( decl->declState == DS_UNPARSED ) {
+		if ( !idLib::IsMainThread() ) {
+			// we can't load images from a background thread on OpenGL,
+			// the renderer on the main thread should parse it if needed
+			idLib::Error( "Attempted to load %s decl '%s' from game thread!", GetDeclNameFromType( type ), name );
+		}
 		decl->ParseLocal();
 	}
 
@@ -1180,6 +1203,7 @@ int idDeclManagerLocal::GetNumDecls( declType_t type ) {
 
 	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL ) {
 		common->FatalError( "idDeclManager::GetNumDecls: bad type: %i", typeIndex );
+		return 0;
 	}
 	return linearLists[ typeIndex ].Num();
 }
@@ -1194,6 +1218,7 @@ const idDecl *idDeclManagerLocal::DeclByIndex( declType_t type, int index, bool 
 
 	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL ) {
 		common->FatalError( "idDeclManager::DeclByIndex: bad type: %i", typeIndex );
+		return NULL;
 	}
 	if ( index < 0 || index >= linearLists[ typeIndex ].Num() ) {
 		common->Error( "idDeclManager::DeclByIndex: out of range" );
@@ -1345,8 +1370,9 @@ idDecl *idDeclManagerLocal::CreateNewDecl( declType_t type, const char *name, co
 	int typeIndex = (int)type;
 	int i, hash;
 
-	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL ) {
+	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL || typeIndex >= DECL_MAX_TYPES ) {
 		common->FatalError( "idDeclManager::CreateNewDecl: bad type: %i", typeIndex );
+		return NULL;
 	}
 
 	char  canonicalName[MAX_STRING_CHARS];
@@ -1376,11 +1402,11 @@ idDecl *idDeclManagerLocal::CreateNewDecl( declType_t type, const char *name, co
 	if ( i < loadedFiles.Num() ) {
 		sourceFile = loadedFiles[i];
 	} else {
-		sourceFile = new idDeclFile( fileName, type );
+		sourceFile = new (TAG_DECL) idDeclFile( fileName, type );
 		loadedFiles.Append( sourceFile );
 	}
 
-	idDeclLocal *decl = new idDeclLocal;
+	idDeclLocal *decl = new (TAG_DECL) idDeclLocal;
 	decl->name = canonicalName;
 	decl->type = type;
 	decl->declState = DS_UNPARSED;
@@ -1551,6 +1577,19 @@ const idSoundShader *idDeclManagerLocal::SoundByIndex( int index, bool forcePars
 
 /*
 ===================
+idDeclManagerLocal::Touch
+===================
+*/
+void idDeclManagerLocal::Touch( const idDecl * decl ) {
+
+	if( decl->base->GetState() ==  DS_UNPARSED ) {
+		// This should parse the decl as well.
+		FindType( decl->GetType(), decl->GetName() );
+	}
+}
+
+/*
+===================
 idDeclManagerLocal::MakeNameCanonical
 ===================
 */
@@ -1639,11 +1678,7 @@ void idDeclManagerLocal::ReloadDecls_f( const idCmdArgs &args ) {
 		common->Printf( "reloading changed decl files:\n" );
 	}
 
-	soundSystem->SetMute( true );
-
 	declManagerLocal.Reload( force );
-
-	soundSystem->SetMute( false );
 }
 
 /*
@@ -1693,8 +1728,9 @@ idDeclLocal *idDeclManagerLocal::FindTypeWithoutParsing( declType_t type, const 
 	int typeIndex = (int)type;
 	int i, hash;
 
-	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL ) {
+	if ( typeIndex < 0 || typeIndex >= declTypes.Num() || declTypes[typeIndex] == NULL || typeIndex >= DECL_MAX_TYPES ) {
 		common->FatalError( "idDeclManager::FindTypeWithoutParsing: bad type: %i", typeIndex );
+		return NULL;
 	}
 
 	char canonicalName[MAX_STRING_CHARS];
@@ -1717,7 +1753,7 @@ idDeclLocal *idDeclManagerLocal::FindTypeWithoutParsing( declType_t type, const 
 		return NULL;
 	}
 
-	idDeclLocal *decl = new idDeclLocal;
+	idDeclLocal *decl = new (TAG_DECL) idDeclLocal;
 	decl->self = NULL;
 	decl->name = canonicalName;
 	decl->type = type;
@@ -1736,6 +1772,180 @@ idDeclLocal *idDeclManagerLocal::FindTypeWithoutParsing( declType_t type, const 
 	return decl;
 }
 
+/*
+=================
+idDeclManagerLocal::ConvertPDAsToStrings
+=================
+*/
+void idDeclManagerLocal::ConvertPDAsToStrings( const idCmdArgs &args ) {
+
+	idStr pdaStringsFileName = "temppdas/pdas.lang";
+	idFileLocal file( fileSystem->OpenFileWrite( pdaStringsFileName ) );
+
+	if ( file == NULL ) {
+		idLib::Printf( "Failed to Convert PDA data to Strings.\n" );
+	}
+
+	int totalEmailCount = 0;
+	int totalAudioCount = 0;
+	int totalVideoCount = 0;
+	idStr headEnd = "\t\"#str_%s_";
+	idStr tailEnd = "\"\t\"%s\"\n";
+	idStr temp;
+
+	int count = linearLists[ DECL_PDA ].Num();
+	for ( int i = 0; i < count; i++ ) {
+		const idDeclPDA *decl = static_cast< const idDeclPDA * >( FindType( DECL_PDA, linearLists[ DECL_PDA ][ i ]->GetName(), false ) );
+
+		idStr pdaBaseStrId = va( headEnd.c_str(), decl->GetName() );
+
+		temp = va( "\n\n//////// %s PDA ////////////\n", decl->GetName() );
+		file->Write( temp, temp.Length() );
+
+		idStr pdaBase = pdaBaseStrId + "pda_%s" + tailEnd;
+		// Pda Name
+		temp = va( pdaBase.c_str(), "name", decl->GetPdaName() );
+		file->Write( temp, temp.Length() );
+		// Full Name
+		temp = va( pdaBase.c_str(), "fullname", decl->GetFullName() );
+		file->Write( temp, temp.Length() );
+		// ID
+		temp = va( pdaBase.c_str(), "id", decl->GetID() );
+		file->Write( temp, temp.Length() );
+		// Post
+		temp = va( pdaBase.c_str(), "post", decl->GetPost() );
+		file->Write( temp, temp.Length() );
+		// Title
+		temp = va( pdaBase.c_str(), "title", decl->GetTitle() );
+		file->Write( temp, temp.Length() );
+		// Security
+		temp = va( pdaBase.c_str(), "security", decl->GetSecurity() );
+		file->Write( temp, temp.Length() );
+
+		int emailCount = decl->GetNumEmails();
+		for ( int emailIter = 0; emailIter < emailCount; emailIter++ ) {
+			const idDeclEmail * email = decl->GetEmailByIndex( emailIter );
+
+			idStr emailBaseStrId = va( headEnd.c_str(), email->GetName() );
+			idStr emailBase = emailBaseStrId + "email_%s" + tailEnd;
+
+			file->Write( "\t//Email\n", 9 );
+			// Date
+			temp = va( emailBase, "date", email->GetDate() );
+			file->Write( temp, temp.Length() );
+			// To
+			temp = va( emailBase, "to", email->GetTo() );
+			file->Write( temp, temp.Length() );
+			// From
+			temp = va( emailBase, "from", email->GetFrom() );
+			file->Write( temp, temp.Length() );
+			// Subject
+			temp = va( emailBase, "subject", email->GetSubject() );
+			file->Write( temp, temp.Length() );
+			// Body
+			idStr body = email->GetBody();
+			body.Replace( "\n", "\\n" );
+			temp = va( emailBase, "text", body.c_str() );
+			file->Write( temp, temp.Length() );
+
+			totalEmailCount++;
+		}
+
+		int audioCount = decl->GetNumAudios();
+		for ( int audioIter = 0; audioIter < audioCount; audioIter++ ) {
+			const idDeclAudio * audio = decl->GetAudioByIndex( audioIter );
+
+			idStr audioBaseStrId = va( headEnd.c_str(), audio->GetName() );
+			idStr audioBase = audioBaseStrId + "audio_%s" + tailEnd;
+
+			file->Write( "\t//Audio\n", 9 );
+			// Name
+			temp = va( audioBase, "name", audio->GetAudioName() );
+			file->Write( temp, temp.Length() );
+			// Info
+			idStr info = audio->GetInfo();
+			info.Replace( "\n", "\\n" );
+			temp = va( audioBase, "info", info.c_str() );
+			file->Write( temp, temp.Length() );
+
+			totalAudioCount++;
+		}
+	}
+
+	int infoEmailCount = linearLists[ DECL_EMAIL ].Num();
+	if ( infoEmailCount > 0 ) {
+		temp = "\n\n//////// PDA Info Emails ////////////\n";
+		file->Write( temp, temp.Length() );
+	}
+	for ( int i = 0; i < infoEmailCount; i++ ) {
+		const idDeclEmail * email = static_cast< const idDeclEmail * >( FindType( DECL_EMAIL, linearLists[ DECL_EMAIL ][ i ]->GetName(), false ) );
+
+		idStr filename = email->base->GetFileName();
+		if ( filename.Icmp( "newpdas/info_emails.pda" ) != 0 ) {
+			continue;
+		}
+
+		idStr emailBaseStrId = va( "\t\"#str_%s_", email->GetName() );
+		idStr emailBase = emailBaseStrId + "email_%s" + tailEnd;
+
+		file->Write( "\t//Email\n", 9 );
+
+		// Date
+		temp = va( emailBase, "date", email->GetDate() );
+		file->Write( temp, temp.Length() );
+		// To
+		temp = va( emailBase, "to", email->GetTo() );
+		file->Write( temp, temp.Length() );
+		// From
+		temp = va( emailBase, "from", email->GetFrom() );
+		file->Write( temp, temp.Length() );
+		// Subject
+		temp = va( emailBase, "subject", email->GetSubject() );
+		file->Write( temp, temp.Length() );
+		// Body
+		idStr body = email->GetBody();
+		body.Replace( "\n", "\\n" );
+		temp = va( emailBase, "text", body.c_str() );
+		file->Write( temp, temp.Length() );
+
+		totalEmailCount++;
+	}
+
+	int videoCount = linearLists[ DECL_VIDEO ].Num();
+	if ( videoCount > 0 ) {
+		temp = "\n\n//////// PDA Videos ////////////\n";
+		file->Write( temp, temp.Length() );
+	}
+	for ( int i = 0; i < videoCount; i++ ) {
+		const idDeclVideo * video = static_cast< const idDeclVideo * >( FindType( DECL_VIDEO, linearLists[ DECL_VIDEO ][ i ]->GetName(), false ) );
+
+		idStr videoBaseStrId = va( "\t\"#str_%s_", video->GetName() );
+		idStr videoBase = videoBaseStrId + "video_%s" + tailEnd;
+
+		file->Write( "\t//Video\n", 9 );
+
+		// Name
+		temp = va( videoBase, "name", video->GetVideoName() );
+		file->Write( temp, temp.Length() );
+		// Info
+		idStr info = video->GetInfo();
+		info.Replace( "\n", "\\n" );
+		temp = va( videoBase, "info", info.c_str() );
+		file->Write( temp, temp.Length() );
+
+		totalVideoCount++;
+	}
+
+	file->Flush();
+
+	idLib::Printf( "\nData written to %s\n", pdaStringsFileName.c_str() );
+	idLib::Printf( "----------------------------\n" );
+	idLib::Printf( "Wrote %d PDAs.\n", count );
+	idLib::Printf( "Wrote %d Emails.\n", totalEmailCount );
+	idLib::Printf( "Wrote %d Audio Records.\n", totalAudioCount );
+	idLib::Printf( "Wrote %d Video Records.\n", totalVideoCount );
+	idLib::Printf( "Please copy the results into the appropriate .lang file.\n" );
+}
 
 /*
 ====================================================================================
@@ -1750,7 +1960,7 @@ idDeclLocal *idDeclManagerLocal::FindTypeWithoutParsing( declType_t type, const 
 idDeclLocal::idDeclLocal
 =================
 */
-idDeclLocal::idDeclLocal( void ) {
+idDeclLocal::idDeclLocal() {
 	name = "unnamed";
 	textSource = NULL;
 	textLength = 0;
@@ -1775,7 +1985,7 @@ idDeclLocal::idDeclLocal( void ) {
 idDeclLocal::GetName
 =================
 */
-const char *idDeclLocal::GetName( void ) const {
+const char *idDeclLocal::GetName() const {
 	return name.c_str();
 }
 
@@ -1784,7 +1994,7 @@ const char *idDeclLocal::GetName( void ) const {
 idDeclLocal::GetType
 =================
 */
-declType_t idDeclLocal::GetType( void ) const {
+declType_t idDeclLocal::GetType() const {
 	return type;
 }
 
@@ -1793,7 +2003,7 @@ declType_t idDeclLocal::GetType( void ) const {
 idDeclLocal::GetState
 =================
 */
-declState_t idDeclLocal::GetState( void ) const {
+declState_t idDeclLocal::GetState() const {
 	return declState;
 }
 
@@ -1802,7 +2012,7 @@ declState_t idDeclLocal::GetState( void ) const {
 idDeclLocal::IsImplicit
 =================
 */
-bool idDeclLocal::IsImplicit( void ) const {
+bool idDeclLocal::IsImplicit() const {
 	return ( sourceFile == declManagerLocal.GetImplicitDeclFile() );
 }
 
@@ -1811,7 +2021,7 @@ bool idDeclLocal::IsImplicit( void ) const {
 idDeclLocal::IsValid
 =================
 */
-bool idDeclLocal::IsValid( void ) const {
+bool idDeclLocal::IsValid() const {
 	return ( declState != DS_UNPARSED );
 }
 
@@ -1820,7 +2030,7 @@ bool idDeclLocal::IsValid( void ) const {
 idDeclLocal::Invalidate
 =================
 */
-void idDeclLocal::Invalidate( void ) {
+void idDeclLocal::Invalidate() {
 	declState = DS_UNPARSED;
 }
 
@@ -1829,7 +2039,7 @@ void idDeclLocal::Invalidate( void ) {
 idDeclLocal::EnsureNotPurged
 =================
 */
-void idDeclLocal::EnsureNotPurged( void ) {
+void idDeclLocal::EnsureNotPurged() {
 	if ( declState == DS_UNPARSED ) {
 		ParseLocal();
 	}
@@ -1840,7 +2050,7 @@ void idDeclLocal::EnsureNotPurged( void ) {
 idDeclLocal::Index
 =================
 */
-int idDeclLocal::Index( void ) const {
+int idDeclLocal::Index() const {
 	return index;
 }
 
@@ -1849,7 +2059,7 @@ int idDeclLocal::Index( void ) const {
 idDeclLocal::GetLineNum
 =================
 */
-int idDeclLocal::GetLineNum( void ) const {
+int idDeclLocal::GetLineNum() const {
 	return sourceLine;
 }
 
@@ -1858,7 +2068,7 @@ int idDeclLocal::GetLineNum( void ) const {
 idDeclLocal::GetFileName
 =================
 */
-const char *idDeclLocal::GetFileName( void ) const {
+const char *idDeclLocal::GetFileName() const {
 	return ( sourceFile ) ? sourceFile->fileName.c_str() : "*invalid*";
 }
 
@@ -1867,7 +2077,7 @@ const char *idDeclLocal::GetFileName( void ) const {
 idDeclLocal::Size
 =================
 */
-size_t idDeclLocal::Size( void ) const {
+size_t idDeclLocal::Size() const {
 	return sizeof( idDecl ) + name.Allocated();
 }
 
@@ -1889,7 +2099,7 @@ void idDeclLocal::GetText( char *text ) const {
 idDeclLocal::GetTextLength
 =================
 */
-int idDeclLocal::GetTextLength( void ) const {
+int idDeclLocal::GetTextLength() const {
 	return textLength;
 }
 
@@ -1923,11 +2133,11 @@ void idDeclLocal::SetTextLocal( const char *text, const int length ) {
 	int maxBytesPerCode = ( maxHuffmanBits + 7 ) >> 3;
 	byte *compressed = (byte *)_alloca( length * maxBytesPerCode );
 	compressedLength = HuffmanCompressText( text, length, compressed, length * maxBytesPerCode );
-	textSource = (char *)Mem_Alloc( compressedLength );
+	textSource = (char *)Mem_Alloc( compressedLength, TAG_DECLTEXT );
 	memcpy( textSource, compressed, compressedLength );
 #else
 	compressedLength = length;
-	textSource = (char *) Mem_Alloc( length + 1 );
+	textSource = (char *) Mem_Alloc( length + 1, TAG_DECLTEXT );
 	memcpy( textSource, text, length );
 	textSource[length] = '\0';
 #endif
@@ -1939,9 +2149,8 @@ void idDeclLocal::SetTextLocal( const char *text, const int length ) {
 idDeclLocal::ReplaceSourceFileText
 =================
 */
-bool idDeclLocal::ReplaceSourceFileText( void ) {
+bool idDeclLocal::ReplaceSourceFileText() {
 	int oldFileLength, newFileLength;
-	char *buffer;
 	idFile *file;
 
 	common->Printf( "Writing \'%s\' to \'%s\'...\n", GetName(), GetFileName() );
@@ -1954,29 +2163,27 @@ bool idDeclLocal::ReplaceSourceFileText( void ) {
 	// get length and allocate buffer to hold the file
 	oldFileLength = sourceFile->fileSize;
 	newFileLength = oldFileLength - sourceTextLength + textLength;
-	buffer = (char *) Mem_Alloc( Max( newFileLength, oldFileLength ) );
+	idTempArray<char> buffer( Max( newFileLength, oldFileLength ) );
+	memset( buffer.Ptr(), 0, buffer.Size() );
 
 	// read original file
 	if ( sourceFile->fileSize ) {
 
 		file = fileSystem->OpenFileRead( GetFileName() );
 		if ( !file ) {
-			Mem_Free( buffer );
 			common->Warning( "Couldn't open %s for reading.", GetFileName() );
 			return false;
 		}
 
 		if ( file->Length() != sourceFile->fileSize || file->Timestamp() != sourceFile->timestamp ) {
-			Mem_Free( buffer );
 			common->Warning( "The file %s has been modified outside of the engine.", GetFileName() );
 			return false;
 		}
 
-		file->Read( buffer, oldFileLength );
+		file->Read( buffer.Ptr(), oldFileLength );
 		fileSystem->CloseFile( file );
 
-		if ( MD5_BlockChecksum( buffer, oldFileLength ) != sourceFile->checksum ) {
-			Mem_Free( buffer );
+		if ( MD5_BlockChecksum( buffer.Ptr(), oldFileLength ) != (unsigned int)sourceFile->checksum ) {
 			common->Warning( "The file %s has been modified outside of the engine.", GetFileName() );
 			return false;
 		}
@@ -1985,26 +2192,22 @@ bool idDeclLocal::ReplaceSourceFileText( void ) {
 	// insert new text
 	char *declText = (char *) _alloca( textLength + 1 );
 	GetText( declText );
-	memmove( buffer + sourceTextOffset + textLength, buffer + sourceTextOffset + sourceTextLength, oldFileLength - sourceTextOffset - sourceTextLength );
-	memcpy( buffer + sourceTextOffset, declText, textLength );
+	memmove( buffer.Ptr() + sourceTextOffset + textLength, buffer.Ptr() + sourceTextOffset + sourceTextLength, oldFileLength - sourceTextOffset - sourceTextLength );
+	memcpy( buffer.Ptr() + sourceTextOffset, declText, textLength );
 
 	// write out new file
-	file = fileSystem->OpenFileWrite( GetFileName(), "fs_devpath" );
+	file = fileSystem->OpenFileWrite( GetFileName(), "fs_basepath" );
 	if ( !file ) {
-		Mem_Free( buffer );
 		common->Warning( "Couldn't open %s for writing.", GetFileName() );
 		return false;
 	}
-	file->Write( buffer, newFileLength );
+	file->Write( buffer.Ptr(), newFileLength );
 	fileSystem->CloseFile( file );
 
 	// set new file size, checksum and timestamp
 	sourceFile->fileSize = newFileLength;
-	sourceFile->checksum = MD5_BlockChecksum( buffer, newFileLength );
+	sourceFile->checksum = MD5_BlockChecksum( buffer.Ptr(), newFileLength );
 	fileSystem->ReadFile( GetFileName(), NULL, &sourceFile->timestamp );
-
-	// free buffer
-	Mem_Free( buffer );
 
 	// move all decls in the same file
 	for ( idDeclLocal *decl = sourceFile->decls; decl; decl = decl->nextInFile ) {
@@ -2024,7 +2227,7 @@ bool idDeclLocal::ReplaceSourceFileText( void ) {
 idDeclLocal::SourceFileChanged
 =================
 */
-bool idDeclLocal::SourceFileChanged( void ) const {
+bool idDeclLocal::SourceFileChanged() const {
 	int newLength;
 	ID_TIME_T newTimestamp;
 
@@ -2069,7 +2272,7 @@ void idDeclLocal::MakeDefault() {
 	self->FreeData();
 
 	// parse
-	self->Parse( defaultText, strlen( defaultText ) );
+	self->Parse( defaultText, strlen( defaultText ), false );
 
 	// we could still eventually hit the recursion if we have enough Error() calls inside Parse...
 	--recursionLevel;
@@ -2080,7 +2283,7 @@ void idDeclLocal::MakeDefault() {
 idDeclLocal::SetDefaultText
 =================
 */
-bool idDeclLocal::SetDefaultText( void ) {
+bool idDeclLocal::SetDefaultText() {
 	return false;
 }
 
@@ -2098,7 +2301,7 @@ const char *idDeclLocal::DefaultDefinition() const {
 idDeclLocal::Parse
 =================
 */
-bool idDeclLocal::Parse( const char *text, const int textLength ) {
+bool idDeclLocal::Parse( const char *text, const int textLength, bool allowBinaryVersion ) {
 	idLexer src;
 
 	src.LoadMemory( text, textLength, GetFileName(), GetLineNum() );
@@ -2138,7 +2341,7 @@ void idDeclLocal::Print() const {
 idDeclLocal::Reload
 =================
 */
-void idDeclLocal::Reload( void ) {
+void idDeclLocal::Reload() {
 	this->sourceFile->Reload( false );
 }
 
@@ -2147,7 +2350,7 @@ void idDeclLocal::Reload( void ) {
 idDeclLocal::AllocateSelf
 =================
 */
-void idDeclLocal::AllocateSelf( void ) {
+void idDeclLocal::AllocateSelf() {
 	if ( self == NULL ) {
 		self = declManagerLocal.GetDeclType( (int)type )->allocator();
 		self->base = this;
@@ -2159,7 +2362,7 @@ void idDeclLocal::AllocateSelf( void ) {
 idDeclLocal::ParseLocal
 =================
 */
-void idDeclLocal::ParseLocal( void ) {
+void idDeclLocal::ParseLocal() {
 	bool generatedDefaultText = false;
 
 	AllocateSelf();
@@ -2189,12 +2392,12 @@ void idDeclLocal::ParseLocal( void ) {
 	// parse
 	char *declText = (char *) _alloca( ( GetTextLength() + 1 ) * sizeof( char ) );
 	GetText( declText );
-	self->Parse( declText, GetTextLength() );
+	self->Parse( declText, GetTextLength(), true );
 
 	// free generated text
 	if ( generatedDefaultText ) {
 		Mem_Free( textSource );
-		textSource = 0;
+		textSource = NULL;
 		textLength = 0;
 	}
 
@@ -2206,7 +2409,7 @@ void idDeclLocal::ParseLocal( void ) {
 idDeclLocal::Purge
 =================
 */
-void idDeclLocal::Purge( void ) {
+void idDeclLocal::Purge() {
 	// never purge things that were referenced outside level load,
 	// like the console and menu graphics
 	if ( parsedOutsideLevelLoad ) {
@@ -2225,6 +2428,6 @@ void idDeclLocal::Purge( void ) {
 idDeclLocal::EverReferenced
 =================
 */
-bool idDeclLocal::EverReferenced( void ) const {
+bool idDeclLocal::EverReferenced() const {
 	return everReferenced;
 }

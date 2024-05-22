@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -39,7 +40,7 @@ END_CLASS
 idPhysics_Actor::idPhysics_Actor
 ================
 */
-idPhysics_Actor::idPhysics_Actor( void ) {
+idPhysics_Actor::idPhysics_Actor() {
 	clipModel = NULL;
 	SetClipModelAxis();
 	mass = 100.0f;
@@ -55,7 +56,7 @@ idPhysics_Actor::idPhysics_Actor( void ) {
 idPhysics_Actor::~idPhysics_Actor
 ================
 */
-idPhysics_Actor::~idPhysics_Actor( void ) {
+idPhysics_Actor::~idPhysics_Actor() {
 	if ( clipModel ) {
 		delete clipModel;
 		clipModel = NULL;
@@ -107,7 +108,7 @@ void idPhysics_Actor::Restore( idRestoreGame *savefile ) {
 idPhysics_Actor::SetClipModelAxis
 ================
 */
-void idPhysics_Actor::SetClipModelAxis( void ) {
+void idPhysics_Actor::SetClipModelAxis() {
 	// align clip model to gravity direction
 	if ( ( gravityNormal[2] == -1.0f ) || ( gravityNormal == vec3_zero ) ) {
 		clipModelAxis.Identity();
@@ -128,7 +129,7 @@ void idPhysics_Actor::SetClipModelAxis( void ) {
 idPhysics_Actor::GetGravityAxis
 ================
 */
-const idMat3 &idPhysics_Actor::GetGravityAxis( void ) const {
+const idMat3 &idPhysics_Actor::GetGravityAxis() const {
 	return clipModelAxis;
 }
 
@@ -137,7 +138,7 @@ const idMat3 &idPhysics_Actor::GetGravityAxis( void ) const {
 idPhysics_Actor::GetMasterDeltaYaw
 ================
 */
-float idPhysics_Actor::GetMasterDeltaYaw( void ) const {
+float idPhysics_Actor::GetMasterDeltaYaw() const {
 	return masterDeltaYaw;
 }
 
@@ -146,7 +147,7 @@ float idPhysics_Actor::GetMasterDeltaYaw( void ) const {
 idPhysics_Actor::GetGroundEntity
 ================
 */
-idEntity *idPhysics_Actor::GetGroundEntity( void ) const {
+idEntity *idPhysics_Actor::GetGroundEntity() const {
 	return groundEntityPtr.GetEntity();
 }
 
@@ -182,7 +183,7 @@ idClipModel *idPhysics_Actor::GetClipModel( int id ) const {
 idPhysics_Actor::GetNumClipModels
 ================
 */
-int idPhysics_Actor::GetNumClipModels( void ) const {
+int idPhysics_Actor::GetNumClipModels() const {
 	return 1;
 }
 
@@ -247,7 +248,7 @@ const idBounds &idPhysics_Actor::GetAbsBounds( int id ) const {
 idPhysics_Actor::IsPushable
 ================
 */
-bool idPhysics_Actor::IsPushable( void ) const {
+bool idPhysics_Actor::IsPushable() const {
 	return ( masterEntity == NULL );
 }
 
@@ -335,7 +336,7 @@ int idPhysics_Actor::ClipContents( const idClipModel *model ) const {
 idPhysics_Actor::DisableClip
 ================
 */
-void idPhysics_Actor::DisableClip( void ) {
+void idPhysics_Actor::DisableClip() {
 	clipModel->Disable();
 }
 
@@ -344,7 +345,7 @@ void idPhysics_Actor::DisableClip( void ) {
 idPhysics_Actor::EnableClip
 ================
 */
-void idPhysics_Actor::EnableClip( void ) {
+void idPhysics_Actor::EnableClip() {
 	clipModel->Enable();
 }
 
@@ -353,7 +354,7 @@ void idPhysics_Actor::EnableClip( void ) {
 idPhysics_Actor::UnlinkClip
 ================
 */
-void idPhysics_Actor::UnlinkClip( void ) {
+void idPhysics_Actor::UnlinkClip() {
 	clipModel->Unlink();
 }
 
@@ -362,7 +363,7 @@ void idPhysics_Actor::UnlinkClip( void ) {
 idPhysics_Actor::LinkClip
 ================
 */
-void idPhysics_Actor::LinkClip( void ) {
+void idPhysics_Actor::LinkClip() {
 	clipModel->Link( gameLocal.clip, self, 0, clipModel->GetOrigin(), clipModel->GetAxis() );
 }
 
@@ -371,7 +372,7 @@ void idPhysics_Actor::LinkClip( void ) {
 idPhysics_Actor::EvaluateContacts
 ================
 */
-bool idPhysics_Actor::EvaluateContacts( void ) {
+bool idPhysics_Actor::EvaluateContacts() {
 
 	// get all the ground contacts
 	ClearContacts();

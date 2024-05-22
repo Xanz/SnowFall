@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -46,20 +46,20 @@ class idMover : public idEntity {
 public:
 	CLASS_PROTOTYPE( idMover );
 
-							idMover( void );
+							idMover();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
 	virtual void			Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
-
-	virtual void			Hide( void );
-	virtual void			Show( void );
+	virtual void			Hide();
+	virtual void			Show();
 
 	void					SetPortalState( bool open );
 
@@ -114,19 +114,19 @@ protected:
 
 	idPhysics_Parametric	physicsObj;
 
-	void					Event_OpenPortal( void );
-	void					Event_ClosePortal( void );
+	void					Event_OpenPortal();
+	void					Event_ClosePortal();
 	void					Event_PartBlocked( idEntity *blockingEntity );
 
 	void					MoveToPos( const idVec3 &pos);
 	void					UpdateMoveSound( moveStage_t stage );
 	void					UpdateRotationSound( moveStage_t stage );
 	void					SetGuiStates( const char *state );
-	void					FindGuiTargets( void );
+	void					FindGuiTargets();
 	void					SetGuiState( const char *key, const char *val ) const;
 
-	virtual void			DoneMoving( void );
-	virtual void			DoneRotating( void );
+	virtual void			DoneMoving();
+	virtual void			DoneRotating();
 	virtual void			BeginMove( idThread *thread = NULL );
 	virtual void			BeginRotation( idThread *thread, bool stopwhendone );
 	moveState_t				move;
@@ -152,17 +152,17 @@ private:
 
 	qhandle_t				areaPortal;		// 0 = no portal
 
-	idList< idEntityPtr<idEntity> >	guiTargets;
+	idList< idEntityPtr<idEntity>, TAG_MOVER >	guiTargets;
 
 	void					VectorForDir( float dir, idVec3 &vec );
 	idCurve_Spline<idVec3> *GetSpline( idEntity *splineEntity ) const;
 
-	void					Event_SetCallback( void );	
+	void					Event_SetCallback();	
 	void					Event_TeamBlocked( idEntity *blockedPart, idEntity *blockingEntity );
-	void					Event_StopMoving( void );
-	void					Event_StopRotating( void );
-	void					Event_UpdateMove( void );
-	void					Event_UpdateRotation( void );
+	void					Event_StopMoving();
+	void					Event_StopRotating();
+	void					Event_UpdateMove();
+	void					Event_UpdateRotation();
 	void					Event_SetMoveSpeed( float speed );
 	void					Event_SetMoveTime( float time );
 	void					Event_SetDecelerationTime( float time );
@@ -182,17 +182,17 @@ private:
 	void					Event_SetAccelSound( const char *sound );
 	void					Event_SetDecelSound( const char *sound );
 	void					Event_SetMoveSound( const char *sound );
-	void					Event_FindGuiTargets( void );
-	void					Event_InitGuiTargets( void );
-	void					Event_EnableSplineAngles( void );
-	void					Event_DisableSplineAngles( void );
-	void					Event_RemoveInitialSplineAngles( void );
+	void					Event_FindGuiTargets();
+	void					Event_InitGuiTargets();
+	void					Event_EnableSplineAngles();
+	void					Event_DisableSplineAngles();
+	void					Event_RemoveInitialSplineAngles();
 	void					Event_StartSpline( idEntity *splineEntity );
-	void					Event_StopSpline( void );
+	void					Event_StopSpline();
 	void					Event_Activate( idEntity *activator );
 	void					Event_PostRestore( int start, int total, int accel, int decel, int useSplineAng );
-	void					Event_IsMoving( void );
-	void					Event_IsRotating( void );
+	void					Event_IsMoving();
+	void					Event_IsRotating();
 };
 
 class idSplinePath : public idEntity {
@@ -201,7 +201,7 @@ public:
 
 							idSplinePath();
 
-	void					Spawn( void );
+	void					Spawn();
 };
 
 
@@ -215,7 +215,7 @@ class idElevator : public idMover {
 public:
 	CLASS_PROTOTYPE( idElevator );
 
-							idElevator( void );
+							idElevator();
 
 	void					Spawn();
 
@@ -227,7 +227,7 @@ public:
 	floorInfo_s *			GetFloorInfo( int floor );
 
 protected:
-	virtual void			DoneMoving( void );
+	virtual void			DoneMoving();
 	virtual void			BeginMove( idThread *thread = NULL );
 	void					SpawnTrigger( const idVec3 &pos );
 	void					GetLocalTriggerPosition();
@@ -241,7 +241,7 @@ private:
 	} elevatorState_t;
 
 	elevatorState_t			state;
-	idList<floorInfo_s>		floorInfo;
+	idList<floorInfo_s, TAG_MOVER>		floorInfo;
 	int						currentFloor;
 	int						pendingFloor;
 	int						lastFloor;
@@ -251,20 +251,18 @@ private:
 	int						lastTouchTime;
 
 	class idDoor *			GetDoor( const char *name );
-	void					Think( void );
-	void					OpenInnerDoor( void );
+	void					Think();
+	void					OpenInnerDoor();
 	void					OpenFloorDoor( int floor );
-	void					CloseAllDoors( void );
-	void					DisableAllDoors( void );
-	void					EnableProperDoors( void );
+	void					CloseAllDoors();
+	void					DisableAllDoors();
+	void					EnableProperDoors();
 
 	void					Event_TeamBlocked( idEntity *blockedEntity, idEntity *blockingEntity );
 	void					Event_Activate( idEntity *activator );
 	void					Event_PostFloorArrival();
 
-#ifdef _D3XP
 	void					Event_SetGuiStates();
-#endif
 
 };
 
@@ -291,31 +289,31 @@ public:
 							idMover_Binary();
 							~idMover_Binary();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-	virtual void			PreBind( void );
-	virtual void			PostBind( void );
+	virtual void			PreBind();
+	virtual void			PostBind();
 
 	void					Enable( bool b );
 	void					InitSpeed( idVec3 &mpos1, idVec3 &mpos2, float mspeed, float maccelTime, float mdecelTime );
 	void					InitTime( idVec3 &mpos1, idVec3 &mpos2, float mtime, float maccelTime, float mdecelTime );
-	void					GotoPosition1( void );
-	void					GotoPosition2( void );
+	void					GotoPosition1();
+	void					GotoPosition2();
 	void					Use_BinaryMover( idEntity *activator );
 	void					SetGuiStates( const char *state );
 	void					UpdateBuddies( int val );
-	idMover_Binary *		GetActivateChain( void ) const { return activateChain; }
-	idMover_Binary *		GetMoveMaster( void ) const { return moveMaster; }
+	idMover_Binary *		GetActivateChain() const { return activateChain; }
+	idMover_Binary *		GetMoveMaster() const { return moveMaster; }
 	void					BindTeam( idEntity *bindTo );
 	void					SetBlocked( bool b );
-	bool					IsBlocked( void );
-	idEntity *				GetActivator( void ) const;
+	bool					IsBlocked();
+	idEntity *				GetActivator() const;
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
 	void					SetPortalState( bool open );
 
@@ -345,31 +343,29 @@ protected:
 	idPhysics_Parametric	physicsObj;
 	qhandle_t				areaPortal;			// 0 = no portal
 	bool					blocked;
-#ifdef _D3XP
 	bool					playerOnly;
-#endif
-	idList< idEntityPtr<idEntity> >	guiTargets;
+	idList< idEntityPtr<idEntity>, TAG_MOVER >	guiTargets;
 
 	void					MatchActivateTeam( moverState_t newstate, int time );
 	void					JoinActivateTeam( idMover_Binary *master );
 
 	void					UpdateMoverSound( moverState_t state );
 	void					SetMoverState( moverState_t newstate, int time );
-	moverState_t			GetMoverState( void ) const { return moverState; }
-	void					FindGuiTargets( void );
+	moverState_t			GetMoverState() const { return moverState; }
+	void					FindGuiTargets();
 	void					SetGuiState( const char *key, const char *val ) const;
 
-	void					Event_SetCallback( void );
-	void					Event_ReturnToPos1( void );
+	void					Event_SetCallback();
+	void					Event_ReturnToPos1();
 	void					Event_Use_BinaryMover( idEntity *activator );
-	void					Event_Reached_BinaryMover( void );
+	void					Event_Reached_BinaryMover();
 	void					Event_MatchActivateTeam( moverState_t newstate, int time );
-	void					Event_Enable( void );
-	void					Event_Disable( void );
-	void					Event_OpenPortal( void );
-	void					Event_ClosePortal( void );
-	void					Event_FindGuiTargets( void );
-	void					Event_InitGuiTargets( void );
+	void					Event_Enable();
+	void					Event_Disable();
+	void					Event_OpenPortal();
+	void					Event_ClosePortal();
+	void					Event_FindGuiTargets();
+	void					Event_InitGuiTargets();
 
 	static void				GetMovedir( float dir, idVec3 &movedir );
 };
@@ -378,30 +374,29 @@ class idDoor : public idMover_Binary {
 public:
 	CLASS_PROTOTYPE( idDoor );
 
-							idDoor( void );
-							~idDoor( void );
+							idDoor();
+							~idDoor();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-	virtual void			Think( void );
-	virtual void			PreBind( void );
-	virtual void			PostBind( void );
-	virtual void			Hide( void );
-	virtual void			Show( void );
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	virtual void			Think();
+	virtual void			PreBind();
+	virtual void			PostBind();
+	virtual void			Hide();
+	virtual void			Show();
 
-	bool					IsOpen( void );
-	bool					IsNoTouch( void );
-#ifdef _D3XP
+	bool					IsOpen();
+	bool					IsNoTouch();
 	bool					AllowPlayerOnly( idEntity *ent );
-#endif
-	int						IsLocked( void );
+	int						IsLocked();
 	void					Lock( int f );
 	void					Use( idEntity *other, idEntity *activator );
-	void					Close( void );
-	void					Open( void );
+	void					Close();
+	void					Open();
 	void					SetCompanion( idDoor *door );
 
 private:
@@ -426,39 +421,40 @@ private:
 	void					GetLocalTriggerPosition( const idClipModel *trigger );
 	void					CalcTriggerBounds( float size, idBounds &bounds );
 
-	void					Event_Reached_BinaryMover( void );
+	void					Event_Reached_BinaryMover();
 	void					Event_TeamBlocked( idEntity *blockedEntity, idEntity *blockingEntity );
 	void					Event_PartBlocked( idEntity *blockingEntity );
 	void					Event_Touch( idEntity *other, trace_t *trace );
 	void					Event_Activate( idEntity *activator );
-	void					Event_StartOpen( void );
-	void					Event_SpawnDoorTrigger( void );
-	void					Event_SpawnSoundTrigger( void );
-	void					Event_Close( void );
-	void					Event_Open( void );
+	void					Event_StartOpen();
+	void					Event_SpawnDoorTrigger();
+	void					Event_SpawnSoundTrigger();
+	void					Event_Close();
+	void					Event_Open();
 	void					Event_Lock( int f );
-	void					Event_IsOpen( void );
-	void					Event_Locked( void );
+	void					Event_IsOpen();
+	void					Event_Locked();
 	void					Event_SpectatorTouch( idEntity *other, trace_t *trace );
-	void					Event_OpenPortal( void );
-	void					Event_ClosePortal( void );
+	void					Event_OpenPortal();
+	void					Event_ClosePortal();
 };
 
 class idPlat : public idMover_Binary {
 public:
 	CLASS_PROTOTYPE( idPlat );
+	
+							idPlat();
+							~idPlat();
 
-							idPlat( void );
-							~idPlat( void );
-
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
-
-	virtual void			Think( void );
-	virtual void			PreBind( void );
-	virtual void			PostBind( void );
+	void					RunPhysics_NoBlocking();
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	virtual void			Think();
+	virtual void			PreBind();
+	virtual void			PostBind();
 
 private:
 	idClipModel *			trigger;
@@ -486,17 +482,17 @@ class idMover_Periodic : public idEntity {
 public:
 	CLASS_PROTOTYPE( idMover_Periodic );
 
-							idMover_Periodic( void );
+							idMover_Periodic();
 
-	void					Spawn( void );
+	void					Spawn();
 	
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-	virtual void			Think( void );
+	virtual void			Think();
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
 protected:
 	idPhysics_Parametric	physicsObj;
@@ -510,9 +506,9 @@ class idRotater : public idMover_Periodic {
 public:
 	CLASS_PROTOTYPE( idRotater );
 
-							idRotater( void );
+							idRotater();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
@@ -527,9 +523,9 @@ class idBobber : public idMover_Periodic {
 public:
 	CLASS_PROTOTYPE( idBobber );
 
-							idBobber( void );
+							idBobber();
 
-	void					Spawn( void );
+	void					Spawn();
 
 private:
 };
@@ -538,9 +534,9 @@ class idPendulum : public idMover_Periodic {
 public:
 	CLASS_PROTOTYPE( idPendulum );
 
-							idPendulum( void );
+							idPendulum();
 
-	void					Spawn( void );
+	void					Spawn();
 
 private:
 };
@@ -549,9 +545,9 @@ class idRiser : public idMover_Periodic {
 public:
 	CLASS_PROTOTYPE( idRiser );
 
-	idRiser( void );
+	idRiser();
 
-	void					Spawn( void );
+	void					Spawn();
 
 private:
 	void					Event_Activate( idEntity *activator );

@@ -8,6 +8,7 @@
  * This file contains software version identification.
  */
 
-#define JVERSION "6  2-Aug-95"
 
-#define JCOPYRIGHT "Copyright (C) 1995, Thomas G. Lane"
+#define JVERSION	"6  2-Aug-95"
+
+#define JCOPYRIGHT	"Copyright (C) 1995, Thomas G. Lane"

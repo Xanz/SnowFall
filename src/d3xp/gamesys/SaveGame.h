@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -35,17 +35,18 @@ Save game related helper classes.
 
 */
 
-const int INITIAL_RELEASE_BUILD_NUMBER = 1262;
-
 class idSaveGame {
 public:
-							idSaveGame( idFile *savefile );
+							idSaveGame( idFile *savefile, idFile *stringFile, int inVersion );
 							~idSaveGame();
 
-	void					Close( void );
+	void					Close();
 
+	void					WriteDecls();
+	
 	void					AddObject( const idClass *obj );
-	void					WriteObjectList( void );
+	void					Resize( const int count ) { objects.Resize( count ); }
+	void					WriteObjectList();
 
 	void					Write( const void *buffer, int len );
 	void					WriteInt( const int value );
@@ -84,28 +85,47 @@ public:
 	void					WriteTrace( const trace_t &trace );
 	void					WriteTraceModel( const idTraceModel &trace );
 	void					WriteClipModel( const class idClipModel *clipModel );
-	void					WriteSoundCommands( void );
+	void					WriteSoundCommands();
 
 	void					WriteBuildNumber( const int value );
 
+	int						GetBuildNumber() const { return version; }
+
+	int						GetCurrentSaveSize() const { return file->Length(); }
+
 private:
 	idFile *				file;
+	idFile *				stringFile;
+	idCompressor *			compressor;
 
 	idList<const idClass *>	objects;
+	int						version;
 
 	void					CallSave_r( const idTypeInfo *cls, const idClass *obj );
+
+	struct stringTableIndex_s {
+		idStr		string;
+		int			offset;
+	};
+
+	idHashIndex						stringHash;
+	idList< stringTableIndex_s >	stringTable;
+	int								curStringTableOffset;
+
 };
 
 class idRestoreGame {
 public:
-							idRestoreGame( idFile *savefile );
+							idRestoreGame( idFile * savefile, idFile * stringTableFile, int saveVersion );
 							~idRestoreGame();
 
-	void					CreateObjects( void );
-	void					RestoreObjects( void );
-	void					DeleteObjects( void );
+	void					ReadDecls();
 
-	void					Error( const char *fmt, ... ) id_attribute((format(printf,2,3)));
+	void					CreateObjects();
+	void					RestoreObjects();
+	void					DeleteObjects();
+
+	void					Error( VERIFY_FORMAT_STRING const char *fmt, ... );
 
 	void					Read( void *buffer, int len );
 	void					ReadInt( int &value );
@@ -144,19 +164,17 @@ public:
 	void					ReadTrace( trace_t &trace );
 	void					ReadTraceModel( idTraceModel &trace );
 	void					ReadClipModel( idClipModel *&clipModel );
-	void					ReadSoundCommands( void );
-
-	void					ReadBuildNumber( void );
+	void					ReadSoundCommands();
 
 	//						Used to retrieve the saved game buildNumber from within class Restore methods
-	int						GetBuildNumber( void );
+	int						GetBuildNumber() const { return version; }
 
 private:
-	int						buildNumber;
-
-	idFile *				file;
-
-	idList<idClass *>		objects;
+	idFile *		file;
+	idFile *		stringFile;
+	idList<idClass *, TAG_SAVEGAMES>		objects;
+	int						version;
+	int						stringTableOffset;
 
 	void					CallRestore_r( const idTypeInfo *cls, idClass *obj );
 };

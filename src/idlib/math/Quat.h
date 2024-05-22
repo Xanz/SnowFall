@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -37,6 +37,7 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
+#include "../containers/Array.h"	// for idTupleSize
 
 class idVec3;
 class idAngles;
@@ -52,7 +53,7 @@ public:
 	float			z;
 	float			w;
 
-					idQuat( void );
+					idQuat();
 					idQuat( float x, float y, float z, float w );
 
 	void 			Set( float x, float y, float z, float w );
@@ -79,27 +80,32 @@ public:
 	bool			operator==(	const idQuat &a ) const;					// exact compare, no epsilon
 	bool			operator!=(	const idQuat &a ) const;					// exact compare, no epsilon
 
-	idQuat			Inverse( void ) const;
-	float			Length( void ) const;
-	idQuat &		Normalize( void );
+	idQuat			Inverse() const;
+	float			Length() const;
+	idQuat &		Normalize();
 
-	float			CalcW( void ) const;
-	int				GetDimension( void ) const;
+	float			CalcW() const;
+	int				GetDimension() const;
 
-	idAngles		ToAngles( void ) const;
-	idRotation		ToRotation( void ) const;
-	idMat3			ToMat3( void ) const;
-	idMat4			ToMat4( void ) const;
-	idCQuat			ToCQuat( void ) const;
-	idVec3			ToAngularVelocity( void ) const;
-	const float *	ToFloatPtr( void ) const;
-	float *			ToFloatPtr( void );
+	idAngles		ToAngles() const;
+	idRotation		ToRotation() const;
+	idMat3			ToMat3() const;
+	idMat4			ToMat4() const;
+	idCQuat			ToCQuat() const;
+	idVec3			ToAngularVelocity() const;
+	const float *	ToFloatPtr() const;
+	float *			ToFloatPtr();
 	const char *	ToString( int precision = 2 ) const;
 
 	idQuat &		Slerp( const idQuat &from, const idQuat &to, float t );
+	idQuat &		Lerp( const idQuat &from, const idQuat &to, const float t );
 };
 
-ID_INLINE idQuat::idQuat( void ) {
+// A non-member slerp function allows constructing a const idQuat object with the result of a slerp,
+// but without having to explicity create a temporary idQuat object.
+idQuat Slerp( const idQuat & from, const idQuat & to, const float t );
+
+ID_INLINE idQuat::idQuat() {
 }
 
 ID_INLINE idQuat::idQuat( float x, float y, float z, float w ) {
@@ -251,18 +257,18 @@ ID_INLINE void idQuat::Set( float x, float y, float z, float w ) {
 	this->w = w;
 }
 
-ID_INLINE idQuat idQuat::Inverse( void ) const {
+ID_INLINE idQuat idQuat::Inverse() const {
 	return idQuat( -x, -y, -z, w );
 }
 
-ID_INLINE float idQuat::Length( void ) const {
+ID_INLINE float idQuat::Length() const {
 	float len;
 
 	len = x * x + y * y + z * z + w * w;
 	return idMath::Sqrt( len );
 }
 
-ID_INLINE idQuat& idQuat::Normalize( void ) {
+ID_INLINE idQuat& idQuat::Normalize() {
 	float len;
 	float ilength;
 
@@ -277,23 +283,34 @@ ID_INLINE idQuat& idQuat::Normalize( void ) {
 	return *this;
 }
 
-ID_INLINE float idQuat::CalcW( void ) const {
+ID_INLINE float idQuat::CalcW() const {
 	// take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
 	return sqrt( fabs( 1.0f - ( x * x + y * y + z * z ) ) );
 }
 
-ID_INLINE int idQuat::GetDimension( void ) const {
+ID_INLINE int idQuat::GetDimension() const {
 	return 4;
 }
 
-ID_INLINE const float *idQuat::ToFloatPtr( void ) const {
+ID_INLINE const float *idQuat::ToFloatPtr() const {
 	return &x;
 }
 
-ID_INLINE float *idQuat::ToFloatPtr( void ) {
+ID_INLINE float *idQuat::ToFloatPtr() {
 	return &x;
 }
 
+/*
+===============================================================================
+
+	Specialization to get size of an idQuat generically.
+
+===============================================================================
+*/
+template<>
+struct idTupleSize< idQuat > {
+	enum { value = 4 };
+};
 
 /*
 ===============================================================================
@@ -309,7 +326,7 @@ public:
 	float			y;
 	float			z;
 
-					idCQuat( void );
+					idCQuat();
 					idCQuat( float x, float y, float z );
 
 	void 			Set( float x, float y, float z );
@@ -322,19 +339,19 @@ public:
 	bool			operator==(	const idCQuat &a ) const;					// exact compare, no epsilon
 	bool			operator!=(	const idCQuat &a ) const;					// exact compare, no epsilon
 
-	int				GetDimension( void ) const;
+	int				GetDimension() const;
 
-	idAngles		ToAngles( void ) const;
-	idRotation		ToRotation( void ) const;
-	idMat3			ToMat3( void ) const;
-	idMat4			ToMat4( void ) const;
-	idQuat			ToQuat( void ) const;
-	const float *	ToFloatPtr( void ) const;
-	float *			ToFloatPtr( void );
+	idAngles		ToAngles() const;
+	idRotation		ToRotation() const;
+	idMat3			ToMat3() const;
+	idMat4			ToMat4() const;
+	idQuat			ToQuat() const;
+	const float *	ToFloatPtr() const;
+	float *			ToFloatPtr();
 	const char *	ToString( int precision = 2 ) const;
 };
 
-ID_INLINE idCQuat::idCQuat( void ) {
+ID_INLINE idCQuat::idCQuat() {
 }
 
 ID_INLINE idCQuat::idCQuat( float x, float y, float z ) {
@@ -384,21 +401,33 @@ ID_INLINE bool idCQuat::operator!=( const idCQuat &a ) const {
 	return !Compare( a );
 }
 
-ID_INLINE int idCQuat::GetDimension( void ) const {
+ID_INLINE int idCQuat::GetDimension() const {
 	return 3;
 }
 
-ID_INLINE idQuat idCQuat::ToQuat( void ) const {
+ID_INLINE idQuat idCQuat::ToQuat() const {
 	// take the absolute value because floating point rounding may cause the dot of x,y,z to be larger than 1
 	return idQuat( x, y, z, sqrt( fabs( 1.0f - ( x * x + y * y + z * z ) ) ) );
 }
 
-ID_INLINE const float *idCQuat::ToFloatPtr( void ) const {
+ID_INLINE const float *idCQuat::ToFloatPtr() const {
 	return &x;
 }
 
-ID_INLINE float *idCQuat::ToFloatPtr( void ) {
+ID_INLINE float *idCQuat::ToFloatPtr() {
 	return &x;
 }
+
+/*
+===============================================================================
+
+	Specialization to get size of an idCQuat generically.
+
+===============================================================================
+*/
+template<>
+struct idTupleSize< idCQuat > {
+	enum { value = 3 };
+};
 
 #endif /* !__MATH_QUAT_H__ */

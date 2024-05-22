@@ -1,34 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../precompiled.h"
 #pragma hdrstop
-
+#include "../precompiled.h"
 
 //===============================================================
 //
@@ -46,7 +45,7 @@ bool idWinding::ReAllocate( int n, bool keep ) {
 
 	oldP = p;
 	n = (n+3) & ~3;	// align up to multiple of four
-	p = new idVec5[n];
+	p = new (TAG_IDLIB_WINDING) idVec5[n];
 	if ( oldP ) {
 		if ( keep ) {
 			memcpy( p, oldP, numPoints * sizeof(p[0]) );
@@ -150,8 +149,8 @@ int idWinding::Split( const idPlane &plane, const float epsilon, idWinding **fro
 
 	maxpts = numPoints+4;	// cant use counts[0]+2 because of fp grouping errors
 
-	*front = f = new idWinding(maxpts);
-	*back = b = new idWinding(maxpts);
+	*front = f = new (TAG_IDLIB_WINDING) idWinding(maxpts);
+	*back = b = new (TAG_IDLIB_WINDING) idWinding(maxpts);
 		
 	for (i = 0; i < numPoints; i++) {
 		p1 = &p[i];
@@ -461,10 +460,10 @@ bool idWinding::ClipInPlace( const idPlane &plane, const float epsilon, const bo
 idWinding::Copy
 =============
 */
-idWinding *idWinding::Copy( void ) const {
+idWinding *idWinding::Copy() const {
 	idWinding *w;
 
-	w = new idWinding( numPoints );
+	w = new (TAG_IDLIB_WINDING) idWinding( numPoints );
 	w->numPoints = numPoints;
 	memcpy( w->p, p, numPoints * sizeof(p[0]) );
 	return w;
@@ -475,11 +474,11 @@ idWinding *idWinding::Copy( void ) const {
 idWinding::Reverse
 =============
 */
-idWinding *idWinding::Reverse( void ) const {
+idWinding *idWinding::Reverse() const {
 	idWinding *w;
 	int i;
 
-	w = new idWinding( numPoints );
+	w = new (TAG_IDLIB_WINDING) idWinding( numPoints );
 	w->numPoints = numPoints;
 	for ( i = 0; i < numPoints; i++ ) {
 		w->p[ numPoints - i - 1 ] = p[i];
@@ -492,7 +491,7 @@ idWinding *idWinding::Reverse( void ) const {
 idWinding::ReverseSelf
 =============
 */
-void idWinding::ReverseSelf( void ) {
+void idWinding::ReverseSelf() {
 	idVec5 v;
 	int i;
 
@@ -595,7 +594,7 @@ bool idWinding::Check( bool print ) const {
 idWinding::GetArea
 =============
 */
-float idWinding::GetArea( void ) const {
+float idWinding::GetArea() const {
 	int i;
 	idVec3 d1, d2, cross;
 	float total;
@@ -636,7 +635,7 @@ float idWinding::GetRadius( const idVec3 &center ) const {
 idWinding::GetCenter
 =============
 */
-idVec3 idWinding::GetCenter( void ) const {
+idVec3 idWinding::GetCenter() const {
 	int i;
 	idVec3 center;
 
@@ -1074,7 +1073,7 @@ idWinding *idWinding::TryMerge( const idWinding &w, const idVec3 &planenormal, i
 	//
 	// build the new polygon
 	//
-	newf = new idWinding( f1->numPoints + f2->numPoints );
+	newf = new (TAG_IDLIB_WINDING) idWinding( f1->numPoints + f2->numPoints );
 	
 	// copy first polygon
 	for ( k = (i+1) % f1->numPoints; k != i; k = (k+1) % f1->numPoints ) {
@@ -1118,7 +1117,7 @@ void idWinding::RemovePoint( int point ) {
 idWinding::InsertPoint
 =============
 */
-void idWinding::InsertPoint( const idVec3 &point, int spot ) {
+void idWinding::InsertPoint( const idVec5 &point, int spot ) {
 	int i;
 
 	if ( spot > numPoints ) {
@@ -1142,13 +1141,13 @@ void idWinding::InsertPoint( const idVec3 &point, int spot ) {
 idWinding::InsertPointIfOnEdge
 =============
 */
-bool idWinding::InsertPointIfOnEdge( const idVec3 &point, const idPlane &plane, const float epsilon ) {
+bool idWinding::InsertPointIfOnEdge( const idVec5 &point, const idPlane &plane, const float epsilon ) {
 	int i;
 	float dist, dot;
 	idVec3 normal;
 
 	// point may not be too far from the winding plane
-	if ( idMath::Fabs( plane.Distance( point ) ) > epsilon ) {
+	if ( idMath::Fabs( plane.Distance( point.ToVec3() ) ) > epsilon ) {
 		return false;
 	}
 
@@ -1159,12 +1158,12 @@ bool idWinding::InsertPointIfOnEdge( const idVec3 &point, const idPlane &plane, 
 		normal.Normalize();
 		dist = normal * p[i].ToVec3();
 
-		if ( idMath::Fabs( normal * point - dist ) > epsilon ) {
+		if ( idMath::Fabs( normal * point.ToVec3() - dist ) > epsilon ) {
 			continue;
 		}
 
 		normal = plane.Normal().Cross( normal );
-		dot = normal * point;
+		dot = normal * point.ToVec3();
 
 		dist = dot - normal * p[i].ToVec3();
 
@@ -1199,7 +1198,7 @@ idWinding::IsTiny
 */
 #define	EDGE_LENGTH		0.2f
 
-bool idWinding::IsTiny( void ) const {
+bool idWinding::IsTiny() const {
 	int		i;
 	float	len;
 	idVec3	delta;
@@ -1223,7 +1222,7 @@ bool idWinding::IsTiny( void ) const {
 idWinding::IsHuge
 =============
 */
-bool idWinding::IsHuge( void ) const {
+bool idWinding::IsHuge() const {
 	int i, j;
 
 	for ( i = 0; i < numPoints; i++ ) {
@@ -1241,7 +1240,7 @@ bool idWinding::IsHuge( void ) const {
 idWinding::Print
 =============
 */
-void idWinding::Print( void ) const {
+void idWinding::Print() const {
 	int i;
 
 	for ( i = 0; i < numPoints; i++ ) {
@@ -1264,21 +1263,21 @@ float idWinding::PlaneDistance( const idPlane &plane ) const {
 		d = plane.Distance( p[i].ToVec3() );
 		if ( d < min ) {
 			min = d;
-			if ( FLOATSIGNBITSET( min ) & FLOATSIGNBITNOTSET( max ) ) {
+			if ( IEEE_FLT_SIGNBITSET( min ) & IEEE_FLT_SIGNBITNOTSET( max ) ) {
 				return 0.0f;
 			}
 		}
 		if ( d > max ) {
 			max = d;
-			if ( FLOATSIGNBITSET( min ) & FLOATSIGNBITNOTSET( max ) ) {
+			if ( IEEE_FLT_SIGNBITSET( min ) & IEEE_FLT_SIGNBITNOTSET( max ) ) {
 				return 0.0f;
 			}
 		}
 	}
-	if ( FLOATSIGNBITNOTSET( min ) ) {
+	if ( IEEE_FLT_SIGNBITNOTSET( min ) ) {
 		return min;
 	}
-	if ( FLOATSIGNBITSET( max ) ) {
+	if ( IEEE_FLT_SIGNBITSET( max ) ) {
 		return max;
 	}
 	return 0.0f;

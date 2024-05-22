@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -198,7 +198,7 @@ void idDict::SetDefaults( const idDict *dict ) {
 idDict::Clear
 ================
 */
-void idDict::Clear( void ) {
+void idDict::Clear() {
 	int i;
 
 	for( i = 0; i < args.Num(); i++ ) {
@@ -234,12 +234,12 @@ int KeyCompare( const idKeyValue *a, const idKeyValue *b ) {
 idDict::Checksum
 ================
 */
-int	idDict::Checksum( void ) const {
+int	idDict::Checksum() const {
 	unsigned long ret;
 	int i, n;
 
 	idList<idKeyValue> sorted = args;
-	sorted.Sort( KeyCompare );
+	sorted.SortWithTemplate( idSort_KeyValue() );
 	n = sorted.Num();
 	CRC32_InitChecksum( ret );
 	for( i = 0; i < n; i++ ) {
@@ -255,7 +255,7 @@ int	idDict::Checksum( void ) const {
 idDict::Allocated
 ================
 */
-size_t idDict::Allocated( void ) const {
+size_t idDict::Allocated() const {
 	int		i;
 	size_t	size;
 
@@ -333,6 +333,54 @@ bool idDict::GetBool( const char *key, const char *defaultString, bool &out ) co
 	found = GetString( key, defaultString, &s );
 	out = ( atoi( s ) != 0 );
 	return found;
+}
+
+/*
+================
+idDict::GetFloat
+================
+*/
+bool idDict::GetFloat( const char *key, const float defaultFloat, float &out ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		out = atof( kv->GetValue() );
+		return true;
+	} else {
+		out = defaultFloat;
+		return false;
+	}
+}
+
+/*
+================
+idDict::GetInt
+================
+*/
+bool idDict::GetInt( const char *key, const int defaultInt, int &out ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		out = atoi( kv->GetValue() );
+		return true;
+	} else {
+		out = defaultInt;
+		return false;
+	}
+}
+
+/*
+================
+idDict::GetBool
+================
+*/
+bool idDict::GetBool( const char *key, const bool defaultBool, bool &out ) const {
+	const idKeyValue *kv = FindKey( key );
+	if ( kv ) {
+		out = ( atoi( kv->GetValue() ) != 0 );
+		return true;
+	} else {
+		out = defaultBool;
+		return false;
+	}
 }
 
 /*
@@ -557,7 +605,7 @@ const char *idDict::RandomPrefix( const char *prefix, idRandom &random ) const {
 	const idKeyValue *kv;
 
 	list[0] = "";
-	for ( count = 0, kv = MatchPrefix( prefix ); kv && count < MAX_RANDOM_KEYS; kv = MatchPrefix( prefix, kv ) ) {
+	for ( count = 0, kv = MatchPrefix( prefix ); kv != NULL && count < MAX_RANDOM_KEYS; kv = MatchPrefix( prefix, kv ) ) {
 		list[count++] = kv->GetValue().c_str();
 	}
 	return list[random.RandomInt( count )];
@@ -620,11 +668,216 @@ void idDict::ReadFromFileHandle( idFile *f ) {
 }
 
 /*
+========================
+idDict::Serialize
+========================
+*/
+void idDict::Serialize( idSerializer & ser ) {
+	if ( ser.IsReading() ) {
+		Clear();
+	}
+
+	int num = args.Num();
+	ser.SerializePacked( num );
+	for ( int i = 0; i < num; i++ ) {
+		idStr key;
+		idStr val; 
+
+		if ( ser.IsWriting() ) {
+			key = args[i].GetKey();
+			val = args[i].GetValue();
+		}
+
+		ser.SerializeString( key );
+		ser.SerializeString( val );
+
+		if ( ser.IsReading() ) {
+			Set( key.c_str(), val.c_str() );
+		}
+	}
+}
+
+/*
+================
+idDict::WriteToIniFile
+================
+*/
+void idDict::WriteToIniFile( idFile * f ) const {
+	// make a copy so we don't affect the checksum of the original dict
+	idList< idKeyValue > sortedArgs( args );
+	sortedArgs.SortWithTemplate( idSort_KeyValue() );
+
+	idList< idStr > prefixList;
+	idTempArray< int > prefixIndex( sortedArgs.Num() );	// for each keyValue in the args, this is an index into which prefix it uses.
+														// 0 means no prefix, otherwise, it's an index + (-1) into prefixList
+														// we do this so we can print all the non-prefix based pairs first
+	idStr prevPrefix = "";
+	idStr skipFirstLine = "";
+
+	// Scan for all the prefixes
+	for ( int i = 0; i < sortedArgs.Num(); i++ ) {
+		const idKeyValue * kv = &sortedArgs[i];
+		int slashPosition = kv->GetKey().Last( '/' );
+		if ( slashPosition != idStr::INVALID_POSITION ) {
+			idStr prefix = kv->GetKey().Mid( 0, slashPosition );
+			if ( prefix != prevPrefix ) {
+				prevPrefix = prefix;
+				prefixList.Append( prefix );
+			}
+			prefixIndex[i] = prefixList.Num();
+		} else {
+			prefixIndex[i] = 0;
+
+			// output all the prefix-less first
+			idStr str = va( "%s=%s\n", kv->GetKey().c_str(), idStr::CStyleQuote( kv->GetValue() ) );
+			f->Write( (void *)str.c_str(), str.Length() );
+
+			skipFirstLine = "\n";
+		}
+	}
+
+	int prevPrefixIndex = 0;
+	int prefixLength = 0;
+
+	// output all the rest without their prefix
+	for ( int i = 0; i < sortedArgs.Num(); i++ ) {
+		if ( prefixIndex[i] == 0 ) {
+			continue;
+		}
+
+		if ( prefixIndex[i] != prevPrefixIndex ) {
+			prevPrefixIndex = prefixIndex[i];
+			prefixLength = prefixList[prevPrefixIndex - 1].Length() + 1; // to skip past the '/' too
+
+			// output prefix
+			idStr str = va( "%s[%s]\n", skipFirstLine.c_str(), prefixList[prevPrefixIndex - 1].c_str() );
+			f->Write( (void *)str.c_str(), str.Length() );
+		}
+
+		const idKeyValue * kv = &sortedArgs[i];
+		idStr str = va( "%s=%s\n", kv->GetKey().c_str() + prefixLength, idStr::CStyleQuote( kv->GetValue() ) );
+		f->Write( (void *)str.c_str(), str.Length() );
+	}
+}
+
+/*
+================
+idDict::ReadFromIniFile
+================
+*/
+bool idDict::ReadFromIniFile( idFile * f ) {
+	int length = f->Length();
+	idTempArray< char > buffer( length );
+	if ( (int)f->Read( buffer.Ptr(), length ) != length ) {
+		return false;
+	}
+	buffer[length-1] = NULL;	// Since the .ini files are not null terminated, make sure we mark where the end of the .ini file is in our read buffer
+
+	idLexer parser( LEXFL_NOFATALERRORS | LEXFL_ALLOWPATHNAMES /*| LEXFL_ONLYSTRINGS */);
+	idStr name = f->GetName();
+	name.Append( " dictionary INI reader" );
+	if ( !parser.LoadMemory( ( const char* )buffer.Ptr(), length, name.c_str() ) ) {
+		return false;
+	}
+
+	idToken	token;
+	idToken	token2;
+	idStr prefix = "";
+	idStr valueStr;
+	bool success = true;
+
+	Clear();
+
+	const punctuation_t ini_punctuations[] = {
+		{ "[", P_SQBRACKETOPEN },
+		{ "]", P_SQBRACKETCLOSE },
+		{ "=", P_ASSIGN },
+		{ NULL, 0 }
+	};
+	parser.SetPunctuations( ini_punctuations );
+
+	while ( success && !parser.EndOfFile() ) {
+		if ( parser.PeekTokenType( TT_PUNCTUATION, P_SQBRACKETOPEN, &token ) ) {
+			success = success && parser.ExpectTokenType( TT_PUNCTUATION, P_SQBRACKETOPEN, &token );
+			success = success && parser.ReadToken( &token );
+			prefix = token.c_str();
+			prefix.Append( '/' );
+			success = success && parser.ExpectTokenType( TT_PUNCTUATION, P_SQBRACKETCLOSE, &token );
+		}
+		
+		if ( !parser.PeekTokenType( TT_NAME, 0, &token ) ) {
+			// end of file most likely
+			break;
+		}
+
+		success = success && parser.ExpectTokenType( TT_NAME, 0, &token );
+		success = success && parser.ExpectTokenType( TT_PUNCTUATION, P_ASSIGN, &token2 );
+		success = success && ( parser.ParseRestOfLine( valueStr ) != NULL );
+
+		valueStr = idStr::CStyleUnQuote( valueStr );
+
+		idStr key = va( "%s%s", prefix.c_str(), token.c_str() );
+		if ( FindKey( key.c_str() ) ) {
+			parser.Warning( "'%s' already defined", key.c_str() );
+		}
+
+		Set( key.c_str(), valueStr.c_str() );
+	}
+
+	return success;
+}
+
+CONSOLE_COMMAND( TestDictIniFile, "Tests the writing/reading of various items in a dict to/from an ini file", 0 ) {
+	// Write to the file
+	idFile * file = fileSystem->OpenFileWrite( "idDict_ini_test.ini" );
+	if ( file == NULL ) {
+		idLib::Printf( "[^1FAILED^0] Couldn't open file for writing.\n" );
+		return;
+	}
+
+	idDict vars;
+	vars.SetInt( "section1/section3/a", -1 );
+	vars.SetInt( "section1/section3/b", 0 );
+	vars.SetInt( "section1/section3/c", 3 );
+	vars.SetFloat( "section2/d", 4.0f );
+	vars.SetFloat( "section2/e", -5.0f );
+	vars.SetBool( "section2/f", true );
+	vars.SetBool( "section1/g", false );
+	vars.Set( "section1/h", "test1" );
+	vars.Set( "i", "1234" );
+	vars.SetInt( "j", 9 );
+	vars.WriteToIniFile( file );
+	delete file;
+
+	// Read from the file
+	file = fileSystem->OpenFileRead( "idDict_ini_test.ini" );
+	if ( file == NULL ) {
+		idLib::Printf( "[^1FAILED^0] Couldn't open file for reading.\n" );
+	}
+
+	idDict readVars;
+	readVars.ReadFromIniFile( file );
+	delete file;
+
+	if ( vars.Checksum() != readVars.Checksum() ) {
+		idLib::Printf( "[^1FAILED^0] Dictionaries do not match.\n" );
+	} else {
+		idLib::Printf( "[^2PASSED^0] Dictionaries match.\n" );
+	}
+
+	// Output results
+	for ( int i = 0; i < readVars.GetNumKeyVals(); i++ ) {
+		const idKeyValue * kv = readVars.GetKeyVal( i );
+		idLib::Printf( "%s=%s\n", kv->GetKey().c_str(), kv->GetValue().c_str() );
+	}
+}
+
+/*
 ================
 idDict::Init
 ================
 */
-void idDict::Init( void ) {
+void idDict::Init() {
 	globalKeys.SetCaseSensitive( false );
 	globalValues.SetCaseSensitive( true );
 }
@@ -634,7 +887,7 @@ void idDict::Init( void ) {
 idDict::Shutdown
 ================
 */
-void idDict::Shutdown( void ) {
+void idDict::Shutdown() {
 	globalKeys.Clear();
 	globalValues.Clear();
 }
@@ -651,32 +904,22 @@ void idDict::ShowMemoryUsage_f( const idCmdArgs &args ) {
 
 /*
 ================
-idDictStringSortCmp
-================
-*/
-// NOTE: the const wonkyness is required to make msvc happy
-template<>
-ID_INLINE int idListSortCompare( const idPoolStr * const *a, const idPoolStr * const *b ) {
-	return (*a)->Icmp( **b );
-}
-
-/*
-================
 idDict::ListKeys_f
 ================
 */
 void idDict::ListKeys_f( const idCmdArgs &args ) {
-	int i;
-	idList<const idPoolStr *> keyStrings;
+	idLib::Printf( "Not implemented due to sort impl issues.\n" );
+	//int i;
+	//idList<const idPoolStr *> keyStrings;
 
-	for ( i = 0; i < globalKeys.Num(); i++ ) {
-		keyStrings.Append( globalKeys[i] );
-	}
-	keyStrings.Sort();
-	for ( i = 0; i < keyStrings.Num(); i++ ) {
-		idLib::common->Printf( "%s\n", keyStrings[i]->c_str() );
-	}
-	idLib::common->Printf( "%5d keys\n", keyStrings.Num() );
+	//for ( i = 0; i < globalKeys.Num(); i++ ) {
+	//	keyStrings.Append( globalKeys[i] );
+	//}
+	//keyStrings.SortWithTemplate( idSort_PoolStrPtr() );
+	//for ( i = 0; i < keyStrings.Num(); i++ ) {
+	//	idLib::common->Printf( "%s\n", keyStrings[i]->c_str() );
+	//}
+	//idLib::common->Printf( "%5d keys\n", keyStrings.Num() );
 }
 
 /*
@@ -685,15 +928,16 @@ idDict::ListValues_f
 ================
 */
 void idDict::ListValues_f( const idCmdArgs &args ) {
-	int i;
-	idList<const idPoolStr *> valueStrings;
+	idLib::Printf( "Not implemented due to sort impl issues.\n" );
+	//int i;
+	//idList<const idPoolStr *> valueStrings;
 
-	for ( i = 0; i < globalValues.Num(); i++ ) {
-		valueStrings.Append( globalValues[i] );
-	}
-	valueStrings.Sort();
-	for ( i = 0; i < valueStrings.Num(); i++ ) {
-		idLib::common->Printf( "%s\n", valueStrings[i]->c_str() );
-	}
-	idLib::common->Printf( "%5d values\n", valueStrings.Num() );
+	//for ( i = 0; i < globalValues.Num(); i++ ) {
+	//	valueStrings.Append( globalValues[i] );
+	//}
+	//valueStrings.SortWithTemplate( idSort_PoolStrPtr() );
+	//for ( i = 0; i < valueStrings.Num(); i++ ) {
+	//	idLib::common->Printf( "%s\n", valueStrings[i]->c_str() );
+	//}
+	//idLib::common->Printf( "%5d values\n", valueStrings.Num() );
 }

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -39,7 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 
 class idBounds {
 public:
-					idBounds( void );
+					idBounds();
 					explicit idBounds( const idVec3 &mins, const idVec3 &maxs );
 					explicit idBounds( const idVec3 &point );
 
@@ -59,14 +59,14 @@ public:
 	bool			operator==(	const idBounds &a ) const;						// exact compare, no epsilon
 	bool			operator!=(	const idBounds &a ) const;						// exact compare, no epsilon
 
-	void			Clear( void );									// inside out bounds
-	void			Zero( void );									// single point at origin
+	void			Clear();									// inside out bounds
+	void			Zero();									// single point at origin
 
-	idVec3			GetCenter( void ) const;						// returns center of bounds
-	float			GetRadius( void ) const;						// returns the radius relative to the bounds origin
+	idVec3			GetCenter() const;						// returns center of bounds
+	float			GetRadius() const;						// returns the radius relative to the bounds origin
 	float			GetRadius( const idVec3 &center ) const;		// returns the radius relative to the given center
-	float			GetVolume( void ) const;						// returns the volume of the bounds
-	bool			IsCleared( void ) const;						// returns true if bounds are inside out
+	float			GetVolume() const;						// returns the volume of the bounds
+	bool			IsCleared() const;						// returns true if bounds are inside out
 
 	bool			AddPoint( const idVec3 &v );					// add the point, returns true if the bounds expanded
 	bool			AddBounds( const idBounds &a );					// add the bounds, returns true if the bounds expanded
@@ -100,18 +100,25 @@ public:
 	void			FromBoundsRotation( const idBounds &bounds, const idVec3 &origin, const idMat3 &axis, const idRotation &rotation );
 
 	void			ToPoints( idVec3 points[8] ) const;
-	idSphere		ToSphere( void ) const;
+	idSphere		ToSphere() const;
 
 	void			AxisProjection( const idVec3 &dir, float &min, float &max ) const;
 	void			AxisProjection( const idVec3 &origin, const idMat3 &axis, const idVec3 &dir, float &min, float &max ) const;
+
+	int				GetDimension() const;
+
+	const float *	ToFloatPtr() const;
+	float *			ToFloatPtr();
 
 private:
 	idVec3			b[2];
 };
 
 extern idBounds	bounds_zero;
+extern idBounds bounds_zeroOneCube;
+extern idBounds bounds_unitCube;
 
-ID_INLINE idBounds::idBounds( void ) {
+ID_INLINE idBounds::idBounds() {
 }
 
 ID_INLINE idBounds::idBounds( const idVec3 &mins, const idVec3 &maxs ) {
@@ -198,28 +205,28 @@ ID_INLINE bool idBounds::operator!=( const idBounds &a ) const {
 	return !Compare( a );
 }
 
-ID_INLINE void idBounds::Clear( void ) {
+ID_INLINE void idBounds::Clear() {
 	b[0][0] = b[0][1] = b[0][2] = idMath::INFINITY;
 	b[1][0] = b[1][1] = b[1][2] = -idMath::INFINITY;
 }
 
-ID_INLINE void idBounds::Zero( void ) {
+ID_INLINE void idBounds::Zero() {
 	b[0][0] = b[0][1] = b[0][2] =
 	b[1][0] = b[1][1] = b[1][2] = 0;
 }
 
-ID_INLINE idVec3 idBounds::GetCenter( void ) const {
+ID_INLINE idVec3 idBounds::GetCenter() const {
 	return idVec3( ( b[1][0] + b[0][0] ) * 0.5f, ( b[1][1] + b[0][1] ) * 0.5f, ( b[1][2] + b[0][2] ) * 0.5f );
 }
 
-ID_INLINE float idBounds::GetVolume( void ) const {
+ID_INLINE float idBounds::GetVolume() const {
 	if ( b[0][0] >= b[1][0] || b[0][1] >= b[1][1] || b[0][2] >= b[1][2] ) {
 		return 0.0f;
 	}
 	return ( ( b[1][0] - b[0][0] ) * ( b[1][1] - b[0][1] ) * ( b[1][2] - b[0][2] ) );
 }
 
-ID_INLINE bool idBounds::IsCleared( void ) const {
+ID_INLINE bool idBounds::IsCleared() const {
 	return b[0][0] > b[1][0];
 }
 
@@ -366,7 +373,7 @@ ID_INLINE bool idBounds::IntersectsBounds( const idBounds &a ) const {
 	return true;
 }
 
-ID_INLINE idSphere idBounds::ToSphere( void ) const {
+ID_INLINE idSphere idBounds::ToSphere() const {
 	idSphere sphere;
 	sphere.SetOrigin( ( b[0] + b[1] ) * 0.5f );
 	sphere.SetRadius( ( b[1] - sphere.GetOrigin() ).Length() );
@@ -404,6 +411,18 @@ ID_INLINE void idBounds::AxisProjection( const idVec3 &origin, const idMat3 &axi
 
 	min = d1 - d2;
 	max = d1 + d2;
+}
+
+ID_INLINE int idBounds::GetDimension() const {
+	return 6;
+}
+
+ID_INLINE const float *idBounds::ToFloatPtr() const {
+	return &b[0].x;
+}
+
+ID_INLINE float *idBounds::ToFloatPtr() {
+	return &b[0].x;
 }
 
 #endif /* !__BV_BOUNDS_H__ */

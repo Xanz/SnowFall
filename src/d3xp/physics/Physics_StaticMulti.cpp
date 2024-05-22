@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -35,14 +36,14 @@ CLASS_DECLARATION( idPhysics, idPhysics_StaticMulti )
 END_CLASS
 
 staticPState_t defaultState;
-
+staticInterpolatePState_t defaultInterpolateState;
 
 /*
 ================
 idPhysics_StaticMulti::idPhysics_StaticMulti
 ================
 */
-idPhysics_StaticMulti::idPhysics_StaticMulti( void ) {
+idPhysics_StaticMulti::idPhysics_StaticMulti() {
 	self = NULL;
 	hasMaster = false;
 	isOrientated = false;
@@ -52,8 +53,17 @@ idPhysics_StaticMulti::idPhysics_StaticMulti( void ) {
 	defaultState.localOrigin.Zero();
 	defaultState.localAxis.Identity();
 
+	defaultInterpolateState.origin.Zero();
+	defaultInterpolateState.axis = defaultState.axis.ToQuat();
+	defaultInterpolateState.localAxis = defaultInterpolateState.axis;
+	defaultInterpolateState.localOrigin.Zero();
+
 	current.SetNum( 1 );
 	current[0] = defaultState;
+	previous.SetNum( 1 );
+	previous[0] = defaultInterpolateState;
+	next.SetNum( 1 );
+	next[0] = defaultInterpolateState;
 	clipModels.SetNum( 1 );
 	clipModels[0] = NULL;
 }
@@ -63,7 +73,7 @@ idPhysics_StaticMulti::idPhysics_StaticMulti( void ) {
 idPhysics_StaticMulti::~idPhysics_StaticMulti
 ================
 */
-idPhysics_StaticMulti::~idPhysics_StaticMulti( void ) {
+idPhysics_StaticMulti::~idPhysics_StaticMulti() {
 	if ( self && self->GetPhysics() == this ) {
 		self->SetPhysics( NULL );
 	}
@@ -177,6 +187,7 @@ void idPhysics_StaticMulti::SetClipModel( idClipModel *model, float density, int
 	clipModels[id] = model;
 	if ( clipModels[id] ) {
 		clipModels[id]->Link( gameLocal.clip, self, id, current[id].origin, current[id].axis );
+
 	}
 
 	for ( i = clipModels.Num() - 1; i >= 1; i-- ) {
@@ -184,8 +195,16 @@ void idPhysics_StaticMulti::SetClipModel( idClipModel *model, float density, int
 			break;
 		}
 	}
-	current.SetNum( i+1, false );
-	clipModels.SetNum( i+1, false );
+	current.SetNum( i+1 );
+	clipModels.SetNum( i+1 );
+
+	// Assure that on first setup, our next/previous is the same as current. 
+	previous.SetNum( current.Num() );
+	next.SetNum( previous.Num() );
+	for( int curIdx = 0; curIdx < current.Num(); curIdx++ ) {
+		previous[curIdx] = ConvertPStateToInterpolateState( current[curIdx] );
+		previous[curIdx] = next[curIdx];
+	}
 }
 
 /*
@@ -205,7 +224,7 @@ idClipModel *idPhysics_StaticMulti::GetClipModel( int id ) const {
 idPhysics_StaticMulti::GetNumClipModels
 ================
 */
-int idPhysics_StaticMulti::GetNumClipModels( void ) const {
+int idPhysics_StaticMulti::GetNumClipModels() const {
 	return clipModels.Num();
 }
 
@@ -377,6 +396,30 @@ bool idPhysics_StaticMulti::Evaluate( int timeStepMSec, int endTimeMSec ) {
 
 /*
 ================
+idPhysics_StaticMulti::Interpolate
+================
+*/
+bool idPhysics_StaticMulti::Interpolate( const float fraction ) {
+	// If the sizes don't match, just use the latest version.
+	// TODO: This might cause visual snapping, is there a better solution?
+	if ( current.Num() != previous.Num() ||
+		 current.Num() != next.Num() ) {
+		current.SetNum( next.Num() );
+		for ( int i = 0; i < next.Num(); ++i ) {
+			current[i] = InterpolateStaticPState( next[i], next[i], 1.0f );
+		}
+		return true;
+	}
+
+	for ( int i = 0; i < current.Num(); ++i ) {
+		current[i] = InterpolateStaticPState( previous[i], next[i], fraction );
+	}
+
+	return true;
+}
+
+/*
+================
 idPhysics_StaticMulti::UpdateTime
 ================
 */
@@ -388,7 +431,7 @@ void idPhysics_StaticMulti::UpdateTime( int endTimeMSec ) {
 idPhysics_StaticMulti::GetTime
 ================
 */
-int idPhysics_StaticMulti::GetTime( void ) const {
+int idPhysics_StaticMulti::GetTime() const {
 	return 0;
 }
 
@@ -422,7 +465,7 @@ void idPhysics_StaticMulti::AddForce( const int id, const idVec3 &point, const i
 idPhysics_StaticMulti::Activate
 ================
 */
-void idPhysics_StaticMulti::Activate( void ) {
+void idPhysics_StaticMulti::Activate() {
 }
 
 /*
@@ -430,7 +473,7 @@ void idPhysics_StaticMulti::Activate( void ) {
 idPhysics_StaticMulti::PutToRest
 ================
 */
-void idPhysics_StaticMulti::PutToRest( void ) {
+void idPhysics_StaticMulti::PutToRest() {
 }
 
 /*
@@ -438,7 +481,7 @@ void idPhysics_StaticMulti::PutToRest( void ) {
 idPhysics_StaticMulti::IsAtRest
 ================
 */
-bool idPhysics_StaticMulti::IsAtRest( void ) const {
+bool idPhysics_StaticMulti::IsAtRest() const {
 	return true;
 }
 
@@ -447,7 +490,7 @@ bool idPhysics_StaticMulti::IsAtRest( void ) const {
 idPhysics_StaticMulti::GetRestStartTime
 ================
 */
-int idPhysics_StaticMulti::GetRestStartTime( void ) const {
+int idPhysics_StaticMulti::GetRestStartTime() const {
 	return 0;
 }
 
@@ -456,7 +499,7 @@ int idPhysics_StaticMulti::GetRestStartTime( void ) const {
 idPhysics_StaticMulti::IsPushable
 ================
 */
-bool idPhysics_StaticMulti::IsPushable( void ) const {
+bool idPhysics_StaticMulti::IsPushable() const {
 	return false;
 }
 
@@ -465,7 +508,7 @@ bool idPhysics_StaticMulti::IsPushable( void ) const {
 idPhysics_StaticMulti::SaveState
 ================
 */
-void idPhysics_StaticMulti::SaveState( void ) {
+void idPhysics_StaticMulti::SaveState() {
 }
 
 /*
@@ -473,7 +516,7 @@ void idPhysics_StaticMulti::SaveState( void ) {
 idPhysics_StaticMulti::RestoreState
 ================
 */
-void idPhysics_StaticMulti::RestoreState( void ) {
+void idPhysics_StaticMulti::RestoreState() {
 }
 
 /*
@@ -696,7 +739,7 @@ void idPhysics_StaticMulti::SetGravity( const idVec3 &newGravity ) {
 idPhysics_StaticMulti::GetGravity
 ================
 */
-const idVec3 &idPhysics_StaticMulti::GetGravity( void ) const {
+const idVec3 &idPhysics_StaticMulti::GetGravity() const {
 	static idVec3 gravity( 0, 0, -g_gravity.GetFloat() );
 	return gravity;
 }
@@ -706,7 +749,7 @@ const idVec3 &idPhysics_StaticMulti::GetGravity( void ) const {
 idPhysics_StaticMulti::GetGravityNormal
 ================
 */
-const idVec3 &idPhysics_StaticMulti::GetGravityNormal( void ) const {
+const idVec3 &idPhysics_StaticMulti::GetGravityNormal() const {
 	static idVec3 gravity( 0, 0, -1 );
 	return gravity;
 }
@@ -758,7 +801,7 @@ int idPhysics_StaticMulti::ClipContents( const idClipModel *model ) const {
 idPhysics_StaticMulti::DisableClip
 ================
 */
-void idPhysics_StaticMulti::DisableClip( void ) {
+void idPhysics_StaticMulti::DisableClip() {
 	int i;
 
 	for ( i = 0; i < clipModels.Num(); i++ ) {
@@ -773,7 +816,7 @@ void idPhysics_StaticMulti::DisableClip( void ) {
 idPhysics_StaticMulti::EnableClip
 ================
 */
-void idPhysics_StaticMulti::EnableClip( void ) {
+void idPhysics_StaticMulti::EnableClip() {
 	int i;
 
 	for ( i = 0; i < clipModels.Num(); i++ ) {
@@ -788,7 +831,7 @@ void idPhysics_StaticMulti::EnableClip( void ) {
 idPhysics_StaticMulti::UnlinkClip
 ================
 */
-void idPhysics_StaticMulti::UnlinkClip( void ) {
+void idPhysics_StaticMulti::UnlinkClip() {
 	int i;
 
 	for ( i = 0; i < clipModels.Num(); i++ ) {
@@ -803,7 +846,7 @@ void idPhysics_StaticMulti::UnlinkClip( void ) {
 idPhysics_StaticMulti::LinkClip
 ================
 */
-void idPhysics_StaticMulti::LinkClip( void ) {
+void idPhysics_StaticMulti::LinkClip() {
 	int i;
 
 	for ( i = 0; i < clipModels.Num(); i++ ) {
@@ -818,7 +861,7 @@ void idPhysics_StaticMulti::LinkClip( void ) {
 idPhysics_StaticMulti::EvaluateContacts
 ================
 */
-bool idPhysics_StaticMulti::EvaluateContacts( void ) {
+bool idPhysics_StaticMulti::EvaluateContacts() {
 	return false;
 }
 
@@ -827,7 +870,7 @@ bool idPhysics_StaticMulti::EvaluateContacts( void ) {
 idPhysics_StaticMulti::GetNumContacts
 ================
 */
-int idPhysics_StaticMulti::GetNumContacts( void ) const {
+int idPhysics_StaticMulti::GetNumContacts() const {
 	return 0;
 }
 
@@ -847,7 +890,7 @@ const contactInfo_t &idPhysics_StaticMulti::GetContact( int num ) const {
 idPhysics_StaticMulti::ClearContacts
 ================
 */
-void idPhysics_StaticMulti::ClearContacts( void ) {
+void idPhysics_StaticMulti::ClearContacts() {
 }
 
 /*
@@ -871,7 +914,7 @@ void idPhysics_StaticMulti::RemoveContactEntity( idEntity *e ) {
 idPhysics_StaticMulti::HasGroundContacts
 ================
 */
-bool idPhysics_StaticMulti::HasGroundContacts( void ) const {
+bool idPhysics_StaticMulti::HasGroundContacts() const {
 	return false;
 }
 
@@ -956,7 +999,7 @@ void idPhysics_StaticMulti::SetMaster( idEntity *master, const bool orientated )
 idPhysics_StaticMulti::GetBlockingInfo
 ================
 */
-const trace_t *idPhysics_StaticMulti::GetBlockingInfo( void ) const {
+const trace_t *idPhysics_StaticMulti::GetBlockingInfo() const {
 	return NULL;
 }
 
@@ -965,7 +1008,7 @@ const trace_t *idPhysics_StaticMulti::GetBlockingInfo( void ) const {
 idPhysics_StaticMulti::GetBlockingEntity
 ================
 */
-idEntity *idPhysics_StaticMulti::GetBlockingEntity( void ) const {
+idEntity *idPhysics_StaticMulti::GetBlockingEntity() const {
 	return NULL;
 }
 
@@ -974,7 +1017,7 @@ idEntity *idPhysics_StaticMulti::GetBlockingEntity( void ) const {
 idPhysics_StaticMulti::GetLinearEndTime
 ================
 */
-int idPhysics_StaticMulti::GetLinearEndTime( void ) const {
+int idPhysics_StaticMulti::GetLinearEndTime() const {
 	return 0;
 }
 
@@ -983,7 +1026,7 @@ int idPhysics_StaticMulti::GetLinearEndTime( void ) const {
 idPhysics_StaticMulti::GetAngularEndTime
 ================
 */
-int idPhysics_StaticMulti::GetAngularEndTime( void ) const {
+int idPhysics_StaticMulti::GetAngularEndTime() const {
 	return 0;
 }
 
@@ -992,7 +1035,7 @@ int idPhysics_StaticMulti::GetAngularEndTime( void ) const {
 idPhysics_StaticMulti::WriteToSnapshot
 ================
 */
-void idPhysics_StaticMulti::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idPhysics_StaticMulti::WriteToSnapshot( idBitMsg &msg ) const {
 	int i;
 	idCQuat quat, localQuat;
 
@@ -1022,28 +1065,18 @@ void idPhysics_StaticMulti::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idPhysics_StaticMulti::ReadFromSnapshot
 ================
 */
-void idPhysics_StaticMulti::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idPhysics_StaticMulti::ReadFromSnapshot( const idBitMsg &msg ) {
 	int i, num;
 	idCQuat quat, localQuat;
 
 	num = msg.ReadByte();
 	assert( num == current.Num() );
 
-	for ( i = 0; i < current.Num(); i++ ) {
-		current[i].origin[0] = msg.ReadFloat();
-		current[i].origin[1] = msg.ReadFloat();
-		current[i].origin[2] = msg.ReadFloat();
-		quat.x = msg.ReadFloat();
-		quat.y = msg.ReadFloat();
-		quat.z = msg.ReadFloat();
-		current[i].localOrigin[0] = msg.ReadDeltaFloat( current[i].origin[0] );
-		current[i].localOrigin[1] = msg.ReadDeltaFloat( current[i].origin[1] );
-		current[i].localOrigin[2] = msg.ReadDeltaFloat( current[i].origin[2] );
-		localQuat.x = msg.ReadDeltaFloat( quat.x );
-		localQuat.y = msg.ReadDeltaFloat( quat.y );
-		localQuat.z = msg.ReadDeltaFloat( quat.z );
+	previous = next;
 
-		current[i].axis = quat.ToMat3();
-		current[i].localAxis = localQuat.ToMat3();
+	next.SetNum( num );
+
+	for ( i = 0; i < current.Num(); i++ ) {
+		next[i] = ReadStaticInterpolatePStateFromSnapshot( msg );
 	}
 }

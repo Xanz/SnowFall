@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -28,6 +28,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifndef __GAME_PLAYERVIEW_H__
 #define __GAME_PLAYERVIEW_H__
+
+class idMenuHandler_HUD;
 
 /*
 ===============================================================================
@@ -53,7 +55,6 @@ typedef struct {
 
 
 
-#ifdef _D3XP
 class WarpPolygon_t {
 public:
 	idVec4					outer1;
@@ -74,9 +75,8 @@ public:
 
 	int						durationMsec;
 
-	idList<WarpPolygon_t>	polys;
+	idList<WarpPolygon_t, TAG_IDLIB_LIST_PLAYER>	polys;
 };
-#endif
 
 
 
@@ -84,7 +84,6 @@ public:
 
 
 
-#ifdef _D3XP
 
 class idPlayerView;
 class FullscreenFXManager;
@@ -167,11 +166,9 @@ FullscreenFX_Helltime
 ==================
 */
 class FullscreenFX_Helltime : public FullscreenFX {
-	const idMaterial*		acInitMaterials[3];
-	const idMaterial*		acCaptureMaterials[3];
-	const idMaterial*		acDrawMaterials[3];
-	const idMaterial*		crCaptureMaterials[3];
-	const idMaterial*		crDrawMaterials[3];
+	const idMaterial *		initMaterial;
+	const idMaterial *		captureMaterials[3];
+	const idMaterial *		drawMaterial;
 	bool					clearAccumBuffer;
 
 	int						DetermineLevel();
@@ -192,11 +189,9 @@ FullscreenFX_Multiplayer
 ==================
 */
 class FullscreenFX_Multiplayer : public FullscreenFX {
-	const idMaterial*		acInitMaterials;
-	const idMaterial*		acCaptureMaterials;
-	const idMaterial*		acDrawMaterials;
-	const idMaterial*		crCaptureMaterials;
-	const idMaterial*		crDrawMaterials;
+	const idMaterial *		initMaterial;
+	const idMaterial *		captureMaterial;
+	const idMaterial *		drawMaterial;
 	bool					clearAccumBuffer;
 
 	int						DetermineLevel();
@@ -283,7 +278,6 @@ FullscreenFX_Bloom
 class FullscreenFX_Bloom : public FullscreenFX {
 	const idMaterial*		drawMaterial;
 	const idMaterial*		initMaterial;
-	const idMaterial*		currentMaterial;
 
 	float					currentIntensity;
 	float					targetIntensity;
@@ -305,11 +299,9 @@ FullscreenFXManager
 ==================
 */
 class FullscreenFXManager {
-	idList<FullscreenFX*>	fx;
-	bool					highQualityMode;
-	idVec2					shiftScale;
+	idList<FullscreenFX*, TAG_FX>	fx;
 
-	idPlayerView			*playerView;
+	idPlayerView *			playerView;
 	const idMaterial*		blendBackMaterial;
 
 	void					CreateFX( idStr name, idStr fxtype, int fade );
@@ -321,10 +313,8 @@ public:
 	void					Initialize( idPlayerView *pv );
 
 	void					Process( const renderView_t *view );
-	void					CaptureCurrentRender();
 	void					Blendback( float alpha );
 
-	idVec2					GetShiftScale()			{ return shiftScale; };
 	idPlayerView*			GetPlayerView()			{ return playerView; };
 	idPlayer*				GetPlayer()				{ return gameLocal.GetLocalPlayer(); };
 
@@ -336,7 +326,6 @@ public:
 	void					Restore( idRestoreGame *savefile );
 };
 
-#endif
 
 
 
@@ -349,39 +338,39 @@ public:
 class idPlayerView {
 public:
 						idPlayerView();
+						~idPlayerView();
 
 	void				Save( idSaveGame *savefile ) const;
 	void				Restore( idRestoreGame *savefile );
 
 	void				SetPlayerEntity( class idPlayer *playerEnt );
 
-	void				ClearEffects( void );
+	void				ClearEffects();
 
 	void				DamageImpulse( idVec3 localKickDir, const idDict *damageDef );
 
 	void				WeaponFireFeedback( const idDict *weaponDef );
 
-	idAngles			AngleOffset( void ) const;			// returns the current kick angle
+	idAngles			AngleOffset() const;			// returns the current kick angle
 
-	idMat3				ShakeAxis( void ) const;			// returns the current shake angle
+	idMat3				ShakeAxis() const;			// returns the current shake angle
 
-	void				CalculateShake( void );
+	void				CalculateShake();
 
 	// this may involve rendering to a texture and displaying
 	// that with a warp model or in double vision mode
-	void				RenderPlayerView( idUserInterface *hud );
+	void				RenderPlayerView( idMenuHandler_HUD * hudManager );
+	void				EmitStereoEyeView( const int eye, idMenuHandler_HUD * hudManager );
 
 	void				Fade( idVec4 color, int time );
 
 	void				Flash( idVec4 color, int time );
 
-	void				AddBloodSpray( float duration );
-
 	// temp for view testing
 	void				EnableBFGVision( bool b ) { bfgVision = b; };
 
 private:
-	void				SingleView( idUserInterface *hud, const renderView_t *view );
+	void				SingleView( const renderView_t *view, idMenuHandler_HUD * hudManager );
 	void				ScreenFade();
 
 	screenBlob_t *		GetScreenBlob();
@@ -390,7 +379,6 @@ private:
 
 public:
 	int					dvFinishTime;		// double vision will be stopped at this time
-	const idMaterial *	dvMaterial;			// material to take the double vision screen shot
 
 	int					kickFinishTime;		// view kick will be stopped at this time
 	idAngles			kickAngles;			
@@ -403,7 +391,6 @@ public:
 	const idMaterial *	irGogglesMaterial;	// ir effect
 	const idMaterial *	bloodSprayMaterial; // blood spray
 	const idMaterial *	bfgMaterial;		// when targeted with BFG
-	const idMaterial *	lagoMaterial;		// lagometer drawing
 	float				lastDamageTime;		// accentuate the tunnel effect for a while
 
 	idVec4				fadeColor;			// fade color
@@ -417,13 +404,14 @@ public:
 	idPlayer *			player;
 	renderView_t		view;
 
-#ifdef _D3XP
 	FullscreenFXManager	*fxManager;
 
 public:
 	int					AddWarp( idVec3 worldOrigin, float centerx, float centery, float initialRadius, float durationMsec );
 	void				FreeWarp( int id );
-#endif
 };
+
+// the crosshair is swapped for a laser sight in stereo rendering
+bool	IsGameStereoRendered();
 
 #endif /* !__GAME_PLAYERVIEW_H__ */

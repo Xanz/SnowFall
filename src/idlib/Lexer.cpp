@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -133,14 +133,14 @@ void idLexer::CreatePunctuationTable( const punctuation_t *punctuations ) {
 	}
 	else {
 		if ( !idLexer::punctuationtable || idLexer::punctuationtable == default_punctuationtable ) {
-			idLexer::punctuationtable = (int *) Mem_Alloc(256 * sizeof(int));
+			idLexer::punctuationtable = (int *) Mem_Alloc(256 * sizeof(int), TAG_IDLIB_LEXER);
 		}
 		if ( idLexer::nextpunctuation && idLexer::nextpunctuation != default_nextpunctuation ) {
 			Mem_Free( idLexer::nextpunctuation );
 		}
 		for (i = 0; punctuations[i].p; i++) {
 		}
-		idLexer::nextpunctuation = (int *) Mem_Alloc(i * sizeof(int));
+		idLexer::nextpunctuation = (int *) Mem_Alloc(i * sizeof(int), TAG_IDLIB_LEXER);
 	}
 	memset(idLexer::punctuationtable, 0xFF, 256 * sizeof(int));
 	memset(idLexer::nextpunctuation, 0xFF, i * sizeof(int));
@@ -282,7 +282,7 @@ Reads spaces, tabs, C-like comments etc.
 When a newline character is found the scripts line counter is increased.
 ================
 */
-int idLexer::ReadWhiteSpace( void ) {
+int idLexer::ReadWhiteSpace() {
 	while(1) {
 		// skip white space
 		while(*idLexer::script_p <= ' ') {
@@ -347,6 +347,91 @@ int idLexer::ReadWhiteSpace( void ) {
 		break;
 	}
 	return 1;
+}
+
+/*
+========================
+idLexer::SkipWhiteSpace
+
+Reads spaces, tabs, C-like comments etc. When a newline character is found, the scripts line 
+counter is increased. Returns false if there is no token left to be read.
+========================
+*/
+bool idLexer::SkipWhiteSpace( bool currentLine ) {
+	while( 1 ) {
+		assert( script_p <= end_p );
+		if ( script_p == end_p ) {
+			return false;
+		}
+		// skip white space
+		while( *script_p <= ' ' ) {
+			if ( script_p == end_p ) {
+				return false;
+			}
+			if ( !*script_p ) {
+				return false;
+			}
+			if ( *script_p == '\n' ) {
+				line++;
+				if ( currentLine ) {
+					script_p++;
+					return true;
+				}
+			}
+			script_p++;
+		}
+		// skip comments
+		if ( *script_p == '/' ) {
+			// comments //
+			if ( *(script_p+1) == '/' ) {
+				script_p++;
+				do {
+					script_p++;
+					if ( !*script_p ) {
+						return false;
+					}
+				}
+				while( *script_p != '\n' );
+				line++;
+				script_p++;
+				if ( currentLine ) {
+					return true;
+				}
+				if ( !*script_p ) {
+					return false;
+				}
+				continue;
+			}
+			// comments /* */
+			else if ( *(script_p+1) == '*' ) {
+				script_p++;
+				while( 1 ) {
+					script_p++;
+					if ( !*script_p ) {
+						return false;
+					}
+					if ( *script_p == '\n' ) {
+						line++;
+					}
+					else if ( *script_p == '/' ) {
+						if ( *(script_p-1) == '*' ) {
+							break;
+						}
+						if ( *(script_p+1) == '*' ) {
+							Warning( "nested comment" );
+						}
+					}
+				}
+				script_p++;
+				if ( !*script_p ) {
+					return false;
+				}
+				continue;
+			}
+		}
+		break;
+	}
+	return true;
 }
 
 /*
@@ -774,7 +859,7 @@ idLexer::ReadPunctuation
 */
 int idLexer::ReadPunctuation( idToken *token ) {
 	int l, n, i;
-	const char *p;
+	char *p;
 	const punctuation_t *punc;
 
 #ifdef PUNCTABLE
@@ -822,6 +907,10 @@ int idLexer::ReadToken( idToken *token ) {
 
 	if ( !loaded ) {
 		idLib::common->Error( "idLexer::ReadToken: no file loaded" );
+		return 0;
+	}
+
+	if ( script_p == NULL ) {
 		return 0;
 	}
 
@@ -1110,7 +1199,7 @@ int idLexer::SkipUntilString( const char *string ) {
 idLexer::SkipRestOfLine
 ================
 */
-int idLexer::SkipRestOfLine( void ) {
+int idLexer::SkipRestOfLine() {
 	idToken token;
 
 	while(idLexer::ReadToken( &token )) {
@@ -1224,7 +1313,7 @@ const char*	idLexer::ReadRestOfLine(idStr& out) {
 idLexer::ParseInt
 ================
 */
-int idLexer::ParseInt( void ) {
+int idLexer::ParseInt() {
 	idToken token;
 
 	if ( !idLexer::ReadToken( &token ) ) {
@@ -1246,7 +1335,7 @@ int idLexer::ParseInt( void ) {
 idLexer::ParseBool
 ================
 */
-bool idLexer::ParseBool( void ) {
+bool idLexer::ParseBool() {
 	idToken token;
 
 	if ( !idLexer::ExpectTokenType( TT_NUMBER, 0, &token ) ) {
@@ -1512,6 +1601,38 @@ const char *idLexer::ParseRestOfLine( idStr &out ) {
 }
 
 /*
+========================
+idLexer::ParseCompleteLine
+
+Returns a string up to the \n, but doesn't eat any whitespace at the beginning of the next line.
+========================
+*/
+const char *idLexer::ParseCompleteLine( idStr &out ) {
+	idToken token;
+	const char	*start;
+
+	start = script_p;
+
+	while ( 1 ) {
+		// end of buffer
+		if ( *script_p == 0 ) {
+			break;
+		}
+		if ( *script_p == '\n' ) {
+			line++;
+			script_p++;
+			break;
+		}
+		script_p++;
+	}
+
+	out.Empty();
+	out.Append( start, script_p - start );
+
+	return out.c_str();
+}
+
+/*
 ================
 idLexer::GetLastWhiteSpace
 ================
@@ -1529,7 +1650,7 @@ int idLexer::GetLastWhiteSpace( idStr &whiteSpace ) const {
 idLexer::GetLastWhiteSpaceStart
 ================
 */
-int idLexer::GetLastWhiteSpaceStart( void ) const {
+int idLexer::GetLastWhiteSpaceStart() const {
 	return whiteSpaceStart_p - buffer;
 }
 
@@ -1538,7 +1659,7 @@ int idLexer::GetLastWhiteSpaceStart( void ) const {
 idLexer::GetLastWhiteSpaceEnd
 ================
 */
-int idLexer::GetLastWhiteSpaceEnd( void ) const {
+int idLexer::GetLastWhiteSpaceEnd() const {
 	return whiteSpaceEnd_p - buffer;
 }
 
@@ -1547,7 +1668,7 @@ int idLexer::GetLastWhiteSpaceEnd( void ) const {
 idLexer::Reset
 ================
 */
-void idLexer::Reset( void ) {
+void idLexer::Reset() {
 	// pointer in script buffer
 	idLexer::script_p = idLexer::buffer;
 	// pointer in script buffer before reading token
@@ -1570,7 +1691,7 @@ void idLexer::Reset( void ) {
 idLexer::EndOfFile
 ================
 */
-int idLexer::EndOfFile( void ) {
+bool idLexer::EndOfFile() {
 	return idLexer::script_p >= idLexer::end_p;
 }
 
@@ -1579,7 +1700,7 @@ int idLexer::EndOfFile( void ) {
 idLexer::NumLinesCrossed
 ================
 */
-int idLexer::NumLinesCrossed( void ) {
+int idLexer::NumLinesCrossed() {
 	return idLexer::line - idLexer::lastline;
 }
 
@@ -1613,7 +1734,7 @@ int idLexer::LoadFile( const char *filename, bool OSPath ) {
 		return false;
 	}
 	length = fp->Length();
-	buf = (char *) Mem_Alloc( length + 1 );
+	buf = (char *) Mem_Alloc( length + 1, TAG_IDLIB_LEXER );
 	buf[length] = '\0';
 	fp->Read( buf, length );
 	idLexer::fileTime = fp->Timestamp();
@@ -1673,7 +1794,7 @@ int idLexer::LoadMemory( const char *ptr, int length, const char *name, int star
 idLexer::FreeSource
 ================
 */
-void idLexer::FreeSource( void ) {
+void idLexer::FreeSource() {
 #ifdef PUNCTABLE
 	if ( idLexer::punctuationtable && idLexer::punctuationtable != default_punctuationtable ) {
 		Mem_Free( (void *) idLexer::punctuationtable );
@@ -1699,7 +1820,7 @@ void idLexer::FreeSource( void ) {
 idLexer::idLexer
 ================
 */
-idLexer::idLexer( void ) {
+idLexer::idLexer() {
 	idLexer::loaded = false;
 	idLexer::filename = "";
 	idLexer::flags = 0;
@@ -1773,7 +1894,7 @@ idLexer::idLexer( const char *ptr, int length, const char *name, int flags ) {
 idLexer::~idLexer
 ================
 */
-idLexer::~idLexer( void ) {
+idLexer::~idLexer() {
 	idLexer::FreeSource();
 }
 
@@ -1791,7 +1912,7 @@ void idLexer::SetBaseFolder( const char *path ) {
 idLexer::HadError
 ================
 */
-bool idLexer::HadError( void ) const {
+bool idLexer::HadError() const {
 	return hadError;
 }
 

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -120,7 +120,7 @@ void idSecurityCamera::Restore( idRestoreGame *savefile ) {
 idSecurityCamera::Spawn
 ================
 */
-void idSecurityCamera::Spawn( void ) {
+void idSecurityCamera::Spawn() {
 	idStr	str;
 
 	sweepAngle	= spawnArgs.GetFloat( "sweepAngle", "90" );
@@ -183,7 +183,7 @@ void idSecurityCamera::Spawn( void ) {
 idSecurityCamera::Event_AddLight
 ================
 */
-void idSecurityCamera::Event_AddLight( void ) {
+void idSecurityCamera::Event_AddLight() {
 	idDict	args;
 	idVec3	right, up, target, temp;
 	idVec3	dir;
@@ -224,7 +224,7 @@ void idSecurityCamera::Event_AddLight( void ) {
 idSecurityCamera::DrawFov
 ================
 */
-void idSecurityCamera::DrawFov( void ) {
+void idSecurityCamera::DrawFov() {
 	int i;
 	float radius, a, s, c, halfRadius;
 	idVec3 right, up;
@@ -283,7 +283,7 @@ renderView_t *idSecurityCamera::GetRenderView() {
 idSecurityCamera::CanSeePlayer
 ================
 */
-bool idSecurityCamera::CanSeePlayer( void ) {
+bool idSecurityCamera::CanSeePlayer() {
 	int i;
 	float dist;
 	idPlayer *ent;
@@ -350,7 +350,7 @@ void idSecurityCamera::SetAlertMode( int alert ) {
 idSecurityCamera::Think
 ================
 */
-void idSecurityCamera::Think( void ) {
+void idSecurityCamera::Think() {
 	float pct;
 	float travel;
 
@@ -421,7 +421,7 @@ void idSecurityCamera::Think( void ) {
 idSecurityCamera::GetAxis
 ================
 */
-const idVec3 idSecurityCamera::GetAxis( void ) const {
+const idVec3 idSecurityCamera::GetAxis() const {
 	return (flipAxis) ? -GetPhysics()->GetAxis()[modelAxis] : GetPhysics()->GetAxis()[modelAxis];
 };
 
@@ -430,7 +430,7 @@ const idVec3 idSecurityCamera::GetAxis( void ) const {
 idSecurityCamera::SweepSpeed
 ================
 */
-float idSecurityCamera::SweepSpeed( void ) const {
+float idSecurityCamera::SweepSpeed() const {
 	return spawnArgs.GetFloat( "sweepSpeed", "5" );
 }
 
@@ -439,7 +439,7 @@ float idSecurityCamera::SweepSpeed( void ) const {
 idSecurityCamera::StartSweep
 ================
 */
-void idSecurityCamera::StartSweep( void ) {
+void idSecurityCamera::StartSweep() {
 	int speed;
 
 	sweeping = true;
@@ -455,7 +455,7 @@ void idSecurityCamera::StartSweep( void ) {
 idSecurityCamera::Event_ContinueSweep
 ================
 */
-void idSecurityCamera::Event_ContinueSweep( void ) {
+void idSecurityCamera::Event_ContinueSweep() {
 	float pct = (stopSweeping - sweepStart) / (sweepEnd - sweepStart);
 	float f = gameLocal.time - (sweepEnd - sweepStart) * pct;
 	int speed;
@@ -474,7 +474,7 @@ void idSecurityCamera::Event_ContinueSweep( void ) {
 idSecurityCamera::Event_Alert
 ================
 */
-void idSecurityCamera::Event_Alert( void ) {
+void idSecurityCamera::Event_Alert() {
 	float	wait;
 
 	SetAlertMode(ACTIVATED);
@@ -492,7 +492,7 @@ void idSecurityCamera::Event_Alert( void ) {
 idSecurityCamera::Event_ReverseSweep
 ================
 */
-void idSecurityCamera::Event_ReverseSweep( void ) {
+void idSecurityCamera::Event_ReverseSweep() {
 	angle = GetPhysics()->GetAxis().ToAngles().yaw;
 	negativeSweep = !negativeSweep;
 	StartSweep();
@@ -503,7 +503,7 @@ void idSecurityCamera::Event_ReverseSweep( void ) {
 idSecurityCamera::Event_Pause
 ================
 */
-void idSecurityCamera::Event_Pause( void ) {
+void idSecurityCamera::Event_Pause() {
 	float	sweepWait;
 
 	sweepWait = spawnArgs.GetFloat( "sweepWait", "0.5" );
@@ -527,7 +527,7 @@ void idSecurityCamera::Killed( idEntity *inflictor, idEntity *attacker, int dama
 	}
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( trm ), 0.02f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( trm ), 0.02f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetBouncyness( 0.2f );
@@ -561,7 +561,7 @@ idSecurityCamera::Present
 Present is called to allow entities to generate refEntities, lights, etc for the renderer.
 ================
 */
-void idSecurityCamera::Present( void ) {
+void idSecurityCamera::Present() {
 	// don't present to the renderer if the entity hasn't changed
 	if ( !( thinkFlags & TH_UPDATEVISUALS ) ) {
 		return;

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -78,7 +78,7 @@ class idPhysics : public idClass {
 public:
 	ABSTRACT_PROTOTYPE( idPhysics );
 
-	virtual						~idPhysics( void );
+	virtual						~idPhysics();
 	static int					SnapTimeToPhysicsFrame( int t );
 
 	// Must not be virtual
@@ -92,7 +92,7 @@ public:	// common physics interface
 	virtual void				SetClipModel( idClipModel *model, float density, int id = 0, bool freeOld = true ) = 0;
 	virtual void				SetClipBox( const idBounds &bounds, float density );
 	virtual idClipModel *		GetClipModel( int id = 0 ) const = 0;
-	virtual int					GetNumClipModels( void ) const = 0;
+	virtual int					GetNumClipModels() const = 0;
 								// get/set the mass of a specific clip model or the whole physics object
 	virtual void				SetMass( float mass, int id = -1 ) = 0;
 	virtual float				GetMass( int id = -1 ) const = 0;
@@ -107,22 +107,27 @@ public:	// common physics interface
 	virtual const idBounds &	GetAbsBounds( int id = -1 ) const = 0;
 								// evaluate the physics with the given time step, returns true if the object moved
 	virtual bool				Evaluate( int timeStepMSec, int endTimeMSec ) = 0;
+								// Interpolate between the two known snapshots with the given fraction, used for MP clients.
+								// returns true if the object moved.
+	virtual bool				Interpolate( const float fraction ) = 0;
+								// resets the prev and next states to the parameters.
+	virtual void				ResetInterpolationState( const idVec3 & origin, const idMat3 & axis ) = 0;
 								// update the time without moving
 	virtual void				UpdateTime( int endTimeMSec ) = 0;
 								// get the last physics update time
-	virtual int					GetTime( void ) const = 0;
+	virtual int					GetTime() const = 0;
 								// collision interaction between different physics objects
 	virtual void				GetImpactInfo( const int id, const idVec3 &point, impactInfo_t *info ) const = 0;
 	virtual void				ApplyImpulse( const int id, const idVec3 &point, const idVec3 &impulse ) = 0;
 	virtual void				AddForce( const int id, const idVec3 &point, const idVec3 &force ) = 0;
-	virtual void				Activate( void ) = 0;
-	virtual void				PutToRest( void ) = 0;
-	virtual bool				IsAtRest( void ) const = 0;
-	virtual int					GetRestStartTime( void ) const = 0;
-	virtual bool				IsPushable( void ) const = 0;
+	virtual void				Activate() = 0;
+	virtual void				PutToRest() = 0;
+	virtual bool				IsAtRest() const = 0;
+	virtual int					GetRestStartTime() const = 0;
+	virtual bool				IsPushable() const = 0;
 								// save and restore the physics state
-	virtual void				SaveState( void ) = 0;
-	virtual void				RestoreState( void ) = 0;
+	virtual void				SaveState() = 0;
+	virtual void				RestoreState() = 0;
 								// set the position and orientation in master space or world space if no master set
 	virtual void				SetOrigin( const idVec3 &newOrigin, int id = -1 ) = 0;
 	virtual void				SetAxis( const idMat3 &newAxis, int id = -1 ) = 0;
@@ -140,44 +145,44 @@ public:	// common physics interface
 	virtual const idVec3 &		GetAngularVelocity( int id = 0 ) const = 0;
 								// gravity
 	virtual void				SetGravity( const idVec3 &newGravity ) = 0;
-	virtual const idVec3 &		GetGravity( void ) const = 0;
-	virtual const idVec3 &		GetGravityNormal( void ) const = 0;
+	virtual const idVec3 &		GetGravity() const = 0;
+	virtual const idVec3 &		GetGravityNormal() const = 0;
 								// get first collision when translating or rotating this physics object
 	virtual void				ClipTranslation( trace_t &results, const idVec3 &translation, const idClipModel *model ) const = 0;
 	virtual void				ClipRotation( trace_t &results, const idRotation &rotation, const idClipModel *model ) const = 0;
 	virtual int					ClipContents( const idClipModel *model ) const = 0;
 								// disable/enable the clip models contained by this physics object
-	virtual void				DisableClip( void ) = 0;
-	virtual void				EnableClip( void ) = 0;
+	virtual void				DisableClip() = 0;
+	virtual void				EnableClip() = 0;
 								// link/unlink the clip models contained by this physics object
-	virtual void				UnlinkClip( void ) = 0;
-	virtual void				LinkClip( void ) = 0;
+	virtual void				UnlinkClip() = 0;
+	virtual void				LinkClip() = 0;
 								// contacts
-	virtual bool				EvaluateContacts( void ) = 0;
-	virtual int					GetNumContacts( void ) const = 0;
+	virtual bool				EvaluateContacts() = 0;
+	virtual int					GetNumContacts() const = 0;
 	virtual const contactInfo_t &GetContact( int num ) const = 0;
-	virtual void				ClearContacts( void ) = 0;
+	virtual void				ClearContacts() = 0;
 	virtual void				AddContactEntity( idEntity *e ) = 0;
 	virtual void 				RemoveContactEntity( idEntity *e ) = 0;
 								// ground contacts
-	virtual bool				HasGroundContacts( void ) const = 0;
+	virtual bool				HasGroundContacts() const = 0;
 	virtual bool				IsGroundEntity( int entityNum ) const = 0;
 	virtual bool				IsGroundClipModel( int entityNum, int id ) const = 0;
 								// set the master entity for objects bound to a master
 	virtual void				SetMaster( idEntity *master, const bool orientated = true ) = 0;
-								// set pushed state
+								// set pushed state	
 	virtual void				SetPushed( int deltaTime ) = 0;
 	virtual const idVec3 &		GetPushedLinearVelocity( const int id = 0 ) const = 0;
 	virtual const idVec3 &		GetPushedAngularVelocity( const int id = 0 ) const = 0;
 								// get blocking info, returns NULL if the object is not blocked
-	virtual const trace_t *		GetBlockingInfo( void ) const = 0;
-	virtual idEntity *			GetBlockingEntity( void ) const = 0;
+	virtual const trace_t *		GetBlockingInfo() const = 0;
+	virtual idEntity *			GetBlockingEntity() const = 0;
 								// movement end times in msec for reached events at the end of predefined motion
-	virtual int					GetLinearEndTime( void ) const = 0;
-	virtual int					GetAngularEndTime( void ) const = 0;
+	virtual int					GetLinearEndTime() const = 0;
+	virtual int					GetAngularEndTime() const = 0;
 								// networking
-	virtual void				WriteToSnapshot( idBitMsgDelta &msg ) const = 0;
-	virtual void				ReadFromSnapshot( const idBitMsgDelta &msg ) = 0;
+	virtual void				WriteToSnapshot( idBitMsg &msg ) const = 0;
+	virtual void				ReadFromSnapshot( const idBitMsg &msg ) = 0;
 };
 
 #endif /* !__PHYSICS_H__ */

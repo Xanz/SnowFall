@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -42,7 +42,7 @@ If you have questions concerning this license or the applicable additional terms
 idAFVector::idAFVector
 ================
 */
-idAFVector::idAFVector( void ) {
+idAFVector::idAFVector() {
 	type = VEC_COORDS;
 	vec.Zero();
 	negate = false;
@@ -599,7 +599,7 @@ bool idDeclAF::WriteSettings( idFile *f ) const {
 idDeclAF::RebuildTextSource
 ================
 */
-bool idDeclAF::RebuildTextSource( void ) {
+bool idDeclAF::RebuildTextSource() {
 	int i;
 	idFile_Memory f;
 
@@ -638,7 +638,7 @@ bool idDeclAF::RebuildTextSource( void ) {
 idDeclAF::Save
 ================
 */
-bool idDeclAF::Save( void ) {
+bool idDeclAF::Save() {
 	RebuildTextSource();
 	ReplaceSourceFileText();
 	modified = false;
@@ -761,7 +761,7 @@ const char * idDeclAF::JointModToString( declAFJointMod_t jointMod ) {
 idDeclAF::Size
 =================
 */
-size_t idDeclAF::Size( void ) const {
+size_t idDeclAF::Size() const {
 	return sizeof( idDeclAF );
 }
 
@@ -794,7 +794,7 @@ bool idDeclAF::ParseBody( idLexer &src ) {
 	bool hasJoint = false;
 	idToken token;
 	idAFVector angles;
-	idDeclAF_Body *body = new idDeclAF_Body;
+	idDeclAF_Body *body = new (TAG_DECL) idDeclAF_Body;
 
 	bodies.Alloc() = body;
 
@@ -924,6 +924,7 @@ bool idDeclAF::ParseBody( idLexer &src ) {
 			ParseContents( src, body->contents );
 		} else if ( !token.Icmp( "clipMask" ) ) {
 			ParseContents( src, body->clipMask );
+			body->clipMask &= ~CONTENTS_CORPSE;		// never allow collisions against corpses
 		} else if ( !token.Icmp( "selfCollision" ) ) {
 			body->selfCollision = src.ParseBool();
 		} else if ( !token.Icmp( "containedjoints" ) ) {
@@ -969,7 +970,7 @@ idDeclAF::ParseFixed
 */
 bool idDeclAF::ParseFixed( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1008,7 +1009,7 @@ idDeclAF::ParseBallAndSocketJoint
 */
 bool idDeclAF::ParseBallAndSocketJoint( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1087,7 +1088,7 @@ idDeclAF::ParseUniversalJoint
 */
 bool idDeclAF::ParseUniversalJoint( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1165,7 +1166,7 @@ idDeclAF::ParseHinge
 */
 bool idDeclAF::ParseHinge( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1229,7 +1230,7 @@ idDeclAF::ParseSlider
 */
 bool idDeclAF::ParseSlider( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1276,7 +1277,7 @@ idDeclAF::ParseSpring
 */
 bool idDeclAF::ParseSpring( idLexer &src ) {
 	idToken token;
-	idDeclAF_Constraint *constraint = new idDeclAF_Constraint;
+	idDeclAF_Constraint *constraint = new (TAG_DECL) idDeclAF_Constraint;
 
 	constraint->SetDefault( this );
 	constraints.Alloc() = constraint;
@@ -1409,6 +1410,7 @@ bool idDeclAF::ParseSettings( idLexer &src ) {
 			ParseContents( src, contents );
 		} else if ( !token.Icmp( "clipMask" ) ) {
 			ParseContents( src, clipMask );
+			clipMask &= ~CONTENTS_CORPSE;	// never allow collisions against corpses
 		} else if ( !token.Icmp( "selfCollision" ) ) {
 			selfCollision = src.ParseBool();
 		} else if ( token == "}" ) {
@@ -1427,7 +1429,7 @@ bool idDeclAF::ParseSettings( idLexer &src ) {
 idDeclAF::Parse
 ================
 */
-bool idDeclAF::Parse( const char *text, const int textLength ) {
+bool idDeclAF::Parse( const char *text, const int textLength, bool allowBinaryVersion ) {
 	int i, j;
 	idLexer src;
 	idToken token;
@@ -1523,7 +1525,7 @@ bool idDeclAF::Parse( const char *text, const int textLength ) {
 idDeclAF::DefaultDefinition
 ================
 */
-const char *idDeclAF::DefaultDefinition( void ) const {
+const char *idDeclAF::DefaultDefinition() const {
 	return
 		"{\n"
 	"\t"	"settings {\n"
@@ -1561,7 +1563,7 @@ const char *idDeclAF::DefaultDefinition( void ) const {
 idDeclAF::FreeData
 ================
 */
-void idDeclAF::FreeData( void ) {
+void idDeclAF::FreeData() {
 	modified = false;
 	defaultLinearFriction = 0.01f;
 	defaultAngularFriction = 0.01f;
@@ -1577,7 +1579,7 @@ void idDeclAF::FreeData( void ) {
 	maxMoveTime = -1.0f;
 	selfCollision = true;
 	contents = CONTENTS_CORPSE;
-	clipMask = CONTENTS_SOLID | CONTENTS_CORPSE;
+	clipMask = CONTENTS_SOLID;
 	bodies.DeleteContents( true );
 	constraints.DeleteContents( true );
 }
@@ -1618,7 +1620,7 @@ idDeclAF::NewBody
 void idDeclAF::NewBody( const char *name ) {
 	idDeclAF_Body *body;
 
-	body = new idDeclAF_Body();
+	body = new (TAG_DECL) idDeclAF_Body();
 	body->SetDefault( this );
 	body->name = name;
 	bodies.Append( body );
@@ -1686,7 +1688,7 @@ idDeclAF::NewConstraint
 void idDeclAF::NewConstraint( const char *name ) {
 	idDeclAF_Constraint *constraint;
 
-	constraint = new idDeclAF_Constraint;
+	constraint = new (TAG_DECL) idDeclAF_Constraint;
 	constraint->SetDefault( this );
 	constraint->name = name;
 	constraints.Append( constraint );
@@ -1730,7 +1732,7 @@ void idDeclAF::DeleteConstraint( const char *name ) {
 idDeclAF::idDeclAF
 ================
 */
-idDeclAF::idDeclAF( void ) {
+idDeclAF::idDeclAF() {
 	FreeData();
 }
 
@@ -1739,7 +1741,7 @@ idDeclAF::idDeclAF( void ) {
 idDeclAF::~idDeclAF
 ================
 */
-idDeclAF::~idDeclAF( void ) {
+idDeclAF::~idDeclAF() {
 	bodies.DeleteContents( true );
 	constraints.DeleteContents( true );
 }

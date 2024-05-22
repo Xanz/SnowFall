@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -45,27 +45,27 @@ public:
 						idLinkList();
 						~idLinkList();
 
-	bool				IsListEmpty( void ) const;
-	bool				InList( void ) const;
-	int					Num( void ) const;
-	void				Clear( void );
+	bool				IsListEmpty() const;
+	bool				InList() const;
+	int					Num() const;
+	void				Clear();
 
 	void				InsertBefore( idLinkList &node );
 	void				InsertAfter( idLinkList &node );
 	void				AddToEnd( idLinkList &node );
 	void				AddToFront( idLinkList &node );
 
-	void				Remove( void );
+	void				Remove();
 
-	type *				Next( void ) const;
-	type *				Prev( void ) const;
+	type *				Next() const;
+	type *				Prev() const;
 
-	type *				Owner( void ) const;
+	type *				Owner() const;
 	void				SetOwner( type *object );
 
-	idLinkList *		ListHead( void ) const;
-	idLinkList *		NextNode( void ) const;
-	idLinkList *		PrevNode( void ) const;
+	idLinkList *		ListHead() const;
+	idLinkList *		NextNode() const;
+	idLinkList *		PrevNode() const;
 
 private:
 	idLinkList *		head;
@@ -110,7 +110,7 @@ Returns true if the list is empty.
 ================
 */
 template< class type >
-bool idLinkList<type>::IsListEmpty( void ) const {
+bool idLinkList<type>::IsListEmpty() const {
 	return head->next == head;
 }
 
@@ -122,7 +122,7 @@ Returns true if the node is in a list.  If called on the head of a list, will al
 ================
 */
 template< class type >
-bool idLinkList<type>::InList( void ) const {
+bool idLinkList<type>::InList() const {
 	return head != this;
 }
 
@@ -134,7 +134,7 @@ Returns the number of nodes in the list.
 ================
 */
 template< class type >
-int idLinkList<type>::Num( void ) const {
+int idLinkList<type>::Num() const {
 	idLinkList<type>	*node;
 	int					num;
 
@@ -154,7 +154,7 @@ If node is the head of the list, clears the list.  Otherwise it just removes the
 ================
 */
 template< class type >
-void idLinkList<type>::Clear( void ) {
+void idLinkList<type>::Clear() {
 	if ( head == this ) {
 		while( next != this ) {
 			next->Remove();
@@ -172,7 +172,7 @@ Removes node from list
 ================
 */
 template< class type >
-void idLinkList<type>::Remove( void ) {
+void idLinkList<type>::Remove() {
 	prev->next = next;
 	next->prev = prev;
 
@@ -252,7 +252,7 @@ a pointer to itself.
 ================
 */
 template< class type >
-idLinkList<type> *idLinkList<type>::ListHead( void ) const {
+idLinkList<type> *idLinkList<type>::ListHead() const {
 	return head;
 }
 
@@ -264,7 +264,7 @@ Returns the next object in the list, or NULL if at the end.
 ================
 */
 template< class type >
-type *idLinkList<type>::Next( void ) const {
+type *idLinkList<type>::Next() const {
 	if ( !next || ( next == head ) ) {
 		return NULL;
 	}
@@ -279,7 +279,7 @@ Returns the previous object in the list, or NULL if at the beginning.
 ================
 */
 template< class type >
-type *idLinkList<type>::Prev( void ) const {
+type *idLinkList<type>::Prev() const {
 	if ( !prev || ( prev == head ) ) {
 		return NULL;
 	}
@@ -294,7 +294,7 @@ Returns the next node in the list, or NULL if at the end.
 ================
 */
 template< class type >
-idLinkList<type> *idLinkList<type>::NextNode( void ) const {
+idLinkList<type> *idLinkList<type>::NextNode() const {
 	if ( next == head ) {
 		return NULL;
 	}
@@ -309,7 +309,7 @@ Returns the previous node in the list, or NULL if at the beginning.
 ================
 */
 template< class type >
-idLinkList<type> *idLinkList<type>::PrevNode( void ) const {
+idLinkList<type> *idLinkList<type>::PrevNode() const {
 	if ( prev == head ) {
 		return NULL;
 	}
@@ -324,7 +324,7 @@ Gets the object that is associated with this node.
 ================
 */
 template< class type >
-type *idLinkList<type>::Owner( void ) const {
+type *idLinkList<type>::Owner() const {
 	return owner;
 }
 

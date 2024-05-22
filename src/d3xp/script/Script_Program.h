@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -39,24 +39,12 @@ class idSaveGame;
 class idRestoreGame;
 
 #define MAX_STRING_LEN		128
-#ifdef _D3XP
 #define MAX_GLOBALS			296608			// in bytes
-#else
-#define MAX_GLOBALS			196608			// in bytes
-#endif
 #define MAX_STRINGS			1024
 
-#ifdef _D3XP
 #define MAX_FUNCS			3584
-#else
-#define MAX_FUNCS			3072
-#endif
 
-#ifdef _D3XP
 #define MAX_STATEMENTS		131072			// statement_t - 18 bytes last I checked
-#else
-#define MAX_STATEMENTS		81920			// statement_t - 18 bytes last I checked
-#endif
 
 typedef enum {
 	ev_error = -1, ev_void, ev_scriptevent, ev_namespace, ev_string, ev_float, ev_vector, ev_entity, ev_field, ev_function, ev_virtualfunction, ev_pointer, ev_object, ev_jumpoffset, ev_argsize, ev_boolean
@@ -66,10 +54,10 @@ class function_t {
 public:
 						function_t();
 
-	size_t				Allocated( void ) const;
+	size_t				Allocated() const;
 	void				SetName( const char *name );
-	const char			*Name( void ) const;
-	void				Clear( void );
+	const char			*Name() const;
+	void				Clear();
 
 private:
 	idStr 				name;
@@ -82,7 +70,7 @@ public:
 	int 				parmTotal;
 	int 				locals; 			// total ints of parms + locals
 	int					filenum; 			// source file defined in
-	idList<int>			parmSize;
+	idList<int, TAG_SCRIPT>			parmSize;
 };
 
 typedef union eval_s {
@@ -110,9 +98,9 @@ private:
 
 	// function types are more complex
 	idTypeDef					*auxType;					// return type
-	idList<idTypeDef *>			parmTypes;
+	idList<idTypeDef *, TAG_SCRIPT>			parmTypes;
 	idStrList					parmNames;
-	idList<const function_t *>	functions;
+	idList<const function_t *, TAG_SCRIPT>	functions;
 
 public:
 	idVarDef					*def;						// a def that points to this type
@@ -120,7 +108,7 @@ public:
 						idTypeDef( const idTypeDef &other );
 						idTypeDef( etype_t etype, idVarDef *edef, const char *ename, int esize, idTypeDef *aux );
 	void				operator=( const idTypeDef& other );
-	size_t				Allocated( void ) const;
+	size_t				Allocated() const;
 
 	bool				Inherits( const idTypeDef *basetype ) const;
 	bool				MatchesType( const idTypeDef &matchtype ) const;
@@ -129,27 +117,27 @@ public:
 	void				AddField( idTypeDef *fieldtype, const char *name );
 
 	void				SetName( const char *newname );
-	const char			*Name( void ) const;
+	const char			*Name() const;
 
-	etype_t				Type( void ) const;
-	int					Size( void ) const;
+	etype_t				Type() const;
+	int					Size() const;
 
-	idTypeDef			*SuperClass( void ) const;
+	idTypeDef			*SuperClass() const;
 	
-	idTypeDef			*ReturnType( void ) const;
+	idTypeDef			*ReturnType() const;
 	void				SetReturnType( idTypeDef *type );
 
-	idTypeDef			*FieldType( void ) const;
+	idTypeDef			*FieldType() const;
 	void				SetFieldType( idTypeDef *type );
 
-	idTypeDef			*PointerType( void ) const;
+	idTypeDef			*PointerType() const;
 	void				SetPointerType( idTypeDef *type );
 
-	int					NumParameters( void ) const;
+	int					NumParameters() const;
 	idTypeDef			*GetParmType( int parmNumber ) const;
 	const char			*GetParmName( int parmNumber ) const;
 
-	int					NumFunctions( void ) const;
+	int					NumFunctions() const;
 	int					GetFunctionNumber( const function_t *func ) const;
 	const function_t	*GetFunction( int funcNumber ) const;
 	void				AddFunction( const function_t *func );
@@ -177,14 +165,14 @@ public:
 	void						Save( idSaveGame *savefile ) const;			// archives object for save game file
 	void						Restore( idRestoreGame *savefile );			// unarchives object from save game file
 
-	void						Free( void );
+	void						Free();
 	bool						SetType( const char *typeName );
-	void						ClearObject( void );
-	bool						HasObject( void ) const;
-	idTypeDef					*GetTypeDef( void ) const;
-	const char					*GetTypeName( void ) const;
-	const function_t			*GetConstructor( void ) const;
-	const function_t			*GetDestructor( void ) const;
+	void						ClearObject();
+	bool						HasObject() const;
+	idTypeDef					*GetTypeDef() const;
+	const char					*GetTypeName() const;
+	const function_t			*GetConstructor() const;
+	const function_t			*GetDestructor() const;
 	const function_t			*GetFunction( const char *name ) const;
 
 	byte						*GetVariable( const char *name, etype_t etype ) const;
@@ -207,8 +195,8 @@ private:
 
 public:
 						idScriptVariable();
-	bool				IsLinked( void ) const;
-	void				Unlink( void );
+	bool				IsLinked() const;
+	void				Unlink();
 	void				LinkTo( idScriptObject &obj, const char *name );
 	idScriptVariable	&operator=( const returnType &value );
 						operator returnType() const;
@@ -220,12 +208,12 @@ ID_INLINE idScriptVariable<type, etype, returnType>::idScriptVariable() {
 }
 
 template<class type, etype_t etype, class returnType>
-ID_INLINE bool idScriptVariable<type, etype, returnType>::IsLinked( void ) const {
+ID_INLINE bool idScriptVariable<type, etype, returnType>::IsLinked() const {
 	return ( data != NULL );
 }
 
 template<class type, etype_t etype, class returnType>
-ID_INLINE void idScriptVariable<type, etype, returnType>::Unlink( void ) {
+ID_INLINE void idScriptVariable<type, etype, returnType>::Unlink() {
 	data = NULL;
 }
 
@@ -341,12 +329,12 @@ public:
 							idVarDef( idTypeDef *typeptr = NULL );
 							~idVarDef();
 
-	const char *			Name( void ) const;
-	const char *			GlobalName( void ) const;
+	const char *			Name() const;
+	const char *			GlobalName() const;
 
 	void					SetTypeDef( idTypeDef *_type ) { typeDef = _type; }
-	idTypeDef *				TypeDef( void ) const { return typeDef; }
-	etype_t					Type( void ) const { return ( typeDef != NULL ) ? typeDef->Type() : ev_void; }
+	idTypeDef *				TypeDef() const { return typeDef; }
+	etype_t					Type() const { return ( typeDef != NULL ) ? typeDef->Type() : ev_void; }
 
 	int						DepthOfScope( const idVarDef *otherScope ) const;
 
@@ -355,7 +343,7 @@ public:
 	void					SetValue( const eval_t &value, bool constant );
 	void					SetString( const char *string, bool constant );
 
-	idVarDef *				Next( void ) const { return next; }		// next var def with same name
+	idVarDef *				Next() const { return next; }		// next var def with same name
 
 	void					PrintInfo( idFile *file, int instructionPointer ) const;
 
@@ -373,11 +361,11 @@ private:
 
 class idVarDefName {
 public:
-							idVarDefName( void ) { defs = NULL; }
+							idVarDefName() { defs = NULL; }
 							idVarDefName( const char *n ) { name = n; defs = NULL; }
 
-	const char *			Name( void ) const { return name; }
-	idVarDef *				GetDefs( void ) const { return defs; }
+	const char *			Name() const { return name; }
+	idVarDef *				GetDefs() const { return defs; }
 
 	void					AddDef( idVarDef *def );
 	void					RemoveDef( idVarDef *def );
@@ -456,10 +444,11 @@ private:
 	idStaticList<byte,MAX_GLOBALS>				variableDefaults;
 	idStaticList<function_t,MAX_FUNCS>			functions;
 	idStaticList<statement_t,MAX_STATEMENTS>	statements;
-	idList<idTypeDef *>							types;
-	idList<idVarDefName *>						varDefNames;
+	idList<idTypeDef *, TAG_SCRIPT>				types;
+	idHashIndex									typesHash;
+	idList<idVarDefName *, TAG_SCRIPT>			varDefNames;
 	idHashIndex									varDefNameHash;
-	idList<idVarDef *>							varDefs;
+	idList<idVarDef *, TAG_SCRIPT>				varDefs;
 
 	idVarDef									*sysDef;
 
@@ -469,7 +458,7 @@ private:
 	int											top_defs;
 	int											top_files;
 
-	void										CompileStats( void );
+	void										CompileStats();
 
 public:
 	idVarDef									*returnDef;
@@ -481,19 +470,19 @@ public:
 	// save games
 	void										Save( idSaveGame *savefile ) const;
 	bool										Restore( idRestoreGame *savefile );
-	int											CalculateChecksum( void ) const;		// Used to insure program code has not
+	int											CalculateChecksum() const;		// Used to insure program code has not
 																						//    changed between savegames
 
 	void										Startup( const char *defaultScript );
-	void										Restart( void );
+	void										Restart();
 	bool										CompileText( const char *source, const char *text, bool console );
 	const function_t							*CompileFunction( const char *functionName, const char *text );
 	void										CompileFile( const char *filename );
-	void										BeginCompilation( void );
-	void										FinishCompilation( void );
+	void										BeginCompilation();
+	void										FinishCompilation();
 	void										DisassembleStatement( idFile *file, int instructionPointer ) const;
-	void										Disassemble( void ) const;
-	void										FreeData( void );
+	void										Disassemble() const;
+	void										FreeData();
 
 	const char									*GetFilename( int num );
 	int											GetFilenum( const char *name );
@@ -520,11 +509,11 @@ public:
 
 	void										SetEntity( const char *name, idEntity *ent );
 
-	statement_t									*AllocStatement( void );
+	statement_t									*AllocStatement();
 	statement_t									&GetStatement( int index );
-	int											NumStatements( void ) { return statements.Num(); }
+	int											NumStatements() { return statements.Num(); }
 
-	int 										GetReturnedInteger( void );
+	int 										GetReturnedInteger();
 
 	void										ReturnFloat( float value );
 	void										ReturnInteger( int value );
@@ -532,7 +521,7 @@ public:
 	void										ReturnString( const char *string );
 	void										ReturnEntity( idEntity *ent );
 	
-	int											NumFilenames( void ) { return fileList.Num( ); }
+	int											NumFilenames() { return fileList.Num( ); }
 };
 
 /*
@@ -567,7 +556,7 @@ ID_INLINE int idProgram::GetFunctionIndex( const function_t *func ) {
 idProgram::GetReturnedInteger
 ================
 */
-ID_INLINE int idProgram::GetReturnedInteger( void ) {
+ID_INLINE int idProgram::GetReturnedInteger() {
 	return *returnDef->value.intPtr;
 }
 

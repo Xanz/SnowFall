@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -151,7 +151,7 @@ void idEntityFx::Setup( const char *fx ) {
 	}
 
 	// early during MP Spawn() with no information. wait till we ReadFromSnapshot for more
-	if ( gameLocal.isClient && ( !fx || fx[0] == '\0' ) ) {
+	if ( common->IsClient() && ( !fx || fx[0] == '\0' ) ) {
 		return;
 	}
 
@@ -192,7 +192,7 @@ void idEntityFx::Setup( const char *fx ) {
 idEntityFx::EffectName
 ================
 */
-const char *idEntityFx::EffectName( void ) {
+const char *idEntityFx::EffectName() {
 	return fxEffect ? fxEffect->GetName() : NULL;
 }
 
@@ -201,7 +201,7 @@ const char *idEntityFx::EffectName( void ) {
 idEntityFx::Joint
 ================
 */
-const char *idEntityFx::Joint( void ) {
+const char *idEntityFx::Joint() {
 	return fxEffect ? fxEffect->joint.c_str() : NULL;
 }
 
@@ -210,7 +210,7 @@ const char *idEntityFx::Joint( void ) {
 idEntityFx::CleanUp
 ================
 */
-void idEntityFx::CleanUp( void ) {
+void idEntityFx::CleanUp() {
 	if ( !fxEffect ) {
 		return;
 	}
@@ -264,7 +264,7 @@ void idEntityFx::Start( int time ) {
 idEntityFx::Stop
 ================
 */
-void idEntityFx::Stop( void ) {
+void idEntityFx::Stop() {
 	CleanUp();
 	started = -1;
 }
@@ -274,7 +274,7 @@ void idEntityFx::Stop( void ) {
 idEntityFx::Duration
 ================
 */
-const int idEntityFx::Duration( void ) {
+const int idEntityFx::Duration() {
 	int max = 0;
 
 	if ( !fxEffect ) {
@@ -470,14 +470,14 @@ void idEntityFx::Run( int time ) {
 					for ( j = 0; j < gameLocal.numClients; j++ ) {
 						idPlayer *player = gameLocal.GetClientByNum( j );
 						if ( player && ( player->GetPhysics()->GetOrigin() - GetPhysics()->GetOrigin() ).LengthSqr() < Square( fxaction.shakeDistance ) ) {
-							if ( !gameLocal.isMultiplayer || !fxaction.shakeIgnoreMaster || GetBindMaster() != player ) {
+							if ( !common->IsMultiplayer() || !fxaction.shakeIgnoreMaster || GetBindMaster() != player ) {
 								player->playerView.DamageImpulse( fxaction.offset, &args );
 							}
 						}
 					}
 					if ( fxaction.shakeImpulse != 0.0f && fxaction.shakeDistance != 0.0f ) {
 						idEntity *ignore_ent = NULL;
-						if ( gameLocal.isMultiplayer ) {
+						if ( common->IsMultiplayer() ) {
 							ignore_ent = this;
 							if ( fxaction.shakeIgnoreMaster ) {
 								ignore_ent = GetBindMaster();
@@ -511,15 +511,13 @@ void idEntityFx::Run( int time ) {
 				} else if ( fxaction.trackOrigin ) {
 					useAction->renderEntity.origin = GetPhysics()->GetOrigin() + fxaction.offset;
 					useAction->renderEntity.axis = fxaction.explicitAxis ? fxaction.axis : GetPhysics()->GetAxis();
-#ifdef _D3XP
 					gameRenderWorld->UpdateEntityDef( useAction->modelDefHandle, &useAction->renderEntity );
-#endif
 				}
 				ApplyFade( fxaction, *useAction, time, actualStart );
 				break;
 			}
 			case FX_LAUNCH: {
-				if ( gameLocal.isClient ) {
+				if ( common->IsClient() ) {
 					// client never spawns entities outside of ClientReadSnapshot
 					useAction->launched = true;
 					break;
@@ -542,9 +540,8 @@ void idEntityFx::Run( int time ) {
 				}
 				break;
 			}
-#ifdef _D3XP
 			case FX_SHOCKWAVE: {
-				if ( gameLocal.isClient ) {
+				if ( common->IsClient() ) {
 					useAction->shakeStarted = true;
 					break;
 				}
@@ -568,7 +565,6 @@ void idEntityFx::Run( int time ) {
 				}
 				break;
 			}
-#endif
 		}
 	}
 }
@@ -600,7 +596,7 @@ idEntityFx::~idEntityFx() {
 idEntityFx::Spawn
 ================
 */
-void idEntityFx::Spawn( void ) {
+void idEntityFx::Spawn() {
 
 	if ( g_skipFX.GetBool() ) {
 		return;
@@ -627,7 +623,7 @@ idEntityFx::Think
   Clears any visual fx started when {item,mob,player} was spawned
 ================
 */
-void idEntityFx::Think( void ) {
+void idEntityFx::Think() {
 	if ( g_skipFX.GetBool() ) {
 		return;
 	}
@@ -647,7 +643,7 @@ idEntityFx::Event_ClearFx
   Clears any visual fx started when item(mob) was spawned
 ================
 */
-void idEntityFx::Event_ClearFx( void ) {
+void idEntityFx::Event_ClearFx() {
 
 	if ( g_skipFX.GetBool() ) {
 		return;
@@ -746,7 +742,7 @@ idEntityFx *idEntityFx::StartFx( const char *fx, const idVec3 *useOrigin, const 
 idEntityFx::WriteToSnapshot
 =================
 */
-void idEntityFx::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idEntityFx::WriteToSnapshot( idBitMsg &msg ) const {
 	GetPhysics()->WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 	msg.WriteLong( ( fxEffect != NULL ) ? gameLocal.ServerRemapDecl( -1, DECL_FX, fxEffect->Index() ) : -1 );
@@ -758,7 +754,7 @@ void idEntityFx::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idEntityFx::ReadFromSnapshot
 =================
 */
-void idEntityFx::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idEntityFx::ReadFromSnapshot( const idBitMsg &msg ) {
 	int fx_index, start_time, max_lapse;
 
 	GetPhysics()->ReadFromSnapshot( msg );
@@ -785,10 +781,25 @@ void idEntityFx::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 
 /*
 =================
+idEntityFx::ClientThink
+=================
+*/
+void idEntityFx::ClientThink( const int curTime, const float fraction, const bool predict ) {
+
+	if ( gameLocal.isNewFrame ) { 
+		Run( gameLocal.serverTime ); 
+	}
+
+	InterpolatePhysics( fraction );
+	Present();
+}
+
+/*
+=================
 idEntityFx::ClientPredictionThink
 =================
 */
-void idEntityFx::ClientPredictionThink( void ) {
+void idEntityFx::ClientPredictionThink() {
 	if ( gameLocal.isNewFrame ) { 
 		Run( gameLocal.time ); 
 	}

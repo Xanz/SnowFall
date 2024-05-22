@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -138,7 +138,7 @@ END_CLASS
 idMover::idMover
 ================
 */
-idMover::idMover( void ) {
+idMover::idMover() {
 	memset( &move, 0, sizeof( move ) );
 	memset( &rot, 0, sizeof( rot ) );
 	move_thread = 0;
@@ -331,7 +331,7 @@ void idMover::Event_PostRestore( int start, int total, int accel, int decel, int
 idMover::Spawn
 ================
 */
-void idMover::Spawn( void ) {
+void idMover::Spawn() {
 	move_thread		= 0;
 	rotate_thread	= 0;
 	stopRotation	= false;
@@ -348,7 +348,7 @@ void idMover::Spawn( void ) {
 	dest_angles = GetPhysics()->GetAxis().ToAngles();
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -386,7 +386,7 @@ void idMover::Spawn( void ) {
 idMover::Hide
 ================
 */
-void idMover::Hide( void ) {
+void idMover::Hide() {
 	idEntity::Hide();
 	physicsObj.SetContents( 0 );
 }
@@ -396,7 +396,7 @@ void idMover::Hide( void ) {
 idMover::Show
 ================
 */
-void idMover::Show( void ) {
+void idMover::Show() {
 	idEntity::Show();
 	if ( spawnArgs.GetBool( "solid", "1" ) ) {
 		physicsObj.SetContents( CONTENTS_SOLID );
@@ -420,7 +420,7 @@ void idMover::Killed( idEntity *inflictor, idEntity *attacker, int damage, const
 idMover::Event_SetCallback
 ================
 */
-void idMover::Event_SetCallback( void ) {
+void idMover::Event_SetCallback() {
 	if ( ( lastCommand == MOVER_ROTATING ) && !rotate_thread ) {
 		lastCommand	= MOVER_NONE;
 		rotate_thread = idThread::CurrentThreadNum();
@@ -523,8 +523,33 @@ void idMover::VectorForDir( float angle, idVec3 &vec ) {
 idMover::FindGuiTargets
 ================
 */
-void idMover::FindGuiTargets( void ) {
+void idMover::FindGuiTargets() {
    	gameLocal.GetTargets( spawnArgs, guiTargets, "guiTarget" );
+}
+
+/*
+==============================
+idMover::ClientThink
+==============================
+*/
+void idMover::ClientThink( const int curTime, const float fraction, const bool predict ) {
+
+	// HACK. because I'm not sure all the other stuff this will screw up.
+	// There was a reason we weren't fully interpolating movers ( Which would evaluate bound objects ).
+	// I just cant remember what it was.
+
+	// Evaluating the Team will update the parts that bound to the entity. 
+	// but because we interpolate the master, we don't want to run evaluate on the mover itself.
+	// sending in true to the interpolatePhysicsOnly will run the TeamChain Evaluate, but only on
+	// Objects bound to the entity.
+	if( this->name == "blueshotty_door" || this->name == "redshotty_door" || 
+		this->name == "Red_blastshield_mover" || this->name == "Blue_blastshield_mover" ) {
+		InterpolatePhysicsOnly( fraction, true );
+	} else {
+		InterpolatePhysicsOnly( fraction );
+	}
+
+	Present();
 }
 
 /*
@@ -555,7 +580,7 @@ void idMover::SetGuiState( const char *key, const char *val ) const {
 idMover::Event_InitGuiTargets
 ================
 */
-void idMover::Event_FindGuiTargets( void ) {
+void idMover::Event_FindGuiTargets() {
 	FindGuiTargets();
 }
 
@@ -582,7 +607,7 @@ void idMover::SetGuiStates( const char *state ) {
 idMover::Event_InitGuiTargets
 ================
 */
-void idMover::Event_InitGuiTargets( void ) {
+void idMover::Event_InitGuiTargets() {
 	SetGuiStates( guiBinaryMoverStates[MOVER_POS1] );
 }
 
@@ -597,7 +622,7 @@ void idMover::Event_InitGuiTargets( void ) {
 idMover::Event_StopMoving
 ================
 */
-void idMover::Event_StopMoving( void ) {
+void idMover::Event_StopMoving() {
 	physicsObj.GetLocalOrigin( dest_position );
 	DoneMoving();
 }
@@ -607,7 +632,7 @@ void idMover::Event_StopMoving( void ) {
 idMover::DoneMoving
 ================
 */
-void idMover::DoneMoving( void ) {
+void idMover::DoneMoving() {
 
 	if ( lastCommand != MOVER_SPLINE ) {
 		// set our final position so that we get rid of any numerical inaccuracy
@@ -654,7 +679,7 @@ void idMover::UpdateMoveSound( moveStage_t stage ) {
 idMover::Event_UpdateMove
 ================
 */
-void idMover::Event_UpdateMove( void ) {
+void idMover::Event_UpdateMove() {
 	idVec3	org;
 
 	physicsObj.GetLocalOrigin( org );
@@ -790,7 +815,7 @@ void idMover::BeginMove( idThread *thread ) {
 idMover::Event_StopRotating
 ================
 */
-void idMover::Event_StopRotating( void ) {
+void idMover::Event_StopRotating() {
 	physicsObj.GetLocalAngles( dest_angles );
 	physicsObj.SetAngularExtrapolation( EXTRAPOLATION_NONE, 0, 0, dest_angles, ang_zero, ang_zero );
 	DoneRotating();
@@ -801,7 +826,7 @@ void idMover::Event_StopRotating( void ) {
 idMover::DoneRotating
 ================
 */
-void idMover::DoneRotating( void ) {
+void idMover::DoneRotating() {
 	lastCommand	= MOVER_NONE;
 	idThread::ObjectMoveDone( rotate_thread, this );
 	rotate_thread = 0;
@@ -842,7 +867,7 @@ void idMover::UpdateRotationSound( moveStage_t stage ) {
 idMover::Event_UpdateRotation
 ================
 */
-void idMover::Event_UpdateRotation( void ) {
+void idMover::Event_UpdateRotation() {
 	idAngles	ang;
 
 	physicsObj.GetLocalAngles( ang );
@@ -1066,8 +1091,9 @@ idMover::Event_MoveTo
 ================
 */
 void idMover::Event_MoveTo( idEntity *ent ) {
-	if ( !ent ) {
+	if ( ent == NULL ) {
 		gameLocal.Warning( "Entity not found" );
+		return;
 	}
 
 	dest_position = GetLocalCoordinates( ent->GetPhysics()->GetOrigin() );
@@ -1320,7 +1346,7 @@ idMover::Event_OpenPortal
 Sets the portal associtated with this mover to be open
 ================
 */
-void idMover::Event_OpenPortal( void ) {
+void idMover::Event_OpenPortal() {
 	if ( areaPortal ) {
 		SetPortalState( true );
 	}
@@ -1333,7 +1359,7 @@ idMover::Event_ClosePortal
 Sets the portal associtated with this mover to be closed
 ================
 */
-void idMover::Event_ClosePortal( void ) {
+void idMover::Event_ClosePortal() {
 	if ( areaPortal ) {
 		SetPortalState( false );
 	}
@@ -1371,7 +1397,7 @@ void idMover::Event_SetMoveSound( const char *sound ) {
 idMover::Event_EnableSplineAngles
 ================
 */
-void idMover::Event_EnableSplineAngles( void ) {
+void idMover::Event_EnableSplineAngles() {
 	useSplineAngles = true;
 }
 
@@ -1380,7 +1406,7 @@ void idMover::Event_EnableSplineAngles( void ) {
 idMover::Event_DisableSplineAngles
 ================
 */
-void idMover::Event_DisableSplineAngles( void ) {
+void idMover::Event_DisableSplineAngles() {
 	useSplineAngles = false;
 }
 
@@ -1389,7 +1415,7 @@ void idMover::Event_DisableSplineAngles( void ) {
 idMover::Event_RemoveInitialSplineAngles
 ================
 */
-void idMover::Event_RemoveInitialSplineAngles( void ) {
+void idMover::Event_RemoveInitialSplineAngles() {
 	idCurve_Spline<idVec3> *spline;
 	idAngles ang;
 
@@ -1445,7 +1471,7 @@ void idMover::Event_StartSpline( idEntity *splineEntity ) {
 idMover::Event_StopSpline
 ================
 */
-void idMover::Event_StopSpline( void ) {
+void idMover::Event_StopSpline() {
 	physicsObj.SetSpline( NULL, 0, 0, useSplineAngles );
 	splineEnt = NULL;
 }
@@ -1465,7 +1491,7 @@ void idMover::Event_Activate( idEntity *activator ) {
 idMover::Event_IsMoving
 ================
 */
-void idMover::Event_IsMoving( void ) {
+void idMover::Event_IsMoving() {
 	if ( physicsObj.GetLinearExtrapolationType() == EXTRAPOLATION_NONE ) {
 		idThread::ReturnInt( false );
 	} else {
@@ -1478,7 +1504,7 @@ void idMover::Event_IsMoving( void ) {
 idMover::Event_IsRotating
 ================
 */
-void idMover::Event_IsRotating( void ) {
+void idMover::Event_IsRotating() {
 	if ( physicsObj.GetAngularExtrapolationType() == EXTRAPOLATION_NONE ) {
 		idThread::ReturnInt( false );
 	} else {
@@ -1491,7 +1517,7 @@ void idMover::Event_IsRotating( void ) {
 idMover::WriteToSnapshot
 ================
 */
-void idMover::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	msg.WriteBits( move.stage, 3 );
 	msg.WriteBits( rot.stage, 3 );
@@ -1504,7 +1530,7 @@ void idMover::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover::ReadFromSnapshot
 ================
 */
-void idMover::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover::ReadFromSnapshot( const idBitMsg &msg ) {
 	moveStage_t oldMoveStage = move.stage;
 	moveStage_t oldRotStage = rot.stage;
 
@@ -1559,7 +1585,7 @@ idSplinePath::idSplinePath() {
 idSplinePath::Spawn
 ================
 */
-void idSplinePath::Spawn( void ) {
+void idSplinePath::Spawn() {
 }
 
 
@@ -1572,9 +1598,7 @@ idElevator
 */
 const idEventDef EV_PostArrival( "postArrival", NULL );
 const idEventDef EV_GotoFloor( "gotoFloor", "d" );
-#ifdef _D3XP
 const idEventDef EV_SetGuiStates( "setGuiStates" );
-#endif
 
 CLASS_DECLARATION( idMover, idElevator )
 	EVENT( EV_Activate,				idElevator::Event_Activate )
@@ -1583,9 +1607,7 @@ CLASS_DECLARATION( idMover, idElevator )
 	EVENT( EV_PostArrival,			idElevator::Event_PostFloorArrival )
 	EVENT( EV_GotoFloor,			idElevator::Event_GotoFloor )
 	EVENT( EV_Touch,				idElevator::Event_Touch )
-#ifdef _D3XP
 	EVENT( EV_SetGuiStates,			idElevator::Event_SetGuiStates )
-#endif
 END_CLASS
 
 /*
@@ -1593,7 +1615,7 @@ END_CLASS
 idElevator::idElevator
 ================
 */
-idElevator::idElevator( void ) {
+idElevator::idElevator() {
 	state = INIT;
 	floorInfo.Clear();
 	currentFloor = 0;
@@ -1666,7 +1688,7 @@ void idElevator::Restore( idRestoreGame *savefile ) {
 idElevator::Spawn
 ================
 */
-void idElevator::Spawn( void ) {
+void idElevator::Spawn() {
 	idStr str;
 	int len1;
 
@@ -1703,6 +1725,10 @@ idElevator::Event_Touch
 */
 void idElevator::Event_Touch( idEntity *other, trace_t *trace ) {
 	
+	if ( common->IsClient() ) {
+		return;
+	}
+
 	if ( gameLocal.slow.time < lastTouchTime + 2000 ) {
 		return;
 	}
@@ -1728,7 +1754,7 @@ void idElevator::Event_Touch( idEntity *other, trace_t *trace ) {
 idElevator::Think
 ================
 */
-void idElevator::Think( void ) {
+void idElevator::Think() {
 	idVec3 masterOrigin;
 	idMat3 masterAxis;
 	idDoor *doorent = GetDoor( spawnArgs.GetString( "innerdoor" ) );
@@ -1751,10 +1777,17 @@ void idElevator::Think( void ) {
 		DisableAllDoors();
 		SetGuiStates( ( pendingFloor == 1 ) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1] );
 	} else if ( state == WAITING_ON_DOORS ) {
-		if ( doorent ) {
-			state = doorent->IsOpen() ? WAITING_ON_DOORS : IDLE;
+		state = IDLE;
+		if ( doorent != NULL && doorent->IsOpen() ) {
+			state = WAITING_ON_DOORS;
 		} else {
-			state = IDLE;
+			for ( int i = 0; i < floorInfo.Num(); i++ ) {
+				idDoor *door = GetDoor( floorInfo[i].door );
+				if ( door != NULL && door->IsOpen() ) {
+					state = WAITING_ON_DOORS; 
+					break;
+				}
+			}
 		}
 		if ( state == IDLE ) {
 			lastFloor = currentFloor;
@@ -1793,7 +1826,7 @@ void idElevator::Event_TeamBlocked( idEntity *blockedEntity, idEntity *blockingE
 		// open the inner doors if one is blocked
 		idDoor *blocked = static_cast<idDoor *>( blockedEntity );
 		idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
-		if ( door && blocked->GetMoveMaster() == door->GetMoveMaster() ) {
+		if ( door != NULL && blocked->GetMoveMaster() == door->GetMoveMaster() ) {
 			door->SetBlocked(true);
 			OpenInnerDoor();
 			OpenFloorDoor( currentFloor );
@@ -1829,12 +1862,7 @@ bool idElevator::HandleSingleGuiCommand( idEntity *entityGui, idLexer *src ) {
 				OpenInnerDoor();
 				OpenFloorDoor( currentFloor );
 			} else {
-				idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
-				if ( door && door->IsOpen() ) {
-					PostEventSec( &EV_GotoFloor, 0.5f, newFloor );
-				} else {
-					ProcessEvent( &EV_GotoFloor, newFloor );
-				}
+				ProcessEvent( &EV_GotoFloor, newFloor );
 			}
 			return true;
 		}
@@ -1864,7 +1892,7 @@ void idElevator::OpenFloorDoor( int floor ) {
 idElevator::OpenInnerDoor
 ================
 */
-void idElevator::OpenInnerDoor( void ) {
+void idElevator::OpenInnerDoor() {
 	idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
 	if ( door ) {
 		door->Open();
@@ -1893,17 +1921,17 @@ idElevator::Event_GotoFloor
 void idElevator::Event_GotoFloor( int floor ) {
 	floorInfo_s *fi = GetFloorInfo( floor );
 	if ( fi ) {
-		idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
-		if ( door ) {
-			if ( door->IsBlocked() || door->IsOpen() ) {
-				PostEventSec( &EV_GotoFloor, 0.5f, floor );
-				return;
-			}
-		}
 		DisableAllDoors();
 		CloseAllDoors();
 		state = WAITING_ON_DOORS;
 		pendingFloor = floor;
+	}
+	// If the inner door is blocked, repost this event
+	idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
+	if ( door ) {
+		if ( door->IsBlocked() || door->IsOpen() ) {
+			PostEventSec( &EV_GotoFloor, 0.5f, floor );
+		}
 	}
 }
 
@@ -1978,18 +2006,16 @@ void idElevator::Event_PostFloorArrival() {
 	}
 }
 
-#ifdef _D3XP
 void idElevator::Event_SetGuiStates() {
 	SetGuiStates( ( currentFloor == 1 ) ? guiBinaryMoverStates[0] : guiBinaryMoverStates[1] );
 }
-#endif
 
 /*
 ================
 idElevator::DoneMoving
 ================
 */
-void idElevator::DoneMoving( void ) {
+void idElevator::DoneMoving() {
 	idMover::DoneMoving();
 	EnableProperDoors();
 	const idKeyValue *kv = spawnArgs.MatchPrefix( "statusGui" );
@@ -2018,7 +2044,7 @@ void idElevator::DoneMoving( void ) {
 idElevator::CloseAllDoors
 ================
 */
-void idElevator::CloseAllDoors( void ) {
+void idElevator::CloseAllDoors() {
 	idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
 	if ( door ) {
 		door->Close();
@@ -2036,7 +2062,7 @@ void idElevator::CloseAllDoors( void ) {
 idElevator::DisableAllDoors
 ================
 */
-void idElevator::DisableAllDoors( void ) {
+void idElevator::DisableAllDoors() {
 	idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
 	if ( door ) {
 		door->Enable( false );
@@ -2054,7 +2080,7 @@ void idElevator::DisableAllDoors( void ) {
 idElevator::EnableProperDoors
 ================
 */
-void idElevator::EnableProperDoors( void ) {
+void idElevator::EnableProperDoors() {
 	idDoor *door = GetDoor( spawnArgs.GetString( "innerdoor" ) );
 	if ( door ) {
 		door->Enable( true );
@@ -2130,9 +2156,7 @@ idMover_Binary::idMover_Binary() {
 	updateStatus = 0;
 	areaPortal = 0;
 	blocked = false;
-#ifdef _D3XP
 	playerOnly = false;
-#endif
 	fl.networkSync = true;
 }
 
@@ -2211,9 +2235,7 @@ void idMover_Binary::Save( idSaveGame *savefile ) const {
 		savefile->WriteInt( gameRenderWorld->GetPortalState( areaPortal ) );
 	}
 	savefile->WriteBool( blocked );
-#ifdef _D3XP
 	savefile->WriteBool( playerOnly );
-#endif
 
 	savefile->WriteInt( guiTargets.Num() );
 	for( i = 0; i < guiTargets.Num(); i++ ) {
@@ -2275,9 +2297,7 @@ void idMover_Binary::Restore( idRestoreGame *savefile ) {
 		gameLocal.SetPortalState( areaPortal, portalState );
 	}
 	savefile->ReadBool( blocked );
-#ifdef _D3XP
 	savefile->ReadBool( playerOnly );
-#endif
 
 	guiTargets.Clear();
 	savefile->ReadInt( num );
@@ -2297,7 +2317,7 @@ Base class for all movers.
 "speed"		movement speed
 ================
 */
-void idMover_Binary::Spawn( void ) {
+void idMover_Binary::Spawn() {
 	idEntity	*ent;
 	const char	*temp;
 
@@ -2341,7 +2361,7 @@ void idMover_Binary::Spawn( void ) {
 	}
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -2403,7 +2423,7 @@ void idMover_Binary::GetMovedir( float angle, idVec3 &movedir ) {
 idMover_Binary::Event_SetCallback
 ================
 */
-void idMover_Binary::Event_SetCallback( void ) {
+void idMover_Binary::Event_SetCallback() {
 	if ( ( moverState == MOVER_1TO2 ) || ( moverState == MOVER_2TO1 ) ) {
 		move_thread = idThread::CurrentThreadNum();
 		idThread::ReturnInt( true );
@@ -2550,7 +2570,7 @@ idMover_Binary::Event_Enable
 Set all entities in a mover team to be enabled
 ================
 */
-void idMover_Binary::Event_Enable( void ) {
+void idMover_Binary::Event_Enable() {
 	idMover_Binary *slave;
 
 	for ( slave = moveMaster; slave != NULL; slave = slave->activateChain ) {
@@ -2565,7 +2585,7 @@ idMover_Binary::Event_Disable
 Set all entities in a mover team to be disabled
 ================
 */
-void idMover_Binary::Event_Disable( void ) {
+void idMover_Binary::Event_Disable() {
 	idMover_Binary *slave;
 
 	for ( slave = moveMaster; slave != NULL; slave = slave->activateChain ) {
@@ -2580,18 +2600,16 @@ idMover_Binary::Event_OpenPortal
 Sets the portal associtated with this mover to be open
 ================
 */
-void idMover_Binary::Event_OpenPortal( void ) {
+void idMover_Binary::Event_OpenPortal() {
 	idMover_Binary *slave;
 
 	for ( slave = moveMaster; slave != NULL; slave = slave->activateChain ) {
 		if ( slave->areaPortal ) {
 			slave->SetPortalState( true );
 		}
-#ifdef _D3XP
 		if ( slave->playerOnly ) {
 			gameLocal.SetAASAreaState( slave->GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, false );
 		}
-#endif
 	}
 }
 
@@ -2602,7 +2620,7 @@ idMover_Binary::Event_ClosePortal
 Sets the portal associtated with this mover to be closed
 ================
 */
-void idMover_Binary::Event_ClosePortal( void ) {
+void idMover_Binary::Event_ClosePortal() {
 	idMover_Binary *slave;
 
 	for ( slave = moveMaster; slave != NULL; slave = slave->activateChain ) {
@@ -2610,11 +2628,9 @@ void idMover_Binary::Event_ClosePortal( void ) {
 			if ( slave->areaPortal ) {
 				slave->SetPortalState( false );
 			}
-#ifdef _D3XP
 			if ( slave->playerOnly ) {
 				gameLocal.SetAASAreaState( slave->GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, true );
 			}
-#endif
 		}
 	}
 }
@@ -2624,7 +2640,7 @@ void idMover_Binary::Event_ClosePortal( void ) {
 idMover_Binary::Event_ReturnToPos1
 ================
 */
-void idMover_Binary::Event_ReturnToPos1( void ) {
+void idMover_Binary::Event_ReturnToPos1() {
 	MatchActivateTeam( MOVER_2TO1, gameLocal.slow.time );
 }
 
@@ -2633,7 +2649,7 @@ void idMover_Binary::Event_ReturnToPos1( void ) {
 idMover_Binary::Event_Reached_BinaryMover
 ================
 */
-void idMover_Binary::Event_Reached_BinaryMover( void ) {
+void idMover_Binary::Event_Reached_BinaryMover() {
 
 	if ( moverState == MOVER_1TO2 ) {
 		// reached pos2
@@ -2689,7 +2705,7 @@ void idMover_Binary::Event_Reached_BinaryMover( void ) {
 idMover_Binary::GotoPosition1
 ================
 */
-void idMover_Binary::GotoPosition1( void ) {
+void idMover_Binary::GotoPosition1() {
 	idMover_Binary *slave;
 	int	partial;
 
@@ -2710,9 +2726,7 @@ void idMover_Binary::GotoPosition1( void ) {
 		for ( slave = this; slave != NULL; slave = slave->activateChain ) {
 			slave->CancelEvents( &EV_Mover_ReturnToPos1 );
 		}
-		if ( !spawnArgs.GetBool( "toggle" ) ) {
-			ProcessEvent( &EV_Mover_ReturnToPos1 );
-		}
+		ProcessEvent( &EV_Mover_ReturnToPos1 );
 		return;
 	}
 
@@ -2737,7 +2751,7 @@ void idMover_Binary::GotoPosition1( void ) {
 idMover_Binary::GotoPosition2
 ================
 */
-void idMover_Binary::GotoPosition2( void ) {
+void idMover_Binary::GotoPosition2() {
 	int	partial;
 
 	// only the master should control this
@@ -2836,9 +2850,9 @@ void idMover_Binary::Use_BinaryMover( idEntity *activator ) {
 	activatedBy = activator;
 
 	if ( moverState == MOVER_POS1 ) {
-		// FIXME: start moving USERCMD_MSEC later, because if this was player
+		// FIXME: start moving 1 ms later, because if this was player
 		// triggered, gameLocal.time hasn't been advanced yet
-		MatchActivateTeam( MOVER_1TO2, gameLocal.slow.time + USERCMD_MSEC );
+		MatchActivateTeam( MOVER_1TO2, gameLocal.slow.time + 1 );
 
 		SetGuiStates( guiBinaryMoverStates[MOVER_1TO2] );
 		// open areaportal
@@ -2890,7 +2904,7 @@ void idMover_Binary::Event_Use_BinaryMover( idEntity *activator ) {
 idMover_Binary::PreBind
 ================
 */
-void idMover_Binary::PreBind( void ) {
+void idMover_Binary::PreBind() {
 	pos1 = GetWorldCoordinates( pos1 );
 	pos2 = GetWorldCoordinates( pos2 );
 }
@@ -2900,7 +2914,7 @@ void idMover_Binary::PreBind( void ) {
 idMover_Binary::PostBind
 ================
 */
-void idMover_Binary::PostBind( void ) {
+void idMover_Binary::PostBind() {
 	pos1 = GetLocalCoordinates( pos1 );
 	pos2 = GetLocalCoordinates( pos2 );
 }
@@ -2910,7 +2924,7 @@ void idMover_Binary::PostBind( void ) {
 idMover_Binary::FindGuiTargets
 ================
 */
-void idMover_Binary::FindGuiTargets( void ) {
+void idMover_Binary::FindGuiTargets() {
    	gameLocal.GetTargets( spawnArgs, guiTargets, "guiTarget" );
 }
 
@@ -2943,7 +2957,7 @@ void idMover_Binary::SetGuiState( const char *key, const char *val ) const {
 idMover_Binary::Event_InitGuiTargets
 ================
 */
-void idMover_Binary::Event_FindGuiTargets( void ) {
+void idMover_Binary::Event_FindGuiTargets() {
 	FindGuiTargets();
 }
 
@@ -2952,7 +2966,7 @@ void idMover_Binary::Event_FindGuiTargets( void ) {
 idMover_Binary::Event_InitGuiTargets
 ================
 */
-void idMover_Binary::Event_InitGuiTargets( void ) {
+void idMover_Binary::Event_InitGuiTargets() {
 	if ( guiTargets.Num() ) {
 		SetGuiState( "movestate", guiBinaryMoverStates[MOVER_POS1] );
 	}
@@ -3050,7 +3064,7 @@ void idMover_Binary::SetBlocked( bool b ) {
 idMover_Binary::IsBlocked
 ================
 */
-bool idMover_Binary::IsBlocked( void ) {
+bool idMover_Binary::IsBlocked() {
 	return blocked;
 }
 
@@ -3059,7 +3073,7 @@ bool idMover_Binary::IsBlocked( void ) {
 idMover_Binary::GetActivator
 ================
 */
-idEntity *idMover_Binary::GetActivator( void ) const {
+idEntity *idMover_Binary::GetActivator() const {
 	return activatedBy.GetEntity();
 }
 
@@ -3068,7 +3082,7 @@ idEntity *idMover_Binary::GetActivator( void ) const {
 idMover_Binary::WriteToSnapshot
 ================
 */
-void idMover_Binary::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover_Binary::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	msg.WriteBits( moverState, 3 );
 	WriteBindToSnapshot( msg );
@@ -3079,7 +3093,7 @@ void idMover_Binary::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover_Binary::ReadFromSnapshot
 ================
 */
-void idMover_Binary::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover_Binary::ReadFromSnapshot( const idBitMsg &msg ) {
 	moverState_t oldMoverState = moverState;
 
 	physicsObj.ReadFromSnapshot( msg );
@@ -3089,6 +3103,7 @@ void idMover_Binary::ReadFromSnapshot( const idBitMsgDelta &msg ) {
 	if ( msg.HasChanged() ) {
 		if ( moverState != oldMoverState ) {
 			UpdateMoverSound( moverState );
+			MatchActivateTeam( moverState, gameLocal.slow.time );
 		}
 		UpdateVisuals();
 	}
@@ -3148,7 +3163,7 @@ END_CLASS
 idDoor::idDoor
 ================
 */
-idDoor::idDoor( void ) {
+idDoor::idDoor() {
 	triggersize = 1.0f;
 	crusher = false;
 	noTouch = false;
@@ -3171,7 +3186,7 @@ idDoor::idDoor( void ) {
 idDoor::~idDoor
 ================
 */
-idDoor::~idDoor( void ) {
+idDoor::~idDoor() {
 	if ( trigger ) {
 		delete trigger;
 	}
@@ -3242,7 +3257,7 @@ void idDoor::Restore( idRestoreGame *savefile ) {
 idDoor::Spawn
 ================
 */
-void idDoor::Spawn( void ) {
+void idDoor::Spawn() {
 	idVec3		abs_movedir;
 	float		distance;
 	idVec3		size;
@@ -3280,9 +3295,7 @@ void idDoor::Spawn( void ) {
 	spawnArgs.GetBool( "crusher", "0", crusher );
 	spawnArgs.GetBool( "start_open", "0", start_open );
 	spawnArgs.GetBool( "no_touch", "0", noTouch );
-#ifdef _D3XP
 	spawnArgs.GetBool( "player_only", "0", playerOnly );
-#endif
 
 	// expects syncLock to be a door that must be closed before this door will open
 	spawnArgs.GetString( "syncLock", "", syncLock );
@@ -3342,11 +3355,9 @@ void idDoor::Spawn( void ) {
 		// start closed
 		ProcessEvent( &EV_Mover_ClosePortal );
 
-#ifdef _D3XP
 		if ( playerOnly ) {
 			gameLocal.SetAASAreaState( GetPhysics()->GetAbsBounds(), AREACONTENTS_CLUSTERPORTAL, true );
 		}
-#endif
 	}
 
 	int locked = spawnArgs.GetInt( "locked" );
@@ -3373,7 +3384,31 @@ void idDoor::Spawn( void ) {
 idDoor::Think
 ================
 */
-void idDoor::Think( void ) {
+void idDoor::ClientThink( const int curTime, const float fraction, const bool predict ) {
+	idVec3 masterOrigin;
+	idMat3 masterAxis;
+
+	idMover_Binary::ClientThink( curTime, fraction, predict );
+
+	if ( thinkFlags & TH_PHYSICS ) {
+		// update trigger position
+		if ( GetMasterPosition( masterOrigin, masterAxis ) ) {
+			if ( trigger ) {
+				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+			}
+			if ( sndTrigger ) {
+				sndTrigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+			}
+		}
+	}
+}
+
+/*
+================
+idDoor::Think
+================
+*/
+void idDoor::Think() {
 	idVec3 masterOrigin;
 	idMat3 masterAxis;
 
@@ -3397,7 +3432,7 @@ void idDoor::Think( void ) {
 idDoor::PreBind
 ================
 */
-void idDoor::PreBind( void ) {
+void idDoor::PreBind() {
 	idMover_Binary::PreBind();
 }
 
@@ -3406,7 +3441,7 @@ void idDoor::PreBind( void ) {
 idDoor::PostBind
 ================
 */
-void idDoor::PostBind( void ) {
+void idDoor::PostBind() {
 	idMover_Binary::PostBind();
 	GetLocalTriggerPosition( trigger ? trigger : sndTrigger );
 }
@@ -3426,7 +3461,7 @@ void idDoor::SetAASAreaState( bool closed ) {
 idDoor::Hide
 ================
 */
-void idDoor::Hide( void ) {
+void idDoor::Hide() {
 	idMover_Binary *slave;
 	idMover_Binary *master;
 	idDoor *slaveDoor;
@@ -3465,7 +3500,7 @@ void idDoor::Hide( void ) {
 idDoor::Show
 ================
 */
-void idDoor::Show( void ) {
+void idDoor::Show() {
 	idMover_Binary *slave;
 	idMover_Binary *master;
 	idDoor *slaveDoor;
@@ -3526,7 +3561,7 @@ void idDoor::Use( idEntity *other, idEntity *activator ) {
 	if ( gameLocal.RequirementMet( activator, requires, removeItem ) ) {
 		if ( syncLock.Length() ) {
 			idEntity *sync = gameLocal.FindEntity( syncLock );
-			if ( sync && sync->IsType( idDoor::Type ) ) {
+			if ( sync != NULL && sync->IsType( idDoor::Type ) ) {
 				if ( static_cast<idDoor *>( sync )->IsOpen() ) {
 					return;
 				}
@@ -3542,7 +3577,7 @@ void idDoor::Use( idEntity *other, idEntity *activator ) {
 idDoor::Open
 ================
 */
-void idDoor::Open( void ) {
+void idDoor::Open() {
 	GotoPosition2();
 }
 
@@ -3551,7 +3586,7 @@ void idDoor::Open( void ) {
 idDoor::Close
 ================
 */
-void idDoor::Close( void ) {
+void idDoor::Close() {
 	GotoPosition1();
 }
 
@@ -3571,7 +3606,7 @@ void idDoor::Lock( int f ) {
 				if ( door->sndTrigger == NULL ) {
 					// in this case the sound trigger never got spawned
 					const char *sndtemp = door->spawnArgs.GetString( "snd_locked" );
-					if ( sndtemp && *sndtemp ) {
+					if ( sndtemp != NULL && *sndtemp != NULL ) {
 						door->PostEventMS( &EV_Door_SpawnSoundTrigger, 0 );
 					}
 				}
@@ -3596,7 +3631,7 @@ void idDoor::Lock( int f ) {
 idDoor::IsLocked
 ================
 */
-int idDoor::IsLocked( void ) {
+int idDoor::IsLocked() {
 	return spawnArgs.GetInt( "locked" );
 }
 
@@ -3605,7 +3640,7 @@ int idDoor::IsLocked( void ) {
 idDoor::IsOpen
 ================
 */
-bool idDoor::IsOpen( void ) {
+bool idDoor::IsOpen() {
 	return ( moverState != MOVER_POS1 );
 }
 
@@ -3614,11 +3649,10 @@ bool idDoor::IsOpen( void ) {
 idDoor::IsNoTouch
 ================
 */
-bool idDoor::IsNoTouch( void ) {
+bool idDoor::IsNoTouch() {
 	return noTouch;
 }
 
-#ifdef _D3XP
 /*
 ================
 idDoor::AllowPlayerOnly
@@ -3631,7 +3665,6 @@ bool idDoor::AllowPlayerOnly( idEntity *ent ) {
 
 	return true;
 }
-#endif
 
 /*
 ======================
@@ -3680,7 +3713,7 @@ idDoor::Event_StartOpen
 if "start_open", reverse position 1 and 2
 ======================
 */
-void idDoor::Event_StartOpen( void ) {
+void idDoor::Event_StartOpen() {
 	float time;
 	float speed;
 
@@ -3705,7 +3738,7 @@ All of the parts of a door have been spawned, so create
 a trigger that encloses all of them.
 ======================
 */
-void idDoor::Event_SpawnDoorTrigger( void ) {
+void idDoor::Event_SpawnDoorTrigger() {
 	idBounds		bounds;
 	idMover_Binary	*other;
 	bool			toggle;
@@ -3736,14 +3769,14 @@ void idDoor::Event_SpawnDoorTrigger( void ) {
 	}
 
 	const char *sndtemp = spawnArgs.GetString( "snd_locked" );
-	if ( spawnArgs.GetInt( "locked" ) && sndtemp && *sndtemp ) {
+	if ( spawnArgs.GetInt( "locked" ) && sndtemp != NULL && *sndtemp != NULL ) {
 		PostEventMS( &EV_Door_SpawnSoundTrigger, 0 );
 	}
 
 	CalcTriggerBounds( triggersize, bounds );
 
 	// create a trigger clip model
-	trigger = new idClipModel( idTraceModel( bounds ) );
+	trigger = new (TAG_PHYSICS_CLIP_MOVER) idClipModel( idTraceModel( bounds ) );
 	trigger->Link( gameLocal.clip, this, 255, GetPhysics()->GetOrigin(), mat3_identity );
 	trigger->SetContents( CONTENTS_TRIGGER );
 
@@ -3759,7 +3792,7 @@ idDoor::Event_SpawnSoundTrigger
 Spawn a sound trigger to activate locked sound if it exists.
 ======================
 */
-void idDoor::Event_SpawnSoundTrigger( void ) {
+void idDoor::Event_SpawnSoundTrigger() {
 	idBounds bounds;
 
 	if ( sndTrigger ) {
@@ -3769,7 +3802,7 @@ void idDoor::Event_SpawnSoundTrigger( void ) {
 	CalcTriggerBounds( triggersize * 0.5f, bounds );
 
 	// create a trigger clip model
-	sndTrigger = new idClipModel( idTraceModel( bounds ) );
+	sndTrigger = new (TAG_PHYSICS_CLIP_MOVER) idClipModel( idTraceModel( bounds ) );
 	sndTrigger->Link( gameLocal.clip, this, 254, GetPhysics()->GetOrigin(), mat3_identity );
 	sndTrigger->SetContents( CONTENTS_TRIGGER );
 
@@ -3781,7 +3814,7 @@ void idDoor::Event_SpawnSoundTrigger( void ) {
 idDoor::Event_Reached_BinaryMover
 ================
 */
-void idDoor::Event_Reached_BinaryMover( void ) {
+void idDoor::Event_Reached_BinaryMover() {
 	if ( moverState == MOVER_2TO1 ) {
 		SetBlocked( false );
 		const idKeyValue *kv = spawnArgs.MatchPrefix( "triggerClosed" );
@@ -3855,19 +3888,19 @@ void idDoor::Event_Touch( idEntity *other, trace_t *trace ) {
 	idVec3		planeaxis1, planeaxis2, normal;
 	idBounds	bounds;
 
+	if ( common->IsClient() ) {
+		return;
+	}
+
 	if ( !enabled ) {
 		return;
 	}
 
 	if ( trigger && trace->c.id == trigger->GetId() ) {
 		if ( !IsNoTouch() && !IsLocked() && GetMoverState() != MOVER_1TO2 ) {
-#ifdef _D3XP
 			if ( AllowPlayerOnly( other ) ) {
-#endif
 				Use( this, other );
-#ifdef _D3XP
 			}
-#endif
 		}
 	} else if ( sndTrigger && trace->c.id == sndTrigger->GetId() ) {
 		if ( other && other->IsType( idPlayer::Type ) && IsLocked() && gameLocal.slow.time > nextSndTriggerTime ) {
@@ -3940,7 +3973,7 @@ void idDoor::Event_Activate( idEntity *activator ) {
 
   	if ( syncLock.Length() ) {
 		idEntity *sync = gameLocal.FindEntity( syncLock );
-		if ( sync && sync->IsType( idDoor::Type ) ) {
+		if ( sync != NULL && sync->IsType( idDoor::Type ) ) {
 			if ( static_cast<idDoor *>( sync )->IsOpen() ) {
   				return;
   			}
@@ -3960,7 +3993,7 @@ void idDoor::Event_Activate( idEntity *activator ) {
 idDoor::Event_Open
 ================
 */
-void idDoor::Event_Open( void ) {
+void idDoor::Event_Open() {
 	Open();
 }
 
@@ -3969,7 +4002,7 @@ void idDoor::Event_Open( void ) {
 idDoor::Event_Close
 ================
 */
-void idDoor::Event_Close( void ) {
+void idDoor::Event_Close() {
 	Close();
 }
 
@@ -3987,7 +4020,7 @@ void idDoor::Event_Lock( int f ) {
 idDoor::Event_IsOpen
 ================
 */
-void idDoor::Event_IsOpen( void ) {
+void idDoor::Event_IsOpen() {
 	bool state;
 
 	state = IsOpen();
@@ -3999,7 +4032,7 @@ void idDoor::Event_IsOpen( void ) {
 idDoor::Event_Locked
 ================
 */
-void idDoor::Event_Locked( void ) {
+void idDoor::Event_Locked() {
 	idThread::ReturnFloat( spawnArgs.GetInt("locked") );
 }
 
@@ -4010,7 +4043,7 @@ idDoor::Event_OpenPortal
 Sets the portal associtated with this door to be open
 ================
 */
-void idDoor::Event_OpenPortal( void ) {
+void idDoor::Event_OpenPortal() {
 	idMover_Binary *slave;
 	idDoor *slaveDoor;
 
@@ -4032,7 +4065,7 @@ idDoor::Event_ClosePortal
 Sets the portal associtated with this door to be closed
 ================
 */
-void idDoor::Event_ClosePortal( void ) {
+void idDoor::Event_ClosePortal() {
 	idMover_Binary *slave;
 	idDoor *slaveDoor;
 
@@ -4069,7 +4102,7 @@ END_CLASS
 idPlat::idPlat
 ===============
 */
-idPlat::idPlat( void ) {
+idPlat::idPlat() {
 	trigger = NULL;
 	localTriggerOrigin.Zero();
 	localTriggerAxis.Identity();
@@ -4080,7 +4113,7 @@ idPlat::idPlat( void ) {
 idPlat::~idPlat
 ===============
 */
-idPlat::~idPlat( void ) {
+idPlat::~idPlat() {
 	if ( trigger ) {
 		delete trigger;
 	}
@@ -4113,7 +4146,7 @@ void idPlat::Restore( idRestoreGame *savefile ) {
 idPlat::Spawn
 ===============
 */
-void idPlat::Spawn( void ) {
+void idPlat::Spawn() {
 	float	lip;
 	float	height;
 	float	time;
@@ -4159,10 +4192,131 @@ void idPlat::Spawn( void ) {
 
 /*
 ================
+idPlat::RunPhysics_NoBlocking
+================
+*/
+void idPlat::RunPhysics_NoBlocking() {
+	int			i, startTime, endTime;
+	idEntity *	part = NULL, *blockedPart = NULL, *blockingEntity = NULL;
+	trace_t		results;
+	bool		moved;
+
+	// don't run physics if not enabled
+	if ( !( thinkFlags & TH_PHYSICS ) ) {
+		// however do update any animation controllers
+		if ( UpdateAnimationControllers() ) {
+			BecomeActive( TH_ANIMATE );
+		}
+		return;
+	}
+
+	/*
+	// if this entity is a team slave don't do anything because the team master will handle everything
+	if ( teamMaster && teamMaster != this ) {
+		return false;
+	}
+	*/
+	startTime = gameLocal.previousTime;
+	endTime = gameLocal.time;
+
+	gameLocal.push.InitSavingPushedEntityPositions();
+	blockedPart = NULL;
+
+	// save the physics state of the whole team and disable the team for collision detection
+	for ( part = this; part != NULL; part = part->GetTeamChain() ) {
+		if ( part->GetPhysics() ) {
+			if ( !part->fl.solidForTeam ) {
+				part->GetPhysics()->DisableClip();
+			}
+			part->GetPhysics()->SaveState();
+		}
+	}
+
+
+	// move the whole team
+	for ( part = this; part != NULL; part = part->GetTeamChain() ) {
+
+		if ( part->GetPhysics() ) {
+
+			// run physics
+			moved = part->GetPhysics()->Evaluate( endTime - startTime, endTime );
+
+			// check if the object is blocked
+			blockingEntity = part->GetPhysics()->GetBlockingEntity();
+			if ( blockingEntity ) {
+				blockedPart = part;
+				break;
+			}
+
+			// if moved or forced to update the visual position and orientation from the physics
+			if ( moved || part->fl.forcePhysicsUpdate ) {
+				part->UpdateVisuals();
+			}
+
+			// update any animation controllers here so an entity bound
+			// to a joint of this entity gets the correct position
+			if ( part->UpdateAnimationControllers() ) {
+				part->BecomeActive( TH_ANIMATE );
+			}
+		}
+	}
+
+	// enable the whole team for collision detection
+	for ( part = this; part != NULL; part = part->GetTeamChain() ) {
+		if ( part->GetPhysics() ) {
+			if ( !part->fl.solidForTeam ) {
+				part->GetPhysics()->EnableClip();
+			}
+		}
+	}
+
+	// set pushed
+	for ( i = 0; i < gameLocal.push.GetNumPushedEntities(); i++ ) {
+		idEntity *ent = gameLocal.push.GetPushedEntity( i );
+		ent->GetPhysics()->SetPushed( endTime - startTime );
+	}
+}
+
+/*
+================
+idPlat::ClientThink
+================
+*/
+void idPlat::ClientThink( const int curTime, const float fraction, const bool predict ) {
+	InterpolatePhysicsOnly( fraction );
+
+	Present();
+
+
+
+	//idMover_Binary::ClientThink( curTime, fraction, predict );
+
+	/*
+	idVec3 masterOrigin;
+	idMat3 masterAxis;
+
+	// Dont bother with blocking entities on clients.. host tells us our move state.
+	RunPhysics_NoBlocking();
+
+	Present();
+	
+	if ( thinkFlags & TH_PHYSICS ) {
+		// update trigger position
+		if ( GetMasterPosition( masterOrigin, masterAxis ) ) {
+			if ( trigger ) {
+				trigger->Link( gameLocal.clip, this, 0, masterOrigin + localTriggerOrigin * masterAxis, localTriggerAxis * masterAxis );
+			}
+		}
+	}
+	*/
+}
+
+/*
+================
 idPlat::Think
 ================
 */
-void idPlat::Think( void ) {
+void idPlat::Think() {
 	idVec3 masterOrigin;
 	idMat3 masterAxis;
 
@@ -4183,7 +4337,7 @@ void idPlat::Think( void ) {
 idPlat::PreBind
 ================
 */
-void idPlat::PreBind( void ) {
+void idPlat::PreBind() {
 	idMover_Binary::PreBind();
 }
 
@@ -4192,7 +4346,7 @@ void idPlat::PreBind( void ) {
 idPlat::PostBind
 ================
 */
-void idPlat::PostBind( void ) {
+void idPlat::PostBind() {
 	idMover_Binary::PostBind();
 	GetLocalTriggerPosition( trigger );
 }
@@ -4247,7 +4401,7 @@ void idPlat::SpawnPlatTrigger( idVec3 &pos ) {
 		tmax[1] = tmin[1] + 1;
 	}
 	
-	trigger = new idClipModel( idTraceModel( idBounds( tmin, tmax ) ) );
+	trigger = new (TAG_PHYSICS_CLIP_MOVER) idClipModel( idTraceModel( idBounds( tmin, tmax ) ) );
 	trigger->Link( gameLocal.clip, this, 255, GetPhysics()->GetOrigin(), mat3_identity );
 	trigger->SetContents( CONTENTS_TRIGGER );
 }
@@ -4258,6 +4412,10 @@ idPlat::Event_Touch
 ===============
 */
 void idPlat::Event_Touch( idEntity *other, trace_t *trace ) {
+	if ( common->IsClient() ) {
+		return;
+	}
+	
 	if ( !other->IsType( idPlayer::Type ) ) {
 		return;
 	}
@@ -4307,7 +4465,7 @@ END_CLASS
 idMover_Periodic::idMover_Periodic
 ===============
 */
-idMover_Periodic::idMover_Periodic( void ) {
+idMover_Periodic::idMover_Periodic() {
 	damage = 0.0f;
 	fl.neverDormant	= false;
 }
@@ -4317,7 +4475,7 @@ idMover_Periodic::idMover_Periodic( void ) {
 idMover_Periodic::Spawn
 ===============
 */
-void idMover_Periodic::Spawn( void ) {
+void idMover_Periodic::Spawn() {
 	spawnArgs.GetFloat( "damage", "0", damage );
 	if ( !spawnArgs.GetBool( "solid", "1" ) ) {
 		GetPhysics()->SetContents( 0 );
@@ -4345,12 +4503,13 @@ void idMover_Periodic::Restore( idRestoreGame *savefile ) {
 	RestorePhysics( &physicsObj );
 }
 
+
 /*
 ================
 idMover_Periodic::Think
 ================
 */
-void idMover_Periodic::Think( void ) {
+void idMover_Periodic::Think() {
 	// if we are completely closed off from the player, don't do anything at all
 	if ( CheckDormant() ) {
 		return;
@@ -4384,7 +4543,7 @@ void idMover_Periodic::Event_PartBlocked( idEntity *blockingEntity ) {
 idMover_Periodic::WriteToSnapshot
 ================
 */
-void idMover_Periodic::WriteToSnapshot( idBitMsgDelta &msg ) const {
+void idMover_Periodic::WriteToSnapshot( idBitMsg &msg ) const {
 	physicsObj.WriteToSnapshot( msg );
 	WriteBindToSnapshot( msg );
 }
@@ -4394,7 +4553,7 @@ void idMover_Periodic::WriteToSnapshot( idBitMsgDelta &msg ) const {
 idMover_Periodic::ReadFromSnapshot
 ================
 */
-void idMover_Periodic::ReadFromSnapshot( const idBitMsgDelta &msg ) {
+void idMover_Periodic::ReadFromSnapshot( const idBitMsg &msg ) {
 	physicsObj.ReadFromSnapshot( msg );
 	ReadBindFromSnapshot( msg );
 
@@ -4421,7 +4580,7 @@ END_CLASS
 idRotater::idRotater
 ===============
 */
-idRotater::idRotater( void ) {
+idRotater::idRotater() {
 	activatedBy = this;
 }
 
@@ -4430,9 +4589,9 @@ idRotater::idRotater( void ) {
 idRotater::Spawn
 ===============
 */
-void idRotater::Spawn( void ) {
+void idRotater::Spawn() {
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -4519,7 +4678,7 @@ END_CLASS
 idBobber::idBobber
 ===============
 */
-idBobber::idBobber( void ) {
+idBobber::idBobber() {
 }
 
 /*
@@ -4527,7 +4686,7 @@ idBobber::idBobber( void ) {
 idBobber::Spawn
 ===============
 */
-void idBobber::Spawn( void ) {
+void idBobber::Spawn() {
 	float	speed;
 	float	height;
 	float	phase;
@@ -4552,7 +4711,7 @@ void idBobber::Spawn( void ) {
 	}
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -4580,7 +4739,7 @@ END_CLASS
 idPendulum::idPendulum
 ===============
 */
-idPendulum::idPendulum( void ) {
+idPendulum::idPendulum() {
 }
 
 /*
@@ -4588,7 +4747,7 @@ idPendulum::idPendulum( void ) {
 idPendulum::Spawn
 ===============
 */
-void idPendulum::Spawn( void ) {
+void idPendulum::Spawn() {
 	float	speed;
 	float	freq;
 	float	length;
@@ -4612,7 +4771,7 @@ void idPendulum::Spawn( void ) {
 	}
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 	physicsObj.SetClipMask( MASK_SOLID );
@@ -4642,7 +4801,7 @@ END_CLASS
 idRiser::idRiser
 ===============
 */
-idRiser::idRiser( void ) {
+idRiser::idRiser() {
 }
 
 /*
@@ -4650,9 +4809,9 @@ idRiser::idRiser( void ) {
 idRiser::Spawn
 ===============
 */
-void idRiser::Spawn( void ) {
+void idRiser::Spawn() {
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_MOVER) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetOrigin( GetPhysics()->GetOrigin() );
 	physicsObj.SetAxis( GetPhysics()->GetAxis() );
 

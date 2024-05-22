@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
 #include "ListGUILocal.h"
 #include "DeviceContext.h"
@@ -39,6 +39,17 @@ extern idCVar r_skipGuiShaders;		// 1 = don't render any gui elements on surface
 idUserInterfaceManagerLocal	uiManagerLocal;
 idUserInterfaceManager *	uiManager = &uiManagerLocal;
 
+// These used to be in every window, but they all pointed at the same one in idUserInterfaceManagerLocal.
+// Made a global so it can be switched out dynamically to test optimized versions.
+idDeviceContext *dc;
+
+idCVar g_useNewGuiCode(	"g_useNewGuiCode",	"1", CVAR_GAME | CVAR_INTEGER, "use optimized device context code, 2 = toggle on/off every frame" );
+
+extern idCVar sys_lang;
+
+
+
+
 /*
 ===============================================================================
 
@@ -49,13 +60,34 @@ idUserInterfaceManager *	uiManager = &uiManagerLocal;
 
 void idUserInterfaceManagerLocal::Init() {
 	screenRect = idRectangle(0, 0, 640, 480);
-	dc.Init();
+	dcOld.Init();
+	dcOptimized.Init();
+
+	SetDrawingDC();
+
 }
 
 void idUserInterfaceManagerLocal::Shutdown() {
 	guis.DeleteContents( true );
 	demoGuis.DeleteContents( true );
-	dc.Shutdown();
+	dcOld.Shutdown();
+	dcOptimized.Shutdown();
+	mapParser.Clear();
+}
+
+void idUserInterfaceManagerLocal::SetDrawingDC() {
+	static int toggle;
+
+	// to make it more obvious that there is a difference between the old and
+	// new paths, toggle between them every frame if g_useNewGuiCode is set to 2
+	toggle++;
+
+	if ( g_useNewGuiCode.GetInteger() == 1 || 
+		( g_useNewGuiCode.GetInteger() == 2 && ( toggle & 1 ) ) ) {
+		dc = &dcOptimized;
+	} else {
+		dc = &dcOld;
+	}
 }
 
 void idUserInterfaceManagerLocal::Touch( const char *name ) {
@@ -76,24 +108,22 @@ void idUserInterfaceManagerLocal::WritePrecacheCommands( idFile *f ) {
 }
 
 void idUserInterfaceManagerLocal::SetSize( float width, float height ) {
-	dc.SetSize( width, height );
+	dc->SetSize( width, height );
 }
 
-void idUserInterfaceManagerLocal::BeginLevelLoad() {
-	int c = guis.Num();
-	for ( int i = 0; i < c; i++ ) {
-		if ( (guis[ i ]->GetDesktop()->GetFlags() & WIN_MENUGUI) == 0 ) {
-			guis[ i ]->ClearRefs();
-			/*
-			delete guis[ i ];
-			guis.RemoveIndex( i );
-			i--; c--;
-			*/
-		}
+void idUserInterfaceManagerLocal::Preload( const char *mapName ) {
+	if ( mapName != NULL && mapName[ 0 ] != '\0' ) {
+		mapParser.LoadFromFile( va( "generated/guis/%s.bgui", mapName ) );
 	}
 }
 
-void idUserInterfaceManagerLocal::EndLevelLoad() {
+void idUserInterfaceManagerLocal::BeginLevelLoad() {
+	for ( int i = 0; i < guis.Num(); i++ ) {
+		guis[ i ]->ClearRefs();
+	}
+ }
+
+void idUserInterfaceManagerLocal::EndLevelLoad( const char *mapName ) {
 	int c = guis.Num();
 	for ( int i = 0; i < c; i++ ) {
 		if ( guis[i]->GetRefs() == 0 ) {
@@ -114,7 +144,16 @@ void idUserInterfaceManagerLocal::EndLevelLoad() {
 				i--; c--;
 			}
 		}
+		common->UpdateLevelLoadPacifier();
 	}
+	if ( cvarSystem->GetCVarBool( "fs_buildresources" ) && mapName != NULL && mapName[ 0 ] != '\0' ) {
+		mapParser.WriteToFile( va( "generated/guis/%s.bgui", mapName ) );
+		idFile *f = fileSystem->OpenFileRead( va( "generated/guis/%s.bgui", mapName ) );
+		delete f;
+	}
+
+	dcOld.Init();
+	dcOptimized.Init();
 }
 
 void idUserInterfaceManagerLocal::Reload( bool all ) {
@@ -164,8 +203,8 @@ bool idUserInterfaceManagerLocal::CheckGui( const char *qpath ) const {
 	return false;
 }
 
-idUserInterface *idUserInterfaceManagerLocal::Alloc( void ) const {
-	return new idUserInterfaceLocal();
+idUserInterface *idUserInterfaceManagerLocal::Alloc() const {
+	return new (TAG_OLD_UI) idUserInterfaceLocal();
 }
 
 void idUserInterfaceManagerLocal::DeAlloc( idUserInterface *gui ) {
@@ -186,9 +225,17 @@ idUserInterface *idUserInterfaceManagerLocal::FindGui( const char *qpath, bool a
 
 	for ( int i = 0; i < c; i++ ) {
 		idUserInterfaceLocal *gui = guis[i];
-		if ( !idStr::Icmp( guis[i]->GetSourceFile(), qpath ) ) {
+		if ( gui == NULL ) {
+			continue;
+		}
+
+		if ( !idStr::Icmp( gui->GetSourceFile(), qpath ) ) {
 			if ( !forceNOTUnique && ( needUnique || guis[i]->IsInteractive() ) ) {
 				break;
+			}
+			// Reload the gui if it's been cleared
+			if ( guis[i]->GetRefs() == 0 ) {
+				guis[i]->InitFromFile( guis[i]->GetSourceFile() );
 			}
 			guis[i]->AddRef();
 			return guis[i];
@@ -217,8 +264,8 @@ idUserInterface *idUserInterfaceManagerLocal::FindDemoGui( const char *qpath ) {
 	return NULL;
 }
 
-idListGUI *	idUserInterfaceManagerLocal::AllocListGUI( void ) const {
-	return new idListGUILocal();
+idListGUI *	idUserInterfaceManagerLocal::AllocListGUI() const {
+	return new (TAG_OLD_UI) idListGUILocal();
 }
 
 void idUserInterfaceManagerLocal::FreeListGUI( idListGUI *listgui ) {
@@ -279,37 +326,53 @@ bool idUserInterfaceLocal::InitFromFile( const char *qpath, bool rebuild, bool c
 
 	if ( rebuild ) {
 		delete desktop;
-		desktop = new idWindow( this );
+		desktop = new (TAG_OLD_UI) idWindow( this );
 	} else if ( desktop == NULL ) {
-		desktop = new idWindow( this );
+		desktop = new (TAG_OLD_UI) idWindow( this );
 	}
 
-	source = qpath;
+	// First try loading the localized version
+	// Then fall back to the english version
+	for ( int i = 0; i < 2; i++ ) {
+		source = qpath;
+		idStr trySource = qpath;
+		trySource.ToLower();
+		trySource.BackSlashesToSlashes();
+		if ( i == 0 ) {
+			trySource.Replace( "guis/", va( "guis/%s/", sys_lang.GetString() ) );
+		}
+		fileSystem->ReadFile( trySource, NULL, &timeStamp);
+		if ( timeStamp != FILE_NOT_FOUND_TIMESTAMP ) {
+			source = trySource;
+			break;
+		}
+	}
 	state.Set( "text", "Test Text!" );
 
-	idParser src( LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT );
-
-	//Load the timestamp so reload guis will work correctly
-	fileSystem->ReadFile(qpath, NULL, &timeStamp);
-
-	src.LoadFile( qpath );
-
-	if ( src.IsLoaded() ) {
+	idTokenParser &bsrc = uiManagerLocal.GetBinaryParser();
+	if ( !bsrc.IsLoaded() || !bsrc.StartParsing( source ) ) {
+		idParser src( LEXFL_NOFATALERRORS | LEXFL_NOSTRINGCONCAT | LEXFL_ALLOWMULTICHARLITERALS | LEXFL_ALLOWBACKSLASHSTRINGCONCAT );
+		src.LoadFile( source );
+		if ( src.IsLoaded() ) {
+			bsrc.LoadFromParser( src, source );
+			ID_TIME_T ts = fileSystem->GetTimestamp( source );
+			bsrc.UpdateTimeStamp( ts );
+		}
+	}
+	if ( bsrc.IsLoaded() && bsrc.StartParsing( source) )  {
 		idToken token;
-		while( src.ReadToken( &token ) ) {
+		while( bsrc.ReadToken( &token ) ) {
 			if ( idStr::Icmp( token, "windowDef" ) == 0 ) {
-				desktop->SetDC( &uiManagerLocal.dc );
-				if ( desktop->Parse( &src, rebuild ) ) {
+				if ( desktop->Parse( &bsrc, rebuild ) ) {
 					desktop->SetFlag( WIN_DESKTOP );
 					desktop->FixupParms();
 				}
 				continue;
 			}
 		}
-
-		state.Set( "name", qpath );
+		state.Set( "name", qpath );	// don't use localized name
+		bsrc.DoneParsing();
 	} else {
-		desktop->SetDC( &uiManagerLocal.dc );
 		desktop->SetFlag( WIN_DESKTOP );
 		desktop->name = "Desktop";
 		desktop->text = va( "Invalid GUI: %s", qpath );
@@ -318,17 +381,13 @@ bool idUserInterfaceLocal::InitFromFile( const char *qpath, bool rebuild, bool c
 		desktop->foreColor = idVec4( 1.0f, 1.0f, 1.0f, 1.0f );
 		desktop->backColor = idVec4( 0.0f, 0.0f, 0.0f, 1.0f );
 		desktop->SetupFromState();
-		common->Warning( "Couldn't load gui: '%s'", qpath );
+		common->Warning( "Couldn't load gui: '%s'", source.c_str() );
 	}
-
 	interactive = desktop->Interactive();
-
 	if ( uiManagerLocal.guis.Find( this ) == NULL ) {
 		uiManagerLocal.guis.Append( this );
 	}
-
 	loading = false;
-
 	return true; 
 }
 
@@ -340,13 +399,6 @@ const char *idUserInterfaceLocal::HandleEvent( const sysEvent_t *event, int _tim
 		const char *ret = bindHandler->HandleEvent( event, updateVisuals );
 		bindHandler = NULL;
 		return ret;
-	}
-
-	// Added to handle UI with ABS mouse pos. Might need further expanding later.
-	if(event->evType == SE_MOUSE_ABS)
-	{
-		cursorX = event->evValue;
-		cursorY = event->evValue2;
 	}
 
 	if ( event->evType == SE_MOUSE ) {
@@ -372,23 +424,23 @@ void idUserInterfaceLocal::HandleNamedEvent ( const char* eventName ) {
 	desktop->RunNamedEvent( eventName );
 }
 
-void idUserInterfaceLocal::Redraw( int _time ) {
+void idUserInterfaceLocal::Redraw( int _time, bool hud ) {
 	if ( r_skipGuiShaders.GetInteger() > 5 ) {
 		return;
 	}
 	if ( !loading && desktop ) {
 		time = _time;
-		uiManagerLocal.dc.PushClipRect( uiManagerLocal.screenRect );
-		desktop->Redraw( 0, 0 );
-		uiManagerLocal.dc.PopClipRect();
+		dc->PushClipRect( uiManagerLocal.screenRect );
+		desktop->Redraw( 0, 0, hud );
+		dc->PopClipRect();
 	}
 }
 
 void idUserInterfaceLocal::DrawCursor() {
 	if ( !desktop || desktop->GetFlags() & WIN_MENUGUI ) {
-		uiManagerLocal.dc.DrawCursor(&cursorX, &cursorY, 32.0f );
+		dc->DrawCursor(&cursorX, &cursorY, 32.0f );
 	} else {
-		uiManagerLocal.dc.DrawCursor(&cursorX, &cursorY, 64.0f );
+		dc->DrawCursor(&cursorX, &cursorY, 56.0f );
 	}
 }
 
@@ -474,9 +526,8 @@ void idUserInterfaceLocal::ReadFromDemoFile( class idDemoFile *f ) {
 
 	if (desktop == NULL) {
 		f->Log("creating new gui\n");
-		desktop = new idWindow(this);
+		desktop = new (TAG_OLD_UI) idWindow(this);
 	   	desktop->SetFlag( WIN_DESKTOP );
-	   	desktop->SetDC( &uiManagerLocal.dc );
 		desktop->ReadFromDemoFile(f);
 	} else {
 		f->Log("re-using gui\n");
@@ -554,7 +605,7 @@ bool idUserInterfaceLocal::WriteToSaveGame( idFile *savefile ) const {
 	return true;
 }
 
-bool idUserInterfaceLocal::ReadFromSaveGame( idFile *savefile ) {
+bool idUserInterfaceLocal::ReadFromSaveGame( idFile * savefile ) {
 	int num;
 	int i, len;
 	idStr key;
@@ -627,7 +678,7 @@ void idUserInterfaceLocal::RecurseSetKeyBindingNames( idWindow *window ) {
 idUserInterfaceLocal::SetKeyBindingNames
 ==============
 */
-void idUserInterfaceLocal::SetKeyBindingNames( void ) {
+void idUserInterfaceLocal::SetKeyBindingNames() {
 	if ( !desktop ) {
 		return;
 	}

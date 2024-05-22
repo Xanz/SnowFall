@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -44,38 +44,35 @@ class idMoveable : public idEntity {
 public:
 	CLASS_PROTOTYPE( idMoveable );
 
-							idMoveable( void );
-							~idMoveable( void );
+							idMoveable();
+							~idMoveable();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-	virtual void			Think( void );
+	virtual void			Think();
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	virtual void			Hide();
+	virtual void			Show();
 
-	virtual void			Hide( void );
-	virtual void			Show( void );
-
-	bool					AllowStep( void ) const;
+	bool					AllowStep() const;
 	void					EnableDamage( bool enable, float duration );
 	virtual bool			Collide( const trace_t &collision, const idVec3 &velocity );
 	virtual void			Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
-#ifdef _D3XP
 	void					SetAttacker( idEntity *ent );
-#endif
+	const idEntity *		GetAttacker() { return attacker; }
 
 protected:
 	idPhysics_RigidBody		physicsObj;				// physics object
 	idStr					brokenModel;			// model set when health drops down to or below zero
 	idStr					damage;					// if > 0 apply damage to hit entities
-#ifdef _D3XP
 	idStr					monsterDamage;
 	idEntity				*attacker;
-#endif
 	idStr					fxCollide;				// fx system to start when collides with something
 	int						nextCollideFxTime;		// next time it is ok to spawn collision fx
 	float					minDamageVelocity;		// minimum velocity before moveable applies damage
@@ -89,15 +86,15 @@ protected:
 	int						nextDamageTime;			// next time the movable can hurt the player
 	int						nextSoundTime;			// next time the moveable can make a sound
 
-	const idMaterial *		GetRenderModelMaterial( void ) const;
-	void					BecomeNonSolid( void );
+	const idMaterial *		GetRenderModelMaterial() const;
+	void					BecomeNonSolid();
 	void					InitInitialSpline( int startTime );
-	bool					FollowInitialSplinePath( void );
+	bool					FollowInitialSplinePath();
 
 	void					Event_Activate( idEntity *activator );
-	void					Event_BecomeNonSolid( void );
-	void					Event_SetOwnerFromSpawnArgs( void );
-	void					Event_IsAtRest( void );
+	void					Event_BecomeNonSolid();
+	void					Event_SetOwnerFromSpawnArgs();
+	void					Event_IsAtRest();
 	void					Event_EnableDamage( float enable );
 };
 
@@ -117,16 +114,16 @@ public:
 	CLASS_PROTOTYPE( idBarrel );
 							idBarrel();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-	void					BarrelThink( void );
-	virtual void			Think( void );
+	void					BarrelThink();
+	virtual void			Think();
 	virtual bool			GetPhysicsToVisualTransform( idVec3 &origin, idMat3 &axis );
-	virtual void			ClientPredictionThink( void );
-
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	
 private:
 	float					radius;					// radius of barrel
 	int						barrelAxis;				// one of the coordinate axes the barrel cylinder is parallel to
@@ -154,25 +151,24 @@ public:
 							idExplodingBarrel();
 							~idExplodingBarrel();
 
-	void					Spawn( void );
+	void					Spawn();
 
 	void					Save( idSaveGame *savefile ) const;
 	void					Restore( idRestoreGame *savefile );
 
-#ifdef _D3XP
-	bool					IsStable( void );
+	bool					IsStable();
 	void					SetStability( bool stability );
-	void					StartBurning( void );
-	void					StopBurning( void );
-#endif
+	void					StartBurning();
+	void					StopBurning();
 
-	virtual void			Think( void );
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	virtual void			Think();
 	virtual void			Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir, 
 								const char *damageDefName, const float damageScale, const int location );
 	virtual void			Killed( idEntity *inflictor, idEntity *attacker, int damage, const idVec3 &dir, int location );
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 
 	enum {
@@ -198,13 +194,12 @@ private:
 	int						particleTime;
 	int						lightTime;
 	float					time;
-#ifdef _D3XP
 	bool					isStable;
-#endif
 
 	void					AddParticles( const char *name, bool burn );
 	void					AddLight( const char *name , bool burn );
-	void					ExplodingEffects( void );
+	void					ExplodingEffects();
+	void					UpdateLight();
 
 	void					Event_Activate( idEntity *activator );
 	void					Event_Respawn();

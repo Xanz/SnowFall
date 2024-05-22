@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __GAME_WEAPON_H__
 #define __GAME_WEAPON_H__
 
+#include "PredictedValue.h"
+
 /*
 ===============================================================================
 
@@ -37,9 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
-#ifdef _D3XP
 extern const idEventDef EV_Weapon_State;
-#endif
 
 typedef enum {
 	WP_READY,
@@ -60,7 +60,6 @@ static const int LIGHTID_VIEW_MUZZLE_FLASH = 100;
 
 class idMoveableItem;
 
-#ifdef _D3XP
 typedef struct {
 	char			name[64];
 	char			particlename[128];
@@ -80,7 +79,6 @@ typedef struct {
 	int				lightHandle;
 	renderLight_t	light;
 } WeaponLight_t;
-#endif
 
 class idWeapon : public idAnimatedEntity {
 public:
@@ -90,10 +88,11 @@ public:
 	virtual					~idWeapon();
 
 	// Init
-	void					Spawn( void );
+	void					Spawn();
 	void					SetOwner( idPlayer *owner );
-	idPlayer*				GetOwner( void );
-	virtual bool			ShouldConstructScriptObjectAtSpawn( void ) const;
+	idPlayer*				GetOwner();
+	virtual bool			ShouldConstructScriptObjectAtSpawn() const;
+	void					SetFlashlightOwner( idPlayer *owner );
 
 	static void				CacheWeapon( const char *weaponName );
 
@@ -102,81 +101,87 @@ public:
 	void					Restore( idRestoreGame *savefile );					// unarchives object from save game file
 
 	// Weapon definition management
-	void					Clear( void );
+	void					Clear();
 	void					GetWeaponDef( const char *objectname, int ammoinclip );
-	bool					IsLinked( void );
-	bool					IsWorldModelReady( void );
+	bool					IsLinked();
+	bool					IsWorldModelReady();
 
 	// GUIs
-	const char *			Icon( void ) const;
-	void					UpdateGUI( void );
+	const char *			Icon() const;
+	void					UpdateGUI();
+	const char *			PdaIcon() const;
+	const char *			DisplayName() const;
+	const char *			Description() const;
 
 	virtual void			SetModel( const char *modelname );
 	bool					GetGlobalJointTransform( bool viewModel, const jointHandle_t jointHandle, idVec3 &offset, idMat3 &axis );
 	void					SetPushVelocity( const idVec3 &pushVelocity );
-	bool					UpdateSkin( void );
+	bool					UpdateSkin();
 
 	// State control/player interface
-	void					Think( void );
-	void					Raise( void );
-	void					PutAway( void );
-	void					Reload( void );
-	void					LowerWeapon( void );
-	void					RaiseWeapon( void );
-	void					HideWeapon( void );
-	void					ShowWeapon( void );
-	void					HideWorldModel( void );
-	void					ShowWorldModel( void );
-	void					OwnerDied( void );
-	void					BeginAttack( void );
-	void					EndAttack( void );
-	bool					IsReady( void ) const;
-	bool					IsReloading( void ) const;
-	bool					IsHolstered( void ) const;
-	bool					ShowCrosshair( void ) const;
+	void					Think();
+	void					Raise();
+	void					PutAway();
+	void					Reload();
+	void					LowerWeapon();
+	void					RaiseWeapon();
+	void					HideWeapon();
+	void					ShowWeapon();
+	void					HideWorldModel();
+	void					ShowWorldModel();
+	void					OwnerDied();
+	void					BeginAttack();
+	void					EndAttack();
+	bool					IsReady() const;
+	bool					IsReloading() const;
+	bool					IsHolstered() const;
+	bool					ShowCrosshair() const;
 	idEntity *				DropItem( const idVec3 &velocity, int activateDelay, int removeDelay, bool died );
-	bool					CanDrop( void ) const;
-	void					WeaponStolen( void );
+	bool					CanDrop() const;
+	void					WeaponStolen();
+	void					ForceAmmoInClip();
 
-#ifdef _D3XP
 	weaponStatus_t			GetStatus() { return status; };
 
-#endif
 
 	// Script state management
-	virtual idThread *		ConstructScriptObject( void );
-	virtual void			DeconstructScriptObject( void );
+	virtual idThread *		ConstructScriptObject();
+	virtual void			DeconstructScriptObject();
 	void					SetState( const char *statename, int blendFrames );
-	void					UpdateScript( void );
-	void					EnterCinematic( void );
-	void					ExitCinematic( void );
-	void					NetCatchup( void );
+	void					UpdateScript();
+	void					EnterCinematic();
+	void					ExitCinematic();
+	void					NetCatchup();
 
 	// Visual presentation
 	void					PresentWeapon( bool showViewModel );
-	int						GetZoomFov( void );
+	int						GetZoomFov();
 	void					GetWeaponAngleOffsets( int *average, float *scale, float *max );
 	void					GetWeaponTimeOffsets( float *time, float *scale );
 	bool					BloodSplat( float size );
+	void					SetIsPlayerFlashlight( bool bl ) { isPlayerFlashlight = bl; }
+	void					FlashlightOn();
+	void					FlashlightOff();
 
 	// Ammo
 	static ammo_t			GetAmmoNumForName( const char *ammoname );
 	static const char		*GetAmmoNameForNum( ammo_t ammonum );
 	static const char		*GetAmmoPickupNameForNum( ammo_t ammonum );
-	ammo_t					GetAmmoType( void ) const;
-	int						AmmoAvailable( void ) const;
-	int						AmmoInClip( void ) const;
-	void					ResetAmmoClip( void );
-	int						ClipSize( void ) const;
-	int						LowAmmo( void ) const;
-	int						AmmoRequired( void ) const;
-#ifdef _D3XP
+	ammo_t					GetAmmoType() const;
+	int						AmmoAvailable() const;
+	int						AmmoInClip() const;
+	void					ResetAmmoClip();
+	int						ClipSize() const;
+	int						LowAmmo() const;
+	int						AmmoRequired() const;
 	int						AmmoCount() const;
 	int						GetGrabberState() const;
-#endif
 
-	virtual void			WriteToSnapshot( idBitMsgDelta &msg ) const;
-	virtual void			ReadFromSnapshot( const idBitMsgDelta &msg );
+	// Flashlight
+	idAnimatedEntity *		GetWorldModel() { return worldModel.GetEntity(); }
+
+	virtual void			WriteToSnapshot( idBitMsg &msg ) const;
+	virtual void			ReadFromSnapshot( const idBitMsg &msg );
 
 	enum {
 		EVENT_RELOAD = idEntity::EVENT_MAXEVENTS,
@@ -186,8 +191,21 @@ public:
 	};
 	virtual bool			ClientReceiveEvent( int event, int time, const idBitMsg &msg );
 
-	virtual void			ClientPredictionThink( void );
+	virtual void			ClientPredictionThink();
+	virtual void			ClientThink( const int curTime, const float fraction, const bool predict );
+	void					MuzzleFlashLight();
+	void					RemoveMuzzleFlashlight();
 
+	// Get a global origin and axis suitable for the laser sight or bullet tracing
+	// Returns false for hands, grenades, and chainsaw.
+	// Can't be const because a frame may need to be created.
+	bool					GetMuzzlePositionWithHacks( idVec3 & origin, idMat3 & axis );
+
+	void					GetProjectileLaunchOriginAndAxis( idVec3 & origin, idMat3 & axis );
+
+	const idDeclEntityDef * GetDeclEntityDef() { return weaponDef; }
+
+	friend class idPlayer;
 private:
 	// script control
 	idScriptBool			WEAPON_ATTACK;
@@ -204,6 +222,7 @@ private:
 	int						animBlendFrames;
 	int						animDoneTime;
 	bool					isLinked;
+	bool					isPlayerFlashlight;
 
 	// precreated projectile
 	idEntity				*projectileEnt;
@@ -249,6 +268,9 @@ private:
 	idDict					brassDict;
 	int						brassDelay;
 	idStr					icon;
+	idStr					pdaIcon;
+	idStr					displayName;
+	idStr					itemDesc;
 
 	// view weapon gui light
 	renderLight_t			guiLight;
@@ -260,6 +282,9 @@ private:
 
 	renderLight_t			worldMuzzleFlash;	// positioned on world weapon bone
 	int						worldMuzzleFlashHandle;
+
+	float					fraccos;
+	float					fraccos2;
 
 	idVec3					flashColor;
 	int						muzzleFlashEnd;
@@ -282,7 +307,7 @@ private:
 	ammo_t					ammoType;
 	int						ammoRequired;		// amount of ammo to use each shot.  0 means weapon doesn't need ammo.
 	int						clipSize;			// 0 means no reload
-	int						ammoClip;
+	idPredictedValue< int >	ammoClip;
 	int						lowAmmo;			// if ammo in clip hits this threshold, snd_
 	bool					powerAmmo;			// true if the clip reduction is a factor of the power setting when
 												// a projectile is launched
@@ -303,12 +328,10 @@ private:
 	jointHandle_t			barrelJointWorld;
 	jointHandle_t			ejectJointWorld;
 
-#ifdef _D3XP
 	jointHandle_t			smokeJointView;
 
 	idHashTable<WeaponParticle_t>	weaponParticles;
 	idHashTable<WeaponLight_t>		weaponLights;
-#endif
 
 	// sound
 	const idSoundShader *	sndHum;
@@ -343,60 +366,58 @@ private:
 	float					weaponOffsetScale;
 
 	// flashlight
-	void					AlertMonsters( void );
+	void					AlertMonsters();
 
 	// Visual presentation
 	void					InitWorldModel( const idDeclEntityDef *def );
-	void					MuzzleFlashLight( void );
 	void					MuzzleRise( idVec3 &origin, idMat3 &axis );
-	void					UpdateNozzleFx( void );
-	void					UpdateFlashPosition( void );
+	void					UpdateNozzleFx();
+	void					UpdateFlashPosition();
 
 	// script events
-	void					Event_Clear( void );
-	void					Event_GetOwner( void );
+	void					Event_Clear();
+	void					Event_GetOwner();
 	void					Event_WeaponState( const char *statename, int blendFrames );
 	void					Event_SetWeaponStatus( float newStatus );
-	void					Event_WeaponReady( void );
-	void					Event_WeaponOutOfAmmo( void );
-	void					Event_WeaponReloading( void );
-	void					Event_WeaponHolstered( void );
-	void					Event_WeaponRising( void );
-	void					Event_WeaponLowering( void );
+	void					Event_WeaponReady();
+	void					Event_WeaponOutOfAmmo();
+	void					Event_WeaponReloading();
+	void					Event_WeaponHolstered();
+	void					Event_WeaponRising();
+	void					Event_WeaponLowering();
 	void					Event_UseAmmo( int amount );
 	void					Event_AddToClip( int amount );
-	void					Event_AmmoInClip( void );
-	void					Event_AmmoAvailable( void );
-	void					Event_TotalAmmoCount( void );
-	void					Event_ClipSize( void );
+	void					Event_AmmoInClip();
+	void					Event_AmmoAvailable();
+	void					Event_TotalAmmoCount();
+	void					Event_ClipSize();
 	void					Event_PlayAnim( int channel, const char *animname );
 	void					Event_PlayCycle( int channel, const char *animname );
 	void					Event_AnimDone( int channel, int blendFrames );
 	void					Event_SetBlendFrames( int channel, int blendFrames );
 	void					Event_GetBlendFrames( int channel );
-	void					Event_Next( void );
+	void					Event_Next();
 	void					Event_SetSkin( const char *skinname );
 	void					Event_Flashlight( int enable );
 	void					Event_GetLightParm( int parmnum );
 	void					Event_SetLightParm( int parmnum, float value );
 	void					Event_SetLightParms( float parm0, float parm1, float parm2, float parm3 );
 	void					Event_LaunchProjectiles( int num_projectiles, float spread, float fuseOffset, float launchPower, float dmgPower );
-	void					Event_CreateProjectile( void );
-	void					Event_EjectBrass( void );
-	void					Event_Melee( void );
-	void					Event_GetWorldModel( void );
+	void					Event_CreateProjectile();
+	void					Event_EjectBrass();
+	void					Event_Melee();
+	void					Event_GetWorldModel();
 	void					Event_AllowDrop( int allow );
-	void					Event_AutoReload( void );
-	void					Event_NetReload( void );
-	void					Event_IsInvisible( void );
-	void					Event_NetEndReload( void );
+	void					Event_AutoReload();
+	void					Event_NetReload();
+	void					Event_IsInvisible();
+	void					Event_NetEndReload();
 
-#ifdef _D3XP
 	idGrabber				grabber;
 	int						grabberState;
 
 	void					Event_Grabber( int enable );
-	void					Event_GrabberHasTarget( void );
+	void					Event_GrabberHasTarget();
 	void					Event_GrabberSetGrabDistance( float dist );
 	void					Event_LaunchProjectilesEllipse( int num_projectiles, float spreada, float spreadb, float fuseOffset, float power );
 	void					Event_LaunchPowerup( const char* powerup, float duration, int useAmmo );
@@ -409,18 +430,17 @@ private:
 
 	void					Event_StartWeaponLight( const char* name);
 	void					Event_StopWeaponLight( const char* name);
-#endif
 };
 
-ID_INLINE bool idWeapon::IsLinked( void ) {
+ID_INLINE bool idWeapon::IsLinked() {
 	return isLinked;
 }
 
-ID_INLINE bool idWeapon::IsWorldModelReady( void ) {
+ID_INLINE bool idWeapon::IsWorldModelReady() {
 	return ( worldModel.GetEntity() != NULL );
 }
 
-ID_INLINE idPlayer* idWeapon::GetOwner( void ) {
+ID_INLINE idPlayer* idWeapon::GetOwner() {
 	return owner;
 }
 

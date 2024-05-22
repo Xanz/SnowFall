@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -73,7 +73,7 @@ If you have questions concerning this license or the applicable additional terms
 	or valid string set specified in the constructor.
 
 	CVars are always considered cheats except when CVAR_NOCHEAT, CVAR_INIT,
-	CVAR_ROM, CVAR_ARCHIVE, CVAR_USERINFO, CVAR_SERVERINFO, CVAR_NETWORKSYNC
+	CVAR_ROM, CVAR_ARCHIVE, CVAR_SERVERINFO, CVAR_NETWORKSYNC
 	is set.
 
 ===============================================================================
@@ -90,7 +90,6 @@ typedef enum {
 	CVAR_GUI				= BIT(6),	// gui variable
 	CVAR_GAME				= BIT(7),	// game variable
 	CVAR_TOOL				= BIT(8),	// tool variable
-	CVAR_USERINFO			= BIT(9),	// sent to servers, available to menu
 	CVAR_SERVERINFO			= BIT(10),	// sent from servers, available to menu
 	CVAR_NETWORKSYNC		= BIT(11),	// cvar is synced from the server to clients
 	CVAR_STATIC				= BIT(12),	// statically declared, not user created
@@ -114,7 +113,7 @@ typedef enum {
 class idCVar {
 public:
 							// Never use the default constructor.
-							idCVar( void ) { assert( typeid( this ) != typeid( idCVar ) ); }
+							idCVar() { assert( typeid( this ) != typeid( idCVar ) ); }
 
 							// Always use one of the following constructors.
 							idCVar( const char *name, const char *value, int flags, const char *description,
@@ -124,24 +123,25 @@ public:
 							idCVar( const char *name, const char *value, int flags, const char *description,
 									const char **valueStrings, argCompletion_t valueCompletion = NULL );
 
-	virtual					~idCVar( void ) {}
+	virtual					~idCVar() {}
 
-	const char *			GetName( void ) const { return internalVar->name; }
-	int						GetFlags( void ) const { return internalVar->flags; }
-	const char *			GetDescription( void ) const { return internalVar->description; }
-	float					GetMinValue( void ) const { return internalVar->valueMin; }
-	float					GetMaxValue( void ) const { return internalVar->valueMax; }
-	const char **			GetValueStrings( void ) const { return valueStrings; }
-	argCompletion_t			GetValueCompletion( void ) const { return valueCompletion; }
+	const char *			GetName() const { return internalVar->name; }
+	int						GetFlags() const { return internalVar->flags; }
+	const char *			GetDescription() const { return internalVar->description; }
+	float					GetMinValue() const { return internalVar->valueMin; }
+	float					GetMaxValue() const { return internalVar->valueMax; }
+	const char **			GetValueStrings() const { return valueStrings; }
+	argCompletion_t			GetValueCompletion() const { return valueCompletion; }
 
-	bool					IsModified( void ) const { return ( internalVar->flags & CVAR_MODIFIED ) != 0; }
-	void					SetModified( void ) { internalVar->flags |= CVAR_MODIFIED; }
-	void					ClearModified( void ) { internalVar->flags &= ~CVAR_MODIFIED; }
+	bool					IsModified() const { return ( internalVar->flags & CVAR_MODIFIED ) != 0; }
+	void					SetModified() { internalVar->flags |= CVAR_MODIFIED; }
+	void					ClearModified() { internalVar->flags &= ~CVAR_MODIFIED; }
 
-	const char *			GetString( void ) const { return internalVar->value; }
-	bool					GetBool( void ) const { return ( internalVar->integerValue != 0 ); }
-	int						GetInteger( void ) const { return internalVar->integerValue; }
-	float					GetFloat( void ) const { return internalVar->floatValue; }
+	const char *			GetDefaultString() const { return internalVar->InternalGetResetString(); }
+	const char *			GetString() const { return internalVar->value; }
+	bool					GetBool() const { return ( internalVar->integerValue != 0 ); }
+	int						GetInteger() const { return internalVar->integerValue; }
+	float					GetFloat() const { return internalVar->floatValue; }
 
 	void					SetString( const char *value ) { internalVar->InternalSetString( value ); }
 	void					SetBool( const bool value ) { internalVar->InternalSetBool( value ); }
@@ -150,7 +150,7 @@ public:
 
 	void					SetInternalVar( idCVar *cvar ) { internalVar = cvar; }
 
-	static void				RegisterStaticVars( void );
+	static void				RegisterStaticVars();
 
 protected:
 	const char *			name;					// name
@@ -174,6 +174,8 @@ private:
 	virtual void			InternalSetBool( const bool newValue ) {}
 	virtual void			InternalSetInteger( const int newValue ) {}
 	virtual void			InternalSetFloat( const float newValue ) {}
+
+	virtual const char *	InternalGetResetString() const { return value; }
 
 	static idCVar *			staticVars;
 };
@@ -207,11 +209,11 @@ ID_INLINE idCVar::idCVar( const char *name, const char *value, int flags, const 
 
 class idCVarSystem {
 public:
-	virtual					~idCVarSystem( void ) {}
+	virtual					~idCVarSystem() {}
 
-	virtual void			Init( void ) = 0;
-	virtual void			Shutdown( void ) = 0;
-	virtual bool			IsInitialized( void ) const = 0;
+	virtual void			Init() = 0;
+	virtual void			Shutdown() = 0;
+	virtual bool			IsInitialized() const = 0;
 
 							// Registers a CVar.
 	virtual void			Register( idCVar *cvar ) = 0;
@@ -242,7 +244,7 @@ public:
 
 							// Sets/gets/clears modified flags that tell what kind of CVars have changed.
 	virtual void			SetModifiedFlags( int flags ) = 0;
-	virtual int				GetModifiedFlags( void ) const = 0;
+	virtual int				GetModifiedFlags() const = 0;
 	virtual void			ClearModifiedFlags( int flags ) = 0;
 
 							// Resets variables with one of the given flags set.
@@ -255,7 +257,7 @@ public:
 	virtual void			WriteFlaggedVariables( int flags, const char *setCmd, idFile *f ) const = 0;
 
 							// Moves CVars to and from dictionaries.
-	virtual const idDict *	MoveCVarsToDict( int flags ) const = 0;
+	virtual void			MoveCVarsToDict( int flags, idDict & dict, bool onlyModified = false ) const = 0;
 	virtual void			SetCVarsFromDict( const idDict &dict ) = 0;
 };
 
@@ -297,7 +299,7 @@ ID_INLINE void idCVar::Init( const char *name, const char *value, int flags, con
 	}
 }
 
-ID_INLINE void idCVar::RegisterStaticVars( void ) {
+ID_INLINE void idCVar::RegisterStaticVars() {
 	if ( staticVars != (idCVar *)0xFFFFFFFF ) {
 		for ( idCVar *cvar = staticVars; cvar; cvar = cvar->next ) {
 			cvarSystem->Register( cvar );

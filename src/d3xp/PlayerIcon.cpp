@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -35,10 +35,8 @@ If you have questions concerning this license or the applicable additional terms
 static const char * iconKeys[ ICON_NONE ] = {
 	"mtr_icon_lag",
 	"mtr_icon_chat"
-#ifdef CTF
 	,"mtr_icon_redteam",
 	"mtr_icon_blueteam"
-#endif
 };
 
 /*
@@ -99,11 +97,6 @@ void idPlayerIcon::Draw( idPlayer *player, const idVec3 &origin ) {
 		if ( !CreateIcon( player, ICON_LAG, origin, axis ) ) {
 			UpdateIcon( player, origin, axis );
 		}
-	} else if ( player->isChatting && !player->spectating ) {
-		if ( !CreateIcon( player, ICON_CHAT, origin, axis ) ) {
-			UpdateIcon( player, origin, axis );
-		}
-#ifdef CTF
 	} else if ( g_CTFArrows.GetBool() && gameLocal.mpGame.IsGametypeFlagBased() && gameLocal.GetLocalPlayer() && player->team == gameLocal.GetLocalPlayer()->team && !player->IsHidden() && !player->AI_DEAD ) {
 		int icon = ICON_TEAM_RED + player->team;
 
@@ -113,7 +106,6 @@ void idPlayerIcon::Draw( idPlayer *player, const idVec3 &origin ) {
 		if ( !CreateIcon( player, ( playerIconType_t )icon, origin, axis ) ) {
 			UpdateIcon( player, origin, axis );
 		}
-#endif
 	} else {
 		FreeIcon();
 	}
@@ -124,7 +116,7 @@ void idPlayerIcon::Draw( idPlayer *player, const idVec3 &origin ) {
 idPlayerIcon::FreeIcon
 ===============
 */
-void idPlayerIcon::FreeIcon( void ) {
+void idPlayerIcon::FreeIcon() {
 	if ( iconHandle != - 1 ) {
 		gameRenderWorld->FreeEntityDef( iconHandle );
 		iconHandle = -1;
@@ -138,7 +130,7 @@ idPlayerIcon::CreateIcon
 ===============
 */
 bool idPlayerIcon::CreateIcon( idPlayer *player, playerIconType_t type, const idVec3 &origin, const idMat3 &axis ) {
-	assert( type != ICON_NONE );
+	assert( type < ICON_NONE );
 	const char *mtr = player->spawnArgs.GetString( iconKeys[ type ], "_default" );
 	return CreateIcon( player, type, mtr, origin, axis );
 }

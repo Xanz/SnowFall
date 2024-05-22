@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -56,21 +56,25 @@ public:
 template< class objType, class keyType, int maxChildrenPerNode >
 class idBTree {
 public:
-									idBTree( void );
-									~idBTree( void );
+									idBTree();
+									~idBTree();
 
-	void							Init( void );
-	void							Shutdown( void );
+	void							Init();
+	void							Shutdown();
 
 	idBTreeNode<objType,keyType> *	Add( objType *object, keyType key );						// add an object to the tree
 	void							Remove( idBTreeNode<objType,keyType> *node );				// remove an object node from the tree
+
+	idBTreeNode<objType,keyType> *	NodeFind( keyType key ) const;								// find an object using the given key
+	idBTreeNode<objType,keyType> *	NodeFindSmallestLargerEqual( keyType key ) const;			// find an object with the smallest key larger equal the given key
+	idBTreeNode<objType,keyType> *	NodeFindLargestSmallerEqual( keyType key ) const;			// find an object with the largest key smaller equal the given key
 
 	objType *						Find( keyType key ) const;									// find an object using the given key
 	objType *						FindSmallestLargerEqual( keyType key ) const;				// find an object with the smallest key larger equal the given key
 	objType *						FindLargestSmallerEqual( keyType key ) const;				// find an object with the largest key smaller equal the given key
 
-	idBTreeNode<objType,keyType> *	GetRoot( void ) const;										// returns the root node of the tree
-	int								GetNodeCount( void ) const;									// returns the total number of nodes in the tree
+	idBTreeNode<objType,keyType> *	GetRoot() const;											// returns the root node of the tree
+	int								GetNodeCount() const;										// returns the total number of nodes in the tree
 	idBTreeNode<objType,keyType> *	GetNext( idBTreeNode<objType,keyType> *node ) const;		// goes through all nodes of the tree
 	idBTreeNode<objType,keyType> *	GetNextLeaf( idBTreeNode<objType,keyType> *node ) const;	// goes through all leaf nodes of the tree
 
@@ -78,34 +82,34 @@ private:
 	idBTreeNode<objType,keyType> *	root;
 	idBlockAlloc<idBTreeNode<objType,keyType>,128>	nodeAllocator;
 
-	idBTreeNode<objType,keyType> *	AllocNode( void );
+	idBTreeNode<objType,keyType> *	AllocNode();
 	void							FreeNode( idBTreeNode<objType,keyType> *node );
 	void							SplitNode( idBTreeNode<objType,keyType> *node );
 	idBTreeNode<objType,keyType> *	MergeNodes( idBTreeNode<objType,keyType> *node1, idBTreeNode<objType,keyType> *node2 );
 
 	void							CheckTree_r( idBTreeNode<objType,keyType> *node, int &numNodes ) const;
-	void							CheckTree( void ) const;
+	void							CheckTree() const;
 };
 
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE idBTree<objType,keyType,maxChildrenPerNode>::idBTree( void ) {
+ID_INLINE idBTree<objType,keyType,maxChildrenPerNode>::idBTree() {
 	assert( maxChildrenPerNode >= 4 );
 	root = NULL;
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE idBTree<objType,keyType,maxChildrenPerNode>::~idBTree( void ) {
+ID_INLINE idBTree<objType,keyType,maxChildrenPerNode>::~idBTree() {
 	Shutdown();
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Init( void ) {
+ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Init() {
 	root = AllocNode();
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Shutdown( void ) {
+ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Shutdown() {
 	nodeAllocator.Shutdown();
 	root = NULL;
 }
@@ -113,6 +117,10 @@ ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Shutdown( void ) {
 template< class objType, class keyType, int maxChildrenPerNode >
 ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNode>::Add( objType *object, keyType key ) {
 	idBTreeNode<objType,keyType> *node, *child, *newNode;
+
+	if ( root == NULL ) {
+		root = AllocNode();
+	}
 
 	if ( root->numChildren >= maxChildrenPerNode ) {
 		newNode = AllocNode();
@@ -261,7 +269,7 @@ ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::Remove( idBTreeNode<
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::Find( keyType key ) const {
+ID_INLINE idBTreeNode<objType,keyType> * idBTree<objType,keyType,maxChildrenPerNode>::NodeFind( keyType key ) const {
 	idBTreeNode<objType,keyType> *node;
 
 	for ( node = root->firstChild; node != NULL; node = node->firstChild ) {
@@ -273,7 +281,7 @@ ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::Find( keyType ke
 		}
 		if ( node->object ) {
 			if ( node->key == key ) {
-				return node->object;
+				return node;
 			} else {
 				return NULL;
 			}
@@ -283,8 +291,12 @@ ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::Find( keyType ke
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::FindSmallestLargerEqual( keyType key ) const {
+ID_INLINE idBTreeNode<objType,keyType> * idBTree<objType,keyType,maxChildrenPerNode>::NodeFindSmallestLargerEqual( keyType key ) const {
 	idBTreeNode<objType,keyType> *node;
+
+	if ( root == NULL ) {
+		return NULL;
+	}
 
 	for ( node = root->firstChild; node != NULL; node = node->firstChild ) {
 		while( node->next ) {
@@ -295,44 +307,85 @@ ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::FindSmallestLarg
 		}
 		if ( node->object ) {
 			if ( node->key >= key ) {
-				return node->object;
+				return node;
 			} else {
 				return NULL;
 			}
 		}
 	}
 	return NULL;
+}
+
+template< class objType, class keyType, int maxChildrenPerNode >
+ID_INLINE idBTreeNode<objType,keyType> * idBTree<objType,keyType,maxChildrenPerNode>::NodeFindLargestSmallerEqual( keyType key ) const {
+	idBTreeNode<objType,keyType> *node;
+
+	if ( root == NULL ) {
+		return NULL;
+	}
+
+	idBTreeNode<objType,keyType> * smaller = NULL;
+	for ( node = root->firstChild; node != NULL; node = node->firstChild ) {
+		while( node->next ) {
+			if ( node->key >= key ) {
+				break;
+			}
+			smaller = node;
+			node = node->next;
+		}
+		if ( node->object ) {
+			if ( node->key <= key ) {
+				return node;
+			} else if ( smaller == NULL ) {
+				return NULL;
+			} else {
+				node = smaller;
+				if ( node->object ) {
+					return node;
+				}
+			}
+		}
+	}
+	return NULL;
+}
+
+template< class objType, class keyType, int maxChildrenPerNode >
+ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::Find( keyType key ) const {
+	idBTreeNode<objType,keyType> * node = NodeFind( key );
+	if ( node == NULL ) {
+		return NULL;
+	} else {
+		return node->object;
+	}
+}
+
+template< class objType, class keyType, int maxChildrenPerNode >
+ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::FindSmallestLargerEqual( keyType key ) const {
+	idBTreeNode<objType,keyType> * node = NodeFindSmallestLargerEqual( key );
+	if ( node == NULL ) {
+		return NULL;
+	} else {
+		return node->object;
+	}
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
 ID_INLINE objType *idBTree<objType,keyType,maxChildrenPerNode>::FindLargestSmallerEqual( keyType key ) const {
-	idBTreeNode<objType,keyType> *node;
-
-	for ( node = root->lastChild; node != NULL; node = node->lastChild ) {
-		while( node->prev ) {
-			if ( node->key <= key ) {
-				break;
-			}
-			node = node->prev;
-		}
-		if ( node->object ) {
-			if ( node->key <= key ) {
-				return node->object;
-			} else {
-				return NULL;
-			}
-		}
+	idBTreeNode<objType,keyType> * node = NodeFindLargestSmallerEqual( key );
+	if ( node == NULL ) {
+		return NULL;
+	} else {
+		return node->object;
 	}
-	return NULL;
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNode>::GetRoot( void ) const {
+ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNode>::GetRoot() const {
 	return root;
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE int idBTree<objType,keyType,maxChildrenPerNode>::GetNodeCount( void ) const {
+ID_INLINE int idBTree<objType,keyType,maxChildrenPerNode>::GetNodeCount() const {
 	return nodeAllocator.GetAllocCount();
 }
 
@@ -372,7 +425,7 @@ ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNo
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNode>::AllocNode( void ) {
+ID_INLINE idBTreeNode<objType,keyType> *idBTree<objType,keyType,maxChildrenPerNode>::AllocNode() {
 	idBTreeNode<objType,keyType> *node = nodeAllocator.Alloc();
 	node->key = 0;
 	node->parent = NULL;
@@ -499,7 +552,7 @@ ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::CheckTree_r( idBTree
 }
 
 template< class objType, class keyType, int maxChildrenPerNode >
-ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::CheckTree( void ) const {
+ID_INLINE void idBTree<objType,keyType,maxChildrenPerNode>::CheckTree() const {
 	int numNodes = 0;
 	idBTreeNode<objType,keyType> *node, *lastNode;
 

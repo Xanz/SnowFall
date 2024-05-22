@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -38,7 +38,7 @@ static const char *smokeParticle_SnapshotName = "_SmokeParticle_Snapshot_";
 idSmokeParticles::idSmokeParticles
 ================
 */
-idSmokeParticles::idSmokeParticles( void ) {
+idSmokeParticles::idSmokeParticles() {
 	initialized = false;
 	memset( &renderEntity, 0, sizeof( renderEntity ) );
 	renderEntityHandle = -1;
@@ -53,7 +53,7 @@ idSmokeParticles::idSmokeParticles( void ) {
 idSmokeParticles::Init
 ================
 */
-void idSmokeParticles::Init( void ) {
+void idSmokeParticles::Init() {
 	if ( initialized ) {
 		Shutdown();
 	}
@@ -101,7 +101,7 @@ void idSmokeParticles::Init( void ) {
 idSmokeParticles::Shutdown
 ================
 */
-void idSmokeParticles::Shutdown( void ) {
+void idSmokeParticles::Shutdown() {
 	// make sure the render entity is freed before the model is freed
 	if ( renderEntityHandle != -1 ) {
 		gameRenderWorld->FreeEntityDef( renderEntityHandle );
@@ -119,7 +119,7 @@ void idSmokeParticles::Shutdown( void ) {
 idSmokeParticles::FreeSmokes
 ================
 */
-void idSmokeParticles::FreeSmokes( void ) {
+void idSmokeParticles::FreeSmokes() {
 	for ( int activeStageNum = 0; activeStageNum < activeStages.Num(); activeStageNum++ ) {
 		singleSmoke_t *smoke, *next, *last;
 
@@ -129,7 +129,6 @@ void idSmokeParticles::FreeSmokes( void ) {
 		for ( last = NULL, smoke = active->smokes; smoke; smoke = next ) {
 			next = smoke->next;
 
-#ifdef _D3XP
 			float frac;
 
 			if ( smoke->timeGroup ) {
@@ -138,9 +137,6 @@ void idSmokeParticles::FreeSmokes( void ) {
 			else {
 				frac = (float)( gameLocal.slow.time - smoke->privateStartTime ) / ( stage->particleLife * 1000 );
 			}
-#else
-			float frac = (float)( gameLocal.time - smoke->privateStartTime ) / ( stage->particleLife * 1000 );
-#endif
 			if ( frac >= 1.0f ) {
 				// remove the particle from the stage list
 				if ( last != NULL ) {
@@ -175,9 +171,7 @@ Called by game code to drop another particle into the list
 */
 bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemStartTime, const float diversity, const idVec3 &origin, const idMat3 &axis, int timeGroup /*_D3XP*/ ) {
 	bool	continues = false;
-#ifdef _D3XP
 	SetTimeState ts( timeGroup );
-#endif
 
 	if ( !smoke ) {
 		return false;
@@ -188,7 +182,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 	}
 
 	// dedicated doesn't smoke. No UpdateRenderEntity, so they would not be freed
-	if ( gameLocal.localClientNum < 0 ) {
+	if ( gameLocal.GetLocalClientNum() < 0 ) {
 		return false;
 	}
 
@@ -220,7 +214,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 		int		finalParticleTime = stage->cycleMsec * stage->spawnBunching;
 		int		deltaMsec = gameLocal.time - systemStartTime;
 
-		int		nowCount, prevCount;
+		int		nowCount = 0, prevCount = 0;
 		if ( finalParticleTime == 0 ) {
 			// if spawnBunching is 0, they will all come out at once
 			if ( gameLocal.time == systemStartTime ) {
@@ -234,7 +228,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 			if ( nowCount >= stage->totalParticles ) {
 				nowCount = stage->totalParticles-1;
 			}
-			prevCount = floor( ((float)( deltaMsec - gameLocal.msec /*_D3XP - FIX - was USERCMD_MSEC*/ ) / finalParticleTime) * stage->totalParticles );
+			prevCount = floor( ((float)( deltaMsec - ( gameLocal.time - gameLocal.previousTime ) ) / finalParticleTime) * stage->totalParticles );
 			if ( prevCount < -1 ) {
 				prevCount = -1;
 			}
@@ -251,7 +245,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 		}
 
 		// find an activeSmokeStage that matches this
-		activeSmokeStage_t	*active;
+		activeSmokeStage_t	*active = NULL;
 		int i;
 		for ( i = 0 ; i < activeStages.Num() ; i++ ) {
 			active = &activeStages[i];
@@ -270,7 +264,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 		}
 
 		// add all the required particles
-		for ( prevCount++ ; prevCount <= nowCount ; prevCount++ ) {
+		for ( prevCount++ ; prevCount <= nowCount && active != NULL ; prevCount++ ) {
 			if ( !freeSmokes ) {
 				gameLocal.Printf( "idSmokeParticles::EmitSmoke: no free smokes with %d active stages\n", activeStages.Num() );
 				return true;
@@ -279,9 +273,7 @@ bool idSmokeParticles::EmitSmoke( const idDeclParticle *smoke, const int systemS
 			freeSmokes = freeSmokes->next;
 			numActiveSmokes++;
 
-#ifdef _D3XP
 			newSmoke->timeGroup = timeGroup;
-#endif
 			newSmoke->index = prevCount;
 			newSmoke->axis = axis;
 			newSmoke->origin = origin;
@@ -304,20 +296,23 @@ idSmokeParticles::UpdateRenderEntity
 */
 bool idSmokeParticles::UpdateRenderEntity( renderEntity_s *renderEntity, const renderView_t *renderView ) {
 
-	// FIXME: re-use model surfaces
-	renderEntity->hModel->InitEmpty( smokeParticle_SnapshotName );
-
 	// this may be triggered by a model trace or other non-view related source,
 	// to which we should look like an empty model
 	if ( !renderView ) {
+		// FIXME: re-use model surfaces
+		renderEntity->hModel->InitEmpty( smokeParticle_SnapshotName );
 		return false;
 	}
 
 	// don't regenerate it if it is current
-	if ( renderView->time == currentParticleTime && !renderView->forceUpdate ) {
+	if ( renderView->time[renderEntity->timeGroup] == currentParticleTime && !renderView->forceUpdate ) {
 		return false;
 	}
-	currentParticleTime = renderView->time;
+
+	// FIXME: re-use model surfaces
+	renderEntity->hModel->InitEmpty( smokeParticle_SnapshotName );
+
+	currentParticleTime = renderView->time[renderEntity->timeGroup];
 
 	particleGen_t g;
 
@@ -356,16 +351,12 @@ bool idSmokeParticles::UpdateRenderEntity( renderEntity_s *renderEntity, const r
 		for ( last = NULL, smoke = active->smokes; smoke; smoke = next ) {
 			next = smoke->next;
 
-#ifdef _D3XP
 			if ( smoke->timeGroup ) {
 				g.frac = (float)( gameLocal.fast.time - smoke->privateStartTime ) / (stage->particleLife * 1000);
 			}
 			else {
 				g.frac = (float)( gameLocal.time - smoke->privateStartTime ) / (stage->particleLife * 1000);
 			}
-#else
-			g.frac = (float)( gameLocal.time - smoke->privateStartTime ) / (stage->particleLife * 1000);
-#endif
 			if ( g.frac >= 1.0f ) {
 				// remove the particle from the stage list
 				if ( last != NULL ) {

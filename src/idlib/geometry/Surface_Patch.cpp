@@ -1,34 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../precompiled.h"
 #pragma hdrstop
-
+#include "../precompiled.h"
 
 /*
 =================
@@ -44,7 +43,7 @@ void idSurface_Patch::SetSize( int patchWidth, int patchHeight ) {
 	}
 	width = patchWidth;
 	height = patchHeight;
-	verts.SetNum( width * height, false );
+	verts.SetNum( width * height );
 }
 
 /*
@@ -54,7 +53,7 @@ idSurface_Patch::PutOnCurve
 Expects an expanded patch.
 =================
 */
-void idSurface_Patch::PutOnCurve( void ) {
+void idSurface_Patch::PutOnCurve() {
 	int i, j;
 	idDrawVert prev, next;
 
@@ -99,7 +98,7 @@ idSurface_Patch::RemoveLinearColumnsRows
 Expects an expanded patch.
 ================
 */
-void idSurface_Patch::RemoveLinearColumnsRows( void ) {
+void idSurface_Patch::RemoveLinearColumnsRows() {
 	int i, j, k;
 	float len, maxLength;
 	idVec3 proj, dir;
@@ -179,7 +178,7 @@ void idSurface_Patch::ResizeExpanded( int newHeight, int newWidth ) {
 idSurface_Patch::Collapse
 ================
 */
-void idSurface_Patch::Collapse( void ) {
+void idSurface_Patch::Collapse() {
 	int i, j;
 
 	if ( !expanded ) {
@@ -193,7 +192,7 @@ void idSurface_Patch::Collapse( void ) {
 			}
 		}
 	}
-	verts.SetNum( width * height, false );
+	verts.SetNum( width * height );
 }
 
 /*
@@ -201,14 +200,14 @@ void idSurface_Patch::Collapse( void ) {
 idSurface_Patch::Expand
 ================
 */
-void idSurface_Patch::Expand( void ) {
+void idSurface_Patch::Expand() {
 	int i, j;
 
 	if ( expanded ) {
 		idLib::common->FatalError("idSurface_Patch::Expand: patch alread expanded");
 	}
 	expanded = true;
-	verts.SetNum( maxWidth * maxHeight, false );
+	verts.SetNum( maxWidth * maxHeight );
 	if ( width != maxWidth ) {
 		for ( j = height-1; j >= 0; j-- ) {
 			for ( i = width-1; i >= 0; i-- ) {
@@ -227,11 +226,8 @@ void idSurface_Patch::LerpVert( const idDrawVert &a, const idDrawVert &b, idDraw
 	out.xyz[0] = 0.5f * ( a.xyz[0] + b.xyz[0] );
 	out.xyz[1] = 0.5f * ( a.xyz[1] + b.xyz[1] );
 	out.xyz[2] = 0.5f * ( a.xyz[2] + b.xyz[2] );
-	out.normal[0] = 0.5f * ( a.normal[0] + b.normal[0] );
-	out.normal[1] = 0.5f * ( a.normal[1] + b.normal[1] );
-	out.normal[2] = 0.5f * ( a.normal[2] + b.normal[2] );
-	out.st[0] = 0.5f * ( a.st[0] + b.st[0] );
-	out.st[1] = 0.5f * ( a.st[1] + b.st[1] );
+	out.SetNormal( ( a.GetNormal() + b.GetNormal() ) * 0.5f );
+	out.SetTexCoord( ( a.GetTexCoord() + b.GetTexCoord() ) * 0.5f );
 }
 
 /*
@@ -244,7 +240,7 @@ Expects a Not expanded patch.
 */
 #define	COPLANAR_EPSILON	0.1f
 
-void idSurface_Patch::GenerateNormals( void ) {
+void idSurface_Patch::GenerateNormals() {
 	int			i, j, k, dist;
 	idVec3		norm;
 	idVec3		sum;
@@ -293,7 +289,7 @@ void idSurface_Patch::GenerateNormals( void ) {
 		if ( i == width * height ) {
 			// all are coplanar
 			for ( i = 0; i < width * height; i++ ) {
-				verts[i].normal = norm;
+				verts[i].SetNormal( norm );
 			}
 			return;
 		}
@@ -378,8 +374,8 @@ void idSurface_Patch::GenerateNormals( void ) {
 				//idLib::common->Printf("bad normal\n");
 				count = 1;
 			}
-			verts[j * width + i].normal = sum;
-			verts[j * width + i].normal.Normalize();
+			sum.Normalize();
+			verts[j * width + i].SetNormal( sum );
 		}
 	}
 }
@@ -389,10 +385,10 @@ void idSurface_Patch::GenerateNormals( void ) {
 idSurface_Patch::GenerateIndexes
 =================
 */
-void idSurface_Patch::GenerateIndexes( void ) {
+void idSurface_Patch::GenerateIndexes() {
 	int i, j, v1, v2, v3, v4, index;
 
-	indexes.SetNum( (width-1) * (height-1) * 2 * 3, false );
+	indexes.SetNum( (width-1) * (height-1) * 2 * 3 );
 	index = 0;
 	for ( i = 0; i < width - 1; i++ ) {
 		for ( j = 0; j < height - 1; j++ ) {
@@ -432,13 +428,13 @@ void idSurface_Patch::SampleSinglePatchPoint( const idDrawVert ctrl[3][3], float
 				b = ctrl[1][vPoint].xyz[axis];
 				c = ctrl[2][vPoint].xyz[axis];
 			} else if ( axis < 6 ) {
-				a = ctrl[0][vPoint].normal[axis-3];
-				b = ctrl[1][vPoint].normal[axis-3];
-				c = ctrl[2][vPoint].normal[axis-3];
+				a = ctrl[0][vPoint].GetNormal()[axis-3];
+				b = ctrl[1][vPoint].GetNormal()[axis-3];
+				c = ctrl[2][vPoint].GetNormal()[axis-3];
 			} else {
-				a = ctrl[0][vPoint].st[axis-6];
-				b = ctrl[1][vPoint].st[axis-6];
-				c = ctrl[2][vPoint].st[axis-6];
+				a = ctrl[0][vPoint].GetTexCoord()[axis-6];
+				b = ctrl[1][vPoint].GetTexCoord()[axis-6];
+				c = ctrl[2][vPoint].GetTexCoord()[axis-6];
 			}
 			qA = a - 2.0f * b + c;
 			qB = 2.0f * b - 2.0f * a;
@@ -462,9 +458,14 @@ void idSurface_Patch::SampleSinglePatchPoint( const idDrawVert ctrl[3][3], float
 		if ( axis < 3 ) {
 			out->xyz[axis] = qA * v * v + qB * v + qC;
 		} else if ( axis < 6 ) {
-			out->normal[axis-3] = qA * v * v + qB * v + qC;
+			idVec3 tempNormal = out->GetNormal();
+			tempNormal[axis-3] = qA * v * v + qB * v + qC;
+			out->SetNormal( tempNormal );
+			//out->normal[axis-3] = qA * v * v + qB * v + qC;
 		} else {
-			out->st[axis-6] = qA * v * v + qB * v + qC;
+			idVec2 tempST = out->GetTexCoord();
+			tempST[axis-6] = qA * v * v + qB * v + qC;
+			out->SetTexCoord( tempST );
 		}
 	}
 }
@@ -499,7 +500,7 @@ void idSurface_Patch::SubdivideExplicit( int horzSubdivisions, int vertSubdivisi
 	idDrawVert sample[3][3];
 	int outWidth = ((width - 1) / 2 * horzSubdivisions) + 1;
 	int outHeight = ((height - 1) / 2 * vertSubdivisions) + 1;
-	idDrawVert *dv = new idDrawVert[ outWidth * outHeight ];
+	idDrawVert *dv = new (TAG_IDLIB_SURFACE) idDrawVert[ outWidth * outHeight ];
 
 	// generate normals for the control mesh
 	if ( genNormals ) {
@@ -539,8 +540,11 @@ void idSurface_Patch::SubdivideExplicit( int horzSubdivisions, int vertSubdivisi
 
 	// normalize all the lerped normals
 	if ( genNormals ) {
+		idVec3 tempNormal;
 		for ( i = 0; i < width * height; i++ ) {
-			verts[i].normal.Normalize();
+			tempNormal= verts[i].GetNormal();
+			tempNormal.Normalize();
+			verts[i].SetNormal( tempNormal );
 		}
 	}
 
@@ -682,8 +686,11 @@ void idSurface_Patch::Subdivide( float maxHorizontalError, float maxVerticalErro
 
 	// normalize all the lerped normals
 	if ( genNormals ) {
+		idVec3 tempNormal;
 		for ( i = 0; i < width * height; i++ ) {
-			verts[i].normal.Normalize();
+			tempNormal = verts[i].GetNormal();
+			tempNormal.Normalize();
+			verts[i].SetNormal( tempNormal );
 		}
 	}
 

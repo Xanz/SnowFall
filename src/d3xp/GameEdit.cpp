@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -48,7 +48,7 @@ END_CLASS
 idCursor3D::idCursor3D
 ===============
 */
-idCursor3D::idCursor3D( void ) {
+idCursor3D::idCursor3D() {
 	draggedPosition.Zero();
 }
 
@@ -57,7 +57,7 @@ idCursor3D::idCursor3D( void ) {
 idCursor3D::~idCursor3D
 ===============
 */
-idCursor3D::~idCursor3D( void ) {
+idCursor3D::~idCursor3D() {
 }
 
 /*
@@ -65,7 +65,7 @@ idCursor3D::~idCursor3D( void ) {
 idCursor3D::Spawn
 ===============
 */
-void idCursor3D::Spawn( void ) {
+void idCursor3D::Spawn() {
 }
 
 /*
@@ -73,7 +73,7 @@ void idCursor3D::Spawn( void ) {
 idCursor3D::Present
 ===============
 */
-void idCursor3D::Present( void ) {
+void idCursor3D::Present() {
 	// don't present to the renderer if the entity hasn't changed
 	if ( !( thinkFlags & TH_UPDATEVISUALS ) ) {
 		return;
@@ -91,7 +91,7 @@ void idCursor3D::Present( void ) {
 idCursor3D::Think
 ===============
 */
-void idCursor3D::Think( void ) {
+void idCursor3D::Think() {
 	if ( thinkFlags & TH_THINK ) {
 		drag.Evaluate( gameLocal.time );
 	}
@@ -114,7 +114,7 @@ void idCursor3D::Think( void ) {
 idDragEntity::idDragEntity
 ==============
 */
-idDragEntity::idDragEntity( void ) {
+idDragEntity::idDragEntity() {
 	cursor = NULL;
 	Clear();
 }
@@ -124,7 +124,7 @@ idDragEntity::idDragEntity( void ) {
 idDragEntity::~idDragEntity
 ==============
 */
-idDragEntity::~idDragEntity( void ) {
+idDragEntity::~idDragEntity() {
 	StopDrag();
 	selected = NULL;
 	delete cursor;
@@ -152,7 +152,7 @@ void idDragEntity::Clear() {
 idDragEntity::StopDrag
 ==============
 */
-void idDragEntity::StopDrag( void ) {
+void idDragEntity::StopDrag() {
 	dragEnt = NULL;
 	if ( cursor ) {
 		cursor->BecomeInactive( TH_THINK );
@@ -168,9 +168,9 @@ void idDragEntity::Update( idPlayer *player ) {
 	idVec3 viewPoint, origin;
 	idMat3 viewAxis, axis;
 	trace_t trace;
-	idEntity *newEnt;
+	idEntity *newEnt = NULL;
 	idAngles angles;
-	jointHandle_t newJoint;
+	jointHandle_t newJoint = INVALID_JOINT;
 	idStr newBodyName;
 
 	player->GetViewPos( viewPoint, viewAxis );
@@ -268,7 +268,7 @@ void idDragEntity::Update( idPlayer *player ) {
 		renderEntity_t *renderEntity = drag->GetRenderEntity();
 		idAnimator *dragAnimator = drag->GetAnimator();
 
-		if ( joint != INVALID_JOINT && renderEntity && dragAnimator ) {
+		if ( joint != INVALID_JOINT && renderEntity != NULL && dragAnimator != NULL ) {
 			dragAnimator->GetJointTransform( joint, gameLocal.time, cursor->draggedPosition, axis );
 			cursor->draggedPosition = renderEntity->origin + cursor->draggedPosition * renderEntity->axis;
 			gameRenderWorld->DrawText( va( "%s\n%s\n%s, %s", drag->GetName(), drag->GetType()->classname, dragAnimator->GetJointName( joint ), bodyName.c_str() ), cursor->GetPhysics()->GetOrigin(), 0.1f, colorWhite, viewAxis, 1 );
@@ -303,7 +303,7 @@ void idDragEntity::SetSelected( idEntity *ent ) {
 idDragEntity::DeleteSelected
 ==============
 */
-void idDragEntity::DeleteSelected( void ) {
+void idDragEntity::DeleteSelected() {
 	delete selected.GetEntity();
 	selected = NULL;
 	StopDrag();
@@ -314,7 +314,7 @@ void idDragEntity::DeleteSelected( void ) {
 idDragEntity::BindSelected
 ==============
 */
-void idDragEntity::BindSelected( void ) {
+void idDragEntity::BindSelected() {
 	int num, largestNum;
 	idLexer lexer;
 	idToken type, bodyName;
@@ -370,7 +370,7 @@ void idDragEntity::BindSelected( void ) {
 idDragEntity::UnbindSelected
 ==============
 */
-void idDragEntity::UnbindSelected( void ) {
+void idDragEntity::UnbindSelected() {
 	const idKeyValue *kv;
 	idAFEntity_Base *af;
 
@@ -410,7 +410,7 @@ void idDragEntity::UnbindSelected( void ) {
 idEditEntities::idEditEntities
 ==============
 */
-idEditEntities::idEditEntities( void ) {
+idEditEntities::idEditEntities() {
 	selectableEntityClasses.Clear();
 	nextSelectTime = 0;
 }
@@ -529,7 +529,7 @@ bool idEditEntities::EntityIsSelectable( idEntity *ent, idVec4 *color, idStr *te
 idEditEntities::DisplayEntities
 =============
 */
-void idEditEntities::DisplayEntities( void ) {
+void idEditEntities::DisplayEntities() {
 	idEntity *ent;
 
 	if ( !gameLocal.GetLocalPlayer() ) {
@@ -1053,7 +1053,7 @@ int idGameEdit::MapGetUniqueMatchingKeyVals( const char *key, const char *list[]
 			idMapEntity *ent = mapFile->GetEntity( i );
 			if ( ent ) {
 				const char *k = ent->epairs.GetString( key );
-				if ( k && *k && count < max ) {
+				if ( k != NULL && *k != NULL && count < max ) {
 					list[count++] = k;
 				}
 			}
@@ -1070,7 +1070,7 @@ idGameEdit::MapAddEntity
 void idGameEdit::MapAddEntity( const idDict *dict ) const {
 	idMapFile *mapFile = gameLocal.GetLevelMap();
 	if ( mapFile ) {
-		idMapEntity *ent = new idMapEntity();
+		idMapEntity *ent = new (TAG_GAME) idMapEntity();
 		ent->epairs = *dict;
 		mapFile->AddEntity( ent );
 	}

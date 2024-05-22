@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -121,7 +121,7 @@ idEditField::~idEditField() {
 idEditField::Clear
 ===============
 */
-void idEditField::Clear( void ) {
+void idEditField::Clear() {
 	buffer[0] = 0;
 	cursor = 0;
 	scroll = 0;
@@ -154,7 +154,7 @@ void idEditField::SetCursor( int c ) {
 idEditField::GetCursor
 ===============
 */
-int idEditField::GetCursor( void ) const {
+int idEditField::GetCursor() const {
 	return cursor;
 }
 
@@ -163,7 +163,7 @@ int idEditField::GetCursor( void ) const {
 idEditField::ClearAutoComplete
 ===============
 */
-void idEditField::ClearAutoComplete( void ) {
+void idEditField::ClearAutoComplete() {
 	if ( autoComplete.length > 0 && autoComplete.length <= (int) strlen( buffer ) ) {
 		buffer[autoComplete.length] = '\0';
 		if ( cursor > autoComplete.length ) {
@@ -179,7 +179,7 @@ void idEditField::ClearAutoComplete( void ) {
 idEditField::GetAutoCompleteLength
 ===============
 */
-int idEditField::GetAutoCompleteLength( void ) const {
+int idEditField::GetAutoCompleteLength() const {
 	return autoComplete.length;
 }
 
@@ -188,7 +188,7 @@ int idEditField::GetAutoCompleteLength( void ) const {
 idEditField::AutoComplete
 ===============
 */
-void idEditField::AutoComplete( void ) {
+void idEditField::AutoComplete() {
 	char completionArgString[MAX_EDIT_LINE];
 	idCmdArgs args;
 
@@ -374,7 +374,7 @@ void idEditField::KeyDownEvent( int key ) {
 	int		len;
 
 	// shift-insert is paste
-	if ( ( ( key == K_INS ) || ( key == K_KP_INS ) ) && idKeyInput::IsDown( K_SHIFT ) ) {
+	if ( ( ( key == K_INS ) || ( key == K_KP_0 ) ) && ( idKeyInput::IsDown( K_LSHIFT ) || idKeyInput::IsDown( K_RSHIFT ) ) ) {
 		ClearAutoComplete();
 		Paste();
 		return;
@@ -392,7 +392,7 @@ void idEditField::KeyDownEvent( int key ) {
 	}
 
 	if ( key == K_RIGHTARROW ) {
-		if ( idKeyInput::IsDown( K_CTRL ) ) {
+		if ( idKeyInput::IsDown( K_LCTRL ) || idKeyInput::IsDown( K_RCTRL ) ) {
 			// skip to next word
 			while( ( cursor < len ) && ( buffer[ cursor ] != ' ' ) ) {
 				cursor++;
@@ -420,7 +420,7 @@ void idEditField::KeyDownEvent( int key ) {
 	}
 
 	if ( key == K_LEFTARROW ) {
-		if ( idKeyInput::IsDown( K_CTRL ) ) {
+		if ( idKeyInput::IsDown( K_LCTRL ) || idKeyInput::IsDown( K_RCTRL ) ) {
 			// skip to previous word
 			while( ( cursor > 0 ) && ( buffer[ cursor - 1 ] == ' ' ) ) {
 				cursor--;
@@ -446,7 +446,7 @@ void idEditField::KeyDownEvent( int key ) {
 		return;
 	}
 
-	if ( key == K_HOME || ( tolower( key ) == 'a' && idKeyInput::IsDown( K_CTRL ) ) ) {
+	if ( key == K_HOME || ( key == K_A && ( idKeyInput::IsDown( K_LCTRL ) || idKeyInput::IsDown( K_RCTRL ) ) ) ) {
 		cursor = 0;
 		scroll = 0;
 		if ( autoComplete.length ) {
@@ -456,7 +456,7 @@ void idEditField::KeyDownEvent( int key ) {
 		return;
 	}
 
-	if ( key == K_END || ( tolower( key ) == 'e' && idKeyInput::IsDown( K_CTRL ) ) ) {
+	if ( key == K_END || ( key == K_E && ( idKeyInput::IsDown( K_LCTRL ) || idKeyInput::IsDown( K_RCTRL ) ) ) ) {
 		cursor = len;
 		if ( cursor >= scroll + widthInChars ) {
 			scroll = cursor - widthInChars + 1;
@@ -474,7 +474,7 @@ void idEditField::KeyDownEvent( int key ) {
 	}
 
 	// clear autocompletion buffer on normal key input
-	if ( key != K_CAPSLOCK && key != K_ALT && key != K_CTRL && key != K_SHIFT ) {
+	if ( key != K_CAPSLOCK && key != K_LALT && key != K_LCTRL && key != K_LSHIFT && key != K_RALT && key != K_RCTRL && key != K_RSHIFT ) {
 		ClearAutoComplete();
 	}
 }
@@ -484,7 +484,7 @@ void idEditField::KeyDownEvent( int key ) {
 idEditField::Paste
 ===============
 */
-void idEditField::Paste( void ) {
+void idEditField::Paste() {
 	char	*cbd;
 	int		pasteLen, i;
 
@@ -508,7 +508,7 @@ void idEditField::Paste( void ) {
 idEditField::GetBuffer
 ===============
 */
-char *idEditField::GetBuffer( void ) {
+char *idEditField::GetBuffer() {
 	return buffer;
 }
 
@@ -528,7 +528,7 @@ void idEditField::SetBuffer( const char *buf ) {
 idEditField::Draw
 ===============
 */
-void idEditField::Draw( int x, int y, int width, bool showCursor, const idMaterial *shader ) {
+void idEditField::Draw( int x, int y, int width, bool showCursor ) {
 	int		len;
 	int		drawLen;
 	int		prestep;
@@ -575,14 +575,14 @@ void idEditField::Draw( int x, int y, int width, bool showCursor, const idMateri
 	str[ drawLen ] = 0;
 
 	// draw it
-	renderSystem->DrawSmallStringExt( x, y, str, colorWhite, false, shader );
+	renderSystem->DrawSmallStringExt( x, y, str, colorWhite, false );
 
 	// draw the cursor
 	if ( !showCursor ) {
 		return;
 	}
 
-	if ( (int)( com_ticNumber >> 4 ) & 1 ) {
+	if ( (int)( idLib::frameNumber >> 4 ) & 1 ) {
 		return;		// off blink
 	}
 
@@ -600,5 +600,5 @@ void idEditField::Draw( int x, int y, int width, bool showCursor, const idMateri
 		}
 	}
 
-	renderSystem->DrawSmallChar( x + ( cursor - prestep ) * size, y, cursorChar, shader );
+	renderSystem->DrawSmallChar( x + ( cursor - prestep ) * size, y, cursorChar );
 }

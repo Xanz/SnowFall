@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -58,9 +58,9 @@ public:
 
 	idDict					epairs;
 
-							idMapPrimitive( void ) { type = TYPE_INVALID; }
-	virtual					~idMapPrimitive( void ) { }
-	int						GetType( void ) const { return type; }
+							idMapPrimitive() { type = TYPE_INVALID; }
+	virtual					~idMapPrimitive() { }
+	int						GetType() const { return type; }
 
 protected:
 	int						type;
@@ -71,11 +71,11 @@ class idMapBrushSide {
 	friend class idMapBrush;
 
 public:
-							idMapBrushSide( void );
-							~idMapBrushSide( void ) { }
-	const char *			GetMaterial( void ) const { return material; }
+							idMapBrushSide();
+							~idMapBrushSide() { }
+	const char *			GetMaterial() const { return material; }
 	void					SetMaterial( const char *p ) { material = p; }
-	const idPlane &			GetPlane( void ) const { return plane; }
+	const idPlane &			GetPlane() const { return plane; }
 	void					SetPlane( const idPlane &p ) { plane = p; }
 	void					SetTextureMatrix( const idVec3 mat[2] ) { texMat[0] = mat[0]; texMat[1] = mat[1]; }
 	void					GetTextureMatrix( idVec3 &mat1, idVec3 &mat2 ) { mat1 = texMat[0]; mat2 = texMat[1]; }
@@ -88,7 +88,7 @@ protected:
 	idVec3					origin;
 };
 
-ID_INLINE idMapBrushSide::idMapBrushSide( void ) {
+ID_INLINE idMapBrushSide::idMapBrushSide() {
 	plane.Zero();
 	texMat[0].Zero();
 	texMat[1].Zero();
@@ -98,38 +98,38 @@ ID_INLINE idMapBrushSide::idMapBrushSide( void ) {
 
 class idMapBrush : public idMapPrimitive {
 public:
-							idMapBrush( void ) { type = TYPE_BRUSH; sides.Resize( 8, 4 ); }
-							~idMapBrush( void ) { sides.DeleteContents( true ); }
+							idMapBrush() { type = TYPE_BRUSH; sides.Resize( 8, 4 ); }
+							~idMapBrush() { sides.DeleteContents( true ); }
 	static idMapBrush *		Parse( idLexer &src, const idVec3 &origin, bool newFormat = true, float version = CURRENT_MAP_VERSION );
 	static idMapBrush *		ParseQ3( idLexer &src, const idVec3 &origin );
 	bool					Write( idFile *fp, int primitiveNum, const idVec3 &origin ) const;
-	int						GetNumSides( void ) const { return sides.Num(); }
+	int						GetNumSides() const { return sides.Num(); }
 	int						AddSide( idMapBrushSide *side ) { return sides.Append( side ); }
 	idMapBrushSide *		GetSide( int i ) const { return sides[i]; }
-	unsigned int			GetGeometryCRC( void ) const;
+	unsigned int			GetGeometryCRC() const;
 
 protected:
 	int						numSides;
-	idList<idMapBrushSide*> sides;
+	idList<idMapBrushSide*, TAG_IDLIB_LIST_MAP> sides;
 };
 
 
 class idMapPatch : public idMapPrimitive, public idSurface_Patch {
 public:
-							idMapPatch( void );
+							idMapPatch();
 							idMapPatch( int maxPatchWidth, int maxPatchHeight );
-							~idMapPatch( void ) { }
+							~idMapPatch() { }
 	static idMapPatch *		Parse( idLexer &src, const idVec3 &origin, bool patchDef3 = true, float version = CURRENT_MAP_VERSION );
 	bool					Write( idFile *fp, int primitiveNum, const idVec3 &origin ) const;
-	const char *			GetMaterial( void ) const { return material; }
+	const char *			GetMaterial() const { return material; }
 	void					SetMaterial( const char *p ) { material = p; }
-	int						GetHorzSubdivisions( void ) const { return horzSubdivisions; }
-	int						GetVertSubdivisions( void ) const { return vertSubdivisions; }
-	bool					GetExplicitlySubdivided( void ) const { return explicitSubdivisions; }
+	int						GetHorzSubdivisions() const { return horzSubdivisions; }
+	int						GetVertSubdivisions() const { return vertSubdivisions; }
+	bool					GetExplicitlySubdivided() const { return explicitSubdivisions; }
 	void					SetHorzSubdivisions( int n ) { horzSubdivisions = n; }
 	void					SetVertSubdivisions( int n ) { vertSubdivisions = n; }
 	void					SetExplicitlySubdivided( bool b ) { explicitSubdivisions = b; }
-	unsigned int			GetGeometryCRC( void ) const;
+	unsigned int			GetGeometryCRC() const;
 
 protected:
 	idStr					material;
@@ -138,7 +138,7 @@ protected:
 	bool					explicitSubdivisions;
 };
 
-ID_INLINE idMapPatch::idMapPatch( void ) {
+ID_INLINE idMapPatch::idMapPatch() {
 	type = TYPE_PATCH;
 	horzSubdivisions = vertSubdivisions = 0;
 	explicitSubdivisions = false;
@@ -166,25 +166,25 @@ public:
 	idDict					epairs;
 
 public:
-							idMapEntity( void ) { epairs.SetHashSize( 64 ); }
-							~idMapEntity( void ) { primitives.DeleteContents( true ); }
+							idMapEntity() { epairs.SetHashSize( 64 ); }
+							~idMapEntity() { primitives.DeleteContents( true ); }
 	static idMapEntity *	Parse( idLexer &src, bool worldSpawn = false, float version = CURRENT_MAP_VERSION );
 	bool					Write( idFile *fp, int entityNum ) const;
-	int						GetNumPrimitives( void ) const { return primitives.Num(); }
+	int						GetNumPrimitives() const { return primitives.Num(); }
 	idMapPrimitive *		GetPrimitive( int i ) const { return primitives[i]; }
 	void					AddPrimitive( idMapPrimitive *p ) { primitives.Append( p ); }
-	unsigned int			GetGeometryCRC( void ) const;
+	unsigned int			GetGeometryCRC() const;
 	void					RemovePrimitiveData();
 
 protected:
-	idList<idMapPrimitive*>	primitives;
+	idList<idMapPrimitive*, TAG_IDLIB_LIST_MAP>	primitives;
 };
 
 
 class idMapFile {
 public:
-							idMapFile( void );
-							~idMapFile( void ) { entities.DeleteContents( true ); }
+							idMapFile();
+							~idMapFile() { entities.DeleteContents( true ); }
 
 							// filename does not require an extension
 							// normally this will use a .reg file instead of a .map file if it exists,
@@ -193,16 +193,16 @@ public:
 	bool					Parse( const char *filename, bool ignoreRegion = false, bool osPath = false );
 	bool					Write( const char *fileName, const char *ext, bool fromBasePath = true );
 							// get the number of entities in the map
-	int						GetNumEntities( void ) const { return entities.Num(); }
+	int						GetNumEntities() const { return entities.Num(); }
 							// get the specified entity
 	idMapEntity *			GetEntity( int i ) const { return entities[i]; }
 							// get the name without file extension
-	const char *			GetName( void ) const { return name; }
+	const char *			GetName() const { return name; }
 							// get the file time
-	ID_TIME_T					GetFileTime( void ) const { return fileTime; }
+	ID_TIME_T					GetFileTime() const { return fileTime; }
 							// get CRC for the map geometry
 							// texture coordinates and entity key/value pairs are not taken into account
-	unsigned int			GetGeometryCRC( void ) const { return geometryCRC; }
+	unsigned int			GetGeometryCRC() const { return geometryCRC; }
 							// returns true if the file on disk changed
 	bool					NeedsReload();
 
@@ -218,15 +218,15 @@ protected:
 	float					version;
 	ID_TIME_T					fileTime;
 	unsigned int			geometryCRC;
-	idList<idMapEntity *>	entities;
+	idList<idMapEntity *, TAG_IDLIB_LIST_MAP>	entities;
 	idStr					name;
 	bool					hasPrimitiveData;
 
 private:
-	void					SetGeometryCRC( void );
+	void					SetGeometryCRC();
 };
 
-ID_INLINE idMapFile::idMapFile( void ) {
+ID_INLINE idMapFile::idMapFile() {
 	version = CURRENT_MAP_VERSION;
 	fileTime = 0;
 	geometryCRC = 0;

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -95,7 +95,7 @@ public:
 	bool				isConvex;		// true when model is convex
 
 public:
-						idTraceModel( void );
+						idTraceModel();
 						// axial bounding box
 						idTraceModel( const idBounds &boxBounds );
 						// cylinder approximation
@@ -124,7 +124,7 @@ public:
 	void				SetupPolygon( const idVec3 *v, const int count );
 	void				SetupPolygon( const idWinding &w );
 						// generate edge normals
-	int					GenerateEdgeNormals( void );
+	int					GenerateEdgeNormals();
 						// translate the trm
 	void				Translate( const idVec3 &translation );
 						// rotate the trm
@@ -144,10 +144,10 @@ public:
 	void				GetMassProperties( const float density, float &mass, idVec3 &centerOfMass, idMat3 &inertiaTensor ) const;
 
 private:
-	void				InitBox( void );
-	void				InitOctahedron( void );
-	void				InitDodecahedron( void );
-	void				InitBone( void );
+	void				InitBox();
+	void				InitOctahedron();
+	void				InitDodecahedron();
+	void				InitBone();
 
 	void				ProjectionIntegrals( int polyNum, int a, int b, struct projectionIntegrals_s &integrals ) const;
 	void				PolygonIntegrals( int polyNum, int a, int b, int c, struct polygonIntegrals_s &integrals ) const;
@@ -157,7 +157,7 @@ private:
 };
 
 
-ID_INLINE idTraceModel::idTraceModel( void ) {
+ID_INLINE idTraceModel::idTraceModel() {
 	type = TRM_INVALID;
 	numVerts = numEdges = numPolys = 0;
 	bounds.Zero();

@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -129,7 +129,7 @@ typedef enum {
 // punctuation
 typedef struct punctuation_s
 {
-	const char *p;						// punctuation character(s)
+	char *p;						// punctuation character(s)
 	int n;							// punctuation id
 } punctuation_t;
 
@@ -153,9 +153,9 @@ public:
 					// NOTE: the ptr is expected to point at a valid C string: ptr[length] == '\0'
 	int				LoadMemory( const char *ptr, int length, const char *name, int startLine = 1 );
 					// free the script
-	void			FreeSource( void );
+	void			FreeSource();
 					// returns true if a script is loaded
-	int				IsLoaded( void ) { return idLexer::loaded; };
+	int				IsLoaded() { return idLexer::loaded; };
 					// read a token
 	int				ReadToken( idToken *token );
 					// expect a certain token, reads the token when available
@@ -175,9 +175,11 @@ public:
 					// skip tokens until the given token string is read
 	int				SkipUntilString( const char *string );
 					// skip the rest of the current line
-	int				SkipRestOfLine( void );
+	int				SkipRestOfLine();
 					// skip the braced section
 	int				SkipBracedSection( bool parseFirstBrace = true );
+	// skips spaces, tabs, C-like comments etc. Returns false if there is no token left to read.
+	bool			SkipWhiteSpace( bool currentLine );
 					// unread the given token
 	void			UnreadToken( const idToken *token );
 					// read a token only if on the same line
@@ -187,9 +189,9 @@ public:
 	const char*		ReadRestOfLine(idStr& out);
 
 					// read a signed integer
-	int				ParseInt( void );
+	int				ParseInt();
 					// read a boolean
-	bool			ParseBool( void );
+	bool			ParseBool();
 					// read a floating point number.  If errorFlag is NULL, a non-numeric token will
 					// issue an Error().  If it isn't NULL, it will issue a Warning() and set *errorFlag = true
 	float			ParseFloat( bool *errorFlag = NULL );
@@ -203,12 +205,14 @@ public:
 	const char *	ParseBracedSectionExact ( idStr &out, int tabs = -1 );
 					// parse the rest of the line
 	const char *	ParseRestOfLine( idStr &out );
+					// pulls the entire line, including the \n at the end
+	const char *	ParseCompleteLine( idStr &out );
 					// retrieves the white space characters before the last read token
 	int				GetLastWhiteSpace( idStr &whiteSpace ) const;
 					// returns start index into text buffer of last white space
-	int				GetLastWhiteSpaceStart( void ) const;
+	int				GetLastWhiteSpaceStart() const;
 					// returns end index into text buffer of last white space
-	int				GetLastWhiteSpaceEnd( void ) const;
+	int				GetLastWhiteSpaceEnd() const;
 					// set an array with punctuations, NULL restores default C/C++ set, see default_punctuations for an example
 	void			SetPunctuations( const punctuation_t *p );
 					// returns a pointer to the punctuation with the given id
@@ -218,25 +222,25 @@ public:
 					// set lexer flags
 	void			SetFlags( int flags );
 					// get lexer flags
-	int				GetFlags( void );
+	int				GetFlags();
 					// reset the lexer
-	void			Reset( void );
+	void			Reset();
 					// returns true if at the end of the file
-	int				EndOfFile( void );
+	bool			EndOfFile();
 					// returns the current filename
-	const char *	GetFileName( void );
+	const char *	GetFileName();
 					// get offset in script
-	const int		GetFileOffset( void );
+	const int		GetFileOffset();
 					// get file time
-	const ID_TIME_T	GetFileTime( void );
+	const ID_TIME_T	GetFileTime();
 					// returns the current line number
-	const int		GetLineNum( void );
+	const int		GetLineNum();
 					// print an error message
-	void			Error( const char *str, ... ) id_attribute((format(printf,2,3)));
+	void			Error( VERIFY_FORMAT_STRING const char *str, ... );
 					// print a warning message
-	void			Warning( const char *str, ... ) id_attribute((format(printf,2,3)));
+	void			Warning( VERIFY_FORMAT_STRING const char *str, ... );
 					// returns true if Error() was called with LEXFL_NOFATALERRORS or LEXFL_NOERRORS set
-	bool			HadError( void ) const;
+	bool			HadError() const;
 
 					// set the base folder to load files from
 	static void		SetBaseFolder( const char *path );
@@ -268,7 +272,7 @@ private:
 
 private:
 	void			CreatePunctuationTable( const punctuation_t *punctuations );
-	int				ReadWhiteSpace( void );
+	int				ReadWhiteSpace();
 	int				ReadEscapeCharacter( char *ch );
 	int				ReadString( idToken *token, int quote );
 	int				ReadName( idToken *token );
@@ -276,22 +280,22 @@ private:
 	int				ReadPunctuation( idToken *token );
 	int				ReadPrimitive( idToken *token );
 	int				CheckString( const char *str ) const;
-	int				NumLinesCrossed( void );
+	int				NumLinesCrossed();
 };
 
-ID_INLINE const char *idLexer::GetFileName( void ) {
+ID_INLINE const char *idLexer::GetFileName() {
 	return idLexer::filename;
 }
 
-ID_INLINE const int idLexer::GetFileOffset( void ) {
+ID_INLINE const int idLexer::GetFileOffset() {
 	return idLexer::script_p - idLexer::buffer;
 }
 
-ID_INLINE const ID_TIME_T idLexer::GetFileTime( void ) {
+ID_INLINE const ID_TIME_T idLexer::GetFileTime() {
 	return idLexer::fileTime;
 }
 
-ID_INLINE const int idLexer::GetLineNum( void ) {
+ID_INLINE const int idLexer::GetLineNum() {
 	return idLexer::line;
 }
 
@@ -299,7 +303,7 @@ ID_INLINE void idLexer::SetFlags( int flags ) {
 	idLexer::flags = flags;
 }
 
-ID_INLINE int idLexer::GetFlags( void ) {
+ID_INLINE int idLexer::GetFlags() {
 	return idLexer::flags;
 }
 

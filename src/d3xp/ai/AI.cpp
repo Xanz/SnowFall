@@ -1,33 +1,34 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
+
 
 #include "../Game_local.h"
 
@@ -341,16 +342,12 @@ idAI::idAI() {
 	lastVisibleEnemyEyeOffset.Zero();
 	lastVisibleReachableEnemyPos.Zero();
 	lastReachableEnemyPos.Zero();
-	shrivel_rate		= 0.0f;
-	shrivel_start		= 0;
 	fl.neverDormant		= false;		// AI's can go dormant
 	current_yaw			= 0.0f;
 	ideal_yaw			= 0.0f;
 
-#ifdef _D3XP
 	spawnClearMoveables	= false;
 	harvestEnt			= NULL;
-#endif
 
 	num_cinematics		= 0;
 	current_cinematic	= 0;
@@ -401,11 +398,9 @@ idAI::~idAI() {
 		worldMuzzleFlashHandle = -1;
 	}
 
-#ifdef _D3XP
 	if ( harvestEnt.GetEntity() ) {
 		harvestEnt.GetEntity()->PostEventMS( &EV_Remove, 0 );
 	}
-#endif
 }
 
 /*
@@ -502,9 +497,6 @@ void idAI::Save( idSaveGame *savefile ) const {
 		savefile->WriteAngles( lookJointAngles[ i ] );
 	}
 
-	savefile->WriteFloat( shrivel_rate );
-	savefile->WriteInt( shrivel_start );
-
 	savefile->WriteInt( particles.Num() );
 	for  ( i = 0; i < particles.Num(); i++ ) {
 		savefile->WriteParticle( particles[i].particle );
@@ -539,7 +531,6 @@ void idAI::Save( idSaveGame *savefile ) const {
 
 	savefile->WriteBool( GetPhysics() == static_cast<const idPhysics *>(&physicsObj) );
 
-#ifdef _D3XP
 	savefile->WriteInt(funcEmitters.Num());
 	for(int i = 0; i < funcEmitters.Num(); i++) {
 		funcEmitter_t* emitter = funcEmitters.GetIndex(i);
@@ -549,7 +540,6 @@ void idAI::Save( idSaveGame *savefile ) const {
 	}
 
 	harvestEnt.Save( savefile);
-#endif
 }
 
 /*
@@ -660,9 +650,6 @@ void idAI::Restore( idRestoreGame *savefile ) {
 		savefile->ReadAngles( lookJointAngles[ i ] );
 	}
 
-	savefile->ReadFloat( shrivel_rate );
-	savefile->ReadInt( shrivel_start );
-
 	savefile->ReadInt( num );
 	particles.SetNum( num );
 	for  ( i = 0; i < particles.Num(); i++ ) {
@@ -718,7 +705,6 @@ void idAI::Restore( idRestoreGame *savefile ) {
 		RestorePhysics( &physicsObj );
 	}
 
-#ifdef _D3XP
 
 	//Clean up the emitters
 	for(int i = 0; i < funcEmitters.Num(); i++) {
@@ -752,7 +738,6 @@ void idAI::Restore( idRestoreGame *savefile ) {
 	//	harvestEnt.GetEntity()->SetParent(this);
 	//}
 	
-#endif
 }
 
 /*
@@ -760,7 +745,7 @@ void idAI::Restore( idRestoreGame *savefile ) {
 idAI::Spawn
 =====================
 */
-void idAI::Spawn( void ) {
+void idAI::Spawn() {
 	const char			*jointname;
 	const idKeyValue	*kv;
 	idStr				jointName;
@@ -904,7 +889,7 @@ void idAI::Spawn( void ) {
 	InitMuzzleFlash();
 
 	physicsObj.SetSelf( this );
-	physicsObj.SetClipModel( new idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
+	physicsObj.SetClipModel( new (TAG_PHYSICS_CLIP_ENTITY) idClipModel( GetPhysics()->GetClipModel() ), 1.0f );
 	physicsObj.SetMass( spawnArgs.GetFloat( "mass", "100" ) );
 
 	if ( spawnArgs.GetBool( "big_monster" ) ) {
@@ -989,13 +974,10 @@ void idAI::Spawn( void ) {
 	StopMove( MOVE_STATUS_DONE );
 
 
-#ifdef _D3XP
 	spawnArgs.GetBool( "spawnClearMoveables", "0", spawnClearMoveables );
-#endif
 }
 
 
-#ifdef _D3XP
 void idAI::Gib( const idVec3 &dir, const char *damageDefName ) {
 	if(harvestEnt.GetEntity()) {
 		//Let the harvest ent know that we gibbed
@@ -1003,14 +985,13 @@ void idAI::Gib( const idVec3 &dir, const char *damageDefName ) {
 	}
 	idActor::Gib(dir, damageDefName);
 }
-#endif
 
 /*
 ===================
 idAI::InitMuzzleFlash
 ===================
 */
-void idAI::InitMuzzleFlash( void ) {
+void idAI::InitMuzzleFlash() {
 	const char			*shader;
 	idVec3				flashColor;
 
@@ -1076,7 +1057,7 @@ idAI::DormantBegin
 called when entity becomes dormant
 ================
 */
-void idAI::DormantBegin( void ) {
+void idAI::DormantBegin() {
 	// since dormant happens on a timer, we wont get to update particles to
 	// hidden through the think loop, but we need to hide them though.
 	if ( particles.Num() ) {
@@ -1099,7 +1080,7 @@ idAI::DormantEnd
 called when entity wakes from being dormant
 ================
 */
-void idAI::DormantEnd( void ) {
+void idAI::DormantEnd() {
 	if ( enemy.GetEntity() && !enemyNode.InList() ) {
 		// let our enemy know we're back on the trail
 		enemyNode.AddToEnd( enemy.GetEntity()->enemyList );
@@ -1119,9 +1100,14 @@ void idAI::DormantEnd( void ) {
 idAI::Think
 =====================
 */
-void idAI::Think( void ) {
+idCVar ai_think( "ai_think", "1", CVAR_BOOL, "for testing.." );
+void idAI::Think() {
 	// if we are completely closed off from the player, don't do anything at all
 	if ( CheckDormant() ) {
+		return;
+	}
+
+	if ( !ai_think.GetBool() ) {
 		return;
 	}
 
@@ -1214,7 +1200,7 @@ void idAI::Think( void ) {
 	}
 /*	this still draws in retail builds.. not sure why.. don't care at this point.
 	if ( !aas && developer.GetBool() && !fl.hidden && !num_cinematics ) {
-		gameRenderWorld->DrawText( "No AAS", physicsObj.GetAbsBounds().GetCenter(), 0.1f, colorWhite, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1, gameLocal.msec );
+		gameRenderWorld->DrawText( "No AAS", physicsObj.GetAbsBounds().GetCenter(), 0.1f, colorWhite, gameLocal.GetLocalPlayer()->viewAngles.ToMat3(), 1, 1 );
 	}
 */
 
@@ -1225,12 +1211,10 @@ void idAI::Think( void ) {
 	UpdateDamageEffects();
 	LinkCombat();
 
-#ifdef _D3XP
 	if(ai_showHealth.GetBool()) {
 		idVec3 aboveHead(0,0,20);
 		gameRenderWorld->DrawText( va( "%d", ( int )health), this->GetEyePosition()+aboveHead, 0.5f, colorWhite, gameLocal.GetLocalPlayer()->viewAngles.ToMat3() );
 	}
-#endif
 }
 
 /***********************************************************************
@@ -1244,7 +1228,7 @@ void idAI::Think( void ) {
 idAI::LinkScriptVariables
 =====================
 */
-void idAI::LinkScriptVariables( void ) {
+void idAI::LinkScriptVariables() {
 	AI_TALK.LinkTo(				scriptObject, "AI_TALK" );
 	AI_DAMAGE.LinkTo(			scriptObject, "AI_DAMAGE" );
 	AI_PAIN.LinkTo(				scriptObject, "AI_PAIN" );
@@ -1270,7 +1254,7 @@ void idAI::LinkScriptVariables( void ) {
 idAI::UpdateAIScript
 =====================
 */
-void idAI::UpdateAIScript( void ) {
+void idAI::UpdateAIScript() {
 	UpdateScript();
 
 	// clear the hit enemy flag so we catch the next time we hit someone
@@ -1374,7 +1358,7 @@ bool ValidForBounds( const idAASSettings *settings, const idBounds &bounds ) {
 idAI::SetAAS
 =====================
 */
-void idAI::SetAAS( void ) {
+void idAI::SetAAS() {
 	idStr use_aas;
 
 	spawnArgs.GetString( "use_aas", NULL, use_aas );
@@ -1400,7 +1384,7 @@ void idAI::SetAAS( void ) {
 idAI::DrawRoute
 =====================
 */
-void idAI::DrawRoute( void ) const {
+void idAI::DrawRoute() const {
 	if ( aas && move.toAreaNum && move.moveCommand != MOVE_NONE && move.moveCommand != MOVE_WANDER && move.moveCommand != MOVE_FACE_ENEMY && move.moveCommand != MOVE_FACE_ENTITY && move.moveCommand != MOVE_TO_POSITION_DIRECT ) {
 		if ( move.moveType == MOVETYPE_FLY ) {
 			aas->ShowFlyPath( physicsObj.GetOrigin(), move.toAreaNum, move.moveDest );
@@ -1521,7 +1505,7 @@ float idAI::TravelDistance( const idVec3 &start, const idVec3 &end ) const {
 		dist = delta.LengthFast();
 
 		if ( ai_debugMove.GetBool() ) {
-			gameRenderWorld->DebugLine( colorBlue, start, end, gameLocal.msec, false );
+			gameRenderWorld->DebugLine( colorBlue, start, end, 1, false );
 			gameRenderWorld->DrawText( va( "%d", ( int )dist ), ( start + end ) * 0.5f, 0.1f, colorWhite, gameLocal.GetLocalPlayer()->viewAngles.ToMat3() );
 		}
 
@@ -1542,7 +1526,7 @@ float idAI::TravelDistance( const idVec3 &start, const idVec3 &end ) const {
 		dist = delta.LengthFast();
 
 		if ( ai_debugMove.GetBool() ) {
-			gameRenderWorld->DebugLine( colorBlue, start, end, gameLocal.msec, false );
+			gameRenderWorld->DebugLine( colorBlue, start, end, 1, false );
 			gameRenderWorld->DrawText( va( "%d", ( int )dist ), ( start + end ) * 0.5f, 0.1f, colorWhite, gameLocal.GetLocalPlayer()->viewAngles.ToMat3() );
 		}
 
@@ -1599,7 +1583,7 @@ idAI::FaceEnemy
 Continually face the enemy's last known position.  MoveDone is always true in this case.
 =====================
 */
-bool idAI::FaceEnemy( void ) {
+bool idAI::FaceEnemy() {
 	idActor *enemyEnt = enemy.GetEntity();
 	if ( !enemyEnt ) {
 		StopMove( MOVE_STATUS_DEST_NOT_FOUND );
@@ -1684,7 +1668,7 @@ bool idAI::DirectMoveToPosition( const idVec3 &pos ) {
 idAI::MoveToEnemyHeight
 =====================
 */
-bool idAI::MoveToEnemyHeight( void ) {
+bool idAI::MoveToEnemyHeight() {
 	idActor	*enemyEnt = enemy.GetEntity();
 
 	if ( !enemyEnt || ( move.moveType != MOVETYPE_FLY ) ) {
@@ -1710,7 +1694,7 @@ bool idAI::MoveToEnemyHeight( void ) {
 idAI::MoveToEnemy
 =====================
 */
-bool idAI::MoveToEnemy( void ) {
+bool idAI::MoveToEnemy() {
 	int			areaNum;
 	aasPath_t	path;
 	idActor		*enemyEnt = enemy.GetEntity();
@@ -2088,7 +2072,7 @@ bool idAI::SlideToPosition( const idVec3 &pos, float time ) {
 idAI::WanderAround
 =====================
 */
-bool idAI::WanderAround( void ) {
+bool idAI::WanderAround() {
 	StopMove( MOVE_STATUS_DONE );
 	
 	move.moveDest = physicsObj.GetOrigin() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 256.0f;
@@ -2113,7 +2097,7 @@ bool idAI::WanderAround( void ) {
 idAI::MoveDone
 =====================
 */
-bool idAI::MoveDone( void ) const {
+bool idAI::MoveDone() const {
 	return ( move.moveCommand == MOVE_NONE );
 }
 
@@ -2355,7 +2339,7 @@ bool idAI::GetMovePos( idVec3 &seekPos ) {
 
 		seekPos = org + move.moveDir * 2048.0f;
 		if ( ai_debugMove.GetBool() ) {
-			gameRenderWorld->DebugLine( colorYellow, org, seekPos, gameLocal.msec, true );
+			gameRenderWorld->DebugLine( colorYellow, org, seekPos, 1, true );
 		}
 	} else {
 		AI_DEST_UNREACHABLE = false;
@@ -2416,7 +2400,7 @@ bool idAI::EntityCanSeePos( idActor *actor, const idVec3 &actorOrigin, const idV
 idAI::BlockedFailSafe
 =====================
 */
-void idAI::BlockedFailSafe( void ) {
+void idAI::BlockedFailSafe() {
 	if ( !ai_blockedFailSafe.GetBool() || blockedRadius < 0.0f ) {
 		return;
 	}
@@ -2444,7 +2428,7 @@ void idAI::BlockedFailSafe( void ) {
 idAI::Turn
 =====================
 */
-void idAI::Turn( void ) {
+void idAI::Turn() {
 	float diff;
 	float diff2;
 	float turnAmount;
@@ -2479,18 +2463,18 @@ void idAI::Turn( void ) {
 		current_yaw = idMath::AngleNormalize180( anim_turn_yaw + rotateAxis[ 0 ].ToYaw() );
 	} else {
 		diff = idMath::AngleNormalize180( ideal_yaw - current_yaw );
-		turnVel += AI_TURN_SCALE * diff * MS2SEC( gameLocal.msec );
+		turnVel += AI_TURN_SCALE * diff * MS2SEC( gameLocal.time - gameLocal.previousTime );
 		if ( turnVel > turnRate ) {
 			turnVel = turnRate;
 		} else if ( turnVel < -turnRate ) {
 			turnVel = -turnRate;
 		}
-		turnAmount = turnVel * MS2SEC( gameLocal.msec );
+		turnAmount = turnVel * MS2SEC( gameLocal.time - gameLocal.previousTime );
 		if ( ( diff >= 0.0f ) && ( turnAmount >= diff ) ) {
-			turnVel = diff / MS2SEC( gameLocal.msec );
+			turnVel = diff / MS2SEC( gameLocal.time - gameLocal.previousTime );
 			turnAmount = diff;
 		} else if ( ( diff <= 0.0f ) && ( turnAmount <= diff ) ) {
-			turnVel = diff / MS2SEC( gameLocal.msec );
+			turnVel = diff / MS2SEC( gameLocal.time - gameLocal.previousTime );
 			turnAmount = diff;
 		}
 		current_yaw += turnAmount;
@@ -2505,9 +2489,9 @@ void idAI::Turn( void ) {
 
 	if ( ai_debugMove.GetBool() ) {
 		const idVec3 &org = physicsObj.GetOrigin();
-		gameRenderWorld->DebugLine( colorRed, org, org + idAngles( 0, ideal_yaw, 0 ).ToForward() * 64, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorGreen, org, org + idAngles( 0, current_yaw, 0 ).ToForward() * 48, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorYellow, org, org + idAngles( 0, current_yaw + turnVel, 0 ).ToForward() * 32, gameLocal.msec );
+		gameRenderWorld->DebugLine( colorRed, org, org + idAngles( 0, ideal_yaw, 0 ).ToForward() * 64, 1 );
+		gameRenderWorld->DebugLine( colorGreen, org, org + idAngles( 0, current_yaw, 0 ).ToForward() * 48, 1 );
+		gameRenderWorld->DebugLine( colorYellow, org, org + idAngles( 0, current_yaw + turnVel, 0 ).ToForward() * 32, 1 );
 	}
 }
 
@@ -2516,7 +2500,7 @@ void idAI::Turn( void ) {
 idAI::FacingIdeal
 =====================
 */
-bool idAI::FacingIdeal( void ) {
+bool idAI::FacingIdeal() {
 	float diff;
 
 	if ( !turnRate ) {
@@ -2595,7 +2579,7 @@ void idAI::GetMoveDelta( const idMat3 &oldaxis, const idMat3 &axis, idVec3 &delt
 	idVec3 oldModelOrigin;
 	idVec3 modelOrigin;
 
-	animator.GetDelta( gameLocal.time - gameLocal.msec, gameLocal.time, delta );
+	animator.GetDelta( gameLocal.previousTime, gameLocal.time, delta );
 	delta = axis * delta;
 
 	if ( modelOffset != vec3_zero ) {
@@ -2634,8 +2618,8 @@ void idAI::CheckObstacleAvoidance( const idVec3 &goalPos, idVec3 &newPos ) {
 	AI_OBSTACLE_IN_PATH = false;
 	foundPath = FindPathAroundObstacles( &physicsObj, aas, enemy.GetEntity(), origin, goalPos, path );
 	if ( ai_showObstacleAvoidance.GetBool() ) {
-		gameRenderWorld->DebugLine( colorBlue, goalPos + idVec3( 1.0f, 1.0f, 0.0f ), goalPos + idVec3( 1.0f, 1.0f, 64.0f ), gameLocal.msec );
-		gameRenderWorld->DebugLine( foundPath ? colorYellow : colorRed, path.seekPos, path.seekPos + idVec3( 0.0f, 0.0f, 64.0f ), gameLocal.msec );
+		gameRenderWorld->DebugLine( colorBlue, goalPos + idVec3( 1.0f, 1.0f, 0.0f ), goalPos + idVec3( 1.0f, 1.0f, 64.0f ), 1 );
+		gameRenderWorld->DebugLine( foundPath ? colorYellow : colorRed, path.seekPos, path.seekPos + idVec3( 0.0f, 0.0f, 64.0f ), 1 );
 	}
 
 	if ( !foundPath ) {
@@ -2706,7 +2690,7 @@ void idAI::CheckObstacleAvoidance( const idVec3 &goalPos, idVec3 &newPos ) {
 idAI::DeadMove
 =====================
 */
-void idAI::DeadMove( void ) {
+void idAI::DeadMove() {
 	idVec3				delta;
 	monsterMoveResult_t	moveResult;
 
@@ -2726,7 +2710,7 @@ void idAI::DeadMove( void ) {
 idAI::AnimMove
 =====================
 */
-void idAI::AnimMove( void ) {
+void idAI::AnimMove() {
 	idVec3				goalPos;
 	idVec3				delta;
 	idVec3				goalDelta;
@@ -2786,9 +2770,7 @@ void idAI::AnimMove( void ) {
 		}
 	}
 
-#ifdef _D3XP
 	physicsObj.UseFlyMove( false );
-#endif
 	physicsObj.SetDelta( delta );
 	physicsObj.ForceDeltaMove( disableGravity );
 
@@ -2803,7 +2785,7 @@ void idAI::AnimMove( void ) {
 		DirectDamage( attack, enemy.GetEntity() );
 	} else {
 		idEntity *blockEnt = physicsObj.GetSlideMoveEntity();
-		if ( blockEnt && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
+		if ( blockEnt != NULL && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
 			KickObstacles( viewAxis[ 0 ], kickForce, blockEnt );
 		}
 	}
@@ -2818,9 +2800,9 @@ void idAI::AnimMove( void ) {
 	}
 
 	if ( ai_debugMove.GetBool() ) {
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec );
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, gameLocal.msec, true );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, 1 );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, 1 );
+		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, 1, true );
 		DrawRoute();
 	}
 }
@@ -2838,7 +2820,7 @@ idVec3 Seek( idVec3 &vel, const idVec3 &org, const idVec3 &goal, float predictio
 	// predict our position
 	predictedPos = org + vel * prediction;
 	goalDelta = goal - predictedPos;
-	seekVel = goalDelta * MS2SEC( gameLocal.msec );
+	seekVel = goalDelta * MS2SEC( gameLocal.time - gameLocal.previousTime );
 
 	return seekVel;
 }
@@ -2848,7 +2830,7 @@ idVec3 Seek( idVec3 &vel, const idVec3 &org, const idVec3 &goal, float predictio
 idAI::SlideMove
 =====================
 */
-void idAI::SlideMove( void ) {
+void idAI::SlideMove() {
 	idVec3				goalPos;
 	idVec3				delta;
 	idVec3				goalDelta;
@@ -2902,11 +2884,11 @@ void idAI::SlideMove( void ) {
 
 	// seek the goal position
 	goalDelta = goalPos - predictedPos;
-	vel -= vel * AI_FLY_DAMPENING * MS2SEC( gameLocal.msec );
-	vel += goalDelta * MS2SEC( gameLocal.msec );
+	vel -= vel * AI_FLY_DAMPENING * MS2SEC( gameLocal.time - gameLocal.previousTime );
+	vel += goalDelta * MS2SEC( gameLocal.time - gameLocal.previousTime );
 
 	// cap our speed
-	vel.Truncate( fly_speed );
+	vel = vel.Truncate( fly_speed );
 	vel.z = z;
 	physicsObj.SetLinearVelocity( vel );
 	physicsObj.UseVelocityMove( true );
@@ -2932,7 +2914,7 @@ void idAI::SlideMove( void ) {
 		DirectDamage( attack, enemy.GetEntity() );
 	} else {
 		idEntity *blockEnt = physicsObj.GetSlideMoveEntity();
-		if ( blockEnt && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
+		if ( blockEnt != NULL && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
 			KickObstacles( viewAxis[ 0 ], kickForce, blockEnt );
 		}
 	}
@@ -2947,9 +2929,9 @@ void idAI::SlideMove( void ) {
 	}
 
 	if ( ai_debugMove.GetBool() ) {
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec );
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, gameLocal.msec, true );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, 1 );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, 1 );
+		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, 1, true );
 		DrawRoute();
 	}
 }
@@ -2959,7 +2941,7 @@ void idAI::SlideMove( void ) {
 idAI::AdjustFlyingAngles
 =====================
 */
-void idAI::AdjustFlyingAngles( void ) {
+void idAI::AdjustFlyingAngles() {
 	idVec3	vel;
 	float 	speed;
 	float 	roll;
@@ -3009,7 +2991,7 @@ void idAI::AddFlyBob( idVec3 &vel ) {
 	if ( fly_bob_strength ) {
 		t = MS2SEC( gameLocal.time + entityNumber * 497 );
 		fly_bob_add = ( viewAxis[ 1 ] * idMath::Sin16( t * fly_bob_horz ) + viewAxis[ 2 ] * idMath::Sin16( t * fly_bob_vert ) ) * fly_bob_strength;
-		vel += fly_bob_add * MS2SEC( gameLocal.msec );
+		vel += fly_bob_add * MS2SEC( gameLocal.time - gameLocal.previousTime );
 		if ( ai_debugMove.GetBool() ) {
 			const idVec3 &origin = physicsObj.GetOrigin();
 			gameRenderWorld->DebugArrow( colorOrange, origin, origin + fly_bob_add, 0 );
@@ -3044,7 +3026,7 @@ void idAI::AdjustFlyHeight( idVec3 &vel, const idVec3 &goalPos ) {
 		}
         
 		if ( ai_debugMove.GetBool() ) {
-			gameRenderWorld->DebugBounds( goLower ? colorRed : colorGreen, physicsObj.GetBounds(), path.endPos, gameLocal.msec );
+			gameRenderWorld->DebugBounds( goLower ? colorRed : colorGreen, physicsObj.GetBounds(), path.endPos, 1 );
 		}
 	}
 
@@ -3088,11 +3070,11 @@ void idAI::AdjustFlySpeed( idVec3 &vel ) {
 	float speed;
 
 	// apply dampening
-	vel -= vel * AI_FLY_DAMPENING * MS2SEC( gameLocal.msec );
+	vel -= vel * AI_FLY_DAMPENING * MS2SEC( gameLocal.time - gameLocal.previousTime );
 
 	// gradually speed up/slow down to desired speed
 	speed = vel.Normalize();
-	speed += ( move.speed - speed ) * MS2SEC( gameLocal.msec );
+	speed += ( move.speed - speed ) * MS2SEC( gameLocal.time - gameLocal.previousTime );
 	if ( speed < 0.0f ) {
 		speed = 0.0f;
 	} else if ( move.speed && ( speed > move.speed ) ) {
@@ -3107,7 +3089,7 @@ void idAI::AdjustFlySpeed( idVec3 &vel ) {
 idAI::FlyTurn
 =====================
 */
-void idAI::FlyTurn( void ) {
+void idAI::FlyTurn() {
 	if ( move.moveCommand == MOVE_FACE_ENEMY ) {
 		TurnToward( lastVisibleEnemyPos );
 	} else if ( ( move.moveCommand == MOVE_FACE_ENTITY ) && move.goalEntity.GetEntity() ) {
@@ -3126,7 +3108,7 @@ void idAI::FlyTurn( void ) {
 idAI::FlyMove
 =====================
 */
-void idAI::FlyMove( void ) {
+void idAI::FlyMove() {
 	idVec3	goalPos;
 	idVec3	oldorigin;
 	idVec3	newDest;
@@ -3180,7 +3162,7 @@ void idAI::FlyMove( void ) {
 		DirectDamage( attack, enemy.GetEntity() );
 	} else {
 		idEntity *blockEnt = physicsObj.GetSlideMoveEntity();
-		if ( blockEnt && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
+		if ( blockEnt != NULL && blockEnt->IsType( idMoveable::Type ) && blockEnt->GetPhysics()->IsPushable() ) {
 			KickObstacles( viewAxis[ 0 ], kickForce, blockEnt );
 		} else if ( moveResult == MM_BLOCKED ) {
 			move.blockTime = gameLocal.time + 500;
@@ -3195,11 +3177,11 @@ void idAI::FlyMove( void ) {
 
 	if ( ai_debugMove.GetBool() ) {
 		gameRenderWorld->DebugLine( colorCyan, oldorigin, physicsObj.GetOrigin(), 4000 );
-		gameRenderWorld->DebugBounds( colorOrange, physicsObj.GetBounds(), org, gameLocal.msec );
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorRed, org, org + physicsObj.GetLinearVelocity(), gameLocal.msec, true );
-		gameRenderWorld->DebugLine( colorBlue, org, goalPos, gameLocal.msec, true );
-		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, gameLocal.msec, true );
+		gameRenderWorld->DebugBounds( colorOrange, physicsObj.GetBounds(), org, 1 );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), move.moveDest, 1 );
+		gameRenderWorld->DebugLine( colorRed, org, org + physicsObj.GetLinearVelocity(), 1, true );
+		gameRenderWorld->DebugLine( colorBlue, org, goalPos, 1, true );
+		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, 1, true );
 		DrawRoute();
 	}
 }
@@ -3209,7 +3191,7 @@ void idAI::FlyMove( void ) {
 idAI::StaticMove
 =====================
 */
-void idAI::StaticMove( void ) {
+void idAI::StaticMove() {
 	idActor	*enemyEnt = enemy.GetEntity();
 
 	if ( AI_DEAD ) {
@@ -3236,9 +3218,9 @@ void idAI::StaticMove( void ) {
 
 	if ( ai_debugMove.GetBool() ) {
 		const idVec3 &org = physicsObj.GetOrigin();
-		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, gameLocal.msec );
-		gameRenderWorld->DebugLine( colorBlue, org, move.moveDest, gameLocal.msec, true );
-		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, gameLocal.msec, true );
+		gameRenderWorld->DebugBounds( colorMagenta, physicsObj.GetBounds(), org, 1 );
+		gameRenderWorld->DebugLine( colorBlue, org, move.moveDest, 1, true );
+		gameRenderWorld->DebugLine( colorYellow, org + EyeOffset(), org + EyeOffset() + viewAxis[ 0 ] * physicsObj.GetGravityAxis() * 16.0f, 1, true );
 	}
 }
 
@@ -3399,6 +3381,14 @@ void idAI::Killed( idEntity *inflictor, idEntity *attacker, int damage, const id
 	idAngles ang;
 	const char *modelDeath;
 
+	// Guardian died?  grats, you get an achievement
+	if ( idStr::Icmp( name, "guardian_spawn" ) == 0 ) {
+		idPlayer * player = gameLocal.GetLocalPlayer();
+		if ( player != NULL && player->GetExpansionType() == GAME_BASE ) {
+			player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_DEFEAT_GUARDIAN_BOSS );
+		}
+	}
+
 	// make sure the monster is activated
 	EndAttack();
 
@@ -3468,10 +3458,8 @@ void idAI::Killed( idEntity *inflictor, idEntity *attacker, int damage, const id
 		physicsObj.SetLinearVelocity( vec3_zero );
 		physicsObj.PutToRest();
 		physicsObj.DisableImpact();
-#ifdef _D3XP
 		// No grabbing if "model_death"
 		noGrab = true;
-#endif
 	}
 
 	restartParticles = false;
@@ -3490,13 +3478,10 @@ void idAI::Killed( idEntity *inflictor, idEntity *attacker, int damage, const id
 		kv = spawnArgs.MatchPrefix( "def_drops", kv );
 	}
 
-#ifndef _D3XP
 	if ( ( attacker && attacker->IsType( idPlayer::Type ) ) && ( inflictor && !inflictor->IsType( idSoulCubeMissile::Type ) ) ) {
 		static_cast< idPlayer* >( attacker )->AddAIKill();
 	}
-#endif
 
-#ifdef _D3XP
 	if(spawnArgs.GetBool("harvest_on_death")) {
 		const idDict *harvestDef = gameLocal.FindEntityDefDict( spawnArgs.GetString("def_harvest_type"), false );
 		if ( harvestDef ) {
@@ -3512,7 +3497,6 @@ void idAI::Killed( idEntity *inflictor, idEntity *attacker, int damage, const id
 			harvestEnt.GetEntity()->BecomeActive( TH_THINK );
 		}
 	}
-#endif
 }
 
 /***********************************************************************
@@ -3526,7 +3510,7 @@ void idAI::Killed( idEntity *inflictor, idEntity *attacker, int damage, const id
 idAI::PlayCinematic
 =====================
 */
-void idAI::PlayCinematic( void ) {
+void idAI::PlayCinematic() {
 	const char *animname;
 
 	if ( current_cinematic >= num_cinematics ) {
@@ -3659,7 +3643,7 @@ void idAI::Activate( idEntity *activator ) {
 idAI::EnemyDead
 =====================
 */
-void idAI::EnemyDead( void ) {
+void idAI::EnemyDead() {
 	ClearEnemy();
 	AI_ENEMY_DEAD = true;
 }
@@ -3674,12 +3658,10 @@ void idAI::TalkTo( idActor *actor ) {
 		return;
 	}
 
-#ifdef _D3XP
 	// Wake up monsters that are pretending to be NPC's
-	if ( team == 1 && actor->team != team ) {
+	if ( team == 1 && actor && actor->team != team ) {
 		ProcessEvent( &EV_Activate, actor );
 	}
-#endif
 
 	talkTarget = actor;
 	if ( actor ) {
@@ -3694,7 +3676,7 @@ void idAI::TalkTo( idActor *actor ) {
 idAI::GetEnemy
 =====================
 */
-idActor	*idAI::GetEnemy( void ) const {
+idActor	*idAI::GetEnemy() const {
 	return enemy.GetEntity();
 }
 
@@ -3703,7 +3685,7 @@ idActor	*idAI::GetEnemy( void ) const {
 idAI::GetTalkState
 =====================
 */
-talkState_t idAI::GetTalkState( void ) const {
+talkState_t idAI::GetTalkState() const {
 	if ( ( talk_state != TALK_NEVER ) && AI_DEAD ) {
 		return TALK_DEAD;
 	}
@@ -3729,7 +3711,7 @@ void idAI::TouchedByFlashlight( idActor *flashlight_owner ) {
 idAI::ClearEnemy
 =====================
 */
-void idAI::ClearEnemy( void ) {
+void idAI::ClearEnemy() {
 	if ( move.moveCommand == MOVE_TO_ENEMY ) {
 		StopMove( MOVE_STATUS_DEST_NOT_FOUND );
 	}
@@ -3748,7 +3730,7 @@ void idAI::ClearEnemy( void ) {
 idAI::EnemyPositionValid
 =====================
 */
-bool idAI::EnemyPositionValid( void ) const {
+bool idAI::EnemyPositionValid() const {
 	trace_t	tr;
 	idVec3	muzzle;
 	idMat3	axis;
@@ -3775,11 +3757,11 @@ bool idAI::EnemyPositionValid( void ) const {
 idAI::SetEnemyPosition
 =====================
 */
-void idAI::SetEnemyPosition( void ) {
+void idAI::SetEnemyPosition() {
 	idActor		*enemyEnt = enemy.GetEntity();
 	int			enemyAreaNum;
 	int			areaNum;
-	int			lastVisibleReachableEnemyAreaNum;
+	int			lastVisibleReachableEnemyAreaNum = 0;
 	aasPath_t	path;
 	idVec3		pos;
 	bool		onGround;
@@ -3869,7 +3851,7 @@ void idAI::SetEnemyPosition( void ) {
 idAI::UpdateEnemyPosition
 =====================
 */
-void idAI::UpdateEnemyPosition( void ) {
+void idAI::UpdateEnemyPosition() {
 	idActor *enemyEnt = enemy.GetEntity();
 	int				enemyAreaNum;
 	int				areaNum;
@@ -3932,8 +3914,8 @@ void idAI::UpdateEnemyPosition( void ) {
 	}
 
 	if ( ai_debugMove.GetBool() ) {
-		gameRenderWorld->DebugBounds( colorLtGrey, enemyEnt->GetPhysics()->GetBounds(), lastReachableEnemyPos, gameLocal.msec );
-		gameRenderWorld->DebugBounds( colorWhite, enemyEnt->GetPhysics()->GetBounds(), lastVisibleReachableEnemyPos, gameLocal.msec );
+		gameRenderWorld->DebugBounds( colorLtGrey, enemyEnt->GetPhysics()->GetBounds(), lastReachableEnemyPos, 1 );
+		gameRenderWorld->DebugBounds( colorWhite, enemyEnt->GetPhysics()->GetBounds(), lastVisibleReachableEnemyPos, 1 );
 	}
 }
 
@@ -3954,6 +3936,16 @@ void idAI::SetEnemy( idActor *newEnemy ) {
 	if ( !newEnemy ) {
 		ClearEnemy();
 	} else if ( enemy.GetEntity() != newEnemy ) {
+
+		// Check to see if we should unlock the 'Turncloak' achievement
+		const idActor * enemyEnt = enemy.GetEntity();
+		if ( enemyEnt != NULL && enemyEnt->IsType( idPlayer::Type ) && newEnemy->IsType( idAI::Type ) && newEnemy->team == this->team && ( idStr::Icmp( newEnemy->GetName(), "hazmat_dummy") != 0 ) ) {
+			idPlayer *player = gameLocal.GetLocalPlayer();
+			if ( player != NULL ) {
+				player->GetAchievementManager().EventCompletesAchievement( ACHIEVEMENT_TWO_DEMONS_FIGHT_EACH_OTHER );
+			}
+		}
+
 		enemy = newEnemy;
 		enemyNode.AddToEnd( newEnemy->enemyList );
 		if ( newEnemy->health <= 0 ) {
@@ -4031,7 +4023,7 @@ idAI::CalculateAttackOffsets
 calculate joint positions on attack frames so we can do proper "can hit" tests
 ===================
 */
-void idAI::CalculateAttackOffsets( void ) {
+void idAI::CalculateAttackOffsets() {
 	const idDeclModelDef	*modelDef;
 	int						num;
 	int						i;
@@ -4079,11 +4071,11 @@ void idAI::CalculateAttackOffsets( void ) {
 idAI::CreateProjectileClipModel
 =====================
 */
-void idAI::CreateProjectileClipModel( void ) const {
+void idAI::CreateProjectileClipModel() const {
 	if ( projectileClipModel == NULL ) {
 		idBounds projectileBounds( vec3_origin );
 		projectileBounds.ExpandSelf( projectileRadius );
-		projectileClipModel	= new idClipModel( idTraceModel( projectileBounds ) );
+		projectileClipModel	= new (TAG_MODEL) idClipModel( idTraceModel( projectileBounds ) );
 	}
 }
 
@@ -4118,12 +4110,10 @@ bool idAI::GetAimDir( const idVec3 &firePos, idEntity *aimAtEnt, const idEntity 
 		targetPos2 = targetPos1;
 	}
 
-#ifdef _D3XP
 	if ( this->team == 0 && !idStr::Cmp( aimAtEnt->GetEntityDefName(), "monster_demon_vulgar" ) ) {
 		targetPos1.z -= 28.f;
 		targetPos2.z -= 12.f;
 	}
-#endif
 
 	// try aiming for chest
 	delta = firePos - targetPos1;
@@ -4156,7 +4146,7 @@ void idAI::BeginAttack( const char *name ) {
 idAI::EndAttack
 =====================
 */
-void idAI::EndAttack( void ) {
+void idAI::EndAttack() {
 	attack = "";
 }
 
@@ -4171,9 +4161,10 @@ idProjectile *idAI::CreateProjectile( const idVec3 &pos, const idVec3 &dir ) {
 
 	if ( !projectile.GetEntity() ) {
 		gameLocal.SpawnEntityDef( *projectileDef, &ent, false );
-		if ( !ent ) {
+		if ( ent == NULL ) {
 			clsname = projectileDef->GetString( "classname" );
 			gameLocal.Error( "Could not spawn entityDef '%s'", clsname );
+			return NULL;
 		}
 		
 		if ( !ent->IsType( idProjectile::Type ) ) {
@@ -4193,7 +4184,7 @@ idProjectile *idAI::CreateProjectile( const idVec3 &pos, const idVec3 &dir ) {
 idAI::RemoveProjectile
 =====================
 */
-void idAI::RemoveProjectile( void ) {
+void idAI::RemoveProjectile() {
 	if ( projectile.GetEntity() ) {
 		projectile.GetEntity()->PostEventMS( &EV_Remove, 0 );
 		projectile = NULL;
@@ -4223,10 +4214,8 @@ idProjectile *idAI::LaunchProjectile( const char *jointname, idEntity *target, b
 	int					num_projectiles;
 	int					i;
 	idMat3				axis;
-#ifdef _D3XP
 	idMat3				proj_axis;
 	bool				forceMuzzle;
-#endif
 	idVec3				tmp;
 	idProjectile		*lastProjectile;
 
@@ -4239,9 +4228,7 @@ idProjectile *idAI::LaunchProjectile( const char *jointname, idEntity *target, b
 	attack_cone = spawnArgs.GetFloat( "attack_cone", "70" );
 	projectile_spread = spawnArgs.GetFloat( "projectile_spread", "0" );
 	num_projectiles = spawnArgs.GetInt( "num_projectiles", "1" );
-#ifdef _D3XP
 	forceMuzzle = spawnArgs.GetBool( "forceMuzzle", "0" );
-#endif
 
 	GetMuzzle( jointname, muzzle, axis );
 
@@ -4264,9 +4251,7 @@ idProjectile *idAI::LaunchProjectile( const char *jointname, idEntity *target, b
 	axis[2] = axis[0];
 	axis[0] = -tmp;
 
-#ifdef _D3XP
 	proj_axis = axis;
-#endif
 
 	if ( !forceMuzzle ) {	// _D3XP
 		// make sure the projectile starts inside the monster bounding box
@@ -4374,8 +4359,9 @@ void idAI::DirectDamage( const char *meleeDefName, idEntity *ent ) {
 	const idSoundShader *shader;
 
 	meleeDef = gameLocal.FindEntityDefDict( meleeDefName, false );
-	if ( !meleeDef ) {
+	if ( meleeDef == NULL ) {
 		gameLocal.Error( "Unknown damage def '%s' on '%s'", meleeDefName, name.c_str() );
+		return;
 	}
 
 	if ( !ent->fl.takedamage ) {
@@ -4388,7 +4374,7 @@ void idAI::DirectDamage( const char *meleeDefName, idEntity *ent ) {
 	// do the damage
 	//
 	p = meleeDef->GetString( "snd_hit" );
-	if ( p && *p ) {
+	if ( p != NULL && *p != NULL ) {
 		shader = declManager->FindSound( p );
 		StartSoundShader( shader, SND_CHANNEL_DAMAGE, 0, false, NULL );
 	}
@@ -4410,7 +4396,7 @@ void idAI::DirectDamage( const char *meleeDefName, idEntity *ent ) {
 idAI::TestMelee
 =====================
 */
-bool idAI::TestMelee( void ) const {
+bool idAI::TestMelee() const {
 	trace_t trace;
 	idActor *enemyEnt = enemy.GetEntity();
 
@@ -4437,7 +4423,7 @@ bool idAI::TestMelee( void ) const {
 	enemyBounds.TranslateSelf( enemyOrg );
 
 	if ( ai_debugMove.GetBool() ) {
-		gameRenderWorld->DebugBounds( colorYellow, bounds, vec3_zero, gameLocal.msec );
+		gameRenderWorld->DebugBounds( colorYellow, bounds, vec3_zero, 1 );
 	}
 
 	if ( !bounds.IntersectsBounds( enemyBounds ) ) {
@@ -4474,13 +4460,14 @@ bool idAI::AttackMelee( const char *meleeDefName ) {
 	const idSoundShader *shader;
 
 	meleeDef = gameLocal.FindEntityDefDict( meleeDefName, false );
-	if ( !meleeDef ) {
+	if ( meleeDef == NULL ) {
 		gameLocal.Error( "Unknown melee '%s'", meleeDefName );
+		return false;
 	}
 
-	if ( !enemyEnt ) {
+	if ( enemyEnt == NULL ) {
 		p = meleeDef->GetString( "snd_miss" );
-		if ( p && *p ) {
+		if ( p != NULL && *p != NULL ) {
 			shader = declManager->FindSound( p );
 			StartSoundShader( shader, SND_CHANNEL_DAMAGE, 0, false, NULL );
 		}
@@ -4512,7 +4499,7 @@ bool idAI::AttackMelee( const char *meleeDefName ) {
 	if ( forceMiss || !TestMelee() ) {
 		// missed
 		p = meleeDef->GetString( "snd_miss" );
-		if ( p && *p ) {
+		if ( p != NULL && *p != NULL ) {
 			shader = declManager->FindSound( p );
 			StartSoundShader( shader, SND_CHANNEL_DAMAGE, 0, false, NULL );
 		}
@@ -4523,7 +4510,7 @@ bool idAI::AttackMelee( const char *meleeDefName ) {
 	// do the damage
 	//
 	p = meleeDef->GetString( "snd_hit" );
-	if ( p && *p ) {
+	if ( p != NULL && *p != NULL ) {
 		shader = declManager->FindSound( p );
 		StartSoundShader( shader, SND_CHANNEL_DAMAGE, 0, false, NULL );
 	}
@@ -4546,7 +4533,7 @@ bool idAI::AttackMelee( const char *meleeDefName ) {
 idAI::PushWithAF
 ================
 */
-void idAI::PushWithAF( void ) {
+void idAI::PushWithAF() {
 	int i, j;
 	afTouch_t touchList[ MAX_GENTITIES ];
 	idEntity *pushed_ents[ MAX_GENTITIES ];
@@ -4649,7 +4636,7 @@ void idAI::TriggerWeaponEffects( const idVec3 &muzzle ) {
 idAI::UpdateMuzzleFlash
 ================
 */
-void idAI::UpdateMuzzleFlash( void ) {
+void idAI::UpdateMuzzleFlash() {
 	if ( worldMuzzleFlashHandle != -1 ) { 
 		if ( gameLocal.time >= muzzleFlashEnd ) {
 			gameRenderWorld->FreeLightDef( worldMuzzleFlashHandle );
@@ -4670,7 +4657,7 @@ void idAI::UpdateMuzzleFlash( void ) {
 idAI::Hide
 ================
 */
-void idAI::Hide( void ) {
+void idAI::Hide() {
 	idActor::Hide();
 	fl.takedamage = false;
 	physicsObj.SetContents( 0 );
@@ -4688,7 +4675,7 @@ void idAI::Hide( void ) {
 idAI::Show
 ================
 */
-void idAI::Show( void ) {
+void idAI::Show() {
 	idActor::Show();
 	if ( spawnArgs.GetBool( "big_monster" ) ) {
 		physicsObj.SetContents( 0 );
@@ -4708,7 +4695,7 @@ void idAI::Show( void ) {
 idAI::SetChatSound
 =====================
 */
-void idAI::SetChatSound( void ) {
+void idAI::SetChatSound() {
 	const char *snd;
 
 	if ( IsHidden() ) {
@@ -4725,7 +4712,7 @@ void idAI::SetChatSound( void ) {
 		snd = NULL;
 	}
 
-	if ( snd && *snd ) {
+	if ( snd != NULL && *snd != NULL ) {
 		chat_snd = declManager->FindSound( snd );
 
 		// set the next chat time
@@ -4742,7 +4729,7 @@ idAI::CanPlayChatterSounds
 Used for playing chatter sounds on monsters.
 ================
 */
-bool idAI::CanPlayChatterSounds( void ) const {
+bool idAI::CanPlayChatterSounds() const {
 	if ( AI_DEAD ) {
 		return false;
 	}
@@ -4767,7 +4754,7 @@ bool idAI::CanPlayChatterSounds( void ) const {
 idAI::PlayChatter
 =====================
 */
-void idAI::PlayChatter( void ) {
+void idAI::PlayChatter() {
 	// check if it's time to play a chat sound
 	if ( AI_DEAD || !chat_snd || ( chat_time > gameLocal.time ) ) {
 		return;
@@ -4784,17 +4771,15 @@ void idAI::PlayChatter( void ) {
 idAI::UpdateParticles
 =====================
 */
-void idAI::UpdateParticles( void ) {
+void idAI::UpdateParticles() {
 	if ( ( thinkFlags & TH_UPDATEPARTICLES) && !IsHidden() ) {
 		idVec3 realVector;
 		idMat3 realAxis;
 
 		int particlesAlive = 0;
 		for ( int i = 0; i < particles.Num(); i++ ) {
-#ifdef _D3XP
 			// Smoke particles on AI characters will always be "slow", even when held by grabber
 			SetTimeState ts(TIME_GROUP1);
-#endif
 			if ( particles[i].particle && particles[i].time ) {
 				particlesAlive++;
 				if (af.IsActive()) {
@@ -4839,7 +4824,6 @@ void idAI::TriggerParticles( const char *jointName ) {
 	}
 }
 
-#ifdef _D3XP
 void idAI::TriggerFX( const char* joint, const char* fx ) {
 	
 	if( !strcmp(joint, "origin") ) {
@@ -4945,7 +4929,6 @@ void idAI::StopEmitter( const char* name ) {
 	}
 }
 
-#endif
 
 
 /***********************************************************************
@@ -4959,7 +4942,7 @@ void idAI::StopEmitter( const char* name ) {
 idAI::UpdateAnimationControllers
 ================
 */
-bool idAI::UpdateAnimationControllers( void ) {
+bool idAI::UpdateAnimationControllers() {
 	idVec3		local;
 	idVec3		focusPos;
 	idQuat		jawQuat;
@@ -5001,7 +4984,7 @@ bool idAI::UpdateAnimationControllers( void ) {
 		}
 		eyeOffset.z = eyepos.z - physicsObj.GetOrigin().z;
 		if ( ai_debugMove.GetBool() ) {
-			gameRenderWorld->DebugLine( colorRed, eyepos, eyepos + orientationJointAxis[ 0 ] * 32.0f, gameLocal.msec );
+			gameRenderWorld->DebugLine( colorRed, eyepos, eyepos + orientationJointAxis[ 0 ] * 32.0f, 1 );
 		}
 	} else {
 		eyepos = GetEyePosition();
@@ -5043,9 +5026,9 @@ bool idAI::UpdateAnimationControllers( void ) {
 	newLookAng.pitch = 0.0f;
 
 #if 0
-	gameRenderWorld->DebugLine( colorRed, orientationJointPos, focusPos, gameLocal.msec );
-	gameRenderWorld->DebugLine( colorYellow, orientationJointPos, orientationJointPos + orientationJointAxis[ 0 ] * 32.0f, gameLocal.msec );
-	gameRenderWorld->DebugLine( colorGreen, orientationJointPos, orientationJointPos + newLookAng.ToForward() * 48.0f, gameLocal.msec );
+	gameRenderWorld->DebugLine( colorRed, orientationJointPos, focusPos, 1 );
+	gameRenderWorld->DebugLine( colorYellow, orientationJointPos, orientationJointPos + orientationJointAxis[ 0 ] * 32.0f, 1 );
+	gameRenderWorld->DebugLine( colorGreen, orientationJointPos, orientationJointPos + newLookAng.ToForward() * 48.0f, 1 );
 #endif
 
 	// determine pitch from joint position
@@ -5155,7 +5138,7 @@ END_CLASS
 idCombatNode::idCombatNode
 =====================
 */
-idCombatNode::idCombatNode( void ) {
+idCombatNode::idCombatNode() {
 	min_dist = 0.0f;
 	max_dist = 0.0f;
 	cone_dist = 0.0f;
@@ -5206,7 +5189,7 @@ void idCombatNode::Restore( idRestoreGame *savefile ) {
 idCombatNode::Spawn
 =====================
 */
-void idCombatNode::Spawn( void ) {
+void idCombatNode::Spawn() {
 	float fov;
 	float yaw;
 	float height;
@@ -5238,7 +5221,7 @@ void idCombatNode::Spawn( void ) {
 idCombatNode::IsDisabled
 =====================
 */
-bool idCombatNode::IsDisabled( void ) const {
+bool idCombatNode::IsDisabled() const {
 	return disabled;
 }
 
@@ -5247,7 +5230,7 @@ bool idCombatNode::IsDisabled( void ) const {
 idCombatNode::DrawDebugInfo
 =====================
 */
-void idCombatNode::DrawDebugInfo( void ) {
+void idCombatNode::DrawDebugInfo() {
 	idEntity		*ent;
 	idCombatNode	*node;
 	idPlayer		*player = gameLocal.GetLocalPlayer();
@@ -5262,7 +5245,7 @@ void idCombatNode::DrawDebugInfo( void ) {
 		node = static_cast<idCombatNode *>( ent );
 		if ( node->disabled ) {
 			color = colorMdGrey;
-		} else if ( player && node->EntityInView( player, player->GetPhysics()->GetOrigin() ) ) {
+		} else if ( player != NULL && node->EntityInView( player, player->GetPhysics()->GetOrigin() ) ) {
 			color = colorYellow;
 		} else {
 			color = colorRed;
@@ -5286,12 +5269,12 @@ void idCombatNode::DrawDebugInfo( void ) {
 			idVec3 pos3 = org + rightDir * node->min_dist;
 			idVec3 pos4 = org + rightDir * cone_dist;
 
-			gameRenderWorld->DebugLine( color, node->GetPhysics()->GetOrigin(), ( pos1 + pos3 ) * 0.5f, gameLocal.msec );
-			gameRenderWorld->DebugLine( color, pos1, pos2, gameLocal.msec );
-			gameRenderWorld->DebugLine( color, pos1, pos3, gameLocal.msec );
-			gameRenderWorld->DebugLine( color, pos3, pos4, gameLocal.msec );
-			gameRenderWorld->DebugLine( color, pos2, pos4, gameLocal.msec );
-			gameRenderWorld->DebugBounds( color, bounds, org, gameLocal.msec );
+			gameRenderWorld->DebugLine( color, node->GetPhysics()->GetOrigin(), ( pos1 + pos3 ) * 0.5f, 1 );
+			gameRenderWorld->DebugLine( color, pos1, pos2, 1 );
+			gameRenderWorld->DebugLine( color, pos1, pos3, 1 );
+			gameRenderWorld->DebugLine( color, pos3, pos4, 1 );
+			gameRenderWorld->DebugLine( color, pos2, pos4, 1 );
+			gameRenderWorld->DebugBounds( color, bounds, org, 1 );
 		}
 	}
 }
@@ -5347,7 +5330,7 @@ void idCombatNode::Event_Activate( idEntity *activator ) {
 idCombatNode::Event_MarkUsed
 =====================
 */
-void idCombatNode::Event_MarkUsed( void ) {
+void idCombatNode::Event_MarkUsed() {
 	if ( spawnArgs.GetBool( "use_once" ) ) {
 		disabled = true;
 	}

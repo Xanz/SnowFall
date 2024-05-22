@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -47,7 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 idAF::idAF
 ================
 */
-idAF::idAF( void ) {
+idAF::idAF() {
 	self = NULL;
 	animator = NULL;
 	modifiedAnim = 0;
@@ -65,7 +65,7 @@ idAF::idAF( void ) {
 idAF::~idAF
 ================
 */
-idAF::~idAF( void ) {
+idAF::~idAF() {
 }
 
 /*
@@ -134,7 +134,7 @@ void idAF::Restore( idRestoreGame *savefile ) {
 idAF::UpdateAnimation
 ================
 */
-bool idAF::UpdateAnimation( void ) {
+bool idAF::UpdateAnimation() {
 	int i;
 	idVec3 origin, renderOrigin, bodyOrigin;
 	idMat3 axis, renderAxis, bodyAxis;
@@ -192,7 +192,7 @@ idAF::GetBounds
   returns bounds for the current pose
 ================
 */
-idBounds idAF::GetBounds( void ) const {
+idBounds idAF::GetBounds() const {
 	int i;
 	idAFBody *body;
 	idVec3 origin, entityOrigin;
@@ -459,7 +459,7 @@ void idAF::AddBody( idAFBody *body, const idJointMat *joints, const char *jointN
 	axis = joints[ handle ].ToMat3();
 
 	index = jointMods.Num();
-	jointMods.SetNum( index + 1, false );
+	jointMods.SetNum( index + 1 );
 	jointMods[index].bodyId = physicsObj.GetBodyId( body );
 	jointMods[index].jointHandle = handle;
 	jointMods[index].jointMod = mod;
@@ -495,7 +495,7 @@ bool idAF::LoadBody( const idDeclAF_Body *fb, const idJointMat *joints ) {
 	idMat3 axis, inertiaTensor;
 	idVec3 centerOfMass, origin;
 	idBounds bounds;
-	idList<jointHandle_t> jointList;
+	idList<jointHandle_t, TAG_AF> jointList;
 
 	origin = fb->origin.ToVec3();
 	axis = fb->angles.ToMat3();
@@ -549,7 +549,7 @@ bool idAF::LoadBody( const idDeclAF_Body *fb, const idJointMat *joints ) {
 	if ( body ) {
 		clip = body->GetClipModel();
 		if ( !clip->IsEqual( trm ) ) {
-			clip = new idClipModel( trm );
+			clip = new (TAG_PHYSICS_CLIP_AF) idClipModel( trm );
 			clip->SetContents( fb->contents );
 			clip->Link( gameLocal.clip, self, 0, origin, axis );
 			body->SetClipModel( clip );
@@ -561,10 +561,10 @@ bool idAF::LoadBody( const idDeclAF_Body *fb, const idJointMat *joints ) {
 		id = physicsObj.GetBodyId( body );
 	}
 	else {
-		clip = new idClipModel( trm );
+		clip = new (TAG_PHYSICS_CLIP_AF) idClipModel( trm );
 		clip->SetContents( fb->contents );
 		clip->Link( gameLocal.clip, self, 0, origin, axis );
-		body = new idAFBody( fb->name, clip, fb->density );
+		body = new (TAG_PHYSICS_AF) idAFBody( fb->name, clip, fb->density );
 		if ( fb->inertiaScale != mat3_identity ) {
 			body->SetDensity( fb->density, fb->inertiaScale );
 		}
@@ -635,7 +635,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_Fixed( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_Fixed( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			break;
@@ -648,7 +648,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_BallAndSocketJoint( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_BallAndSocketJoint( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			c->SetAnchor( fc->anchor.ToVec3() );
@@ -680,7 +680,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_UniversalJoint( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_UniversalJoint( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			c->SetAnchor( fc->anchor.ToVec3() );
@@ -713,7 +713,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_Hinge( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_Hinge( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			c->SetAnchor( fc->anchor.ToVec3() );
@@ -743,7 +743,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_Slider( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_Slider( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			c->SetAxis( fc->axis.ToVec3() );
@@ -757,7 +757,7 @@ bool idAF::LoadConstraint( const idDeclAF_Constraint *fc ) {
 				c->SetBody2( body2 );
 			}
 			else {
-				c = new idAFConstraint_Spring( fc->name, body1, body2 );
+				c = new (TAG_PHYSICS_AF) idAFConstraint_Spring( fc->name, body1, body2 );
 				physicsObj.AddConstraint( c );
 			}
 			c->SetAnchor( fc->anchor.ToVec3(), fc->anchor2.ToVec3() );
@@ -865,7 +865,7 @@ bool idAF::Load( idEntity *ent, const char *fileName ) {
 	physicsObj.SetSelfCollision( file->selfCollision );
 
 	// clear the list with transforms from joints to bodies
-	jointMods.SetNum( 0, false );
+	jointMods.SetNum( 0 );
 
 	// clear the joint to body conversion list
 	jointBody.AssureSize( animator->NumJoints() );
@@ -891,8 +891,9 @@ bool idAF::Load( idEntity *ent, const char *fileName ) {
 	for ( i = 0; i < physicsObj.GetNumConstraints(); i++ ) {
 		idAFConstraint *constraint = physicsObj.GetConstraint( i );
 		for ( j = 0; j < file->constraints.Num(); j++ ) {
+			// idADConstraint enum is a superset of declADConstraint, so the cast is valid
 			if ( file->constraints[j]->name.Icmp( constraint->GetName() ) == 0 &&
-					file->constraints[j]->type == constraint->GetType() ) {
+					(constraintType_t)(file->constraints[j]->type) == constraint->GetType() ) {
 				break;
 			}
 		}
@@ -938,7 +939,7 @@ bool idAF::Load( idEntity *ent, const char *fileName ) {
 idAF::Start
 ================
 */
-void idAF::Start( void ) {
+void idAF::Start() {
 	if ( !IsLoaded() ) {
 		return;
 	}
@@ -958,7 +959,7 @@ void idAF::Start( void ) {
 idAF::TestSolid
 ================
 */
-bool idAF::TestSolid( void ) const {
+bool idAF::TestSolid() const {
 	int i;
 	idAFBody *body;
 	trace_t trace;
@@ -1039,7 +1040,7 @@ void idAF::StartFromCurrentPose( int inheritVelocityTime ) {
 idAF::Stop
 ================
 */
-void idAF::Stop( void ) {
+void idAF::Stop() {
 	// disable the articulated figure for collision detection
 	physicsObj.UnlinkClip();
 	isActive = false;
@@ -1050,7 +1051,7 @@ void idAF::Stop( void ) {
 idAF::Rest
 ================
 */
-void idAF::Rest( void ) {
+void idAF::Rest() {
 	physicsObj.PutToRest();
 }
 
@@ -1157,7 +1158,7 @@ void idAF::LoadState( const idDict &args ) {
 idAF::AddBindConstraints
 ================
 */
-void idAF::AddBindConstraints( void ) {
+void idAF::AddBindConstraints() {
 	const idKeyValue *kv;
 	idStr name;
 	idAFBody *body;
@@ -1197,13 +1198,13 @@ void idAF::AddBindConstraints( void ) {
 		if ( type.Icmp( "fixed" ) == 0 ) {
 			idAFConstraint_Fixed *c;
 
-			c = new idAFConstraint_Fixed( name, body, NULL );
+			c = new (TAG_PHYSICS_AF) idAFConstraint_Fixed( name, body, NULL );
 			physicsObj.AddConstraint( c );
 		}
 		else if ( type.Icmp( "ballAndSocket" ) == 0 ) {
 			idAFConstraint_BallAndSocketJoint *c;
 
-			c = new idAFConstraint_BallAndSocketJoint( name, body, NULL );
+			c = new (TAG_PHYSICS_AF) idAFConstraint_BallAndSocketJoint( name, body, NULL );
 			physicsObj.AddConstraint( c );
 			lexer.ReadToken( &jointName );
 
@@ -1218,7 +1219,7 @@ void idAF::AddBindConstraints( void ) {
 		else if ( type.Icmp( "universal" ) == 0 ) {
 			idAFConstraint_UniversalJoint *c;
 
-			c = new idAFConstraint_UniversalJoint( name, body, NULL );
+			c = new (TAG_PHYSICS_AF) idAFConstraint_UniversalJoint( name, body, NULL );
 			physicsObj.AddConstraint( c );
 			lexer.ReadToken( &jointName );
 
@@ -1245,7 +1246,7 @@ void idAF::AddBindConstraints( void ) {
 idAF::RemoveBindConstraints
 ================
 */
-void idAF::RemoveBindConstraints( void ) {
+void idAF::RemoveBindConstraints() {
 	const idKeyValue *kv;
 
 	if ( !IsLoaded() ) {

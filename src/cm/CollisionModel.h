@@ -1,25 +1,25 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
@@ -86,15 +86,17 @@ typedef int cmHandle_t;
 
 class idCollisionModelManager {
 public:
-	virtual					~idCollisionModelManager( void ) {}
+	virtual					~idCollisionModelManager() {}
 
 	// Loads collision models from a map file.
 	virtual void			LoadMap( const idMapFile *mapFile ) = 0;
 	// Frees all the collision models.
-	virtual void			FreeMap( void ) = 0;
+	virtual void			FreeMap() = 0;
+
+	virtual void			Preload( const char *mapName ) = 0;
 
 	// Gets the clip handle for a model.
-	virtual cmHandle_t		LoadModel( const char *modelName, const bool precache ) = 0;
+	virtual cmHandle_t		LoadModel( const char *modelName ) = 0;
 	// Sets up a trace model for collision with other trace models.
 	virtual cmHandle_t		SetupTrmModel( const idTraceModel &trm, const idMaterial *material ) = 0;
 	// Creates a trace model from a collision model, returns true if succesfull.
@@ -138,7 +140,7 @@ public:
 	// Prints model information, use -1 handle for accumulated model info.
 	virtual void			ModelInfo( cmHandle_t model ) = 0;
 	// Lists all loaded models.
-	virtual void			ListModels( void ) = 0;
+	virtual void			ListModels() = 0;
 	// Writes a collision model file for the given map entity.
 	virtual bool			WriteCollisionModelForMapEntity( const idMapEntity *mapEnt, const char *filename, const bool testTraceModel = true ) = 0;
 };

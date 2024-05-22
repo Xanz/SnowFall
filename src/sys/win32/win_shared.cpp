@@ -1,33 +1,33 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../../idlib/precompiled.h"
 #pragma hdrstop
+#include "../../idlib/precompiled.h"
 
 #include "win_local.h"
 #include <lmerr.h>
@@ -38,34 +38,43 @@ If you have questions concerning this license or the applicable additional terms
 #include <direct.h>
 #include <io.h>
 #include <conio.h>
+#undef StrCmpN
+#undef StrCmpNI
+#undef StrCmpI
+#include <atlbase.h>
 
-#ifndef	ID_DEDICATED
 #include <comdef.h>
 #include <comutil.h>
 #include <Wbemidl.h>
 
 #pragma comment (lib, "wbemuuid.lib")
-#endif
 
-#include "win_nanoafx.h"
+#pragma warning(disable:4740)	// warning C4740: flow in or out of inline asm code suppresses global optimization
 
 /*
 ================
 Sys_Milliseconds
 ================
 */
-int Sys_Milliseconds( void ) {
-	int sys_curtime;
-	static int sys_timeBase;
-	static bool	initialized = false;
+int Sys_Milliseconds() {
+	static DWORD sys_timeBase = timeGetTime();
+	return timeGetTime() - sys_timeBase;
+}
 
-	if ( !initialized ) {
-		sys_timeBase = timeGetTime();
-		initialized = true;
+/*
+========================
+Sys_Microseconds
+========================
+*/
+uint64 Sys_Microseconds() {
+	static uint64 ticksPerMicrosecondTimes1024 = 0;
+
+	if ( ticksPerMicrosecondTimes1024 == 0 ) {
+		ticksPerMicrosecondTimes1024 = ( (uint64)Sys_ClockTicksPerSecond() << 10 ) / 1000000;
+		assert( ticksPerMicrosecondTimes1024 > 0 );
 	}
-	sys_curtime = timeGetTime() - sys_timeBase;
 
-	return sys_curtime;
+	return ((uint64)( (int64)Sys_GetClockTicks() << 10 )) / ticksPerMicrosecondTimes1024;
 }
 
 /*
@@ -75,7 +84,7 @@ Sys_GetSystemRam
 	returns amount of physical memory in MB
 ================
 */
-int Sys_GetSystemRam( void ) {
+int Sys_GetSystemRam() {
 	MEMORYSTATUSEX statex;
 	statex.dwLength = sizeof ( statex );
 	GlobalMemoryStatusEx (&statex);
@@ -104,6 +113,22 @@ int Sys_GetDriveFreeSpace( const char *path ) {
 	return ret;
 }
 
+/*
+========================
+Sys_GetDriveFreeSpaceInBytes
+========================
+*/
+int64 Sys_GetDriveFreeSpaceInBytes( const char * path ) {
+	DWORDLONG lpFreeBytesAvailable;
+	DWORDLONG lpTotalNumberOfBytes;
+	DWORDLONG lpTotalNumberOfFreeBytes;
+	int64 ret = 1;
+	//FIXME: see why this is failing on some machines
+	if ( ::GetDiskFreeSpaceEx( path, (PULARGE_INTEGER)&lpFreeBytesAvailable, (PULARGE_INTEGER)&lpTotalNumberOfBytes, (PULARGE_INTEGER)&lpTotalNumberOfFreeBytes ) ) {
+		ret = lpFreeBytesAvailable;
+	}
+	return ret;
+}
 
 /*
 ================
@@ -111,10 +136,7 @@ Sys_GetVideoRam
 returns in megabytes
 ================
 */
-int Sys_GetVideoRam( void ) {
-#ifdef	ID_DEDICATED
-	return 0;
-#else
+int Sys_GetVideoRam() {
 	unsigned int retSize = 64;
 
 	CComPtr<IWbemLocator> spLoc = NULL;
@@ -161,7 +183,6 @@ int Sys_GetVideoRam( void ) {
 		}
 	}
 	return retSize;
-#endif
 }
 
 /*
@@ -173,10 +194,9 @@ Sys_GetCurrentMemoryStatus
 ================
 */
 void Sys_GetCurrentMemoryStatus( sysMemoryStats_t &stats ) {
-	MEMORYSTATUSEX statex;
+	MEMORYSTATUSEX statex = {};
 	unsigned __int64 work;
 
-	memset( &statex, sizeof( statex ), 0 );
 	statex.dwLength = sizeof( statex );
 	GlobalMemoryStatusEx( &statex );
 
@@ -238,7 +258,7 @@ void Sys_SetPhysicalWorkMemory( int minBytes, int maxBytes ) {
 Sys_GetCurrentUser
 ================
 */
-char *Sys_GetCurrentUser( void ) {
+char *Sys_GetCurrentUser() {
 	static char s_userName[1024];
 	unsigned long size = sizeof( s_userName );
 
@@ -367,7 +387,7 @@ void Sym_Init( long addr ) {
 	module->next = modules;
 	modules = module;
 
-	FILE *fp = fopen( moduleName, "rb" );
+	FILE * fp = fopen( moduleName, "rb" );
 	if ( fp == NULL ) {
 		return;
 	}
@@ -447,7 +467,7 @@ void Sym_Init( long addr ) {
 Sym_Shutdown
 ==================
 */
-void Sym_Shutdown( void ) {
+void Sym_Shutdown() {
 	module_t *m;
 	symbol_t *s;
 
@@ -555,7 +575,7 @@ void Sym_Init( long addr ) {
 Sym_Shutdown
 ==================
 */
-void Sym_Shutdown( void ) {
+void Sym_Shutdown() {
 	SymUnloadModule( GetCurrentProcess(), lastAllocationBase );
 	SymCleanup( GetCurrentProcess() );
 	lastAllocationBase = -1;
@@ -627,7 +647,7 @@ void Sym_Init( long addr ) {
 Sym_Shutdown
 ==================
 */
-void Sym_Shutdown( void ) {
+void Sym_Shutdown() {
 }
 
 /*
@@ -775,6 +795,6 @@ const char *Sys_GetCallStackCurAddressStr( int depth ) {
 Sys_ShutdownSymbols
 ==================
 */
-void Sys_ShutdownSymbols( void ) {
+void Sys_ShutdownSymbols() {
 	Sym_Shutdown();
 }

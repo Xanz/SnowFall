@@ -32,5 +32,9 @@
 *.app
 
 build/
-
+base/
 src/.vs/
+Game/
+.vscode/
+external/
+

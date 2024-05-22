@@ -1,46 +1,45 @@
 /*
 ===========================================================================
 
-Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Doom 3 BFG Edition GPL Source Code
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
 
-Doom 3 Source Code is free software: you can redistribute it and/or modify
+Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
 
-Doom 3 Source Code is distributed in the hope that it will be useful,
+Doom 3 BFG Edition Source Code is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
-along with Doom 3 Source Code.  If not, see <http://www.gnu.org/licenses/>.
+along with Doom 3 BFG Edition Source Code.  If not, see <http://www.gnu.org/licenses/>.
 
-In addition, the Doom 3 Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 Source Code.  If not, please request a copy in writing from id Software at the address below.
+In addition, the Doom 3 BFG Edition Source Code is also subject to certain additional terms. You should have received a copy of these additional terms immediately following the terms and conditions of the GNU General Public License which accompanied the Doom 3 BFG Edition Source Code.  If not, please request a copy in writing from id Software at the address below.
 
 If you have questions concerning this license or the applicable additional terms, you may contact in writing id Software LLC, c/o ZeniMax Media Inc., Suite 120, Rockville, Maryland 20850 USA.
 
 ===========================================================================
 */
 
-#include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "../idlib/precompiled.h"
 
 #include "Window.h"
 #include "Winvar.h"
 #include "GuiScript.h"
 #include "UserInterfaceLocal.h"
 
-
 /*
 =========================
 Script_Set
 =========================
 */
-void Script_Set(idWindow *window, idList<idGSWinVar> *src) {
+void Script_Set(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idStr key, val;
 	idWinStr *dest = dynamic_cast<idWinStr*>((*src)[0].var);
 	if (dest) {
@@ -72,11 +71,11 @@ void Script_Set(idWindow *window, idList<idGSWinVar> *src) {
 Script_SetFocus
 =========================
 */
-void Script_SetFocus(idWindow *window, idList<idGSWinVar> *src) {
+void Script_SetFocus(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idWinStr *parm = dynamic_cast<idWinStr*>((*src)[0].var);
 	if (parm) {
 		drawWin_t *win = window->GetGui()->GetDesktop()->FindChildByName(*parm);
-		if (win && win->win) {
+		if ( win != NULL && win->win != NULL ) {
 			window->SetFocus(win->win);
 		}
 	}
@@ -87,7 +86,7 @@ void Script_SetFocus(idWindow *window, idList<idGSWinVar> *src) {
 Script_ShowCursor
 =========================
 */
-void Script_ShowCursor(idWindow *window, idList<idGSWinVar> *src) {
+void Script_ShowCursor(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idWinStr *parm = dynamic_cast<idWinStr*>((*src)[0].var);
 	if ( parm ) {
 		if ( atoi( *parm ) ) {
@@ -105,7 +104,7 @@ Script_RunScript
  run scripts must come after any set cmd set's in the script
 =========================
 */
-void Script_RunScript(idWindow *window, idList<idGSWinVar> *src) {
+void Script_RunScript(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idWinStr *parm = dynamic_cast<idWinStr*>((*src)[0].var);
 	if (parm) {
 		idStr str = window->cmd;
@@ -120,10 +119,10 @@ void Script_RunScript(idWindow *window, idList<idGSWinVar> *src) {
 Script_LocalSound
 =========================
 */
-void Script_LocalSound(idWindow *window, idList<idGSWinVar> *src) {
+void Script_LocalSound(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idWinStr *parm = dynamic_cast<idWinStr*>((*src)[0].var);
 	if (parm) {
-		session->sw->PlayShaderDirectly(*parm);
+		common->SW()->PlayShaderDirectly(*parm);
 	}
 }
 
@@ -132,7 +131,7 @@ void Script_LocalSound(idWindow *window, idList<idGSWinVar> *src) {
 Script_EvalRegs
 =========================
 */
-void Script_EvalRegs(idWindow *window, idList<idGSWinVar> *src) {
+void Script_EvalRegs(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	window->EvalRegs(-1, true);
 }
 
@@ -141,8 +140,7 @@ void Script_EvalRegs(idWindow *window, idList<idGSWinVar> *src) {
 Script_EndGame
 =========================
 */
-void Script_EndGame( idWindow *window, idList<idGSWinVar> *src ) {
-	cvarSystem->SetCVarBool( "g_nightmare", true );
+void Script_EndGame( idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src ) {
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "disconnect\n" );
 }
 
@@ -151,14 +149,18 @@ void Script_EndGame( idWindow *window, idList<idGSWinVar> *src ) {
 Script_ResetTime
 =========================
 */
-void Script_ResetTime(idWindow *window, idList<idGSWinVar> *src) {
+void Script_ResetTime(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	idWinStr *parm = dynamic_cast<idWinStr*>((*src)[0].var);
 	drawWin_t *win = NULL;
-	if (parm && src->Num() > 1) {
+	if (parm != NULL && src->Num() > 1) {
 		win = window->GetGui()->GetDesktop()->FindChildByName(*parm);
 		parm = dynamic_cast<idWinStr*>((*src)[1].var);
 	}
-	if (win && win->win) {
+	if ( parm == NULL ) {
+		return;
+	}
+
+	if (win != NULL && win->win != NULL) {
 		win->win->ResetTime(atoi(*parm));
 		win->win->EvalRegs(-1, true);
 	} else {
@@ -172,7 +174,7 @@ void Script_ResetTime(idWindow *window, idList<idGSWinVar> *src) {
 Script_ResetCinematics
 =========================
 */
-void Script_ResetCinematics(idWindow *window, idList<idGSWinVar> *src) {
+void Script_ResetCinematics(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	window->ResetCinematics();
 }
 
@@ -181,7 +183,7 @@ void Script_ResetCinematics(idWindow *window, idList<idGSWinVar> *src) {
 Script_Transition
 =========================
 */
-void Script_Transition(idWindow *window, idList<idGSWinVar> *src) {
+void Script_Transition(idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src) {
 	// transitions always affect rect or vec4 vars
 	if (src->Num() >= 4) {
 		idWinRectangle *rect = NULL;
@@ -239,7 +241,7 @@ void Script_Transition(idWindow *window, idList<idGSWinVar> *src) {
 
 typedef struct {
 	const char *name;
-	void (*handler) (idWindow *window, idList<idGSWinVar> *src);
+	void (*handler) (idWindow *window, idList<idGSWinVar, TAG_OLD_UI> *src);
 	int mMinParms;
 	int mMaxParms;
 } guiCommandDef_t;
@@ -342,7 +344,7 @@ void idGuiScript::ReadFromSaveGame( idFile *savefile ) {
 idGuiScript::Parse
 =========================
 */
-bool idGuiScript::Parse(idParser *src) {
+bool idGuiScript::Parse(idTokenParser *src) {
 	int i;
 	
 	// first token should be function call
@@ -384,7 +386,7 @@ bool idGuiScript::Parse(idParser *src) {
 			break;
 		}
 
-		idWinStr *str = new idWinStr();
+		idWinStr *str = new (TAG_OLD_UI) idWinStr();
 		*str = token;
 		idGSWinVar wv;
 		wv.own = true;
@@ -459,7 +461,7 @@ void idGuiScript::FixupParms(idWindow *win) {
 				//  always use a string here, no point using a float if it is one
 				//  FIXME: This creates duplicate variables, while not technically a problem since they
 				//  are all bound to the same guiDict, it does consume extra memory and is generally a bad thing
-				idWinStr* defvar = new idWinStr();
+				idWinStr* defvar = new (TAG_OLD_UI) idWinStr();
 				defvar->Init ( *str, win );
 				win->AddDefinedVar ( defvar );
 				delete parms[i].var;
@@ -484,7 +486,7 @@ void idGuiScript::FixupParms(idWindow *win) {
 					parms[i].own = false;
 				}
 			} else if ( idStr::Cmpn( str->c_str(), STRTABLE_ID, STRTABLE_ID_LENGTH ) == 0 ) {
-				str->Set( common->GetLanguageDict()->GetString( str->c_str() ) );
+				str->Set( idLocalization::GetString( str->c_str() ) );
 			} else if ( precacheBackground ) {
 				const idMaterial *mat = declManager->FindMaterial( str->c_str() );
 				mat->SetSort( SS_GUI );
@@ -529,11 +531,11 @@ void idGuiScript::FixupParms(idWindow *win) {
 		for ( c = 1; c < 3; c ++ ) {
 			str = dynamic_cast<idWinStr*>(parms[c].var);
 
-			idWinVec4 *v4 = new idWinVec4;
+			idWinVec4 *v4 = new (TAG_OLD_UI) idWinVec4;
 			parms[c].var = v4;
 			parms[c].own = true;
 
-			drawWin_t* owner;
+			drawWin_t* owner = NULL;
 
 			if ( (*str[0]) == '$' ) {
 				dest = win->GetWinVarByName ( (const char*)(*str) + 1, true, &owner );
@@ -544,7 +546,7 @@ void idGuiScript::FixupParms(idWindow *win) {
 			if ( dest ) {	
 				idWindow* ownerparent;
 				idWindow* destparent;
-				if ( owner ) {
+				if ( owner != NULL ) {
 					ownerparent = owner->simp?owner->simp->GetParent():owner->win->GetParent();
 					destparent  = destowner->simp?destowner->simp->GetParent():destowner->win->GetParent();
 
@@ -570,7 +572,11 @@ void idGuiScript::FixupParms(idWindow *win) {
 			delete str;
 		}		
 		// 
-
+	} else if (handler == &Script_LocalSound) {
+		idWinStr * str = dynamic_cast<idWinStr*>(parms[0].var);
+		if ( str ) {
+			declManager->FindSound( str->c_str() );
+		}
 	} else {
 		int c = parms.Num();
 		for (int i = 0; i < c; i++) {

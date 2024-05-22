@@ -149,7 +149,7 @@ idBase64::Decode
 ============
 */
 void idBase64::Decode( idStr &dest ) const {
-	byte *buf = new byte[ DecodeLength()+1 ]; // +1 for trailing \0
+	byte *buf = new (TAG_IDLIB) byte[ DecodeLength()+1 ]; // +1 for trailing \0
 	int out = Decode( buf );
 	buf[out] = '\0';
 	dest = (const char *)buf;
@@ -162,7 +162,7 @@ idBase64::Decode
 ============
 */
 void idBase64::Decode( idFile *dest ) const {	
-	byte *buf = new byte[ DecodeLength()+1 ]; // +1 for trailing \0
+	byte *buf = new (TAG_IDLIB) byte[ DecodeLength()+1 ]; // +1 for trailing \0
 	int out = Decode( buf );
 	dest->Write( buf, out );
 	delete[] buf;
