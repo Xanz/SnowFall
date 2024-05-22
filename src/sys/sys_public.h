@@ -511,8 +511,10 @@ int				Sys_ReturnKeyboardInputEvent( const int n, int &ch, bool &state );
 void			Sys_EndKeyboardInputEvents();
 
 // mouse input polling
-static const int MAX_MOUSE_EVENTS = 256;
-int				Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] );
+int				Sys_PollMouseInputEvents();
+int				Sys_ReturnMouseInputEvent( const int n, int &action, int &value );
+void			Sys_EndMouseInputEvents( void );
+
 
 // joystick input polling
 void			Sys_SetRumble( int device, int low, int hi );

@@ -50,6 +50,9 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar r_useOpenGL32( "r_useOpenGL32", "2", CVAR_INTEGER, "0 = OpenGL 2.0, 1 = OpenGL 3.2 compatibility profile, 2 = OpenGL 3.2 core profile", 0, 2 );
 
+// Adds raw mouse input.
+idCVar m_rawInput("m_rawinput",	"1", CVAR_BOOL,	"use raw input value : 0 : 1");
+
 //
 // function declaration
 //
@@ -81,7 +84,7 @@ void GLimp_TestSwapBuffers( const idCmdArgs &args ) {
 				glClearColor( 1, 0, 0, 1 );
 			}
 			glClear( GL_COLOR_BUFFER_BIT );
-			SwapBuffers( win32.hDC );
+			glfwSwapBuffers( window );
 			glFinish();
 			timestamps[i] = Sys_Microseconds();
 		}
@@ -99,13 +102,6 @@ GLimp_GetOldGammaRamp
 ========================
 */
 static void GLimp_SaveGamma() {
-	HDC			hDC;
-	BOOL		success;
-
-	hDC = GetDC( GetDesktopWindow() );
-	success = GetDeviceGammaRamp( hDC, win32.oldHardwareGamma );
-	common->DPrintf( "...getting default gamma ramp: %s\n", success ? "success" : "failed" );
-	ReleaseDC( GetDesktopWindow(), hDC );
 }
 
 /*
@@ -114,19 +110,6 @@ GLimp_RestoreGamma
 ========================
 */
 static void GLimp_RestoreGamma() {
-	HDC hDC;
-	BOOL success;
-
-	// if we never read in a reasonable looking
-	// table, don't write it out
-	if ( win32.oldHardwareGamma[0][255] == 0 ) {
-		return;
-	}
-
-	hDC = GetDC( GetDesktopWindow() );
-	success = SetDeviceGammaRamp( hDC, win32.oldHardwareGamma );
-	common->DPrintf ( "...restoring hardware gamma: %s\n", success ? "success" : "failed" );
-	ReleaseDC( GetDesktopWindow(), hDC );
 }
 
 
@@ -138,22 +121,22 @@ The renderer calls this when the user adjusts r_gamma or r_brightness
 ========================
 */
 void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigned short blue[256] ) {
-	unsigned short table[3][256];
-	int i;
+	// unsigned short table[3][256];
+	// int i;
 
-	if ( !win32.hDC ) {
-		return;
-	}
+	// if ( !win32.hDC ) {
+	// 	return;
+	// }
 
-	for ( i = 0; i < 256; i++ ) {
-		table[0][i] = red[i];
-		table[1][i] = green[i];
-		table[2][i] = blue[i];
-	}
+	// for ( i = 0; i < 256; i++ ) {
+	// 	table[0][i] = red[i];
+	// 	table[1][i] = green[i];
+	// 	table[2][i] = blue[i];
+	// }
 
-	if ( !SetDeviceGammaRamp( win32.hDC, table ) ) {
-		common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
-	}
+	// if ( !SetDeviceGammaRamp( win32.hDC, table ) ) {
+	// 	common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
+	// }
 }
 
 /*
@@ -181,189 +164,6 @@ bool R_CheckWinExtension( const char * name ) {
 	idLib::Printf( "...using %s\n", name );
 	return true;
 }
-
-
-/*
-====================
-FakeWndProc
-
-Only used to get wglExtensions
-====================
-*/
-LONG WINAPI FakeWndProc (
-    HWND    hWnd,
-    UINT    uMsg,
-    WPARAM  wParam,
-    LPARAM  lParam) {
-
-	if ( uMsg == WM_DESTROY ) {
-        PostQuitMessage(0);
-	}
-
-	if ( uMsg != WM_CREATE ) {
-	    return DefWindowProc(hWnd, uMsg, wParam, lParam);
-	}
-
-	const static PIXELFORMATDESCRIPTOR pfd = {
-		sizeof(PIXELFORMATDESCRIPTOR),
-		1,
-		PFD_DRAW_TO_WINDOW | PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER,
-		PFD_TYPE_RGBA,
-		24,
-		0, 0, 0, 0, 0, 0,
-		8, 0,
-		0, 0, 0, 0,
-		24, 8,
-		0,
-		PFD_MAIN_PLANE,
-		0,
-		0,
-		0,
-		0,
-	};
-	int		pixelFormat;
-	HDC hDC;
-	HGLRC hGLRC;
-
-    hDC = GetDC(hWnd);
-
-    // Set up OpenGL
-    pixelFormat = ChoosePixelFormat(hDC, &pfd);
-    SetPixelFormat(hDC, pixelFormat, &pfd);
-    hGLRC = wglCreateContext(hDC);
-    wglMakeCurrent(hDC, hGLRC);
-
-	// free things
-    wglMakeCurrent(NULL, NULL);
-    wglDeleteContext(hGLRC);
-    ReleaseDC(hWnd, hDC);
-
-    return DefWindowProc(hWnd, uMsg, wParam, lParam);
-}
-
-
-/*
-==================
-GLW_GetWGLExtensionsWithFakeWindow
-==================
-*/
-void GLW_CheckWGLExtensions( HDC hDC ) {
-
-	GLenum glewStatus = glewInit();
-
-	if( GLEW_OK != glewStatus )
-	{
-		// glewInit failed, something is seriously wrong
-		common->Printf( "^GLW_CheckWGLExtensions() - GLEW could not load OpenGL subsystem: %s", glewGetErrorString( glewStatus ) );
-	}
-	else
-	{
-		common->Printf( "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
-	}
-
-	if ( WGLEW_ARB_extensions_string ) {
-		glConfig.wgl_extensions_string = (const char *) wglGetExtensionsStringARB(hDC);
-	} else {
-		glConfig.wgl_extensions_string = "";
-	}
-
-	r_swapInterval.SetModified();	// force a set next frame
-
-	// WGL_EXT_swap_control_tear
-	glConfig.swapControlTearAvailable =  WGLEW_EXT_swap_control_tear != 0;
-}
-
-/*
-==================
-GLW_GetWGLExtensionsWithFakeWindow
-==================
-*/
-static void GLW_GetWGLExtensionsWithFakeWindow() {
-	HWND	hWnd;
-    MSG		msg;
-
-    // Create a window for the sole purpose of getting
-	// a valid context to get the wglextensions
-    hWnd = CreateWindow(WIN32_FAKE_WINDOW_CLASS_NAME, GAME_NAME,
-        WS_OVERLAPPEDWINDOW,
-        40, 40,
-        640,
-        480,
-        NULL, NULL, win32.hInstance, NULL );
-    if ( !hWnd ) {
-        common->FatalError( "GLW_GetWGLExtensionsWithFakeWindow: Couldn't create fake window" );
-    }
-
-    HDC hDC = GetDC( hWnd );
-	HGLRC gRC = wglCreateContext( hDC );
-	wglMakeCurrent( hDC, gRC );
-	GLW_CheckWGLExtensions( hDC );
-	wglDeleteContext( gRC );
-	ReleaseDC( hWnd, hDC );
-
-    DestroyWindow( hWnd );
-    while ( GetMessage( &msg, NULL, 0, 0 ) ) {
-        TranslateMessage( &msg );
-        DispatchMessage( &msg );
-    }
-}
-
-//=============================================================================
-
-/*
-====================
-GLW_WM_CREATE
-====================
-*/
-void GLW_WM_CREATE( HWND hWnd ) {
-}
-
-/*
-========================
-CreateOpenGLContextOnDC
-========================
-*/
-static HGLRC CreateOpenGLContextOnDC( const HDC hdc, const bool debugContext ) {
-	int useOpenGL32 = r_useOpenGL32.GetInteger();
-	HGLRC m_hrc = NULL;
-
-	for ( int i = 0; i < 2; i++ ) {
-		const int glMajorVersion = ( useOpenGL32 != 0 ) ? 3 : 2;
-		const int glMinorVersion = ( useOpenGL32 != 0 ) ? 2 : 0;
-		const int glDebugFlag = debugContext ? WGL_CONTEXT_DEBUG_BIT_ARB : 0;
-		const int glProfileMask = ( useOpenGL32 != 0 ) ? WGL_CONTEXT_PROFILE_MASK_ARB : 0;
-		const int glProfile = ( useOpenGL32 == 1 ) ? WGL_CONTEXT_COMPATIBILITY_PROFILE_BIT_ARB : ( ( useOpenGL32 == 2 ) ? WGL_CONTEXT_CORE_PROFILE_BIT_ARB : 0 );
-		const int attribs[] =
-		{
-			WGL_CONTEXT_MAJOR_VERSION_ARB,	glMajorVersion,
-			WGL_CONTEXT_MINOR_VERSION_ARB,	glMinorVersion,
-			WGL_CONTEXT_FLAGS_ARB,			glDebugFlag,
-			glProfileMask,					glProfile,
-			0
-		};
-
-		m_hrc = wglCreateContextAttribsARB( hdc, 0, attribs );
-		if ( m_hrc != NULL ) {
-			idLib::Printf( "created OpenGL %d.%d context\n", glMajorVersion, glMinorVersion );
-			break;
-		}
-
-		idLib::Printf( "failed to create OpenGL %d.%d context\n", glMajorVersion, glMinorVersion );
-		useOpenGL32 = 0;	// fall back to OpenGL 2.0
-	}
-
-	if ( m_hrc == NULL ) {
-		int	err = GetLastError();
-		switch( err ) {
-			case ERROR_INVALID_VERSION_ARB: idLib::Printf( "ERROR_INVALID_VERSION_ARB\n" ); break;
-			case ERROR_INVALID_PROFILE_ARB: idLib::Printf( "ERROR_INVALID_PROFILE_ARB\n" ); break;
-			default: idLib::Printf( "unknown error: 0x%x\n", err ); break;
-		}
-	}
-
-	return m_hrc;
-}
-
 /*
 ====================
 GLW_ChoosePixelFormat
@@ -395,172 +195,6 @@ static int GLW_ChoosePixelFormat( const HDC hdc, const int multisamples, const b
 	return pixelFormat;
 }
 
-
-/*
-====================
-GLW_InitDriver
-
-Set the pixelformat for the window before it is
-shown, and create the rendering context
-====================
-*/
-static bool GLW_InitDriver( glimpParms_t parms ) {
-    PIXELFORMATDESCRIPTOR src = 
-	{
-		sizeof(PIXELFORMATDESCRIPTOR),	// size of this pfd
-		1,								// version number
-		PFD_DRAW_TO_WINDOW |			// support window
-		PFD_SUPPORT_OPENGL |			// support OpenGL
-		PFD_DOUBLEBUFFER,				// double buffered
-		PFD_TYPE_RGBA,					// RGBA type
-		32,								// 32-bit color depth
-		0, 0, 0, 0, 0, 0,				// color bits ignored
-		8,								// 8 bit destination alpha
-		0,								// shift bit ignored
-		0,								// no accumulation buffer
-		0, 0, 0, 0, 					// accum bits ignored
-		24,								// 24-bit z-buffer	
-		8,								// 8-bit stencil buffer
-		0,								// no auxiliary buffer
-		PFD_MAIN_PLANE,					// main layer
-		0,								// reserved
-		0, 0, 0							// layer masks ignored
-    };
-
-	common->Printf( "Initializing OpenGL driver\n" );
-
-	//
-	// get a DC for our window if we don't already have one allocated
-	//
-	if ( win32.hDC == NULL ) {
-		common->Printf( "...getting DC: " );
-
-		if ( ( win32.hDC = GetDC( win32.hWnd ) ) == NULL ) {
-			common->Printf( "^3failed^0\n" );
-			return false;
-		}
-		common->Printf( "succeeded\n" );
-	}
-
-	// the multisample path uses the wgl 
-	if ( wglChoosePixelFormatARB ) {
-		win32.pixelformat = GLW_ChoosePixelFormat( win32.hDC, parms.multiSamples, parms.stereo );
-	} else {
-		// this is the "classic" choose pixel format path
-		common->Printf( "Using classic ChoosePixelFormat\n" );
-
-		// eventually we may need to have more fallbacks, but for
-		// now, ask for everything
-		if ( parms.stereo ) {
-			common->Printf( "...attempting to use stereo\n" );
-			src.dwFlags |= PFD_STEREO;
-		}
-
-		//
-		// choose, set, and describe our desired pixel format.  If we're
-		// using a minidriver then we need to bypass the GDI functions,
-		// otherwise use the GDI functions.
-		//
-		if ( ( win32.pixelformat = ChoosePixelFormat( win32.hDC, &src ) ) == 0 ) {
-			common->Printf( "...^3GLW_ChoosePFD failed^0\n");
-			return false;
-		}
-		common->Printf( "...PIXELFORMAT %d selected\n", win32.pixelformat );
-	}
-
-	// get the full info
-	DescribePixelFormat( win32.hDC, win32.pixelformat, sizeof( win32.pfd ), &win32.pfd );
-	glConfig.colorBits = win32.pfd.cColorBits;
-	glConfig.depthBits = win32.pfd.cDepthBits;
-	glConfig.stencilBits = win32.pfd.cStencilBits;
-
-	// XP seems to set this incorrectly
-	if ( !glConfig.stencilBits ) {
-		glConfig.stencilBits = 8;
-	}
-
-	// the same SetPixelFormat is used either way
-	if ( SetPixelFormat( win32.hDC, win32.pixelformat, &win32.pfd ) == FALSE ) {
-		common->Printf( "...^3SetPixelFormat failed^0\n", win32.hDC );
-		return false;
-	}
-
-	//
-	// startup the OpenGL subsystem by creating a context and making it current
-	//
-	common->Printf( "...creating GL context: " );
-	win32.hGLRC = CreateOpenGLContextOnDC( win32.hDC, r_debugContext.GetBool() );
-	if ( win32.hGLRC == 0 ) {
-		common->Printf( "^3failed^0\n" );
-		return false;
-	}
-	common->Printf( "succeeded\n" );
-
-	common->Printf( "...making context current: " );
-	if ( !wglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-		wglDeleteContext( win32.hGLRC );
-		win32.hGLRC = NULL;
-		common->Printf( "^3failed^0\n" );
-		return false;
-	}
-	common->Printf( "succeeded\n" );
-
-	return true;
-}
-
-/*
-====================
-GLW_CreateWindowClasses
-====================
-*/
-static void GLW_CreateWindowClasses() {
-	WNDCLASS wc;
-
-	//
-	// register the window class if necessary
-	//
-	if ( win32.windowClassRegistered ) {
-		return;
-	}
-
-	memset( &wc, 0, sizeof( wc ) );
-
-	wc.style         = 0;
-	wc.lpfnWndProc   = (WNDPROC) MainWndProc;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
-	wc.hInstance     = win32.hInstance;
-	wc.hIcon         = LoadIcon( win32.hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	wc.hCursor       = NULL;
-	wc.hbrBackground = (struct HBRUSH__ *)COLOR_GRAYTEXT;
-	wc.lpszMenuName  = 0;
-	wc.lpszClassName = WIN32_WINDOW_CLASS_NAME;
-
-	if ( !RegisterClass( &wc ) ) {
-		common->FatalError( "GLW_CreateWindow: could not register window class" );
-	}
-	common->Printf( "...registered window class\n" );
-
-	// now register the fake window class that is only used
-	// to get wgl extensions
-	wc.style         = 0;
-	wc.lpfnWndProc   = (WNDPROC) FakeWndProc;
-	wc.cbClsExtra    = 0;
-	wc.cbWndExtra    = 0;
-	wc.hInstance     = win32.hInstance;
-	wc.hIcon         = LoadIcon( win32.hInstance, MAKEINTRESOURCE(IDI_ICON1));
-	wc.hCursor       = LoadCursor (NULL,IDC_ARROW);
-	wc.hbrBackground = (struct HBRUSH__ *)COLOR_GRAYTEXT;
-	wc.lpszMenuName  = 0;
-	wc.lpszClassName = WIN32_FAKE_WINDOW_CLASS_NAME;
-
-	if ( !RegisterClass( &wc ) ) {
-		common->FatalError( "GLW_CreateWindow: could not register window class" );
-	}
-	common->Printf( "...registered fake window class\n" );
-
-	win32.windowClassRegistered = true;
-}
 
 /*
 ========================
@@ -785,6 +419,8 @@ void DumpAllDisplayDevices() {
 /*
 ====================
 R_GetModeListForDisplay
+
+Returns a list of modes for resolution selection.
 ====================
 */
 bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t> & modeList ) {
@@ -888,225 +524,256 @@ bool R_GetModeListForDisplay( const int requestedDisplayNum, idList<vidMode_t> &
 	// Never gets here
 }
 
+
 /*
-====================
-GLW_GetWindowDimensions
-====================
+=======
+MapKey
+
+Map from GLFW to Doom keynums
+=======
 */
-static bool GLW_GetWindowDimensions( const glimpParms_t parms, int &x, int &y, int &w, int &h ) {
-	//
-	// compute width and height
-	//
-	if ( parms.fullScreen != 0 ) {
-		if ( parms.fullScreen == -1 ) {
-			// borderless window at specific location, as for spanning
-			// multiple monitor outputs
-			x = parms.x;
-			y = parms.y;
-			w = parms.width;
-			h = parms.height;
-		} else {
-			// get the current monitor position and size on the desktop, assuming
-			// any required ChangeDisplaySettings has already been done
-			int displayHz = 0;
-			if ( !GetDisplayCoordinates( parms.fullScreen - 1, x, y, w, h, displayHz ) ) {
-				return false;
+int GLFWDoom_MapKey (int key) {
+    switch (key) {
+        case GLFW_KEY_ESCAPE: return K_ESCAPE;
+        case GLFW_KEY_1: return K_1;
+        case GLFW_KEY_2: return K_2;
+        case GLFW_KEY_3: return K_3;
+        case GLFW_KEY_4: return K_4;
+        case GLFW_KEY_5: return K_5;
+        case GLFW_KEY_6: return K_6;
+        case GLFW_KEY_7: return K_7;
+        case GLFW_KEY_8: return K_8;
+        case GLFW_KEY_9: return K_9;
+        case GLFW_KEY_0: return K_0;
+        case GLFW_KEY_MINUS: return K_MINUS;
+        case GLFW_KEY_EQUAL: return K_EQUALS;
+        case GLFW_KEY_BACKSPACE: return K_BACKSPACE;
+        case GLFW_KEY_TAB: return K_TAB;
+        case GLFW_KEY_Q: return K_Q;
+        case GLFW_KEY_W: return K_W;
+        case GLFW_KEY_E: return K_E;
+        case GLFW_KEY_R: return K_R;
+        case GLFW_KEY_T: return K_T;
+        case GLFW_KEY_Y: return K_Y;
+        case GLFW_KEY_U: return K_U;
+        case GLFW_KEY_I: return K_I;
+        case GLFW_KEY_O: return K_O;
+        case GLFW_KEY_P: return K_P;
+        case GLFW_KEY_LEFT_BRACKET: return K_LBRACKET;
+        case GLFW_KEY_RIGHT_BRACKET: return K_RBRACKET;
+        case GLFW_KEY_ENTER: return K_ENTER;
+        case GLFW_KEY_LEFT_CONTROL: return K_LCTRL;
+        case GLFW_KEY_A: return K_A;
+        case GLFW_KEY_S: return K_S;
+        case GLFW_KEY_D: return K_D;
+        case GLFW_KEY_F: return K_F;
+        case GLFW_KEY_G: return K_G;
+        case GLFW_KEY_H: return K_H;
+        case GLFW_KEY_J: return K_J;
+        case GLFW_KEY_K: return K_K;
+        case GLFW_KEY_L: return K_L;
+        case GLFW_KEY_SEMICOLON: return K_SEMICOLON;
+        case GLFW_KEY_APOSTROPHE: return K_APOSTROPHE;
+        case GLFW_KEY_GRAVE_ACCENT: return K_GRAVE;
+        case GLFW_KEY_LEFT_SHIFT: return K_LSHIFT;
+        case GLFW_KEY_BACKSLASH: return K_BACKSLASH;
+        case GLFW_KEY_Z: return K_Z;
+        case GLFW_KEY_X: return K_X;
+        case GLFW_KEY_C: return K_C;
+        case GLFW_KEY_V: return K_V;
+        case GLFW_KEY_B: return K_B;
+        case GLFW_KEY_N: return K_N;
+        case GLFW_KEY_M: return K_M;
+        case GLFW_KEY_COMMA: return K_COMMA;
+        case GLFW_KEY_PERIOD: return K_PERIOD;
+        case GLFW_KEY_SLASH: return K_SLASH;
+        case GLFW_KEY_RIGHT_SHIFT: return K_RSHIFT;
+        case GLFW_KEY_KP_MULTIPLY: return K_KP_STAR;
+        case GLFW_KEY_LEFT_ALT: return K_LALT;
+        case GLFW_KEY_SPACE: return K_SPACE;
+        case GLFW_KEY_CAPS_LOCK: return K_CAPSLOCK;
+        case GLFW_KEY_F1: return K_F1;
+        case GLFW_KEY_F2: return K_F2;
+        case GLFW_KEY_F3: return K_F3;
+        case GLFW_KEY_F4: return K_F4;
+        case GLFW_KEY_F5: return K_F5;
+        case GLFW_KEY_F6: return K_F6;
+        case GLFW_KEY_F7: return K_F7;
+        case GLFW_KEY_F8: return K_F8;
+        case GLFW_KEY_F9: return K_F9;
+        case GLFW_KEY_F10: return K_F10;
+        case GLFW_KEY_NUM_LOCK: return K_NUMLOCK;
+        case GLFW_KEY_SCROLL_LOCK: return K_SCROLL;
+        case GLFW_KEY_KP_7: return K_KP_7;
+        case GLFW_KEY_KP_8: return K_KP_8;
+        case GLFW_KEY_KP_9: return K_KP_9;
+        case GLFW_KEY_KP_SUBTRACT: return K_KP_MINUS;
+        case GLFW_KEY_KP_4: return K_KP_4;
+        case GLFW_KEY_KP_5: return K_KP_5;
+        case GLFW_KEY_KP_6: return K_KP_6;
+        case GLFW_KEY_KP_ADD: return K_KP_PLUS;
+        case GLFW_KEY_KP_1: return K_KP_1;
+        case GLFW_KEY_KP_2: return K_KP_2;
+        case GLFW_KEY_KP_3: return K_KP_3;
+        case GLFW_KEY_KP_0: return K_KP_0;
+        case GLFW_KEY_KP_DECIMAL: return K_KP_DOT;
+        case GLFW_KEY_F11: return K_F11;
+        case GLFW_KEY_F12: return K_F12;
+        case GLFW_KEY_PRINT_SCREEN: return K_PRINTSCREEN;
+        case GLFW_KEY_PAUSE: return K_PAUSE;
+        case GLFW_KEY_INSERT: return K_INS;
+        case GLFW_KEY_HOME: return K_HOME;
+        case GLFW_KEY_PAGE_UP: return K_PGUP;
+        case GLFW_KEY_DELETE: return K_DEL;
+        case GLFW_KEY_END: return K_END;
+        case GLFW_KEY_PAGE_DOWN: return K_PGDN;
+        case GLFW_KEY_RIGHT: return K_RIGHTARROW;
+        case GLFW_KEY_LEFT: return K_LEFTARROW;
+        case GLFW_KEY_DOWN: return K_DOWNARROW;
+        case GLFW_KEY_UP: return K_UPARROW;
+        case GLFW_KEY_KP_ENTER: return K_KP_ENTER;
+        case GLFW_KEY_RIGHT_CONTROL: return K_RCTRL;
+        case GLFW_KEY_KP_DIVIDE: return K_KP_SLASH;
+        case GLFW_KEY_RIGHT_ALT: return K_RALT;
+        case GLFW_KEY_LEFT_SUPER: return K_LWIN;
+        case GLFW_KEY_RIGHT_SUPER: return K_RWIN;
+        default: return K_NONE; // Undefined mapping
+    }
+}
+
+
+static void MouseKey_Callback(GLFWwindow* window, int button, int action, int mods)
+{
+	if(action == GLFW_PRESS || action == GLFW_RELEASE)
+	{
+		int key;
+		int state = action == GLFW_PRESS ? 1 : 0;
+
+		// UI seems to use K_MOUSE1 instead of M_ACTION1
+		if(!game->IsInGame() || game->IsPDAOpen())
+		{
+			switch(button)
+			{
+			case GLFW_MOUSE_BUTTON_LEFT:
+				key = K_MOUSE1;
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				key = K_MOUSE2;
+				break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				key = K_MOUSE3;
+				break;
+			case GLFW_MOUSE_BUTTON_4:
+				key = K_MOUSE4;
+				break;
+			case GLFW_MOUSE_BUTTON_5:
+				key = K_MOUSE5;
+				break;
 			}
 		}
-	} else {
-		RECT	r;
+		else
+		{
+			switch(button)
+			{
+			case GLFW_MOUSE_BUTTON_LEFT:
+				key = M_ACTION1;
+				break;
+			case GLFW_MOUSE_BUTTON_RIGHT:
+				key = M_ACTION2;
+				break;
+			case GLFW_MOUSE_BUTTON_MIDDLE:
+				key = M_ACTION3;
+				break;
+			case GLFW_MOUSE_BUTTON_4:
+				key = M_ACTION4;
+				break;
+			case GLFW_MOUSE_BUTTON_5:
+				key = M_ACTION5;
+				break;
+			}
+		}
 
-		// adjust width and height for window border
-		r.bottom = parms.height;
-		r.left = 0;
-		r.top = 0;
-		r.right = parms.width;
-
-		AdjustWindowRect (&r, WINDOW_STYLE|WS_SYSMENU, FALSE);
-
-		w = r.right - r.left;
-		h = r.bottom - r.top;
-
-		x = parms.x;
-		y = parms.y;
-	}
-
-	return true;
-}
-
-
-/*
-=======================
-GLW_CreateWindow
-
-Responsible for creating the Win32 window.
-If fullscreen, it won't have a border
-=======================
-*/
-static bool GLW_CreateWindow( glimpParms_t parms ) {
-	int				x, y, w, h;
-	if ( !GLW_GetWindowDimensions( parms, x, y, w, h ) ) {
-		return false;
-	}
-
-	int				stylebits;
-	int				exstyle;
-	if ( parms.fullScreen != 0 ) {
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
-	} else {
-		exstyle = 0;
-		stylebits = WINDOW_STYLE|WS_SYSMENU;
-	}
-
-	win32.hWnd = CreateWindowEx (
-		 exstyle, 
-		 WIN32_WINDOW_CLASS_NAME,
-		 GAME_NAME,
-		 stylebits,
-		 x, y, w, h,
-		 NULL,
-		 NULL,
-		 win32.hInstance,
-		 NULL);
-
-	if ( !win32.hWnd ) {
-		common->Printf( "^3GLW_CreateWindow() - Couldn't create window^0\n" );
-		return false;
-	}
-
-	::SetTimer( win32.hWnd, 0, 100, NULL );
-
-	ShowWindow( win32.hWnd, SW_SHOW );
-	UpdateWindow( win32.hWnd );
-	common->Printf( "...created window @ %d,%d (%dx%d)\n", x, y, w, h );
-
-	// makeCurrent NULL frees the DC, so get another
-	win32.hDC = GetDC( win32.hWnd );
-	if ( !win32.hDC ) {
-		common->Printf( "^3GLW_CreateWindow() - GetDC()failed^0\n" );
-		return false;
-	}
-
-	// Check to see if we can get a stereo pixel format, even if we aren't going to use it,
-	// so the menu option can be 
-	if ( GLW_ChoosePixelFormat( win32.hDC, parms.multiSamples, true ) != -1 ) {
-		glConfig.stereoPixelFormatAvailable = true;
-	} else {
-		glConfig.stereoPixelFormatAvailable = false;
-	}
-
-	if ( !GLW_InitDriver( parms ) ) {
-		ShowWindow( win32.hWnd, SW_HIDE );
-		DestroyWindow( win32.hWnd );
-		win32.hWnd = NULL;
-		return false;
-	}
-
-	SetForegroundWindow( win32.hWnd );
-	SetFocus( win32.hWnd );
-
-	glConfig.isFullscreen = parms.fullScreen;
-
-	return true;
-}
-
-/*
-===================
-PrintCDSError
-===================
-*/
-static void PrintCDSError( int value ) {
-	switch ( value ) {
-	case DISP_CHANGE_RESTART:
-		common->Printf( "restart required\n" );
-		break;
-	case DISP_CHANGE_BADPARAM:
-		common->Printf( "bad param\n" );
-		break;
-	case DISP_CHANGE_BADFLAGS:
-		common->Printf( "bad flags\n" );
-		break;
-	case DISP_CHANGE_FAILED:
-		common->Printf( "DISP_CHANGE_FAILED\n" );
-		break;
-	case DISP_CHANGE_BADMODE:
-		common->Printf( "bad mode\n" );
-		break;
-	case DISP_CHANGE_NOTUPDATED:
-		common->Printf( "not updated\n" );
-		break;
-	default:
-		common->Printf( "unknown error %d\n", value );
-		break;
+		mouse_polls.Append(mouse_poll_t(key, state));
+		Sys_QueEvent(SE_KEY, key, state, 0, NULL, 0);
 	}
 }
 
-/*
-===================
-GLW_ChangeDislaySettingsIfNeeded
-
-Optionally ChangeDisplaySettings to get a different fullscreen resolution.
-Default uses the full desktop resolution.
-===================
-*/
-static bool GLW_ChangeDislaySettingsIfNeeded( glimpParms_t parms ) {
-	// If we had previously changed the display settings on a different monitor,
-	// go back to standard.
-	if ( win32.cdsFullscreen != 0 && win32.cdsFullscreen != parms.fullScreen ) {
-		win32.cdsFullscreen = 0;
-		ChangeDisplaySettings( 0, 0 );
-		Sys_Sleep( 1000 ); // Give the driver some time to think about this change
+static void Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
+{
+	// Backspace needs to be handled here.
+	if(key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS)
+	{
+		Sys_QueEvent( SE_CHAR, K_BACKSPACE, 0, 0, NULL, 0);
+		return;
 	}
 
-	// 0 is dragable mode on desktop, -1 is borderless window on desktop
-	if ( parms.fullScreen <= 0 ) {
-		return true;
+	if(action == GLFW_PRESS || action == GLFW_RELEASE)
+	{
+		bool state = (action == GLFW_PRESS) ? 1 : 0;
+		keyboard_polls.Append(keyboard_poll_t(key, state));
+
+		Sys_QueEvent(SE_KEY, GLFWDoom_MapKey(key), state, 0, NULL, 0);
 	}
-
-	// if we are already in the right resolution, don't do a ChangeDisplaySettings
-	int x, y, width, height, displayHz;
-
-	if ( !GetDisplayCoordinates( parms.fullScreen - 1, x, y, width, height, displayHz ) ) {
-		return false;
-	}
-	if ( width == parms.width && height == parms.height && ( displayHz == parms.displayHz || parms.displayHz == 0 ) ) {
-		return true;
-	}
-
-	DEVMODE dm = {};
-
-	dm.dmSize = sizeof( dm );
-
-	dm.dmPelsWidth  = parms.width;
-	dm.dmPelsHeight = parms.height;
-	dm.dmBitsPerPel = 32;
-	dm.dmFields     = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-	if ( parms.displayHz != 0 ) {
-		dm.dmDisplayFrequency = parms.displayHz;
-		dm.dmFields |= DM_DISPLAYFREQUENCY;
-	}
-	
-	common->Printf( "...calling CDS: " );
-	
-	const char * const deviceName = GetDisplayName( parms.fullScreen - 1 );
-
-	int		cdsRet;
-	if ( ( cdsRet = ChangeDisplaySettingsEx(
-		deviceName,
-		&dm, 
-		NULL,
-		CDS_FULLSCREEN,
-		NULL) ) == DISP_CHANGE_SUCCESSFUL ) {
-		common->Printf( "ok\n" );
-		win32.cdsFullscreen = parms.fullScreen;
-		return true;
-	}
-
-	common->Printf( "^3failed^0, " );
-	PrintCDSError( cdsRet );
-	return false;
 }
+
+static void Cursor_Callback(GLFWwindow* window, double xpos, double ypos)
+{
+	// We use different mouse styles to allow for better mouse handling for UI.
+	if(!game->IsInGame() || game->IsPDAOpen())
+	{
+		Sys_QueEvent( SE_MOUSE_ABSOLUTE, xpos, ypos, 0, NULL, 0);
+	}
+	else
+	{	
+		mouse_polls.Append(mouse_poll_t(M_DELTAX, xpos));
+		mouse_polls.Append(mouse_poll_t(M_DELTAY, ypos));
+		
+		Sys_QueEvent( SE_MOUSE, xpos, ypos, 0, NULL, 0);
+
+		glfwSetCursorPos(window, 0, 0);
+	}
+}
+
+static void Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset)
+{
+	//Has to be done this way otherwise we get funky skipping.
+	if(yoffset >= 1)
+	{
+		mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
+		Sys_QueEvent( SE_KEY, K_MWHEELUP, 1, 0, NULL, 0 );
+	}
+	else if (yoffset <= -1)
+	{
+		mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
+		Sys_QueEvent( SE_KEY, K_MWHEELDOWN, 1, 0, NULL, 0 );
+	}
+
+}
+
+static void Character_Callback(GLFWwindow* window, unsigned int codepoint)
+{
+	// We convert the text to UTF-8
+	char text[5] = { 0 };
+    if (codepoint <= 0x7F) {
+        text[0] = static_cast<char>(codepoint);
+    } else if (codepoint <= 0x7FF) {
+        text[0] = static_cast<char>(0xC0 | (codepoint >> 6));
+        text[1] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    } else if (codepoint <= 0xFFFF) {
+        text[0] = static_cast<char>(0xE0 | (codepoint >> 12));
+        text[1] = static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+        text[2] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    } else if (codepoint <= 0x10FFFF) {
+        text[0] = static_cast<char>(0xF0 | (codepoint >> 18));
+        text[1] = static_cast<char>(0x80 | ((codepoint >> 12) & 0x3F));
+        text[2] = static_cast<char>(0x80 | ((codepoint >> 6) & 0x3F));
+        text[3] = static_cast<char>(0x80 | (codepoint & 0x3F));
+    }
+
+	Sys_QueEvent(SE_CHAR, (unsigned char)text[0], 0, 0, NULL, 0);
+}
+
+
 
 /*
 ===================
@@ -1124,51 +791,45 @@ parameters and try again.
 ===================
 */
 bool GLimp_Init( glimpParms_t parms ) {
-	HDC		hDC;
 
-	cmdSystem->AddCommand( "testSwapBuffers", GLimp_TestSwapBuffers, CMD_FL_SYSTEM, "Times swapbuffer options" );
+	// Do we even care?
+	// cmdSystem->AddCommand( "testSwapBuffers", GLimp_TestSwapBuffers, CMD_FL_SYSTEM, "Times swapbuffer options" );
 
 	common->Printf( "Initializing OpenGL subsystem with multisamples:%i stereo:%i fullscreen:%i\n", 
 		parms.multiSamples, parms.stereo, parms.fullScreen );
 
-	// check our desktop attributes
-	hDC = GetDC( GetDesktopWindow() );
-	win32.desktopBitsPixel = GetDeviceCaps( hDC, BITSPIXEL );
-	win32.desktopWidth = GetDeviceCaps( hDC, HORZRES );
-	win32.desktopHeight = GetDeviceCaps( hDC, VERTRES );
-	ReleaseDC( GetDesktopWindow(), hDC );
 
-	// we can't run in a window unless it is 32 bpp
-	if ( win32.desktopBitsPixel < 32 && parms.fullScreen <= 0 ) {
-		common->Printf("^3Windowed mode requires 32 bit desktop depth^0\n");
+	if(!glfwInit())
+	{
+		common->Error( "Could not start GLFW\n" );
 		return false;
 	}
 
-	// save the hardware gamma so it can be
-	// restored on exit
-	GLimp_SaveGamma();
+	// full screen window
+	if(parms.fullScreen)
+	{
+		const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-	// create our window classes if we haven't already
-	GLW_CreateWindowClasses();
-	
-	// getting the wgl extensions involves creating a fake window to get a context,
-	// which is pretty disgusting, and seems to mess with the AGP VAR allocation
-	GLW_GetWGLExtensionsWithFakeWindow();
-
-
-
-	// Optionally ChangeDisplaySettings to get a different fullscreen resolution.
-	if ( !GLW_ChangeDislaySettingsIfNeeded( parms ) ) {
-		GLimp_Shutdown();
-		return false;
+		//We need this to set our refresh rate correctly.
+		glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", glfwGetPrimaryMonitor(), NULL);
+	}
+	else
+	{
+		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", NULL, NULL);
 	}
 
-	// try to create a window with the correct pixel format
-	// and init the renderer context
-	if ( !GLW_CreateWindow( parms ) ) {
-		GLimp_Shutdown();
-		return false;
-	}
+
+	if (!window)
+    {
+		//Really bad!
+        glfwTerminate();
+		common->Error( "Could not start GLFW\n" );
+        return false;
+    }
 
 	glConfig.isFullscreen = parms.fullScreen;
 	glConfig.isStereoPixelFormat = parms.stereo;
@@ -1179,35 +840,59 @@ bool GLimp_Init( glimpParms_t parms ) {
 	glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
 									// should side-by-side stereo modes be consider aspect 0.5?
 
-	// get the screen size, which may not be reliable...
-	// If we use the windowDC, I get my 30" monitor, even though the window is
-	// on a 27" monitor, so get a dedicated DC for the full screen device name.
-	const idStr deviceName = GetDeviceName( Max( 0, parms.fullScreen - 1 ) );
 
-	HDC deviceDC = CreateDC( deviceName.c_str(), deviceName.c_str(), NULL, NULL );
-	const int mmWide = GetDeviceCaps( win32.hDC, HORZSIZE );
-	DeleteDC( deviceDC );
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3); 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3); 
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); 
 
-	if ( mmWide == 0 ) {
-		glConfig.physicalScreenWidthInCentimeters = 100.0f;
-	} else {
-		glConfig.physicalScreenWidthInCentimeters = 0.1f * mmWide;
+	//Disable resizing.
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); 
+
+	glfwMakeContextCurrent(window);
+
+	glewInit();
+
+	// Raw mouse input
+	if(m_rawInput.GetBool())
+	{
+		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
+	
+	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(window, 0, 0);
+
+	//Toggle V-Sync
+	if(r_swapInterval.GetInteger() == 1)
+	{	
+		glfwSwapInterval(1);
+	}
+	else
+	{
+		glfwSwapInterval(0);
+	}
+
+	//MSAA samples :)
+	glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
 
 
 	GLenum glewResult = glewInit();
 	if( GLEW_OK != glewResult )
 	{
 		// glewInit failed, something is seriously wrong
-		common->Printf( "^3GLimp_Init() - GLEW could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
+		common->Printf( "GLimp_Init() - GLEW could not load OpenGL subsystem: %s", glewGetErrorString( glewResult ) );
 	}
 	else
 	{
 		common->Printf( "Using GLEW %s\n", glewGetString( GLEW_VERSION ) );
 	}
 
-	// wglSwapinterval, etc
-	GLW_CheckWGLExtensions( win32.hDC );
+
+	glfwSetMouseButtonCallback(window, MouseKey_Callback);
+	glfwSetKeyCallback(window, Key_Callback);
+	glfwSetCursorPosCallback(window, Cursor_Callback);
+	glfwSetScrollCallback(window, Scroll_Callback);
+	glfwSetCharCallback(window, Character_Callback);
+
 	return true;
 }
 
@@ -1220,29 +905,9 @@ Sets up the screen based on passed parms..
 */
 bool GLimp_SetScreenParms( glimpParms_t parms ) {
 	// Optionally ChangeDisplaySettings to get a different fullscreen resolution.
-	if ( !GLW_ChangeDislaySettingsIfNeeded( parms ) ) {
-		return false;
-	}
-
-	int x, y, w, h;
-	if ( !GLW_GetWindowDimensions( parms, x, y, w, h ) ) {
-		return false;
-	}
-
-	int exstyle;
-	int stylebits;
-
-	if ( parms.fullScreen ) {
-		exstyle = WS_EX_TOPMOST;
-		stylebits = WS_POPUP|WS_VISIBLE|WS_SYSMENU;
-	} else {
-		exstyle = 0;
-		stylebits = WINDOW_STYLE|WS_SYSMENU;
-	}
-
-	SetWindowLong( win32.hWnd, GWL_STYLE, stylebits );
-	SetWindowLong( win32.hWnd, GWL_EXSTYLE, exstyle );
-	SetWindowPos( win32.hWnd, parms.fullScreen ? HWND_TOPMOST : HWND_NOTOPMOST, x, y, w, h, SWP_SHOWWINDOW );
+	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+	glfwSetWindowMonitor(window, monitor, 0, 0, parms.width, parms.height, parms.displayHz);
 
 	glConfig.isFullscreen = parms.fullScreen;
 	glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
@@ -1263,57 +928,12 @@ subsystem.
 ===================
 */
 void GLimp_Shutdown() {
-	const char *success[] = { "failed", "success" };
-	int retVal;
-
 	common->Printf( "Shutting down OpenGL subsystem\n" );
 
-
-	retVal = wglMakeCurrent( NULL, NULL ) != 0;
-	common->Printf( "...wglMakeCurrent( NULL, NULL ): %s\n", success[retVal] );
-
-
-	// delete HGLRC
-	if ( win32.hGLRC ) {
-		retVal = wglDeleteContext( win32.hGLRC ) != 0;
-		common->Printf( "...deleting GL context: %s\n", success[retVal] );
-		win32.hGLRC = NULL;
-	}
-
-	// release DC
-	if ( win32.hDC ) {
-		retVal = ReleaseDC( win32.hWnd, win32.hDC ) != 0;
-		common->Printf( "...releasing DC: %s\n", success[retVal] );
-		win32.hDC   = NULL;
-	}
-
-	// destroy window
-	if ( win32.hWnd ) {
-		common->Printf( "...destroying window\n" );
-		ShowWindow( win32.hWnd, SW_HIDE );
-		DestroyWindow( win32.hWnd );
-		win32.hWnd = NULL;
-	}
-
-	// reset display settings
-	if ( win32.cdsFullscreen ) {
-		common->Printf( "...resetting display\n" );
-		ChangeDisplaySettings( 0, 0 );
-		win32.cdsFullscreen = 0;
-	}
-
-	// close the thread so the handle doesn't dangle
-	if ( win32.renderThreadHandle ) {
-		common->Printf( "...closing smp thread\n" );
-		CloseHandle( win32.renderThreadHandle );
-		win32.renderThreadHandle = NULL;
-	}
+	glfwTerminate();
 
 	// restore gamma
 	GLimp_RestoreGamma();
-
-	// shutdown QGL subsystem
-	// QGL_Shutdown();
 }
 
 /*
@@ -1322,22 +942,7 @@ GLimp_SwapBuffers
 =====================
 */
 void GLimp_SwapBuffers() {
-	if ( r_swapInterval.IsModified() ) {
-		r_swapInterval.ClearModified();
-
-		int interval = 0;
-		if ( r_swapInterval.GetInteger() == 1 ) {
-			interval = ( glConfig.swapControlTearAvailable ) ? -1 : 1;
-		} else if ( r_swapInterval.GetInteger() == 2 ) {
-			interval = 1;
-		}
-
-		if ( wglSwapIntervalEXT ) {
-			wglSwapIntervalEXT( interval );
-		}
-	}
-
-	SwapBuffers( win32.hDC );
+	glfwSwapBuffers(window);
 }
 
 /*
@@ -1354,9 +959,7 @@ GLimp_ActivateContext
 ===================
 */
 void GLimp_ActivateContext() {
-	if ( !wglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-		win32.wglErrors++;
-	}
+	glfwMakeContextCurrent(window);
 }
 
 /*
@@ -1366,9 +969,6 @@ GLimp_DeactivateContext
 */
 void GLimp_DeactivateContext() {
 	glFinish();
-	if ( !wglMakeCurrent( win32.hDC, NULL ) ) {
-		win32.wglErrors++;
-	}
 }
 
 /*
@@ -1378,9 +978,6 @@ GLimp_RenderThreadWrapper
 */
 static void GLimp_RenderThreadWrapper() {
 	win32.glimpRenderThread();
-
-	// unbind the context before we die
-	wglMakeCurrent( win32.hDC, NULL );
 }
 
 /*

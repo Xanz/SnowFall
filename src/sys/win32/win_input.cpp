@@ -43,100 +43,18 @@ DIRECT INPUT KEYBOARD CONTROL
 */
 
 bool IN_StartupKeyboard() {
-    HRESULT hr;
-    bool    bExclusive;
-    bool    bForeground;
-    bool    bImmediate;
-    bool    bDisableWindowsKey;
-    DWORD   dwCoopFlags;
-
-	if (!win32.g_pdi) {
-		common->Printf("keyboard: DirectInput has not been started\n");
-		return false;
-	}
-
-	if (win32.g_pKeyboard) {
-		win32.g_pKeyboard->Release();
-		win32.g_pKeyboard = NULL;
-	}
-
-    // Detrimine where the buffer would like to be allocated 
-    bExclusive         = false;
-    bForeground        = true;
-    bImmediate         = false;
-    bDisableWindowsKey = true;
-
-    if( bExclusive )
-        dwCoopFlags = DISCL_EXCLUSIVE;
-    else
-        dwCoopFlags = DISCL_NONEXCLUSIVE;
-
-    if( bForeground )
-        dwCoopFlags |= DISCL_FOREGROUND;
-    else
-        dwCoopFlags |= DISCL_BACKGROUND;
-
-    // Disabling the windows key is only allowed only if we are in foreground nonexclusive
-    if( bDisableWindowsKey && !bExclusive && bForeground )
-        dwCoopFlags |= DISCL_NOWINKEY;
-
-    // Obtain an interface to the system keyboard device.
-    if( FAILED( hr = win32.g_pdi->CreateDevice( GUID_SysKeyboard, &win32.g_pKeyboard, NULL ) ) ) {
-		common->Printf("keyboard: couldn't find a keyboard device\n");
-        return false;
-	}
-    
-    // Set the data format to "keyboard format" - a predefined data format 
-    //
-    // A data format specifies which controls on a device we
-    // are interested in, and how they should be reported.
-    //
-    // This tells DirectInput that we will be passing an array
-    // of 256 bytes to IDirectInputDevice::GetDeviceState.
-    if( FAILED( hr = win32.g_pKeyboard->SetDataFormat( &c_dfDIKeyboard ) ) )
-        return false;
-    
-    // Set the cooperativity level to let DirectInput know how
-    // this device should interact with the system and with other
-    // DirectInput applications.
-    hr = win32.g_pKeyboard->SetCooperativeLevel( win32.hWnd, dwCoopFlags );
-    if( hr == DIERR_UNSUPPORTED && !bForeground && bExclusive ) {
-        common->Printf("keyboard: SetCooperativeLevel() returned DIERR_UNSUPPORTED.\nFor security reasons, background exclusive keyboard access is not allowed.\n");
-        return false;
-    }
-
-    if( FAILED(hr) ) {
-        return false;
-	}
-
-    if( !bImmediate ) {
-        // IMPORTANT STEP TO USE BUFFERED DEVICE DATA!
-        //
-        // DirectInput uses unbuffered I/O (buffer size = 0) by default.
-        // If you want to read buffered data, you need to set a nonzero
-        // buffer size.
-        //
-        // Set the buffer size to DINPUT_BUFFERSIZE (defined above) elements.
-        //
-        // The buffer size is a DWORD property associated with the device.
-        DIPROPDWORD dipdw;
-
-        dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-        dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        dipdw.diph.dwObj        = 0;
-        dipdw.diph.dwHow        = DIPH_DEVICE;
-        dipdw.dwData            = DINPUT_BUFFERSIZE; // Arbitary buffer size
-
-        if( FAILED( hr = win32.g_pKeyboard->SetProperty( DIPROP_BUFFERSIZE, &dipdw.diph ) ) )
-            return false;
-    }
-
-    // Acquire the newly created device
-    win32.g_pKeyboard->Acquire();
-
-	common->Printf( "keyboard: DirectInput initialized.\n");
-    return true;
+	return true;
 }
+
+/*
+=======
+MapKey
+
+Map from GLFW to Doom keynums
+=======
+*/
+int GLFWDoom_MapKey (int key);
+
 
 /*
 ==========================
@@ -144,10 +62,6 @@ IN_DeactivateKeyboard
 ==========================
 */
 void IN_DeactivateKeyboard() {
-	if (!win32.g_pKeyboard) {
-		return;
-	}
-	win32.g_pKeyboard->Unacquire( );
 }
 
 /*
@@ -165,21 +79,6 @@ IN_InitDirectInput
 */
 
 void IN_InitDirectInput() {
-    HRESULT		hr;
-
-	common->Printf( "Initializing DirectInput...\n" );
-
-	if ( win32.g_pdi != NULL ) {
-		win32.g_pdi->Release();			// if the previous window was destroyed we need to do this
-		win32.g_pdi = NULL;
-	}
-
-    // Register with the DirectInput subsystem and get a pointer
-    // to a IDirectInput interface we can use.
-    // Create the base DirectInput object
-	if ( FAILED( hr = DirectInput8Create( GetModuleHandle(NULL), DIRECTINPUT_VERSION, IID_IDirectInput8, (void**)&win32.g_pdi, NULL ) ) ) {
-		common->Printf ("DirectInputCreate failed\n");
-    }
 }
 
 /*
@@ -188,69 +87,6 @@ IN_InitDIMouse
 ========================
 */
 bool IN_InitDIMouse() {
-    HRESULT		hr;
-
-	if ( win32.g_pdi == NULL) {
-		return false;
-	}
-
-	// obtain an interface to the system mouse device.
-	hr = win32.g_pdi->CreateDevice( GUID_SysMouse, &win32.g_pMouse, NULL);
-
-	if (FAILED(hr)) {
-		common->Printf ("mouse: Couldn't open DI mouse device\n");
-		return false;
-	}
-
-    // Set the data format to "mouse format" - a predefined data format 
-    //
-    // A data format specifies which controls on a device we
-    // are interested in, and how they should be reported.
-    //
-    // This tells DirectInput that we will be passing a
-    // DIMOUSESTATE2 structure to IDirectInputDevice::GetDeviceState.
-    if( FAILED( hr = win32.g_pMouse->SetDataFormat( &c_dfDIMouse2 ) ) ) {
-		common->Printf ("mouse: Couldn't set DI mouse format\n");
-		return false;
-	}
-    
-	// set the cooperativity level.
-	hr = win32.g_pMouse->SetCooperativeLevel( win32.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-
-	if (FAILED(hr)) {
-		common->Printf ("mouse: Couldn't set DI coop level\n");
-		return false;
-	}
-
-
-    // IMPORTANT STEP TO USE BUFFERED DEVICE DATA!
-    //
-    // DirectInput uses unbuffered I/O (buffer size = 0) by default.
-    // If you want to read buffered data, you need to set a nonzero
-    // buffer size.
-    //
-    // Set the buffer size to SAMPLE_BUFFER_SIZE (defined above) elements.
-    //
-    // The buffer size is a DWORD property associated with the device.
-    DIPROPDWORD dipdw;
-    dipdw.diph.dwSize       = sizeof(DIPROPDWORD);
-    dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-    dipdw.diph.dwObj        = 0;
-    dipdw.diph.dwHow        = DIPH_DEVICE;
-    dipdw.dwData            = DINPUT_BUFFERSIZE; // Arbitary buffer size
-
-    if( FAILED( hr = win32.g_pMouse->SetProperty( DIPROP_BUFFERSIZE, &dipdw.diph ) ) ) {
-		common->Printf ("mouse: Couldn't set DI buffersize\n");
-		return false;
-	}
-
-	IN_ActivateMouse();
-
-	// clear any pending samples
-	int	mouseEvents[MAX_MOUSE_EVENTS][2];
-	Sys_PollMouseInputEvents( mouseEvents );
-
-	common->Printf( "mouse: DirectInput initialized.\n");
 	return true;
 }
 
@@ -261,28 +97,6 @@ IN_ActivateMouse
 ==========================
 */
 void IN_ActivateMouse() {
-	int i;
-	HRESULT hr;
-
-	if ( !win32.in_mouse.GetBool() || win32.mouseGrabbed || !win32.g_pMouse ) {
-		return;
-	}
-
-	win32.mouseGrabbed = true;
-	for ( i = 0; i < 10; i++ ) {
-		if ( ::ShowCursor( false ) < 0 ) {
-			break;
-		}
-	}
-
-	// we may fail to reacquire if the window has been recreated
-	hr = win32.g_pMouse->Acquire();
-	if (FAILED(hr)) {
-		return;
-	}
-
-	// set the cooperativity level.
-	hr = win32.g_pMouse->SetCooperativeLevel( win32.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
 }
 
 /*
@@ -291,20 +105,6 @@ IN_DeactivateMouse
 ==========================
 */
 void IN_DeactivateMouse() {
-	int i;
-
-	if (!win32.g_pMouse || !win32.mouseGrabbed ) {
-		return;
-	}
-
-	win32.g_pMouse->Unacquire();
-
-	for ( i = 0; i < 10; i++ ) {
-		if ( ::ShowCursor( true ) >= 0 ) {
-			break;
-		}
-	}
-	win32.mouseGrabbed = false;
 }
 
 /*
@@ -313,9 +113,6 @@ IN_DeactivateMouseIfWindowed
 ==========================
 */
 void IN_DeactivateMouseIfWindowed() {
-	if ( !win32.cdsFullscreen ) {
-		IN_DeactivateMouse();
-	}
 }
 
 /*
@@ -333,22 +130,10 @@ Sys_ShutdownInput
 ===========
 */
 void Sys_ShutdownInput() {
+	mouse_polls.Clear();
+	keyboard_polls.Clear();
 	IN_DeactivateMouse();
 	IN_DeactivateKeyboard();
-	if ( win32.g_pKeyboard ) {
-		win32.g_pKeyboard->Release();
-		win32.g_pKeyboard = NULL;
-	}
-
-    if ( win32.g_pMouse ) {
-		win32.g_pMouse->Release();
-		win32.g_pMouse = NULL;
-	}
-
-    if ( win32.g_pdi ) {
-		win32.g_pdi->Release();
-		win32.g_pdi = NULL;
-	}
 }
 
 /*
@@ -357,19 +142,10 @@ Sys_InitInput
 ===========
 */
 void Sys_InitInput() {
+	keyboard_polls.SetGranularity(64);
+	mouse_polls.SetGranularity(64);
 	common->Printf ("\n------- Input Initialization -------\n");
-	IN_InitDirectInput();
-	if ( win32.in_mouse.GetBool() ) {
-		IN_InitDIMouse();
-		// don't grab the mouse on initialization
-		Sys_GrabMouseCursor( false );
-	} else {
-		common->Printf ("Mouse control not active.\n");
-	}
-	IN_StartupKeyboard();
-
 	common->Printf ("------------------------------------\n");
-	win32.in_mouse.ClearModified();
 }
 
 /*
@@ -380,62 +156,15 @@ Called every frame, even if not generating commands
 ==================
 */
 void IN_Frame() {
-	bool	shouldGrab = true;
-
-	if ( !win32.in_mouse.GetBool() ) {
-		shouldGrab = false;
-	}
-	// if fullscreen, we always want the mouse
-	if ( !win32.cdsFullscreen ) {
-		if ( win32.mouseReleased ) {
-			shouldGrab = false;
-		}
-		if ( win32.movingWindow ) {
-			shouldGrab = false;
-		}
-		if ( !win32.activeApp ) {
-			shouldGrab = false;
-		}
-	}
-
-	if ( shouldGrab != win32.mouseGrabbed ) {
-		if ( usercmdGen != NULL ) {
-			usercmdGen->Clear();
-		}
-
-		if ( win32.mouseGrabbed ) {
-			IN_DeactivateMouse();
-		} else {
-			IN_ActivateMouse();
-
-#if 0	// if we can't reacquire, try reinitializing
-			if ( !IN_InitDIMouse() ) {
-				win32.in_mouse.SetBool( false );
-				return;
-			}
-#endif
-		}
-	}
 }
 
 
 void	Sys_GrabMouseCursor( bool grabIt ) {
-	win32.mouseReleased = !grabIt;
 	if ( !grabIt ) {
 		// release it right now
 		IN_Frame();
 	}
 }
-
-//=====================================================================================
-
-static DIDEVICEOBJECTDATA polled_didod[ DINPUT_BUFFERSIZE ];  // Receives buffered data 
-
-static int diFetch;
-static byte toggleFetch[2][ 256 ];
-
-
-#if 1
 // I tried doing the full-state get to address a keyboard problem on one system,
 // but it didn't make any difference
 
@@ -445,199 +174,45 @@ Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_PollKeyboardInputEvents() {
-    DWORD              dwElements;
-    HRESULT            hr;
-
-    if( win32.g_pKeyboard == NULL ) {
-        return 0;
-	}
-    
-    dwElements = DINPUT_BUFFERSIZE;
-    hr = win32.g_pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA),
-                                     polled_didod, &dwElements, 0 );
-    if( hr != DI_OK ) 
-    {
-        // We got an error or we got DI_BUFFEROVERFLOW.
-        //
-        // Either way, it means that continuous contact with the
-        // device has been lost, either due to an external
-        // interruption, or because the buffer overflowed
-        // and some events were lost.
-        hr = win32.g_pKeyboard->Acquire();
-
-		
-
-		// nuke the garbage
-		if (!FAILED(hr)) {
-			//Bug 951: The following command really clears the garbage input.
-			//The original will still process keys in the buffer and was causing
-			//some problems.
-			win32.g_pKeyboard->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), NULL, &dwElements, 0 );
-			dwElements = 0;
-		}
-        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
-        // may occur when the app is minimized or in the process of 
-        // switching, so just try again later 
-    }
-
-    if( FAILED(hr) ) {
-        return 0;
-	}
-
-	return dwElements;
+	return keyboard_polls.Num();
 }
-
-#else
-
-/*
-====================
-Sys_PollKeyboardInputEvents
-
-Fake events by getting the entire device state
-and checking transitions
-====================
-*/
-int Sys_PollKeyboardInputEvents() {
-    HRESULT            hr;
-
-    if( win32.g_pKeyboard == NULL ) {
-        return 0;
-	}
-    
-	hr = win32.g_pKeyboard->GetDeviceState( sizeof( toggleFetch[ diFetch ] ), toggleFetch[ diFetch ] );
-    if( hr != DI_OK ) 
-    {
-        // We got an error or we got DI_BUFFEROVERFLOW.
-        //
-        // Either way, it means that continuous contact with the
-        // device has been lost, either due to an external
-        // interruption, or because the buffer overflowed
-        // and some events were lost.
-        hr = win32.g_pKeyboard->Acquire();
-
-		// nuke the garbage
-		if (!FAILED(hr)) {
-			hr = win32.g_pKeyboard->GetDeviceState( sizeof( toggleFetch[ diFetch ] ), toggleFetch[ diFetch ] );
-		}
-        // hr may be DIERR_OTHERAPPHASPRIO or other errors.  This
-        // may occur when the app is minimized or in the process of 
-        // switching, so just try again later 
-    }
-
-    if( FAILED(hr) ) {
-        return 0;
-	}
-
-	// build faked events
-	int		numChanges = 0;
-
-	for ( int i = 0 ; i < 256 ; i++ ) {
-		if ( toggleFetch[0][i] != toggleFetch[1][i] ) {
-			polled_didod[ numChanges ].dwOfs = i;
-			polled_didod[ numChanges ].dwData = toggleFetch[ diFetch ][i] ? 0x80 : 0;
-			numChanges++;
-		}
-	}
-
-	diFetch ^= 1;
-
-	return numChanges;
-}
-
-#endif
-
 /*
 ====================
 Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_ReturnKeyboardInputEvent( const int n, int &ch, bool &state ) {
-	ch = polled_didod[ n ].dwOfs;
-	state = ( polled_didod[ n ].dwData & 0x80 ) == 0x80;
-	if ( ch == K_PRINTSCREEN || ch == K_LCTRL || ch == K_LALT || ch == K_RCTRL || ch == K_RALT ) {
-		// for windows, add a keydown event for print screen here, since
-		// windows doesn't send keydown events to the WndProc for this key.
-		// ctrl and alt are handled here to get around windows sending ctrl and
-		// alt messages when the right-alt is pressed on non-US 102 keyboards.
-		Sys_QueEvent( SE_KEY, ch, state, 0, NULL, 0 );
-	}
+	ch = GLFWDoom_MapKey(keyboard_polls[n].key);
+	state = keyboard_polls[n].state;
 	return ch;
 }
 
 
 void Sys_EndKeyboardInputEvents() {
+	keyboard_polls.SetNum(0);
 }
 
 //=====================================================================================
 
 
-int Sys_PollMouseInputEvents( int mouseEvents[MAX_MOUSE_EVENTS][2] ) {
-	DWORD				dwElements;
-	HRESULT				hr;
+int Sys_PollMouseInputEvents() {
+	return mouse_polls.Num();
+}
 
-	if ( !win32.g_pMouse || !win32.mouseGrabbed ) {
+int Sys_ReturnMouseInputEvent( const int n, int &action, int &value ) {
+	if (n >= mouse_polls.Num())
+	{
 		return 0;
 	}
 
-    dwElements = DINPUT_BUFFERSIZE;
-    hr = win32.g_pMouse->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), polled_didod, &dwElements, 0 );
+	action = mouse_polls[n].action;
+	value = mouse_polls[n].value;
+	return 1;
+}
 
-    if( hr != DI_OK ) {
-        hr = win32.g_pMouse->Acquire();
-		// clear the garbage
-		if (!FAILED(hr)) {
-			win32.g_pMouse->GetDeviceData( sizeof(DIDEVICEOBJECTDATA), polled_didod, &dwElements, 0 );
-		}
-    }
-
-    if( FAILED(hr) ) {
-        return 0;
-	}
-
-	if ( dwElements > MAX_MOUSE_EVENTS ) {
-		dwElements = MAX_MOUSE_EVENTS;
-	}
-
-	for( DWORD i = 0; i < dwElements; i++ ) {
-		mouseEvents[i][0] = M_INVALID;
-		mouseEvents[i][1] = 0;
-
-		if ( polled_didod[i].dwOfs >= DIMOFS_BUTTON0 && polled_didod[i].dwOfs <= DIMOFS_BUTTON7 ) {
-			const int mouseButton = ( polled_didod[i].dwOfs - DIMOFS_BUTTON0 );
-			const bool mouseDown = (polled_didod[i].dwData & 0x80) == 0x80;
-			mouseEvents[i][0] = M_ACTION1 + mouseButton;
-			mouseEvents[i][1] = mouseDown;
-			Sys_QueEvent( SE_KEY, K_MOUSE1 + mouseButton, mouseDown, 0, NULL, 0 );
-		} else {
-			switch (polled_didod[i].dwOfs) {
-			case DIMOFS_X:
-				mouseEvents[i][0] = M_DELTAX;
-				mouseEvents[i][1] = polled_didod[i].dwData;
-				Sys_QueEvent( SE_MOUSE, polled_didod[i].dwData, 0, 0, NULL, 0 );
-				break;
-			case DIMOFS_Y:
-				mouseEvents[i][0] = M_DELTAY;
-				mouseEvents[i][1] = polled_didod[i].dwData;
-				Sys_QueEvent( SE_MOUSE, 0, polled_didod[i].dwData, 0, NULL, 0 );
-				break;
-			case DIMOFS_Z:
-				mouseEvents[i][0] = M_DELTAZ;
-				mouseEvents[i][1] = (int)polled_didod[i].dwData / WHEEL_DELTA;
-				{
-					const int value = (int)polled_didod[i].dwData / WHEEL_DELTA;
-					const int key = value < 0 ? K_MWHEELDOWN : K_MWHEELUP;
-					const int iterations = abs( value );
-					for ( int i = 0; i < iterations; i++ ) {
-						Sys_QueEvent( SE_KEY, key, true, 0, NULL, 0 );
-						Sys_QueEvent( SE_KEY, key, false, 0, NULL, 0 );
-					}
-				}
-				break;
-			}
-		}
-	}
-
-	return dwElements;
+void Sys_EndMouseInputEvents( void ) 
+{
+	mouse_polls.SetNum(0);
 }
 
 //=====================================================================================
@@ -849,9 +424,9 @@ idJoystickWin32::PollInputEvents
 int idJoystickWin32::PollInputEvents( int inputDeviceNum ) {
 	numEvents = 0;
 
-	if ( !win32.activeApp ) {
-		return numEvents;
-	}
+	// if ( !win32.activeApp ) {
+	// 	return numEvents;
+	// }
 
 	assert( inputDeviceNum < 4 );
 

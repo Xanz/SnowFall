@@ -428,7 +428,7 @@ idSessionLocalWin::IsSystemUIShowing
 ========================
 */
 bool idSessionLocalWin::IsSystemUIShowing() const {
-	return !win32.activeApp || isSysUIShowing; // If the user alt+tabs away, treat it the same as bringing up the steam overlay
+	return isSysUIShowing; // If the user alt+tabs away, treat it the same as bringing up the steam overlay
 }
 
 /*

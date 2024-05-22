@@ -32,8 +32,39 @@ If you have questions concerning this license or the applicable additional terms
 #include <windows.h>
 #include "GL/wglew.h"		// windows OpenGL extensions
 #include "win_input.h"
+#include "GLFW/glfw3.h"
+
+
 
 #define	WINDOW_STYLE	(WS_OVERLAPPED|WS_BORDER|WS_CAPTION|WS_VISIBLE | WS_THICKFRAME)
+
+
+struct mouse_poll_t {
+	int action;
+	float value;
+
+	mouse_poll_t() {
+	}
+
+	mouse_poll_t(int a, float v) {
+		action = a;
+		value = v;
+	}
+};
+
+struct keyboard_poll_t
+{
+	int key;
+	bool state;	
+
+	keyboard_poll_t() {
+	}
+
+	keyboard_poll_t(int a, bool v) {
+		key = a;
+		state = v;
+	}
+};
 
 void	Sys_QueEvent( sysEventType_t type, int value, int value2, int ptrLength, void *ptr, int inputDeviceNum );
 
@@ -71,11 +102,6 @@ void Conbuf_AppendText( const char *msg );
 typedef struct {
 	HWND			hWnd;
 	HINSTANCE		hInstance;
-
-	bool			activeApp;			// changed with WM_ACTIVATE messages
-	bool			mouseReleased;		// when the game has the console down or is doing a long operation
-	bool			movingWindow;		// inhibit mouse grab when dragging the window
-	bool			mouseGrabbed;		// current state of grab and hide
 
 	OSVERSIONINFOEX	osversion;
 
@@ -120,10 +146,6 @@ typedef struct {
 	CRITICAL_SECTION criticalSections[MAX_CRITICAL_SECTIONS];
 
 	HINSTANCE		hInstDI;			// direct input
-
-	LPDIRECTINPUT8			g_pdi;
-	LPDIRECTINPUTDEVICE8	g_pMouse;
-	LPDIRECTINPUTDEVICE8	g_pKeyboard;
 	idJoystickWin32			g_Joystick;
 
 	HANDLE			renderCommandsEvent;
@@ -139,5 +161,11 @@ typedef struct {
 } Win32Vars_t;
 
 extern Win32Vars_t	win32;
+
+extern GLFWwindow* window;
+
+extern idList<mouse_poll_t> mouse_polls;
+
+extern idList<keyboard_poll_t> keyboard_polls;
 
 #endif /* !__WIN_LOCAL_H__ */

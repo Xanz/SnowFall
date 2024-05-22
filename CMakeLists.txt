@@ -49,28 +49,19 @@ set(D3Source
 
     
 add_compile_options(/wd4467)
-# set(CMAKE_CXX_STANDARD 17)  # Or the required C++ standard
-# set(CMAKE_CXX_STANDARD_REQUIRED ON)
-# set(CMAKE_C_STANDARD 17)
-# set(CMAKE_C_STANDARD_REQUIRED ON)
 
-# add_compile_definitions(_WINDOWS)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
-# add_compile_definitions(WIN32)
 add_compile_definitions(_USE_32BIT_TIME_T)
 add_compile_definitions(_MBCS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-# add_compile_definitions(_XKEYCHECK_H)
-# add_compile_definitions(_INLINEDEBUG)
 add_compile_definitions(__DOOM__)
-# add_compile_definitions(_DEBUG)
 # add_compile_definitions(GLFW_INCLUDE_NONE)
 
 # Needed so that VSCode can syntax check correctly.
-include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/OpenAL/include external/glfw/include external/glew/include external/zlib src/idlib)
-link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib external/zlib/build/Release)
+include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/OpenAL/include external/glfw/include external/glew/include external/zlib src/idlib external/glfw/include)
+link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib external/zlib/build/Release external/glfw/libs)
 
-set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32)
+set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32 glfw3)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
@@ -78,5 +69,5 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
-LINK_FLAGS "/SUBSYSTEM:WINDOWS"
+LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
 )

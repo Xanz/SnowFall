@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../idlib/precompiled.h"
 #pragma hdrstop
+#include "GLFW/glfw3.h"
 
 idCVar joy_mergedThreshold( "joy_mergedThreshold", "1", CVAR_BOOL | CVAR_ARCHIVE, "If the thresholds aren't merged, you drift more off center" );
 idCVar joy_newCode( "joy_newCode", "1", CVAR_BOOL | CVAR_ARCHIVE, "Use the new codepath" );
@@ -1198,52 +1199,49 @@ void idUsercmdGenLocal::Key( int keyNum, bool down ) {
 idUsercmdGenLocal::Mouse
 ===================
 */
-void idUsercmdGenLocal::Mouse() {
-	int	mouseEvents[MAX_MOUSE_EVENTS][2];
-
-	int numEvents = Sys_PollMouseInputEvents( mouseEvents );
-
+void idUsercmdGenLocal::Mouse() 
+{
+	int i;
+	int numEvents = Sys_PollMouseInputEvents();
 	// Study each of the buffer elements and process them.
-	for ( int i = 0; i < numEvents; i++ ) {
-		int action = mouseEvents[i][0];
-		int value = mouseEvents[i][1];
-		switch ( action ) {
-		case M_ACTION1:
-		case M_ACTION2:
-		case M_ACTION3:
-		case M_ACTION4:
-		case M_ACTION5:
-		case M_ACTION6:
-		case M_ACTION7:
-		case M_ACTION8:
-			mouseButton = K_MOUSE1 + ( action - M_ACTION1 );
-			mouseDown = ( value != 0 );
-			Key( mouseButton, mouseDown );
-			break;
-		case M_DELTAX:
-			mouseDx += value;
-			continuousMouseX += value;
-			break;
-		case M_DELTAY:
-			mouseDy += value;
-			continuousMouseY += value;
-			break;
-		case M_DELTAZ:	// mouse wheel, may have multiple clicks
-			{
-				int key = value < 0 ? K_MWHEELDOWN : K_MWHEELUP;
-				value = abs( value );
-				while( value-- > 0 ) {
-					Key( key, true );
-					Key( key, false );
-					mouseButton = key;
-					mouseDown = true;
+	if ( numEvents ) {
+		//
+	    // Study each of the buffer elements and process them.
+		//
+		for( i = 0; i < numEvents; i++ ) {
+			int action, value;
+			if ( Sys_ReturnMouseInputEvent( i, action, value ) ) {
+				if ( action >= M_ACTION1 && action <= M_ACTION8 ) {
+					mouseButton = K_MOUSE1 + ( action - M_ACTION1 );
+					mouseDown = ( value != 0 );
+					Key( mouseButton, mouseDown );
+				} else {
+					switch ( action ) {
+						case M_DELTAX:
+							mouseDx += value;
+							continuousMouseX += value;
+							break;
+						case M_DELTAY:
+							mouseDy += value;
+							continuousMouseY += value;
+							break;
+						case M_DELTAZ:
+							int key = value < 0 ? K_MWHEELDOWN : K_MWHEELUP;
+							value = abs( value );
+							while( value-- > 0 ) {
+								Key( key, true );
+								Key( key, false );
+								mouseButton = key;
+								mouseDown = true;
+							}
+							break;
+					}
 				}
 			}
-			break;
-		default:	// some other undefined button
-			break;
 		}
 	}
+
+	Sys_EndMouseInputEvents();
 }
 
 /*
@@ -1337,6 +1335,8 @@ void idUsercmdGenLocal::BuildCurrentUsercmd( int deviceNum ) {
 
 	// create the usercmd
 	MakeCurrent();
+
+	glfwPollEvents();
 
 	lastPollTime = pollTime;
 }
