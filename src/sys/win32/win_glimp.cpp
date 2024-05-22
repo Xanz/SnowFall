@@ -650,7 +650,7 @@ static void MouseKey_Callback(GLFWwindow* window, int button, int action, int mo
 		int state = action == GLFW_PRESS ? 1 : 0;
 
 		// UI seems to use K_MOUSE1 instead of M_ACTION1
-		if(!game->IsInGame() || game->IsPDAOpen())
+		if(game->Shell_IsActive() || game->IsPDAOpen())
 		{
 			switch(button)
 			{
@@ -719,7 +719,7 @@ static void Key_Callback(GLFWwindow* window, int key, int scancode, int action, 
 static void Cursor_Callback(GLFWwindow* window, double xpos, double ypos)
 {
 	// We use different mouse styles to allow for better mouse handling for UI.
-	if(!game->IsInGame() || game->IsPDAOpen())
+	if(game->Shell_IsActive() || game->IsPDAOpen())
 	{
 		Sys_QueEvent( SE_MOUSE_ABSOLUTE, xpos, ypos, 0, NULL, 0);
 	}
