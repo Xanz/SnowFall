@@ -176,28 +176,9 @@ static float DotProduct_SIMD( const float * src0, const float * src1, const int 
 	assert_16_byte_aligned( src0 );
 	assert_16_byte_aligned( src1 );
 
-#ifdef ID_WIN_X86_SSE_INTRIN
-
-	__m128 sum = (__m128 &) SIMD_SP_zero;
-	int i = 0;
-	for ( ; i < count - 3; i += 4 ) {
-		__m128 s0 = _mm_load_ps( src0 + i );
-		__m128 s1 = _mm_load_ps( src1 + i );
-		sum = _mm_add_ps( _mm_mul_ps( s0, s1 ), sum );
-	}
-	__m128 mask = _mm_load_ps( (float *) &SIMD_SP_indexedEndMask[count & 3] );
-	__m128 s0 = _mm_and_ps( _mm_load_ps( src0 + i ), mask );
-	__m128 s1 = _mm_and_ps( _mm_load_ps( src1 + i ), mask );
-	sum = _mm_add_ps( _mm_mul_ps( s0, s1 ), sum );
-	sum = _mm_add_ps( sum, _mm_shuffle_ps( sum, sum, _MM_SHUFFLE( 1, 0, 3, 2 ) ) );
-	sum = _mm_add_ps( sum, _mm_shuffle_ps( sum, sum, _MM_SHUFFLE( 2, 3, 0, 1 ) ) );
-	float dot;
-	_mm_store_ss( & dot, sum );
-	return dot;
-
-#else
-
-	// RB: the old loop caused completely broken rigid body physics and NaN errors
+	// Taken from RBDoom3
+	// Fix for broken physics, should probably just replace this with an actual math library to avoid issues like this.
+	// Old loop can return NAN errors breaking rigidbody and physics.
 #if 1
 	float s0 = 0.0f;
 	float s1 = 0.0f;
@@ -239,9 +220,7 @@ static float DotProduct_SIMD( const float * src0, const float * src1, const int 
 
 	return s;
 #endif
-	// RB end
 
-#endif
 }
 
 /*
