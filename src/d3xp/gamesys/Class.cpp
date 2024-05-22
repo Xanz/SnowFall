@@ -922,7 +922,7 @@ bool idClass::ProcessEventArgPtr( const idEventDef *ev, int *data ) {
 
 	callback = c->eventMap[ num ];
 
-#if !CPU_EASYARGS
+#if 0
 
 /*
 on ppc architecture, floats are passed in a seperate set of registers

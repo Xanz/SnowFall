@@ -43,6 +43,11 @@ static const int AT_VS_OUT = BIT( 2 );
 static const int AT_PS_IN  = BIT( 3 );
 static const int AT_PS_OUT = BIT( 4 );
 
+// We need to disable GL_ prefixes
+static const int AT_VS_OUT_RESERVED = BIT( 5 );
+static const int AT_PS_IN_RESERVED	= BIT( 6 );
+static const int AT_PS_OUT_RESERVED = BIT( 7 );
+
 struct idCGBlock {
 	idStr prefix;	// tokens that comes before the name
 	idStr name;		// the name
@@ -99,7 +104,7 @@ attribInfo_t attribsPC[] = {
 	{ "float4",		"color2",		"COLOR1",		"in_Color2",			PC_ATTRIB_INDEX_COLOR2,			AT_VS_IN,		VERTEX_MASK_COLOR2 },
 
 	// pre-defined vertex program output
-	{ "float4",		"position",		"POSITION",		"gl_Position",			0,	AT_VS_OUT,		0 },
+	{ "float4",		"position",		"POSITION",		"gl_Position",			0,	AT_VS_OUT | AT_VS_OUT_RESERVED,		0 },
 	{ "float",		"clip0",		"CLP0",			"gl_ClipDistance[0]",	0,	AT_VS_OUT,		0 },
 	{ "float",		"clip1",		"CLP1",			"gl_ClipDistance[1]",	0,	AT_VS_OUT,		0 },
 	{ "float",		"clip2",		"CLP2",			"gl_ClipDistance[2]",	0,	AT_VS_OUT,		0 },
@@ -107,33 +112,37 @@ attribInfo_t attribsPC[] = {
 	{ "float",		"clip4",		"CLP4",			"gl_ClipDistance[4]",	0,	AT_VS_OUT,		0 },
 	{ "float",		"clip5",		"CLP5",			"gl_ClipDistance[5]",	0,	AT_VS_OUT,		0 },
 
-	// pre-defined fragment program input
-	{ "float4",		"position",		"WPOS",			"gl_FragCoord",			0,	AT_PS_IN,		0 },
-	{ "half4",		"hposition",	"WPOS",			"gl_FragCoord",			0,	AT_PS_IN,		0 },
-	{ "float",		"facing",		"FACE",			"gl_FrontFacing",		0,	AT_PS_IN,		0 },
+	// // pre-defined fragment program input
+	{ "float4",		"position",		"WPOS",			"gl_FragCoord",			0,	AT_PS_IN | AT_PS_IN_RESERVED,		0 },
+	{ "half4",		"hposition",	"WPOS",			"gl_FragCoord",			0,	AT_PS_IN | AT_PS_IN_RESERVED,		0 },
+	{ "float",		"facing",		"FACE",			"gl_FrontFacing",		0,	AT_PS_IN | AT_PS_IN_RESERVED,		0 },
 
 	// fragment program output
-	{ "float4",		"color",		"COLOR",		"gl_FragColor",		0,	AT_PS_OUT,		0 }, // GLSL version 1.2 doesn't allow for custom color name mappings
-	{ "half4",		"hcolor",		"COLOR",		"gl_FragColor",		0,	AT_PS_OUT,		0 },
-	{ "float4",		"color0",		"COLOR0",		"gl_FragColor",		0,	AT_PS_OUT,		0 },
-	{ "float4",		"color1",		"COLOR1",		"gl_FragColor",		1,	AT_PS_OUT,		0 },
-	{ "float4",		"color2",		"COLOR2",		"gl_FragColor",		2,	AT_PS_OUT,		0 },
-	{ "float4",		"color3",		"COLOR3",		"gl_FragColor",		3,	AT_PS_OUT,		0 },
-	{ "float",		"depth",		"DEPTH",		"gl_FragDepth",		4,	AT_PS_OUT,		0 },
+	{ "float4",		"color",		"COLOR",		"gl_FragColor",		0,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 }, // GLSL version 1.2 doesn't allow for custom color name mappings
+	{ "half4",		"hcolor",		"COLOR",		"gl_FragColor",		0,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
+	{ "float4",		"color0",		"COLOR0",		"gl_FragColor",		0,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
+	{ "float4",		"color1",		"COLOR1",		"gl_FragColor",		1,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
+	{ "float4",		"color2",		"COLOR2",		"gl_FragColor",		2,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
+	{ "float4",		"color3",		"COLOR3",		"gl_FragColor",		3,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
+	{ "float",		"depth",		"DEPTH",		"gl_FragDepth",		4,	AT_PS_OUT | AT_PS_OUT_RESERVED,		0 },
 
 	// vertex to fragment program pass through
-	{ "float4",		"color",		"COLOR",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
-	{ "float4",		"color0",		"COLOR0",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
-	{ "float4",		"color1",		"COLOR1",		"gl_FrontSecondaryColor",	0,	AT_VS_OUT,	0 },
+	// { "float4",		"color",		"COLOR",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
+	// { "float4",		"color0",		"COLOR0",		"gl_FrontColor",			0,	AT_VS_OUT,	0 },
+	// { "float4",		"color1",		"COLOR1",		"gl_FrontSecondaryColor",	0,	AT_VS_OUT,	0 },
+
+	{ "float4",		"color",		"COLOR",		"vofi_Color",				0,	AT_VS_OUT,	0 },
+	{ "float4",		"color0",		"COLOR0",		"vofi_Color",				0,	AT_VS_OUT,	0 },
+	{ "float4",		"color1",		"COLOR1",		"vofi_SecondaryColor",		0,	AT_VS_OUT,	0 },
 
 
-	{ "float4",		"color",		"COLOR",		"gl_Color",				0,	AT_PS_IN,	0 },
-	{ "float4",		"color0",		"COLOR0",		"gl_Color",				0,	AT_PS_IN,	0 },
-	{ "float4",		"color1",		"COLOR1",		"gl_SecondaryColor",	0,	AT_PS_IN,	0 },
+	{ "float4",		"color",		"COLOR",		"vofi_Color",				0,	AT_PS_IN,	0 },
+	{ "float4",		"color0",		"COLOR0",		"vofi_Color",				0,	AT_PS_IN,	0 },
+	{ "float4",		"color1",		"COLOR1",		"vofi_SecondaryColor",	0,	AT_PS_IN,	0 },
 
-	{ "half4",		"hcolor",		"COLOR",		"gl_Color",				0,	AT_PS_IN,		0 },
-	{ "half4",		"hcolor0",		"COLOR0",		"gl_Color",				0,	AT_PS_IN,		0 },
-	{ "half4",		"hcolor1",		"COLOR1",		"gl_SecondaryColor",	0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor",		"COLOR",		"vofi_Color",				0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor0",		"COLOR0",		"vofi_Color",				0,	AT_PS_IN,		0 },
+	{ "half4",		"hcolor1",		"COLOR1",		"vofi_SecondaryColor",	0,	AT_PS_IN,		0 },
 
 	{ "float4",		"texcoord0",	"TEXCOORD0_centroid",	"vofi_TexCoord0",	0,	AT_PS_IN,	0 },
 	{ "float4",		"texcoord1",	"TEXCOORD1_centroid",	"vofi_TexCoord1",	0,	AT_PS_IN,	0 },
@@ -572,7 +581,7 @@ struct inOutVariable_t {
 ParseInOutStruct
 ========================
 */
-void ParseInOutStruct( idLexer & src, int attribType, idList< inOutVariable_t > & inOutVars ) {
+void ParseInOutStruct( idLexer& src, int attribType, int attribIgnoreType, idList< inOutVariable_t >& inOutVars ) {
 	src.ExpectTokenString( "{" );
 
 	while( !src.CheckTokenString( "}" ) ) {
@@ -617,6 +626,20 @@ void ParseInOutStruct( idLexer & src, int attribType, idList< inOutVariable_t > 
 			if ( var.nameGLSL == inOutVars[i].nameGLSL ) {
 				var.declareInOut = false;
 				break;
+			}
+		}
+
+
+		//Disables the GL_ prefix
+		for( int i = 0; attribsPC[i].semantic != NULL; i++ )
+		{
+			if( var.nameGLSL.Cmp( attribsPC[i].glsl ) == 0 )
+			{
+				if( ( attribsPC[i].flags & attribIgnoreType ) != 0 )
+				{
+					var.declareInOut = false;
+					break;
+				}
 			}
 		}
 
@@ -667,7 +690,7 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 		// convert the in/out structs
 		if ( token == "struct" ) {
 			if ( src.CheckTokenString( "VS_IN" ) ) {
-				ParseInOutStruct( src, AT_VS_IN, varsIn );
+				ParseInOutStruct( src, AT_VS_IN, 0, varsIn );
 				program += "\n\n";
 				for ( int i = 0; i < varsIn.Num(); i++ ) {
 					if ( varsIn[i].declareInOut ) {
@@ -676,7 +699,7 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 				}
 				continue;
 			} else if ( src.CheckTokenString( "VS_OUT" ) ) {
-				ParseInOutStruct( src, AT_VS_OUT, varsOut );
+				ParseInOutStruct( src, AT_VS_OUT, AT_VS_OUT_RESERVED, varsOut );
 				program += "\n";
 				for ( int i = 0; i < varsOut.Num(); i++ ) {
 					if ( varsOut[i].declareInOut ) {
@@ -685,7 +708,7 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 				}
 				continue;
 			} else if ( src.CheckTokenString( "PS_IN" ) ) {
-				ParseInOutStruct( src, AT_PS_IN, varsIn );
+				ParseInOutStruct( src, AT_PS_IN, AT_PS_IN_RESERVED ,varsIn );
 				program += "\n\n";
 				for ( int i = 0; i < varsIn.Num(); i++ ) {
 					if ( varsIn[i].declareInOut ) {
@@ -699,7 +722,7 @@ idStr ConvertCG2GLSL( const idStr & in, const char * name, bool isVertexProgram,
 				varsIn.Append( var );
 				continue;
 			} else if ( src.CheckTokenString( "PS_OUT" ) ) {
-				ParseInOutStruct( src, AT_PS_OUT, varsOut );
+				ParseInOutStruct( src, AT_PS_OUT, AT_PS_OUT_RESERVED, varsOut );
 				program += "\n";
 				for ( int i = 0; i < varsOut.Num(); i++ ) {
 					if ( varsOut[i].declareInOut ) {
