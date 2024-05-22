@@ -68,9 +68,9 @@ add_compile_definitions(__DOOM__)
 
 # Needed so that VSCode can syntax check correctly.
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/OpenAL/include external/glfw/include external/glew/include external/zlib src/idlib)
-link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib/Release/Win32 external/zlib/build/Release)
+link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib external/zlib/build/Release)
 
-set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic)
+set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)

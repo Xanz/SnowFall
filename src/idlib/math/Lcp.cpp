@@ -197,26 +197,49 @@ static float DotProduct_SIMD( const float * src0, const float * src1, const int 
 
 #else
 
+	// RB: the old loop caused completely broken rigid body physics and NaN errors
+#if 1
 	float s0 = 0.0f;
 	float s1 = 0.0f;
 	float s2 = 0.0f;
 	float s3 = 0.0f;
+
 	int i = 0;
-	for ( ; i < count - 3; i += 4 ) {
-		s0 += src0[i+4] * src1[i+4];
-		s1 += src0[i+5] * src1[i+5];
-		s2 += src0[i+6] * src1[i+6];
-		s3 += src0[i+7] * src1[i+7];
+	for( ; i + 4 <= count; i += 4 )
+	{
+		s0 += src0[i + 0] * src1[i + 0];
+		s1 += src0[i + 1] * src1[i + 1];
+		s2 += src0[i + 2] * src1[i + 2];
+		s3 += src0[i + 3] * src1[i + 3];
 	}
-	switch( count - i ) {
-		NODEFAULT;
-		case 3: s0 += src0[i+2] * src1[i+2];
-		case 2: s1 += src0[i+1] * src1[i+1];
-		case 1: s2 += src0[i+0] * src1[i+0];
+
+	switch( count - i )
+	{
+			NODEFAULT;
+
+		case 4:
+			s3 += src0[i + 3] * src1[i + 3];
+		case 3:
+			s2 += src0[i + 2] * src1[i + 2];
+		case 2:
+			s1 += src0[i + 1] * src1[i + 1];
+		case 1:
+			s0 += src0[i + 0] * src1[i + 0];
 		case 0:
 			break;
 	}
 	return s0 + s1 + s2 + s3;
+#else
+
+	float s = 0;
+	for( int i = 0; i < count; i++ )
+	{
+		s += src0[i] * src1[i];
+	}
+
+	return s;
+#endif
+	// RB end
 
 #endif
 }

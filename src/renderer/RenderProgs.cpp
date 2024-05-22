@@ -175,19 +175,19 @@ void idRenderProgManager::KillAllShaders() {
 	Unbind();
 	for ( int i = 0; i < vertexShaders.Num(); i++ ) {
 		if ( vertexShaders[i].progId != INVALID_PROGID ) {
-			qglDeleteShader( vertexShaders[i].progId );
+			glDeleteShader( vertexShaders[i].progId );
 			vertexShaders[i].progId = INVALID_PROGID;
 		}
 	}
 	for ( int i = 0; i < fragmentShaders.Num(); i++ ) {
 		if ( fragmentShaders[i].progId != INVALID_PROGID ) {
-			qglDeleteShader( fragmentShaders[i].progId );
+			glDeleteShader( fragmentShaders[i].progId );
 			fragmentShaders[i].progId = INVALID_PROGID;
 		}
 	}
 	for ( int i = 0; i < glslPrograms.Num(); ++i ) {
 		if ( glslPrograms[i].progId != INVALID_PROGID ) {
-			qglDeleteProgram( glslPrograms[i].progId );
+			glDeleteProgram( glslPrograms[i].progId );
 			glslPrograms[i].progId = INVALID_PROGID;
 		}
 	}
@@ -327,19 +327,19 @@ GLuint idRenderProgManager::LoadShader( GLenum target, const char * name, const 
 	program.Replace( "vertex.texcoord", "vertex.attrib[8]" );
 
 	GLuint progId;
-	qglGenProgramsARB( 1, &progId );
+	glGenProgramsARB( 1, &progId );
 
-	qglBindProgramARB( target, progId );
-	qglGetError();
+	glBindProgramARB( target, progId );
+	glGetError();
 
-	qglProgramStringARB( target, GL_PROGRAM_FORMAT_ASCII_ARB, program.Length(), program.c_str() );
-	GLenum err = qglGetError();
+	glProgramStringARB( target, GL_PROGRAM_FORMAT_ASCII_ARB, program.Length(), program.c_str() );
+	GLenum err = glGetError();
 
 	GLint ofs = -1;
-	qglGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &ofs );
+	glGetIntegerv( GL_PROGRAM_ERROR_POSITION_ARB, &ofs );
 	if ( ( err == GL_INVALID_OPERATION ) || ( ofs != -1 ) ) {
 		if ( err == GL_INVALID_OPERATION ) {
-			const GLubyte * str = qglGetString( GL_PROGRAM_ERROR_STRING_ARB );
+			const GLubyte * str = glGetString( GL_PROGRAM_ERROR_STRING_ARB );
 			common->Printf( "\nGL_PROGRAM_ERROR_STRING_ARB: %s\n", str );
 		} else {
 			common->Printf( "\nUNKNOWN ERROR\n" );
@@ -351,7 +351,7 @@ GLuint idRenderProgManager::LoadShader( GLenum target, const char * name, const 
 		} else {
 			common->Printf( "error at %i:\n%s", ofs, program.c_str() + ofs );
 		}
-		qglDeleteProgramsARB( 1, &progId );
+		glDeleteProgramsARB( 1, &progId );
 		fileSystem->FreeFile( fileBuffer );
 		return INVALID_PROGID;
 	}
@@ -375,7 +375,7 @@ void idRenderProgManager::BindShader( int vIndex, int fIndex ) {
 	if ( vIndex >= 0 && vIndex < glslPrograms.Num() ) {
 		currentRenderProgram = vIndex;
 		RENDERLOG_PRINTF( "Binding GLSL Program %s\n", glslPrograms[vIndex].name.c_str() );
-		qglUseProgram( glslPrograms[vIndex].progId );
+		glUseProgram( glslPrograms[vIndex].progId );
 	}
 }
 
@@ -388,7 +388,7 @@ void idRenderProgManager::Unbind() {
 	currentVertexShader = -1;
 	currentFragmentShader = -1;
 
-	qglUseProgram( 0 );
+	glUseProgram( 0 );
 }
 
 /*
