@@ -1026,9 +1026,7 @@ void		GLimp_Shutdown();
 // Destroys the rendering context, closes the window, resets the resolution,
 // and resets the gamma ramps.
 
-void		GLimp_SetGamma( unsigned short red[256], 
-						    unsigned short green[256],
-							unsigned short blue[256] );
+void		GLimp_SetGamma( float value );
 // Sets the hardware gamma ramps for gamma and brightness adjustment.
 // These are now taken as 16 bit values, so we can take full advantage
 // of dacs with >8 bits of precision

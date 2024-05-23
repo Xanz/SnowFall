@@ -1378,16 +1378,16 @@ R_SetColorMappings
 ===============
 */
 void R_SetColorMappings() {
-	float b = r_brightness.GetFloat();
-	float invg = 1.0f / r_gamma.GetFloat();
+	// float b = r_brightness.GetFloat();
+	// float invg = 1.0f / r_gamma.GetFloat();
 
-	float j = 0.0f;
-	for ( int i = 0; i < 256; i++, j += b ) {
-		int inf = idMath::Ftoi( 0xffff * pow( j / 255.0f, invg ) + 0.5f );
-		tr.gammaTable[i] = idMath::ClampInt( 0, 0xFFFF, inf );
-	}
+	// float j = 0.0f;
+	// for ( int i = 0; i < 256; i++, j += b ) {
+	// 	int inf = idMath::Ftoi( 0xffff * pow( j / 255.0f, invg ) + 0.5f );
+	// 	tr.gammaTable[i] = idMath::ClampInt( 0, 0xFFFF, inf );
+	// }
 
-	GLimp_SetGamma( tr.gammaTable, tr.gammaTable, tr.gammaTable );
+	GLimp_SetGamma( r_gamma.GetFloat() );
 }
 
 /*

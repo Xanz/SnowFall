@@ -120,23 +120,8 @@ GLimp_SetGamma
 The renderer calls this when the user adjusts r_gamma or r_brightness
 ========================
 */
-void GLimp_SetGamma( unsigned short red[256], unsigned short green[256], unsigned short blue[256] ) {
-	// unsigned short table[3][256];
-	// int i;
-
-	// if ( !win32.hDC ) {
-	// 	return;
-	// }
-
-	// for ( i = 0; i < 256; i++ ) {
-	// 	table[0][i] = red[i];
-	// 	table[1][i] = green[i];
-	// 	table[2][i] = blue[i];
-	// }
-
-	// if ( !SetDeviceGammaRamp( win32.hDC, table ) ) {
-	// 	common->Printf( "WARNING: SetDeviceGammaRamp failed.\n" );
-	// }
+void GLimp_SetGamma( float value ) {
+	glfwSetGamma(glfwGetPrimaryMonitor(), value);
 }
 
 /*
@@ -927,6 +912,9 @@ subsystem.
 */
 void GLimp_Shutdown() {
 	common->Printf( "Shutting down OpenGL subsystem\n" );
+
+	//Restore normal gamma before shutdown.
+	glfwSetGamma(glfwGetPrimaryMonitor(), 1.0f);
 
 	glfwTerminate();
 
