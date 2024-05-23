@@ -84,7 +84,7 @@ void GLimp_TestSwapBuffers( const idCmdArgs &args ) {
 				glClearColor( 1, 0, 0, 1 );
 			}
 			glClear( GL_COLOR_BUFFER_BIT );
-			glfwSwapBuffers( window );
+			glfwSwapBuffers( m_Window );
 			glFinish();
 			timestamps[i] = Sys_Microseconds();
 		}
@@ -693,7 +693,7 @@ static void MouseKey_Callback(GLFWwindow* window, int button, int action, int mo
 			}
 		}
 
-		mouse_polls.Append(mouse_poll_t(key, state));
+		m_MousePolls.push_back(mouse_poll_t(key, state));
 		Sys_QueEvent(SE_KEY, key, state, 0, NULL, 0);
 	}
 }
@@ -710,7 +710,7 @@ static void Key_Callback(GLFWwindow* window, int key, int scancode, int action, 
 	if(action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
 		bool state = (action == GLFW_PRESS) ? 1 : 0;
-		keyboard_polls.Append(keyboard_poll_t(key, state));
+		m_KeyboardPolls.push_back(keyboard_poll_t(key, state));
 
 		Sys_QueEvent(SE_KEY, GLFWDoom_MapKey(key), state, 0, NULL, 0);
 	}
@@ -725,8 +725,8 @@ static void Cursor_Callback(GLFWwindow* window, double xpos, double ypos)
 	}
 	else
 	{	
-		mouse_polls.Append(mouse_poll_t(M_DELTAX, xpos));
-		mouse_polls.Append(mouse_poll_t(M_DELTAY, ypos));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAX, xpos));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAY, ypos));
 		
 		Sys_QueEvent( SE_MOUSE, xpos, ypos, 0, NULL, 0);
 
@@ -739,12 +739,12 @@ static void Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset)
 	//Has to be done this way otherwise we get funky skipping.
 	if(yoffset >= 1)
 	{
-		mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAZ, 1));
 		Sys_QueEvent( SE_KEY, K_MWHEELUP, 1, 0, NULL, 0 );
 	}
 	else if (yoffset <= -1)
 	{
-		mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAZ, -1));
 		Sys_QueEvent( SE_KEY, K_MWHEELDOWN, 1, 0, NULL, 0 );
 	}
 
@@ -811,15 +811,15 @@ bool GLimp_Init( glimpParms_t parms ) {
 		glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
 		glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
-		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", glfwGetPrimaryMonitor(), NULL);
+		m_Window = glfwCreateWindow(parms.width, parms.height, "Doom 3", glfwGetPrimaryMonitor(), NULL);
 	}
 	else
 	{
-		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", NULL, NULL);
+		m_Window = glfwCreateWindow(parms.width, parms.height, "Doom 3", NULL, NULL);
 	}
 
 
-	if (!window)
+	if (!m_Window)
     {
 		//Really bad!
         glfwTerminate();
@@ -844,20 +844,20 @@ bool GLimp_Init( glimpParms_t parms ) {
 	//Disable resizing.
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE); 
 
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(m_Window);
 
 	glewInit();
 
 	// Raw mouse input
 	if(m_rawInput.GetBool())
 	{
-		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
 	
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	// sets the cursor to the center on game start.
-	glfwSetCursorPos(window, parms.width / 2, parms.height / 2);
+	glfwSetCursorPos(m_Window, parms.width / 2, parms.height / 2);
 
 	//Toggle V-Sync
 	if(r_swapInterval.GetInteger() == 1)
@@ -885,11 +885,11 @@ bool GLimp_Init( glimpParms_t parms ) {
 	}
 
 
-	glfwSetMouseButtonCallback(window, MouseKey_Callback);
-	glfwSetKeyCallback(window, Key_Callback);
-	glfwSetCursorPosCallback(window, Cursor_Callback);
-	glfwSetScrollCallback(window, Scroll_Callback);
-	glfwSetCharCallback(window, Character_Callback);
+	glfwSetMouseButtonCallback(m_Window, MouseKey_Callback);
+	glfwSetKeyCallback(m_Window, Key_Callback);
+	glfwSetCursorPosCallback(m_Window, Cursor_Callback);
+	glfwSetScrollCallback(m_Window, Scroll_Callback);
+	glfwSetCharCallback(m_Window, Character_Callback);
 
 	return true;
 }
@@ -905,7 +905,7 @@ bool GLimp_SetScreenParms( glimpParms_t parms ) {
 	// Optionally ChangeDisplaySettings to get a different fullscreen resolution.
 	GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 	const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-	glfwSetWindowMonitor(window, monitor, 0, 0, parms.width, parms.height, parms.displayHz);
+	glfwSetWindowMonitor(m_Window, monitor, 0, 0, parms.width, parms.height, parms.displayHz);
 
 	glConfig.isFullscreen = parms.fullScreen;
 	glConfig.pixelAspect = 1.0f;	// FIXME: some monitor modes may be distorted
@@ -940,7 +940,7 @@ GLimp_SwapBuffers
 =====================
 */
 void GLimp_SwapBuffers() {
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(m_Window);
 }
 
 /*
@@ -957,7 +957,7 @@ GLimp_ActivateContext
 ===================
 */
 void GLimp_ActivateContext() {
-	glfwMakeContextCurrent(window);
+	glfwMakeContextCurrent(m_Window);
 }
 
 /*

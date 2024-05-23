@@ -130,8 +130,8 @@ Sys_ShutdownInput
 ===========
 */
 void Sys_ShutdownInput() {
-	mouse_polls.Clear();
-	keyboard_polls.Clear();
+	m_MousePolls.clear();
+	m_KeyboardPolls.clear();
 	IN_DeactivateMouse();
 	IN_DeactivateKeyboard();
 }
@@ -142,8 +142,6 @@ Sys_InitInput
 ===========
 */
 void Sys_InitInput() {
-	keyboard_polls.SetGranularity(64);
-	mouse_polls.SetGranularity(64);
 	common->Printf ("\n------- Input Initialization -------\n");
 	common->Printf ("------------------------------------\n");
 }
@@ -174,7 +172,7 @@ Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_PollKeyboardInputEvents() {
-	return keyboard_polls.Num();
+	return m_KeyboardPolls.size();
 }
 /*
 ====================
@@ -182,37 +180,37 @@ Sys_PollKeyboardInputEvents
 ====================
 */
 int Sys_ReturnKeyboardInputEvent( const int n, int &ch, bool &state ) {
-	ch = GLFWDoom_MapKey(keyboard_polls[n].key);
-	state = keyboard_polls[n].state;
+	ch = GLFWDoom_MapKey(m_KeyboardPolls[n].key);
+	state = m_KeyboardPolls[n].state;
 	return ch;
 }
 
 
 void Sys_EndKeyboardInputEvents() {
-	keyboard_polls.SetNum(0);
+	m_KeyboardPolls.clear();
 }
 
 //=====================================================================================
 
 
 int Sys_PollMouseInputEvents() {
-	return mouse_polls.Num();
+	return m_MousePolls.size();
 }
 
 int Sys_ReturnMouseInputEvent( const int n, int &action, int &value ) {
-	if (n >= mouse_polls.Num())
+	if (n >= m_MousePolls.size())
 	{
 		return 0;
 	}
 
-	action = mouse_polls[n].action;
-	value = mouse_polls[n].value;
+	action = m_MousePolls[n].action;
+	value = m_MousePolls[n].value;
 	return 1;
 }
 
 void Sys_EndMouseInputEvents( void ) 
 {
-	mouse_polls.SetNum(0);
+	m_MousePolls.clear();
 }
 
 //=====================================================================================

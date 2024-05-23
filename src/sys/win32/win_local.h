@@ -33,6 +33,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "GL/wglew.h"		// windows OpenGL extensions
 #include "win_input.h"
 #include "GLFW/glfw3.h"
+#include <vector>
 
 
 
@@ -162,10 +163,10 @@ typedef struct {
 
 extern Win32Vars_t	win32;
 
-extern GLFWwindow* window;
+extern GLFWwindow* m_Window;
 
-extern idList<mouse_poll_t> mouse_polls;
+extern std::vector<mouse_poll_t> m_MousePolls;
 
-extern idList<keyboard_poll_t> keyboard_polls;
+extern std::vector<keyboard_poll_t> m_KeyboardPolls;
 
 #endif /* !__WIN_LOCAL_H__ */

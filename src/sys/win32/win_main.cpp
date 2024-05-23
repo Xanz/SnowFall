@@ -47,6 +47,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys_local.h"
 #include "win_local.h"
 #include "../../renderer/tr_local.h"
+#include <vector>
 
 idCVar Win32Vars_t::sys_arch( "sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "" );
 idCVar Win32Vars_t::sys_cpustring( "sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "" );
@@ -61,11 +62,11 @@ idCVar Win32Vars_t::win_allowMultipleInstances( "win_allowMultipleInstances", "0
 
 Win32Vars_t	win32;
 
-GLFWwindow* window;
+GLFWwindow* m_Window;
 
-idList<mouse_poll_t> mouse_polls;
+std::vector<mouse_poll_t> m_MousePolls;
 
-idList<keyboard_poll_t> keyboard_polls;
+std::vector<keyboard_poll_t> m_KeyboardPolls;
 
 static char		sys_cmdline[MAX_STRING_CHARS];
 
