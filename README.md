@@ -44,5 +44,5 @@ SnowFall Engine or SFEngine is a fork of the Doom 3 BFG engine. The overall goal
 
 **I’ve found a bug or want to contribute to the engine?**
 
-> If you have found any bugs with the engine simply raise an issue in the Github page and I will take a look at it when I can. If you would like to submit new features or bugfixes create a pull request and I can take a look at your changes, Please make sure that your code is commented the pull request specific in the goal/issue fixed.
+> If you have found any bugs with the engine simply raise an issue in the Github page and I will take a look at it when I can. If you would like to submit new features or bugfixes create a pull request and I can take a look at your changes, Please make sure that your code is commented and the pull request is specific in the goal/issue fixed.
 >
