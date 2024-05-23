@@ -21,8 +21,6 @@ file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE TOOLS src/tools/*.cpp src/tools/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
 file(GLOB SWF src/swf/*.cpp src/swf/*.h)
-# file(GLOB_RECURSE ZLIB src/framework/zlib/*.c src/framework/zlib/*.h)
-# file(GLOB GLAD external/glad/src/glad.c)
 
 set(D3Source
     ${D3GAME}
@@ -45,8 +43,6 @@ set(D3Source
     ${AAS}
     ${SWF}
     )
-
-
     
 add_compile_options(/wd4467)
 
@@ -55,13 +51,14 @@ add_compile_definitions(_USE_32BIT_TIME_T)
 add_compile_definitions(_MBCS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(__DOOM__)
-# add_compile_definitions(GLFW_INCLUDE_NONE)
+add_compile_definitions(GLEW_STATIC)
 
-# Needed so that VSCode can syntax check correctly.
+
+# we need to also include the base src folder so that VSCode can link headers correctly.
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/OpenAL/include external/glfw/include external/glew/include external/zlib src/idlib external/glfw/include)
 link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib external/zlib/build/Release external/glfw/libs)
 
-set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32 glfw3)
+set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32s glfw3)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
