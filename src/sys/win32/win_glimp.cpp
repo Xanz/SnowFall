@@ -791,10 +791,6 @@ parameters and try again.
 ===================
 */
 bool GLimp_Init( glimpParms_t parms ) {
-
-	// Do we even care?
-	// cmdSystem->AddCommand( "testSwapBuffers", GLimp_TestSwapBuffers, CMD_FL_SYSTEM, "Times swapbuffer options" );
-
 	common->Printf( "Initializing OpenGL subsystem with multisamples:%i stereo:%i fullscreen:%i\n", 
 		parms.multiSamples, parms.stereo, parms.fullScreen );
 
@@ -859,7 +855,9 @@ bool GLimp_Init( glimpParms_t parms ) {
 	}
 	
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(window, 0, 0);
+
+	// sets the cursor to the center on game start.
+	glfwSetCursorPos(window, parms.width / 2, parms.height / 2);
 
 	//Toggle V-Sync
 	if(r_swapInterval.GetInteger() == 1)
