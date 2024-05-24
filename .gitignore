@@ -36,5 +36,6 @@ base/
 src/.vs/
 Game/
 .vscode/
-external/
+# We ignore glew for now, I cannot seem to build this as a cmake project.
+external/glew/
 

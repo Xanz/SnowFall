@@ -54,11 +54,16 @@ add_compile_definitions(__DOOM__)
 add_compile_definitions(GLEW_STATIC)
 
 
-# we need to also include the base src folder so that VSCode can link headers correctly.
-include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/OpenAL/include external/glfw/include external/glew/include external/zlib src/idlib external/glfw/include)
-link_directories(external/OpenAL/build/Debug external/glfw/libs external/glew/lib external/zlib/build/Release external/glfw/libs)
+set(BUILD_SHARED_LIBS OFF)
+add_subdirectory("external/glfw")
+add_subdirectory("external/zlib")
+add_subdirectory("external/openal")
 
-set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL32 zlibstatic glew32s glfw3)
+# we need to also include the base src folder so that VSCode can link headers correctly.
+include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/glew/include src/idlib external/glfw/include external/openal/include)
+link_directories(external/glew/lib/Release/Win32)
+
+set(LIBS xinput dbghelp dinput8 dsound dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm wsock32 OpenAL zlibstatic glew32s glfw)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
