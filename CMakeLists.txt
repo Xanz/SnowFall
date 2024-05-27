@@ -21,7 +21,6 @@ file(GLOB_RECURSE OGG_SRC external/OggVorbis/oggsrc/*.c external/OggVorbis/oggsr
 file(GLOB_RECURSE OGG external/OggVorbis/ogg/*.c external/OggVorbis/ogg/*.cpp external/OggVorbis/ogg/*.h)
 file(GLOB_RECURSE VORBIS external/OggVorbis/vorbis/*.c external/OggVorbis/vorbis/*.cpp external/OggVorbis/vorbis/*.h)
 file(GLOB_RECURSE VORBIS_SRC external/OggVorbis/vorbissrc/*.c external/OggVorbis/vorbissrc/*.cpp external/OggVorbis/vorbissrc/*.h)
-# file(GLOB GLAD external/glad/src/glad.c)
 
 set(D3Source
     ${D3GAME}
@@ -50,9 +49,7 @@ add_compile_definitions(_WINDOWS)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(WIN32)
 add_compile_definitions(_USE_32BIT_TIME_T)
-# add_compile_definitions(_MBCS)
 add_compile_definitions(_XKEYCHECK_H)
-# add_compile_definitions(GLFW_INCLUDE_NONE)
 
 # Needed so that VSCode can syntax check correctly.
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/openal external/glfw/include external/glew/include)
@@ -67,4 +64,9 @@ target_link_libraries(${PROJECT_NAME} ${LIBS})
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+)
+
+set_target_properties(${PROJECT_NAME} PROPERTIES
+    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}
+    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}
 )

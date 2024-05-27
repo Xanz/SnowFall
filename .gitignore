@@ -30,7 +30,12 @@
 *.exe
 *.out
 *.app
+*.pdb
 
 build/
 
 src/.vs/
+
+.vs/
+
+base/
