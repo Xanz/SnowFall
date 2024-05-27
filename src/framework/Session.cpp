@@ -389,6 +389,8 @@ idSessionLocal::idSessionLocal()
 
 	menuSoundWorld = NULL;
 
+	// lastTicMsec = 0;
+
 	Clear();
 }
 
@@ -517,7 +519,7 @@ void idSessionLocal::StartWipe(const char *_wipeMaterial, bool hold)
 	wipeMaterial = declManager->FindMaterial(_wipeMaterial, false);
 
 	wipeStartTic = com_ticNumber;
-	wipeStopTic = wipeStartTic + 1000.0f / USERCMD_MSEC * com_wipeSeconds.GetFloat();
+	wipeStopTic = wipeStartTic + 1000.0f / FPS_TO_MSEC() * com_wipeSeconds.GetFloat();
 	wipeHold = hold;
 }
 
@@ -540,6 +542,7 @@ void idSessionLocal::CompleteWipe()
 #if ID_CONSOLE_LOCK
 		emptyDrawCount = 0;
 #endif
+		com_ticNumber++;
 		UpdateScreen(true);
 	}
 }
@@ -564,15 +567,15 @@ void idSessionLocal::ShowLoadingGui()
 	int force = 10;
 	while (Sys_Milliseconds() < stop || force-- > 0)
 	{
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		com_frameTime = com_ticNumber * FPS_TO_MSEC();
 		session->Frame();
 		session->UpdateScreen(false);
 	}
 #else
-	int stop = com_ticNumber + 1000.0f / USERCMD_MSEC * 1.0f;
+	int stop = com_ticNumber + 1000.0f / FPS_TO_MSEC() * 1.0f;
 	while (com_ticNumber < stop)
 	{
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		com_frameTime = com_ticNumber * FPS_TO_MSEC();
 		session->Frame();
 		session->UpdateScreen(false);
 	}
@@ -1783,6 +1786,10 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 	// note any warning prints that happen during the load process
 	common->ClearWarnings(mapString);
 
+	// allow com_engineHz to be changed between map loads
+	com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+	com_engineHz_latched = com_engineHz.GetFloat();
+
 	// release the mouse cursor
 	// before we do this potentially long operation
 	Sys_GrabMouseCursor(false);
@@ -2839,11 +2846,7 @@ idSessionLocal::Frame
 */
 void idSessionLocal::Frame()
 {
-
-	if (com_asyncSound.GetInteger() == 0)
-	{
-		soundSystem->AsyncUpdate(Sys_Milliseconds());
-	}
+	soundSystem->AsyncUpdate(Sys_Milliseconds());
 
 	// Editors that completely take over the game
 	if (com_editorActive && (com_editors & (EDITOR_RADIANT | EDITOR_GUI)))
@@ -2869,7 +2872,7 @@ void idSessionLocal::Frame()
 
 		name = va("demos/%s/%s_%05i.tga", aviDemoShortName.c_str(), aviDemoShortName.c_str(), aviTicStart);
 
-		float ratio = 30.0f / (1000.0f / USERCMD_MSEC / com_aviDemoTics.GetInteger());
+		float ratio = 30.0f / (1000.0f / FPS_TO_MSEC() / com_aviDemoTics.GetInteger());
 		aviDemoFrameCount += ratio;
 		if (aviTicStart + 1 != (int)aviDemoFrameCount)
 		{
@@ -2889,69 +2892,6 @@ void idSessionLocal::Frame()
 		// this will call Draw, possibly multiple times if com_aviDemoSamples is > 1
 		renderSystem->TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name, com_aviDemoSamples.GetInteger(), NULL);
 	}
-
-	// at startup, we may be backwards
-	if (latchedTicNumber > com_ticNumber)
-	{
-		latchedTicNumber = com_ticNumber;
-	}
-
-	// se how many tics we should have before continuing
-	int minTic = latchedTicNumber + 1;
-	if (com_minTics.GetInteger() > 1)
-	{
-		minTic = lastGameTic + com_minTics.GetInteger();
-	}
-
-	if (readDemo)
-	{
-		if (!timeDemo && numDemoFrames != 1)
-		{
-			minTic = lastDemoTic + USERCMD_PER_DEMO_FRAME;
-		}
-		else
-		{
-			// timedemos and demoshots will run as fast as they can, other demos
-			// will not run more than 30 hz
-			minTic = latchedTicNumber;
-		}
-	}
-	else if (writeDemo)
-	{
-		minTic = lastGameTic + USERCMD_PER_DEMO_FRAME; // demos are recorded at 30 hz
-	}
-
-	// fixedTic lets us run a forced number of usercmd each frame without timing
-	if (com_fixedTic.GetInteger())
-	{
-		minTic = latchedTicNumber;
-	}
-
-	// FIXME: deserves a cleanup and abstraction
-#if defined(_WIN32)
-	// Spin in place if needed.  The game should yield the cpu if
-	// it is running over 60 hz, because there is fundamentally
-	// nothing useful for it to do.
-	while (1)
-	{
-		latchedTicNumber = com_ticNumber;
-		if (latchedTicNumber >= minTic)
-		{
-			break;
-		}
-		Sys_Sleep(1);
-	}
-#else
-	while (1)
-	{
-		latchedTicNumber = com_ticNumber;
-		if (latchedTicNumber >= minTic)
-		{
-			break;
-		}
-		Sys_WaitForEvent(TRIGGER_EVENT_ONE);
-	}
-#endif
 
 	if (authEmitTimeout)
 	{
@@ -3035,7 +2975,7 @@ void idSessionLocal::Frame()
 	// don't let a long onDemand sound load unsync everything
 	if (timeHitch)
 	{
-		int skip = timeHitch / USERCMD_MSEC;
+		int skip = timeHitch / FPS_TO_MSEC();
 		lastGameTic += skip;
 		numCmdsToRun -= skip;
 		timeHitch = 0;

@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "../renderer/Image.h"
+#include "Session_local.h"
 
 #define MAX_PRINT_MSG_SIZE 4096
 #define MAX_WARNING_LIST 256
@@ -71,7 +72,7 @@ idCVar com_asyncSound("com_asyncSound", "1", CVAR_INTEGER | CVAR_SYSTEM, ASYNCSO
 #endif
 idCVar com_forceGenericSIMD("com_forceGenericSIMD", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "force generic platform independent SIMD");
 idCVar com_developer("developer", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "developer mode");
-idCVar com_allowConsole("com_allowConsole", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "allow toggling console with the tilde key");
+idCVar com_allowConsole("com_allowConsole", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "allow toggling console with the tilde key");
 idCVar com_speeds("com_speeds", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show engine timings");
 idCVar com_showFPS("cl_showFPS", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_NOCHEAT, "show frames rendered per second");
 idCVar com_showMemoryUsage("com_showMemoryUsage", "0", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT, "show total and per frame memory usage");
@@ -86,6 +87,13 @@ idCVar com_updateLoadSize("com_updateLoadSize", "0", CVAR_BOOL | CVAR_SYSTEM | C
 idCVar com_videoRam("com_videoRam", "64", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCHEAT | CVAR_ARCHIVE, "holds the last amount of detected video ram");
 
 idCVar com_product_lang_ext("com_product_lang_ext", "1", CVAR_INTEGER | CVAR_SYSTEM | CVAR_ARCHIVE, "Extension to use when creating language files.");
+
+idCVar com_engineHz("com_engineHz", "90", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f);
+idCVar com_deltaTimeClamp("com_deltaTimeClamp", "50", CVAR_INTEGER, "don't process more than this time in a single frame");
+
+float com_engineHz_latched = 90.0f; // Latched version of cvar, updated between map loads
+int64_t com_engineHz_numerator = 100LL * 1000LL;
+int64_t com_engineHz_denominator = 100LL * 60LL;
 
 // com_speeds times
 int time_gameFrame;
@@ -124,7 +132,6 @@ public:
 	virtual bool IsInitialized(void) const;
 	virtual void Frame(void);
 	virtual void GUIFrame(bool execCmd, bool network);
-	virtual void Async(void);
 	virtual void StartupVariable(const char *match, bool once);
 	virtual void InitTool(const toolFlag_t tool, const idDict *dict);
 	virtual void ActivateTool(bool active);
@@ -203,6 +210,9 @@ private:
 #ifdef ID_WRITE_VERSION
 	idCompressor *config_compressor;
 #endif
+
+	int gameFrame;			 // Frame number of the local game
+	double gameTimeResidual; // left over msec from the last game frame
 };
 
 idCommonLocal commonLocal;
@@ -229,6 +239,9 @@ idCommonLocal::idCommonLocal(void)
 	rd_flush = NULL;
 
 	gameDLL = 0;
+
+	gameFrame = 0;
+	gameTimeResidual = 0;
 
 #ifdef ID_WRITE_VERSION
 	config_compressor = NULL;
@@ -2771,7 +2784,112 @@ void idCommonLocal::Frame(void)
 
 		eventLoop->RunEventLoop();
 
-		com_frameTime = com_ticNumber * USERCMD_MSEC;
+		//--------------------------------------------
+		// Determine how many game tics we are going to run,
+		// now that the previous frame is completely finished.
+		//
+		// It is important that any waiting on the GPU be done
+		// before this, or there will be a bad stuttering when
+		// dropping frames for performance management.
+		//--------------------------------------------
+
+		// input:
+		// thisFrameTime
+		// com_noSleep
+		// com_engineHz
+		// com_fixedTic
+		// com_deltaTimeClamp
+		// IsMultiplayer
+		//
+		// in/out state:
+		// gameFrame
+		// gameTimeResidual
+		// lastFrameTime
+		// syncNextFrame
+		//
+		// Output:
+		// numGameFrames
+
+		// How many game frames to run
+		int numGameFrames = 0;
+
+		for (;;)
+		{
+			const int thisFrameTime = Sys_Milliseconds();
+			static int lastFrameTime = thisFrameTime; // initialized only the first time
+			const int deltaMilliseconds = thisFrameTime - lastFrameTime;
+			lastFrameTime = thisFrameTime;
+
+			// if there was a large gap in time since the last frame, or the frame
+			// rate is very very low, limit the number of frames we will run
+			const int clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
+
+			gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
+
+			// don't run any frames when paused
+			// if (pauseGame) {
+			//	gameFrame++;
+			//	gameTimeResidual = 0;
+			//	break;
+			//}
+
+			// debug cvar to force multiple game tics
+			// if (com_fixedTic.GetInteger() > 0) {
+			//	numGameFrames = com_fixedTic.GetInteger();
+			//	gameFrame += numGameFrames;
+			//	gameTimeResidual = 0;
+			//	break;
+			//}
+
+			// if (syncNextGameFrame) {
+			//	// don't sleep at all
+			//	syncNextGameFrame = false;
+			//	gameFrame++;
+			//	numGameFrames++;
+			//	gameTimeResidual = 0;
+			//	break;
+			// }
+
+			for (;;)
+			{
+				// How much time to wait before running the next frame,
+				// based on com_engineHz
+				const int frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
+				if (gameTimeResidual < frameDelay)
+				{
+					break;
+				}
+				gameTimeResidual -= frameDelay;
+				gameFrame++;
+				numGameFrames++;
+				com_ticNumber++;
+				// if there is enough residual left, we may run additional frames
+			}
+			sessLocal.latchedTicNumber = com_ticNumber;
+
+			if (numGameFrames > 0)
+			{
+				// ready to actually run them
+				break;
+			}
+
+			// if we are vsyncing, we always want to run at least one game
+			// frame and never sleep, which might happen due to scheduling issues
+			// if we were just looking at real time.
+			// if (com_noSleep.GetBool()) {
+			//	numGameFrames = 1;
+			//	gameFrame += numGameFrames;
+			//	gameTimeResidual = 0;
+			//	break;
+			//}
+
+			// not enough time has passed to run a frame, as might happen if
+			// we don't have vsync on, or the monitor is running at 120hz while
+			// com_engineHz is 60, so sleep a bit and check again
+			Sys_Sleep(0);
+		}
+
+		com_frameTime = Sys_Milliseconds();
 
 		idAsyncNetwork::RunFrame();
 
@@ -2831,135 +2949,13 @@ void idCommonLocal::GUIFrame(bool execCmd, bool network)
 {
 	Sys_GenerateEvents();
 	eventLoop->RunEventLoop(execCmd); // and execute any commands
-	com_frameTime = com_ticNumber * USERCMD_MSEC;
+	com_frameTime = com_ticNumber * FPS_TO_MSEC();
 	if (network)
 	{
 		idAsyncNetwork::RunFrame();
 	}
 	session->Frame();
 	session->UpdateScreen(false);
-}
-
-/*
-=================
-idCommonLocal::SingleAsyncTic
-
-The system will asyncronously call this function 60 times a second to
-handle the time-critical functions that we don't want limited to
-the frame rate:
-
-sound mixing
-user input generation (conditioned by com_asyncInput)
-packet server operation
-packet client operation
-
-We are not using thread safe libraries, so any functionality put here must
-be VERY VERY careful about what it calls.
-=================
-*/
-
-typedef struct
-{
-	int milliseconds; // should always be incremeting by 60hz
-	int deltaMsec;	  // should always be 16
-	int timeConsumed; // msec spent in Com_AsyncThread()
-	int clientPacketsReceived;
-	int serverPacketsReceived;
-	int mostRecentServerPacketSequence;
-} asyncStats_t;
-
-static const int MAX_ASYNC_STATS = 1024;
-asyncStats_t com_asyncStats[MAX_ASYNC_STATS]; // indexed by com_ticNumber
-int prevAsyncMsec;
-int lastTicMsec;
-
-void idCommonLocal::SingleAsyncTic(void)
-{
-	// main thread code can prevent this from happening while modifying
-	// critical data structures
-	Sys_EnterCriticalSection();
-
-	asyncStats_t *stat = &com_asyncStats[com_ticNumber & (MAX_ASYNC_STATS - 1)];
-	memset(stat, 0, sizeof(*stat));
-	stat->milliseconds = Sys_Milliseconds();
-	stat->deltaMsec = stat->milliseconds - com_asyncStats[(com_ticNumber - 1) & (MAX_ASYNC_STATS - 1)].milliseconds;
-
-	if (usercmdGen && com_asyncInput.GetBool())
-	{
-		usercmdGen->UsercmdInterrupt();
-	}
-
-	switch (com_asyncSound.GetInteger())
-	{
-	case 1:
-		soundSystem->AsyncUpdate(stat->milliseconds);
-		break;
-	case 3:
-		soundSystem->AsyncUpdateWrite(stat->milliseconds);
-		break;
-	}
-
-	// we update com_ticNumber after all the background tasks
-	// have completed their work for this tic
-	com_ticNumber++;
-
-	stat->timeConsumed = Sys_Milliseconds() - stat->milliseconds;
-
-	Sys_LeaveCriticalSection();
-}
-
-/*
-=================
-idCommonLocal::Async
-=================
-*/
-void idCommonLocal::Async(void)
-{
-	if (com_shuttingDown)
-	{
-		return;
-	}
-
-	int msec = Sys_Milliseconds();
-	if (!lastTicMsec)
-	{
-		lastTicMsec = msec - USERCMD_MSEC;
-	}
-
-	if (!com_preciseTic.GetBool())
-	{
-		// just run a single tic, even if the exact msec isn't precise
-		SingleAsyncTic();
-		return;
-	}
-
-	int ticMsec = USERCMD_MSEC;
-
-	// the number of msec per tic can be varies with the timescale cvar
-	float timescale = com_timescale.GetFloat();
-	if (timescale != 1.0f)
-	{
-		ticMsec /= timescale;
-		if (ticMsec < 1)
-		{
-			ticMsec = 1;
-		}
-	}
-
-	// don't skip too many
-	if (timescale == 1.0f)
-	{
-		if (lastTicMsec + 10 * USERCMD_MSEC < msec)
-		{
-			lastTicMsec = msec - 10 * USERCMD_MSEC;
-		}
-	}
-
-	while (lastTicMsec + ticMsec <= msec)
-	{
-		SingleAsyncTic();
-		lastTicMsec += ticMsec;
-	}
 }
 
 /*
@@ -3222,6 +3218,10 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		ClearCommandLine();
 
 		com_fullyInitialized = true;
+
+		// Needs to be set at init otherwise the fps will still be capped.
+		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+		com_engineHz_latched = com_engineHz.GetFloat();
 	}
 
 	catch (idException &)

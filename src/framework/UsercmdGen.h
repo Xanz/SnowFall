@@ -43,8 +43,8 @@ If you have questions concerning this license or the applicable additional terms
 // Also why the fuck is FPS calculated using integers? - WTF
 // Pull request for https://github.com/dhewm/dhewm3/pull/297
 // Could be helpful when trying to implement this.
-const int USERCMD_HZ = 60; // 60 frames per second
-const int USERCMD_MSEC = 1000 / USERCMD_HZ;
+// const int USERCMD_HZ = 90; // 60 frames per second
+// const int USERCMD_MSEC = 1000 / 90;
 
 // usercmd_t->button bits
 const int BUTTON_ATTACK = BIT(0);

@@ -135,11 +135,6 @@ public:
 
 	// Called repeatedly by blocking function calls with GUI interactivity.
 	virtual void GUIFrame(bool execCmd, bool network) = 0;
-
-	// Called 60 times a second from a background thread for sound mixing,
-	// and input generation. Not called until idCommon::Init() has completed.
-	virtual void Async(void) = 0;
-
 	// Checks for and removes command line "+set var arg" constructs.
 	// If match is NULL, all set commands will be executed, otherwise
 	// only a set with the exact name.  Only used during startup.
@@ -214,5 +209,35 @@ public:
 };
 
 extern idCommon *common;
+extern idCVar com_engineHz;
+extern float com_engineHz_latched;
+extern int64_t com_engineHz_numerator;
+extern int64_t com_engineHz_denominator;
+
+// Returns the msec the frame starts on
+ID_INLINE int FRAME_TO_MSEC(int64_t frame)
+{
+	return (int)((frame * com_engineHz_numerator) / com_engineHz_denominator);
+}
+// Rounds DOWN to the nearest frame
+ID_INLINE int MSEC_TO_FRAME_FLOOR(int msec)
+{
+	return (int)((((int64_t)msec * com_engineHz_denominator) + (com_engineHz_denominator - 1)) / com_engineHz_numerator);
+}
+// Rounds UP to the nearest frame
+ID_INLINE int MSEC_TO_FRAME_CEIL(int msec)
+{
+	return (int)((((int64_t)msec * com_engineHz_denominator) + (com_engineHz_numerator - 1)) / com_engineHz_numerator);
+}
+// Aligns msec so it starts on a frame bondary
+ID_INLINE int MSEC_ALIGN_TO_FRAME(int msec)
+{
+	return FRAME_TO_MSEC(MSEC_TO_FRAME_CEIL(msec));
+}
+
+ID_INLINE int FPS_TO_MSEC()
+{
+	return 1000 / com_engineHz.GetFloat();
+}
 
 #endif /* !__COMMON_H__ */

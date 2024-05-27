@@ -566,10 +566,10 @@ void idCameraAnim::Think(void)
 			return;
 		}
 
-		if (frameRate == com_engineHz_latched)
+		if (frameRate == com_engineHz.GetFloat())
 		{
 			frameTime = gameLocal.time - starttime;
-			frame = frameTime / gameLocal.msec;
+			frame = frameTime / FPS_TO_MSEC();
 		}
 		else
 		{
@@ -627,10 +627,10 @@ void idCameraAnim::GetViewParms(renderView_t *view)
 		return;
 	}
 
-	if (frameRate == USERCMD_HZ)
+	if (frameRate == com_engineHz.GetFloat())
 	{
 		frameTime = gameLocal.time - starttime;
-		frame = frameTime / gameLocal.msec;
+		frame = frameTime / FPS_TO_MSEC();
 		lerp = 0.0f;
 	}
 	else
@@ -655,7 +655,7 @@ void idCameraAnim::GetViewParms(renderView_t *view)
 
 	if (g_debugCinematic.GetBool())
 	{
-		int prevFrameTime = (gameLocal.time - starttime - gameLocal.msec) * frameRate;
+		int prevFrameTime = (gameLocal.time - starttime - FPS_TO_MSEC()) * frameRate;
 		int prevFrame = prevFrameTime / 1000;
 		int prevCut;
 
@@ -743,7 +743,7 @@ void idCameraAnim::GetViewParms(renderView_t *view)
 	static int lastFrame = 0;
 	static idVec3 lastFrameVec( 0.0f, 0.0f, 0.0f );
 	if ( gameLocal.time != lastFrame ) {
-		gameRenderWorld->DebugBounds( colorCyan, idBounds( view->vieworg ).Expand( 16.0f ), vec3_origin, gameLocal.msec );
+		gameRenderWorld->DebugBounds( colorCyan, idBounds( view->vieworg ).Expand( 16.0f ), vec3_origin, FPS_TO_MSEC() );
 		gameRenderWorld->DebugLine( colorRed, view->vieworg, view->vieworg + idVec3( 0.0f, 0.0f, 2.0f ), 10000, false );
 		gameRenderWorld->DebugLine( colorCyan, lastFrameVec, view->vieworg, 10000, false );
 		gameRenderWorld->DebugLine( colorYellow, view->vieworg + view->viewaxis[ 0 ] * 64.0f, view->vieworg + view->viewaxis[ 0 ] * 66.0f, 10000, false );

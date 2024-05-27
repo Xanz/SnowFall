@@ -432,14 +432,14 @@ bool idMoveable::FollowInitialSplinePath(void)
 		if (gameLocal.time < initialSpline->GetTime(initialSpline->GetNumValues() - 1))
 		{
 			idVec3 splinePos = initialSpline->GetCurrentValue(gameLocal.time);
-			idVec3 linearVelocity = (splinePos - physicsObj.GetOrigin()) * USERCMD_HZ;
+			idVec3 linearVelocity = (splinePos - physicsObj.GetOrigin()) * com_engineHz_latched;
 			physicsObj.SetLinearVelocity(linearVelocity);
 
 			idVec3 splineDir = initialSpline->GetCurrentFirstDerivative(gameLocal.time);
 			idVec3 dir = initialSplineDir * physicsObj.GetAxis();
 			idVec3 angularVelocity = dir.Cross(splineDir);
 			angularVelocity.Normalize();
-			angularVelocity *= idMath::ACos16(dir * splineDir / splineDir.Length()) * USERCMD_HZ;
+			angularVelocity *= idMath::ACos16(dir * splineDir / splineDir.Length()) * com_engineHz_latched;
 			physicsObj.SetAngularVelocity(angularVelocity);
 			return true;
 		}
