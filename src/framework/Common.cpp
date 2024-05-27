@@ -168,6 +168,8 @@ public:
 
 	void SetMachineSpec(void);
 
+	bool com_shuttingDown;
+
 private:
 	void InitCommands(void);
 	void InitRenderSystem(void);
@@ -189,7 +191,6 @@ private:
 	bool com_fullyInitialized;
 	bool com_refreshOnPrint; // update the screen every print for dmap
 	int com_errorEntered;	 // 0, ERP_DROP, etc
-	bool com_shuttingDown;
 
 	idFile *logFile;
 
@@ -3111,6 +3112,15 @@ void idCommonLocal::SetMachineSpec(void)
 	com_videoRam.SetInteger(vidRam);
 }
 
+void idSoundThread()
+{
+	while (!commonLocal.com_shuttingDown)
+	{
+		soundSystem->AsyncUpdate(Sys_Milliseconds());
+		Sleep(0);
+	}
+}
+
 /*
 =================
 idCommonLocal::Init
@@ -3216,6 +3226,8 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		console->ClearNotifyLines();
 
 		ClearCommandLine();
+
+		static std::thread soundThread(idSoundThread);
 
 		com_fullyInitialized = true;
 

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,20 +37,20 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef _WIN32
 
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// prevent auto literal to string conversion
+#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS // prevent auto literal to string conversion
 
 #ifndef _D3SDK
 #ifndef GAME_DLL
 
-#define WINVER				0x501
+#define WINVER 0x501
 
 #if 0
 // Dedicated server hits unresolved when trying to link this way now. Likely because of the 2010/Win7 transition? - TTimo
 
-#ifdef	ID_DEDICATED
+#ifdef ID_DEDICATED
 // dedicated sets windows version here
-#define	_WIN32_WINNT WINVER
-#define	WIN32_LEAN_AND_MEAN
+#define _WIN32_WINNT WINVER
+#define WIN32_LEAN_AND_MEAN
 #else
 // non-dedicated includes MFC and sets windows version here
 //#include "../tools/comafx/StdAfx.h"			// this will go away when MFC goes away
@@ -58,7 +58,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #else
 
-//#include "../tools/comafx/StdAfx.h"
+// #include "../tools/comafx/StdAfx.h"
 
 #endif
 
@@ -66,8 +66,8 @@ If you have questions concerning this license or the applicable additional terms
 #include <mmsystem.h>
 #include <mmreg.h>
 
-#define DIRECTINPUT_VERSION  0x0800			// was 0x0700 with the old mssdk
-#define DIRECTSOUND_VERSION  0x0800
+#define DIRECTINPUT_VERSION 0x0800 // was 0x0700 with the old mssdk
+#define DIRECTSOUND_VERSION 0x0800
 
 #include <dsound.h>
 #include <dinput.h>
@@ -75,22 +75,22 @@ If you have questions concerning this license or the applicable additional terms
 #endif /* !GAME_DLL */
 #endif /* !_D3SDK */
 
-#pragma warning(disable : 4100)				// unreferenced formal parameter
-#pragma warning(disable : 4244)				// conversion to smaller type, possible loss of data
-#pragma warning(disable : 4714)				// function marked as __forceinline not inlined
-#pragma warning(disable : 4996)				// unsafe string operations
+#pragma warning(disable : 4100) // unreferenced formal parameter
+#pragma warning(disable : 4244) // conversion to smaller type, possible loss of data
+#pragma warning(disable : 4714) // function marked as __forceinline not inlined
+#pragma warning(disable : 4996) // unsafe string operations
 
-#include <malloc.h>							// no malloc.h on mac or unix
-#include <windows.h>						// for qgl.h
-#undef FindText								// stupid namespace poluting Microsoft monkeys
+#include <malloc.h>	 // no malloc.h on mac or unix
+#include <windows.h> // for qgl.h
+#undef FindText		 // stupid namespace poluting Microsoft monkeys
 
 #endif /* _WIN32 */
 
 //-----------------------------------------------------
 
-#if !defined( _DEBUG ) && !defined( NDEBUG )
-	// don't generate asserts
-	#define NDEBUG
+#if !defined(_DEBUG) && !defined(NDEBUG)
+// don't generate asserts
+#define NDEBUG
 #endif
 
 #include <stdio.h>
@@ -103,6 +103,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <typeinfo>
 #include <errno.h>
 #include <math.h>
+#include <thread>
 
 // #include <glad/glad.h>
 #include <GL/glew.h>
@@ -205,7 +206,7 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 // The editor entry points are always declared, but may just be
 // stubbed out on non-windows platforms.
-//#include "../tools/edit_public.h"
+// #include "../tools/edit_public.h"
 
 // Compilers for map, model, video etc. processing.
 #include "../tools/compilers/compiler_public.h"
@@ -216,6 +217,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 //-----------------------------------------------------
 
-#endif	/* __cplusplus */
+#endif /* __cplusplus */
 
 #endif /* !__PRECOMPILED_H__ */
