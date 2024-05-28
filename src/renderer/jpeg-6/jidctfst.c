@@ -146,7 +146,7 @@ Sorry, this code only copes with 8x8 DCTs./* deliberate syntax err */
 #endif
 
 #ifdef USE_ACCURATE_ROUNDING
-#define IDESCALE(x, n) ((int)IRIGHT_SHIFT((x) + (1 << ((n)-1)), n))
+#define IDESCALE(x, n) ((int)IRIGHT_SHIFT((x) + (1 << ((n) - 1)), n))
 #else
 #define IDESCALE(x, n) ((int)IRIGHT_SHIFT(x, n))
 #endif

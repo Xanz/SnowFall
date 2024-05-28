@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,7 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #define __RENDERWINDOW_H
 
 class idUserInterfaceLocal;
-class idRenderWindow : public idWindow {
+class idRenderWindow : public idWindow
+{
 public:
 	idRenderWindow(idUserInterfaceLocal *gui);
 	idRenderWindow(idDeviceContext *d, idUserInterfaceLocal *gui);
@@ -37,12 +38,12 @@ public:
 
 	virtual void PostParse();
 	virtual void Draw(int time, float x, float y);
-	virtual size_t Allocated(){return idWindow::Allocated();};
-// 
-//  
-	virtual idWinVar *GetWinVarByName(const char *_name, bool winLookup = false, drawWin_t** owner = NULL);
-// 
-	
+	virtual size_t Allocated() { return idWindow::Allocated(); };
+	//
+	//
+	virtual idWinVar *GetWinVarByName(const char *_name, bool winLookup = false, drawWin_t **owner = NULL);
+	//
+
 private:
 	void CommonInit();
 	virtual bool ParseInternalVar(const char *name, idParser *src);
@@ -55,12 +56,12 @@ private:
 	renderLight_t rLight;
 	const idMD5Anim *modelAnim;
 
-	qhandle_t	worldModelDef;
-	qhandle_t	lightDef;
-	qhandle_t   modelDef;
+	qhandle_t worldModelDef;
+	qhandle_t lightDef;
+	qhandle_t modelDef;
 	idWinStr modelName;
 	idWinStr animName;
-	idStr	 animClass;
+	idStr animClass;
 	idWinVec4 lightOrigin;
 	idWinVec4 lightColor;
 	idWinVec4 modelOrigin;

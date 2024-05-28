@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: getinmemory.c,v 1.5 2003/12/08 14:13:19 bagder Exp $
@@ -19,7 +19,8 @@
 #include <curl/types.h>
 #include <curl/easy.h>
 
-struct MemoryStruct {
+struct MemoryStruct
+{
   char *memory;
   size_t size;
 };
@@ -29,9 +30,10 @@ WriteMemoryCallback(void *ptr, size_t size, size_t nmemb, void *data)
 {
   register int realsize = size * nmemb;
   struct MemoryStruct *mem = (struct MemoryStruct *)data;
-  
+
   mem->memory = (char *)realloc(mem->memory, mem->size + realsize + 1);
-  if (mem->memory) {
+  if (mem->memory)
+  {
     memcpy(&(mem->memory[mem->size]), ptr, realsize);
     mem->size += realsize;
     mem->memory[mem->size] = 0;
@@ -45,8 +47,8 @@ int main(int argc, char **argv)
 
   struct MemoryStruct chunk;
 
-  chunk.memory=NULL; /* we expect realloc(NULL, size) to work */
-  chunk.size = 0;    /* no data at this point */
+  chunk.memory = NULL; /* we expect realloc(NULL, size) to work */
+  chunk.size = 0;      /* no data at this point */
 
   curl_global_init(CURL_GLOBAL_ALL);
 

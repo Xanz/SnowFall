@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -73,7 +73,6 @@
 #include <fcntl.h>
 #endif
 
-
 #endif
 
 #include "urldata.h"
@@ -106,7 +105,7 @@ CURLcode Curl_file_connect(struct connectdata *conn)
 #endif
 
   file = (struct FILEPROTO *)calloc(sizeof(struct FILEPROTO), 1);
-  if(!file)
+  if (!file)
     return CURLE_OUT_OF_MEMORY;
 
   conn->proto.file = file;
@@ -136,17 +135,18 @@ CURLcode Curl_file_connect(struct connectdata *conn)
   }
 
   /* change path separators from '/' to '\\' for Windows and OS/2 */
-  for (i=0; actual_path[i] != '\0'; ++i)
+  for (i = 0; actual_path[i] != '\0'; ++i)
     if (actual_path[i] == '/')
       actual_path[i] = '\\';
 
-  fd = open(actual_path, O_RDONLY | O_BINARY);	/* no CR/LF translation! */
+  fd = open(actual_path, O_RDONLY | O_BINARY); /* no CR/LF translation! */
 #else
   fd = open(real_path, O_RDONLY);
 #endif
   free(real_path);
 
-  if(fd == -1) {
+  if (fd == -1)
+  {
     failf(conn->data, "Couldn't open file %s", conn->path);
     return CURLE_FILE_COULDNT_READ_FILE;
   }
@@ -156,22 +156,22 @@ CURLcode Curl_file_connect(struct connectdata *conn)
 }
 
 #if defined(WIN32) && (SIZEOF_CURL_OFF_T > 4)
-#define lseek(x,y,z) _lseeki64(x, y, z)
+#define lseek(x, y, z) _lseeki64(x, y, z)
 #endif
 
 /* This is the do-phase, separated from the connect-phase above */
 
 CURLcode Curl_file(struct connectdata *conn)
 {
-  /* This implementation ignores the host name in conformance with 
+  /* This implementation ignores the host name in conformance with
      RFC 1738. Only local files (reachable via the standard file system)
      are supported. This means that files on remotely mounted directories
      (via NFS, Samba, NT sharing) can be accessed through a file:// URL
   */
   CURLcode res = CURLE_OK;
   struct stat statbuf;
-  curl_off_t expected_size=0;
-  bool fstated=FALSE;
+  curl_off_t expected_size = 0;
+  bool fstated = FALSE;
   ssize_t nread;
   struct SessionHandle *data = conn->data;
   char *buf = data->state.buffer;
@@ -187,7 +187,8 @@ CURLcode Curl_file(struct connectdata *conn)
   fd = conn->proto.file->fd;
 
   /* VMS: This only works reliable for STREAMLF files */
-  if( -1 != fstat(fd, &statbuf)) {
+  if (-1 != fstat(fd, &statbuf))
+  {
     /* we could stat it, then read out the size */
     expected_size = statbuf.st_size;
     fstated = TRUE;
@@ -196,20 +197,22 @@ CURLcode Curl_file(struct connectdata *conn)
   /* If we have selected NOBODY and HEADER, it means that we only want file
      information. Which for FILE can't be much more than the file size and
      date. */
-  if(data->set.no_body && data->set.include_header && fstated) {
+  if (data->set.no_body && data->set.include_header && fstated)
+  {
     CURLcode result;
     sprintf(buf, "Content-Length: %" FORMAT_OFF_T "\r\n", expected_size);
     result = Curl_client_write(data, CLIENTWRITE_BOTH, buf, 0);
-    if(result)
+    if (result)
       return result;
 
     sprintf(buf, "Accept-ranges: bytes\r\n");
     result = Curl_client_write(data, CLIENTWRITE_BOTH, buf, 0);
-    if(result)
+    if (result)
       return result;
 
 #ifdef HAVE_STRFTIME
-    if(fstated) {
+    if (fstated)
+    {
       struct tm *tm;
       time_t clock = (time_t)statbuf.st_mtime;
 #ifdef HAVE_GMTIME_R
@@ -219,7 +222,7 @@ CURLcode Curl_file(struct connectdata *conn)
       tm = gmtime(&clock);
 #endif
       /* format: "Tue, 15 Nov 1994 12:45:26 GMT" */
-      strftime(buf, BUFSIZE-1, "Last-Modified: %a, %d %b %Y %H:%M:%S GMT\r\n",
+      strftime(buf, BUFSIZE - 1, "Last-Modified: %a, %d %b %Y %H:%M:%S GMT\r\n",
                tm);
       result = Curl_client_write(data, CLIENTWRITE_BOTH, buf, 0);
     }
@@ -241,18 +244,19 @@ CURLcode Curl_file(struct connectdata *conn)
      this is both more efficient than the former call to download() and
      it avoids problems with select() and recv() on file descriptors
      in Winsock */
-  if(fstated)
+  if (fstated)
     Curl_pgrsSetDownloadSize(data, expected_size);
 
-  if(conn->resume_from)
+  if (conn->resume_from)
     lseek(fd, conn->resume_from, SEEK_SET);
 
   Curl_pgrsTime(data, TIMER_STARTTRANSFER);
 
-  while (res == CURLE_OK) {
-    nread = read(fd, buf, BUFSIZE-1);
+  while (res == CURLE_OK)
+  {
+    nread = read(fd, buf, BUFSIZE - 1);
 
-    if ( nread > 0)
+    if (nread > 0)
       buf[nread] = 0;
 
     if (nread <= 0)
@@ -265,17 +269,17 @@ CURLcode Curl_file(struct connectdata *conn)
        file descriptor). */
 
     res = Curl_client_write(data, CLIENTWRITE_BODY, buf, nread);
-    if(res)
+    if (res)
       return res;
 
     Curl_pgrsSetDownloadCounter(data, bytecount);
 
-    if(Curl_pgrsUpdate(conn))
+    if (Curl_pgrsUpdate(conn))
       res = CURLE_ABORTED_BY_CALLBACK;
     else
-      res = Curl_speedcheck (data, now);
+      res = Curl_speedcheck(data, now);
   }
-  if(Curl_pgrsUpdate(conn))
+  if (Curl_pgrsUpdate(conn))
     res = CURLE_ABORTED_BY_CALLBACK;
 
   close(fd);

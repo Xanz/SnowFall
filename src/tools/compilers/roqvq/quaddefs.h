@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -55,77 +55,83 @@ If you have questions concerning this license or the applicable additional terms
 #define PATNUMBE4 5
 #define PATNUMBE5 6
 
-#define MAXSIZE		16
-#define MINSIZE		4
+#define MAXSIZE 16
+#define MINSIZE 4
 
-#define RoQ_ID 			0x1084
-#define	RoQ_QUAD		0x1000
-#define	RoQ_PUZZLE_QUAD	0x1003
-#define RoQ_QUAD_HANG	0x1013
-#define	RoQ_QUAD_SMALL	0x1010
-#define	RoQ_QUAD_INFO	0x1001
-#define RoQ_QUAD_VQ		0x1011
-#define RoQ_QUAD_JPEG	0x1012
-#define RoQ_QUAD_CODEBOOK		0x1002
+#define RoQ_ID 0x1084
+#define RoQ_QUAD 0x1000
+#define RoQ_PUZZLE_QUAD 0x1003
+#define RoQ_QUAD_HANG 0x1013
+#define RoQ_QUAD_SMALL 0x1010
+#define RoQ_QUAD_INFO 0x1001
+#define RoQ_QUAD_VQ 0x1011
+#define RoQ_QUAD_JPEG 0x1012
+#define RoQ_QUAD_CODEBOOK 0x1002
 
-typedef struct {
-	byte	size;				//	32, 16, 8, or 4
-	word	xat;				// where is it at on the screen
-	word	yat;				// 
+typedef struct
+{
+	byte size; //	32, 16, 8, or 4
+	word xat;  // where is it at on the screen
+	word yat;  //
 } shortQuadCel;
 
-typedef struct {
-	byte	size;				//	32, 16, 8, or 4
-	word	xat;				// where is it at on the screen
-	word	yat;				// 
+typedef struct
+{
+	byte size; //	32, 16, 8, or 4
+	word xat;  // where is it at on the screen
+	word yat;  //
 
-	float	cccsnr;				// ccc bitmap snr to actual image
-	float	fccsnr;				// fcc bitmap snr to actual image
-	float	motsnr;				// delta snr to previous image
-	float	sldsnr;				// solid color snr
-	float	patsnr;
-	float	dctsnr;
-	float	rsnr;				// what's the current snr
+	float cccsnr; // ccc bitmap snr to actual image
+	float fccsnr; // fcc bitmap snr to actual image
+	float motsnr; // delta snr to previous image
+	float sldsnr; // solid color snr
+	float patsnr;
+	float dctsnr;
+	float rsnr; // what's the current snr
 
-	unsigned int	cola;			// color a for ccc
-	unsigned int	colb;			// color b for ccc
-	unsigned int	colc;			// color b for ccc
-	unsigned int	sldcol;			// sold color
-	unsigned int	colpata;
-	unsigned int	colpatb;
-	unsigned int	colpats;
-	unsigned int	bitmap;				// ccc bitmap
-	
-	word	domain;				// where to copy from for fcc
-	word	patten[5];			// which pattern
+	unsigned int cola;	 // color a for ccc
+	unsigned int colb;	 // color b for ccc
+	unsigned int colc;	 // color b for ccc
+	unsigned int sldcol; // sold color
+	unsigned int colpata;
+	unsigned int colpatb;
+	unsigned int colpats;
+	unsigned int bitmap; // ccc bitmap
 
-	int		status;
-	bool		mark;
-	float			snr[DEAD+1];				// snrssss
+	word domain;	// where to copy from for fcc
+	word patten[5]; // which pattern
+
+	int status;
+	bool mark;
+	float snr[DEAD + 1]; // snrssss
 } quadcel;
 
-typedef struct {
-	float			snr[DEAD+1];				// snrssss
-	unsigned int	cols[8];
-	unsigned int	bitmaps[7];				// ccc bitmap
+typedef struct
+{
+	float snr[DEAD + 1]; // snrssss
+	unsigned int cols[8];
+	unsigned int bitmaps[7]; // ccc bitmap
 } dataQuadCel;
 
-typedef struct {
-	float				normal;
-	unsigned short int	index;
+typedef struct
+{
+	float normal;
+	unsigned short int index;
 } norm;
 
-typedef struct {
+typedef struct
+{
 	unsigned char dtlMap[256];
-	int	r[4];
+	int r[4];
 	int g[4];
 	int b[4];
 	int a[4];
 	float ymean;
 } dtlCel;
 
-typedef struct {
-	byte	r,g,b,a;
+typedef struct
+{
+	byte r, g, b, a;
 } pPixel;
 
-#endif   // quaddef
+#endif // quaddef

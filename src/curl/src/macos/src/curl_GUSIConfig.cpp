@@ -62,18 +62,17 @@ void GUSISetupDevices()
 #error GUSISetupConfig() needs to be written in C++
 #endif
 
-GUSIConfiguration::FileSuffix	sSuffices[] = {
-	"", '????', '????'
-};
+GUSIConfiguration::FileSuffix sSuffices[] = {
+	"", '????', '????'};
 
 extern "C" void GUSISetupConfig()
 {
-	GUSIConfiguration * config =
+	GUSIConfiguration *config =
 		GUSIConfiguration::CreateInstance(GUSIConfiguration::kNoResource);
 
 	config->ConfigureDefaultTypeCreator('TEXT', 'CWIE');
 	config->ConfigureSuffices(
-		sizeof(sSuffices)/sizeof(GUSIConfiguration::FileSuffix)-1, sSuffices);
+		sizeof(sSuffices) / sizeof(GUSIConfiguration::FileSuffix) - 1, sSuffices);
 }
 
 /**************** END GUSI CONFIGURATION *************************/

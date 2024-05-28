@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -95,53 +95,53 @@ static void win32_cleanup(void)
 
 static CURLcode win32_init(void)
 {
-  WORD wVersionRequested;  
-  WSADATA wsaData; 
-  int err; 
+  WORD wVersionRequested;
+  WSADATA wsaData;
+  int err;
 
 #ifdef ENABLE_IPV6
   wVersionRequested = MAKEWORD(2, 0);
 #else
   wVersionRequested = MAKEWORD(1, 1);
 #endif
-    
-  err = WSAStartup(wVersionRequested, &wsaData); 
-    
-  if (err != 0) 
-    /* Tell the user that we couldn't find a useable */ 
-    /* winsock.dll.     */ 
-    return CURLE_FAILED_INIT; 
-    
-  /* Confirm that the Windows Sockets DLL supports what we need.*/ 
-  /* Note that if the DLL supports versions greater */ 
-  /* than wVersionRequested, it will still return */ 
+
+  err = WSAStartup(wVersionRequested, &wsaData);
+
+  if (err != 0)
+    /* Tell the user that we couldn't find a useable */
+    /* winsock.dll.     */
+    return CURLE_FAILED_INIT;
+
+  /* Confirm that the Windows Sockets DLL supports what we need.*/
+  /* Note that if the DLL supports versions greater */
+  /* than wVersionRequested, it will still return */
   /* wVersionRequested in wVersion. wHighVersion contains the */
   /* highest supported version. */
 
-  if ( LOBYTE( wsaData.wVersion ) != LOBYTE(wVersionRequested) || 
-       HIBYTE( wsaData.wVersion ) != HIBYTE(wVersionRequested) ) { 
-    /* Tell the user that we couldn't find a useable */ 
+  if (LOBYTE(wsaData.wVersion) != LOBYTE(wVersionRequested) ||
+      HIBYTE(wsaData.wVersion) != HIBYTE(wVersionRequested))
+  {
+    /* Tell the user that we couldn't find a useable */
 
-    /* winsock.dll. */ 
-    WSACleanup(); 
-    return CURLE_FAILED_INIT; 
+    /* winsock.dll. */
+    WSACleanup();
+    return CURLE_FAILED_INIT;
   }
   return CURLE_OK;
 }
-/* The Windows Sockets DLL is acceptable. Proceed. */ 
+/* The Windows Sockets DLL is acceptable. Proceed. */
 #else
 /* These functions exist merely to prevent compiler warnings */
 static CURLcode win32_init(void) { return CURLE_OK; }
-static void win32_cleanup(void) { }
+static void win32_cleanup(void) {}
 #endif
 
-
 /* true globals -- for curl_global_init() and curl_global_cleanup() */
-static unsigned int  initialized = 0;
-static long          init_flags  = 0;
+static unsigned int initialized = 0;
+static long init_flags = 0;
 
 /**
- * Globally initializes cURL given a bitwise set of 
+ * Globally initializes cURL given a bitwise set of
  * the different features to initialize.
  */
 CURLcode curl_global_init(long flags)
@@ -157,13 +157,13 @@ CURLcode curl_global_init(long flags)
       return CURLE_FAILED_INIT;
 
 #ifdef _AMIGASF
-  if(!amiga_init())
+  if (!amiga_init())
     return CURLE_FAILED_INIT;
 #endif
 
   initialized = 1;
-  init_flags  = flags;
-  
+  init_flags = flags;
+
   return CURLE_OK;
 }
 
@@ -189,7 +189,7 @@ void curl_global_cleanup(void)
 #endif
 
   initialized = 0;
-  init_flags  = 0;
+  init_flags = 0;
 }
 
 CURL *curl_easy_init(void)
@@ -198,16 +198,17 @@ CURL *curl_easy_init(void)
   struct SessionHandle *data;
 
   /* Make sure we inited the global SSL stuff */
-  if (!initialized) {
+  if (!initialized)
+  {
     res = curl_global_init(CURL_GLOBAL_DEFAULT);
-    if(res)
+    if (res)
       /* something in the global init failed, return nothing */
       return NULL;
   }
 
   /* We use curl_open() with undefined URL so far */
   res = Curl_open(&data);
-  if(res != CURLE_OK)
+  if (res != CURLE_OK)
     return NULL;
 
   return data;
@@ -222,7 +223,7 @@ CURLcode curl_easy_setopt(CURL *curl, CURLoption tag, ...)
   void *param_obj = NULL;
   curl_off_t param_offset = 0;
   struct SessionHandle *data = curl;
-  CURLcode ret=CURLE_FAILED_INIT;
+  CURLcode ret = CURLE_FAILED_INIT;
 
   va_start(arg, tag);
 
@@ -233,21 +234,26 @@ CURLcode curl_easy_setopt(CURL *curl, CURLoption tag, ...)
      the types.
   */
 
-  if(tag < CURLOPTTYPE_OBJECTPOINT) {
+  if (tag < CURLOPTTYPE_OBJECTPOINT)
+  {
     /* This is a LONG type */
     param_long = va_arg(arg, long);
     ret = Curl_setopt(data, tag, param_long);
   }
-  else if(tag < CURLOPTTYPE_FUNCTIONPOINT) {
+  else if (tag < CURLOPTTYPE_FUNCTIONPOINT)
+  {
     /* This is a object pointer type */
     param_obj = va_arg(arg, void *);
     ret = Curl_setopt(data, tag, param_obj);
   }
-  else if(tag < CURLOPTTYPE_OFF_T) {
+  else if (tag < CURLOPTTYPE_OFF_T)
+  {
     /* This is a function pointer type */
-    param_func = va_arg(arg, func_T );
+    param_func = va_arg(arg, func_T);
     ret = Curl_setopt(data, tag, param_func);
-  } else {
+  }
+  else
+  {
     /* This is a curl_off_t type */
     param_offset = va_arg(arg, curl_off_t);
     ret = Curl_setopt(data, tag, param_offset);
@@ -261,35 +267,39 @@ CURLcode curl_easy_perform(CURL *curl)
 {
   struct SessionHandle *data = (struct SessionHandle *)curl;
 
-  if ( ! (data->share && data->share->hostcache) ) {
+  if (!(data->share && data->share->hostcache))
+  {
 
     if (Curl_global_host_cache_use(data) &&
-        data->hostcache != Curl_global_host_cache_get()) {
+        data->hostcache != Curl_global_host_cache_get())
+    {
       if (data->hostcache)
         Curl_hash_destroy(data->hostcache);
       data->hostcache = Curl_global_host_cache_get();
     }
 
-    if (!data->hostcache) {
+    if (!data->hostcache)
+    {
       data->hostcache = Curl_hash_alloc(7, Curl_freednsinfo);
 
-      if(!data->hostcache)
+      if (!data->hostcache)
         /* While we possibly could survive and do good without a host cache,
            the fact that creating it failed indicates that things are truly
            screwed up and we should bail out! */
         return CURLE_OUT_OF_MEMORY;
     }
-    
   }
-  
+
   return Curl_perform(data);
 }
 
 void curl_easy_cleanup(CURL *curl)
 {
   struct SessionHandle *data = (struct SessionHandle *)curl;
-  if ( ! (data->share && data->share->hostcache) ) {
-    if ( !Curl_global_host_cache_use(data)) {
+  if (!(data->share && data->share->hostcache))
+  {
+    if (!Curl_global_host_cache_use(data))
+    {
       Curl_hash_destroy(data->hostcache);
     }
   }
@@ -310,12 +320,12 @@ CURLcode curl_easy_getinfo(CURL *curl, CURLINFO info, ...)
 
 CURL *curl_easy_duphandle(CURL *incurl)
 {
-  struct SessionHandle *data=(struct SessionHandle *)incurl;
+  struct SessionHandle *data = (struct SessionHandle *)incurl;
 
   struct SessionHandle *outcurl = (struct SessionHandle *)
-    malloc(sizeof(struct SessionHandle));
+      malloc(sizeof(struct SessionHandle));
 
-  if(NULL == outcurl)
+  if (NULL == outcurl)
     return NULL; /* failure */
 
   /* start with clearing the entire new struct */
@@ -326,12 +336,13 @@ CURL *curl_easy_duphandle(CURL *incurl)
    * get setup on-demand in the code, as that would probably decrease
    * the likeliness of us forgetting to init a buffer here in the future.
    */
-  outcurl->state.headerbuff=(char*)malloc(HEADERSIZE);
-  if(!outcurl->state.headerbuff) {
+  outcurl->state.headerbuff = (char *)malloc(HEADERSIZE);
+  if (!outcurl->state.headerbuff)
+  {
     free(outcurl); /* free the memory again */
     return NULL;
   }
-  outcurl->state.headersize=HEADERSIZE;
+  outcurl->state.headersize = HEADERSIZE;
 
   /* copy all userdefined values */
   outcurl->set = data->set;
@@ -339,18 +350,19 @@ CURL *curl_easy_duphandle(CURL *incurl)
   outcurl->state.connects = (struct connectdata **)
       malloc(sizeof(struct connectdata *) * outcurl->state.numconnects);
 
-  if(!outcurl->state.connects) {
+  if (!outcurl->state.connects)
+  {
     free(outcurl->state.headerbuff);
     free(outcurl);
     return NULL;
   }
   memset(outcurl->state.connects, 0,
-         sizeof(struct connectdata *)*outcurl->state.numconnects);
+         sizeof(struct connectdata *) * outcurl->state.numconnects);
 
-  outcurl->progress.flags    = data->progress.flags;
+  outcurl->progress.flags = data->progress.flags;
   outcurl->progress.callback = data->progress.callback;
 
-  if(data->cookies)
+  if (data->cookies)
     /* If cookies are enabled in the parent handle, we enable them
        in the clone as well! */
     outcurl->cookies = Curl_cookie_init(data,
@@ -359,15 +371,18 @@ CURL *curl_easy_duphandle(CURL *incurl)
                                         data->set.cookiesession);
 
   /* duplicate all values in 'change' */
-  if(data->change.url) {
+  if (data->change.url)
+  {
     outcurl->change.url = strdup(data->change.url);
     outcurl->change.url_alloc = TRUE;
   }
-  if(data->change.proxy) {
+  if (data->change.proxy)
+  {
     outcurl->change.proxy = strdup(data->change.proxy);
     outcurl->change.proxy_alloc = TRUE;
   }
-  if(data->change.referer) {
+  if (data->change.referer)
+  {
     outcurl->change.referer = strdup(data->change.referer);
     outcurl->change.referer_alloc = TRUE;
   }

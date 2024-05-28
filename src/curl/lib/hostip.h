@@ -1,10 +1,10 @@
 #ifndef __HOSTIP_H
 #define __HOSTIP_H
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -12,7 +12,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -37,11 +37,12 @@ curl_hash *Curl_global_host_cache_get(void);
 
 #define Curl_global_host_cache_use(__p) ((__p)->set.global_dns_cache)
 
-struct Curl_dns_entry {
+struct Curl_dns_entry
+{
   Curl_addrinfo *addr;
   time_t timestamp;
-  long inuse;      /* use-counter, make very sure you decrease this
-                      when you're done using the address you received */
+  long inuse; /* use-counter, make very sure you decrease this
+                 when you're done using the address you received */
 };
 
 /*
@@ -94,6 +95,5 @@ int curl_getaddrinfo(char *hostname, char *service,
 #else
 #define CURL_INADDR_NONE INADDR_NONE
 #endif
-
 
 #endif

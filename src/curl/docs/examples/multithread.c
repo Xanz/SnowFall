@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: multithread.c,v 1.1 2001/05/04 09:35:43 bagder Exp $
@@ -16,12 +16,11 @@
 #include <curl/curl.h>
 
 /* silly list of test-URLs */
-char *urls[]= {
-  "http://curl.haxx.se/",
-  "ftp://cool.haxx.se/",
-  "http://www.contactor.se/",
-  "www.haxx.se"
-};
+char *urls[] = {
+    "http://curl.haxx.se/",
+    "ftp://cool.haxx.se/",
+    "http://www.contactor.se/",
+    "www.haxx.se"};
 
 void *pull_one_url(void *url)
 {
@@ -37,8 +36,7 @@ void *pull_one_url(void *url)
   return NULL;
 }
 
-
-/* 
+/*
    int pthread_create(pthread_t *new_thread_ID,
    const pthread_attr_t *attr,
    void * (*start_func)(void *), void *arg);
@@ -49,19 +47,21 @@ int main(int argc, char **argv)
   pthread_t tid[4];
   int i;
   int error;
-  for(i=0; i< 4; i++) {
+  for (i = 0; i < 4; i++)
+  {
     error = pthread_create(&tid[i],
                            NULL, /* default attributes please */
                            pull_one_url,
                            urls[i]);
-    if(0 != error)
+    if (0 != error)
       fprintf(stderr, "Couldn't run thread number %d, errno %d\n", i, error);
-    else 
+    else
       fprintf(stderr, "Thread %d, gets %s\n", i, urls[i]);
   }
 
   /* now wait for all threads to terminate */
-  for(i=0; i< 4; i++) {
+  for (i = 0; i < 4; i++)
+  {
     error = pthread_join(tid[i], NULL);
     fprintf(stderr, "Thread %d terminated\n", i);
   }

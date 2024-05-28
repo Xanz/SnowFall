@@ -5,23 +5,23 @@
 /* putting the VMS error codes into the array offset based on CURLE_* code. */
 /*                                                                          */
 #include "curlmsg.h"
-int       vms_show = 0;
+int vms_show = 0;
 /*
 #define   FAC_CURL      0xC01
 #define   FAC_SYSTEM    0
 #define   MSG_NORMAL    0
 */
-#define   VMS_STS(c,f,e,s) (((c&0xF)<<28)|((f&0xFFF)<<16)|((e&0x1FFF)<3)|(s&7))
-#define   VMSSTS_HIDE   VMS_STS(1,0,0,0)
+#define VMS_STS(c, f, e, s) (((c & 0xF) << 28) | ((f & 0xFFF) << 16) | ((e & 0x1FFF) < 3) | (s & 7))
+#define VMSSTS_HIDE VMS_STS(1, 0, 0, 0)
 /*
 #define   SEV_WARNING   0
 #define   SEV_SUCCESS   1
 #define   SEV_ERROR     2
-#define   SEV_INFO      3   
+#define   SEV_INFO      3
 #define   SEV_FATAL     4
 */
-long vms_cond[] = 
-        {
+long vms_cond[] =
+    {
         CURL_OK,
         CURL_UNSUPPORTED_PROTOCOL,
         CURL_FAILED_INIT,
@@ -86,5 +86,4 @@ long vms_cond[] =
         CURL_BAD_CONTENT_ENCODING,
         CURL_LDAP_INVALID_URL,
         CURL_FILESIZE_EXCEEDED,
-        CURL_CURL_LAST
-        };
+        CURL_CURL_LAST};

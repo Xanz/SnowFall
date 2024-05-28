@@ -8,24 +8,26 @@
 #define NV_CONTROL_MAJOR 1
 #define NV_CONTROL_MINOR 6
 
-#define X_nvCtrlQueryExtension            0
-#define X_nvCtrlIsNv                      1
-#define X_nvCtrlQueryAttribute            2
-#define X_nvCtrlSetAttribute              3
-#define X_nvCtrlQueryStringAttribute      4
+#define X_nvCtrlQueryExtension 0
+#define X_nvCtrlIsNv 1
+#define X_nvCtrlQueryAttribute 2
+#define X_nvCtrlSetAttribute 3
+#define X_nvCtrlQueryStringAttribute 4
 #define X_nvCtrlQueryValidAttributeValues 5
-#define X_nvCtrlSelectNotify              6
-#define X_nvCtrlLastRequest              (X_nvCtrlSelectNotify + 1)
+#define X_nvCtrlSelectNotify 6
+#define X_nvCtrlLastRequest (X_nvCtrlSelectNotify + 1)
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
 } xnvCtrlQueryExtensionReq;
 #define sz_xnvCtrlQueryExtensionReq 4
 
-typedef struct {
-    BYTE type;   /* X_Reply */
+typedef struct
+{
+    BYTE type; /* X_Reply */
     CARD8 padb1;
     CARD16 sequenceNumber B16;
     CARD32 length B32;
@@ -39,7 +41,8 @@ typedef struct {
 } xnvCtrlQueryExtensionReply;
 #define sz_xnvCtrlQueryExtensionReply 32
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -47,8 +50,9 @@ typedef struct {
 } xnvCtrlIsNvReq;
 #define sz_xnvCtrlIsNvReq 8
 
-typedef struct {
-    BYTE type;   /* X_Reply */
+typedef struct
+{
+    BYTE type; /* X_Reply */
     CARD8 padb1;
     CARD16 sequenceNumber B16;
     CARD32 length B32;
@@ -61,7 +65,8 @@ typedef struct {
 } xnvCtrlIsNvReply;
 #define sz_xnvCtrlIsNvReply 32
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -71,13 +76,14 @@ typedef struct {
 } xnvCtrlQueryAttributeReq;
 #define sz_xnvCtrlQueryAttributeReq 16
 
-typedef struct {
+typedef struct
+{
     BYTE type;
     BYTE pad0;
     CARD16 sequenceNumber B16;
     CARD32 length B32;
     CARD32 flags B32;
-    INT32  value B32;
+    INT32 value B32;
     CARD32 pad4 B32;
     CARD32 pad5 B32;
     CARD32 pad6 B32;
@@ -85,7 +91,8 @@ typedef struct {
 } xnvCtrlQueryAttributeReply;
 #define sz_xnvCtrlQueryAttributeReply 32
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -96,7 +103,8 @@ typedef struct {
 } xnvCtrlSetAttributeReq;
 #define sz_xnvCtrlSetAttributeReq 20
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -110,7 +118,8 @@ typedef struct {
  * CtrlQueryStringAttribute reply struct
  * n indicates the length of the string.
  */
-typedef struct {
+typedef struct
+{
     BYTE type;
     BYTE pad0;
     CARD16 sequenceNumber B16;
@@ -124,7 +133,8 @@ typedef struct {
 } xnvCtrlQueryStringAttributeReply;
 #define sz_xnvCtrlQueryStringAttributeReply 32
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -134,21 +144,23 @@ typedef struct {
 } xnvCtrlQueryValidAttributeValuesReq;
 #define sz_xnvCtrlQueryValidAttributeValuesReq 16
 
-typedef struct {
+typedef struct
+{
     BYTE type;
     BYTE pad0;
     CARD16 sequenceNumber B16;
     CARD32 length B32;
     CARD32 flags B32;
-    INT32  attr_type B32;
-    INT32  min B32;
-    INT32  max B32;
+    INT32 attr_type B32;
+    INT32 min B32;
+    INT32 max B32;
     CARD32 bits B32;
     CARD32 perms B32;
 } xnvCtrlQueryValidAttributeValuesReply;
 #define sz_xnvCtrlQueryValidAttributeValuesReply 32
 
-typedef struct {
+typedef struct
+{
     CARD8 reqType;
     CARD8 nvReqType;
     CARD16 length B16;
@@ -158,14 +170,18 @@ typedef struct {
 } xnvCtrlSelectNotifyReq;
 #define sz_xnvCtrlSelectNotifyReq 12
 
-typedef struct {
-    union {
-        struct {
+typedef struct
+{
+    union
+    {
+        struct
+        {
             BYTE type;
             BYTE detail;
             CARD16 sequenceNumber B16;
         } u;
-        struct {
+        struct
+        {
             BYTE type;
             BYTE detail;
             CARD16 sequenceNumber B16;
@@ -179,6 +195,5 @@ typedef struct {
         } attribute_changed;
     } u;
 } xnvctrlEvent;
-
 
 #endif /* __NVCONTROL_H */

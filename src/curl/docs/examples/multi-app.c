@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: multi-app.c,v 1.4 2003/08/28 11:21:14 bagder Exp $
@@ -24,9 +24,9 @@
  * Download a HTTP file and upload an FTP file simultaneously.
  */
 
-#define HANDLECOUNT 2	/* Number of simultaneous transfers */
-#define HTTP_HANDLE 0	/* Index for the HTTP transfer */
-#define FTP_HANDLE 1	/* Index for the FTP transfer */
+#define HANDLECOUNT 2 /* Number of simultaneous transfers */
+#define HTTP_HANDLE 0 /* Index for the HTTP transfer */
+#define FTP_HANDLE 1  /* Index for the FTP transfer */
 
 int main(int argc, char **argv)
 {
@@ -36,12 +36,12 @@ int main(int argc, char **argv)
   int still_running; /* keep number of running handles */
   int i;
 
-  CURLMsg *msg; /* for picking up messages with the transfer status */
+  CURLMsg *msg;  /* for picking up messages with the transfer status */
   int msgs_left; /* how many messages are left */
 
   /* Allocate one CURL handle per transfer */
-  for (i=0; i<HANDLECOUNT; i++)
-      handles[i] = curl_easy_init();
+  for (i = 0; i < HANDLECOUNT; i++)
+    handles[i] = curl_easy_init();
 
   /* set the options (I left out a few, you'll get the point anyway) */
   curl_easy_setopt(handles[HTTP_HANDLE], CURLOPT_URL, "http://website.com");
@@ -53,14 +53,16 @@ int main(int argc, char **argv)
   multi_handle = curl_multi_init();
 
   /* add the individual transfers */
-  for (i=0; i<HANDLECOUNT; i++)
-      curl_multi_add_handle(multi_handle, handles[i]);
+  for (i = 0; i < HANDLECOUNT; i++)
+    curl_multi_add_handle(multi_handle, handles[i]);
 
   /* we start some action by calling perform right away */
-  while(CURLM_CALL_MULTI_PERFORM ==
-        curl_multi_perform(multi_handle, &still_running));
+  while (CURLM_CALL_MULTI_PERFORM ==
+         curl_multi_perform(multi_handle, &still_running))
+    ;
 
-  while(still_running) {
+  while (still_running)
+  {
     struct timeval timeout;
     int rc; /* select() return code */
 
@@ -80,9 +82,10 @@ int main(int argc, char **argv)
     /* get file descriptors from the transfers */
     curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
-    rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+    rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
 
-    switch(rc) {
+    switch (rc)
+    {
     case -1:
       /* select error */
       break;
@@ -92,8 +95,9 @@ int main(int argc, char **argv)
     default:
       /* one or more of curl's file descriptors say there's data to read
          or write */
-      while(CURLM_CALL_MULTI_PERFORM ==
-            curl_multi_perform(multi_handle, &still_running));
+      while (CURLM_CALL_MULTI_PERFORM ==
+             curl_multi_perform(multi_handle, &still_running))
+        ;
       break;
     }
   }
@@ -101,28 +105,32 @@ int main(int argc, char **argv)
   curl_multi_cleanup(multi_handle);
 
   /* See how the transfers went */
-  while ((msg = curl_multi_info_read(multi_handle, &msgs_left))) {
-    if (msg->msg == CURLMSG_DONE) {
+  while ((msg = curl_multi_info_read(multi_handle, &msgs_left)))
+  {
+    if (msg->msg == CURLMSG_DONE)
+    {
 
-       int idx, found = 0;
+      int idx, found = 0;
 
-       /* Find out which handle this message is about */
-       for (idx=0; (!found && (idx<HANDLECOUNT)); idx++) found = (msg->easy_handle == handles[idx]);
+      /* Find out which handle this message is about */
+      for (idx = 0; (!found && (idx < HANDLECOUNT)); idx++)
+        found = (msg->easy_handle == handles[idx]);
 
-       switch (idx) {
-         case HTTP_HANDLE:
-	   printf("HTTP transfer completed with status %d\n", msg->data.result);
-	   break;
-	 case FTP_HANDLE:
-	   printf("FTP transfer completed with status %d\n", msg->data.result);
-	   break;
-       }
+      switch (idx)
+      {
+      case HTTP_HANDLE:
+        printf("HTTP transfer completed with status %d\n", msg->data.result);
+        break;
+      case FTP_HANDLE:
+        printf("FTP transfer completed with status %d\n", msg->data.result);
+        break;
+      }
     }
   }
 
   /* Free the CURL handles */
-  for (i=0; i<HANDLECOUNT; i++)
-      curl_easy_cleanup(handles[i]);
+  for (i = 0; i < HANDLECOUNT; i++)
+    curl_easy_cleanup(handles[i]);
 
   return 0;
 }

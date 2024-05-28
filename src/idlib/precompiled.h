@@ -80,9 +80,9 @@ If you have questions concerning this license or the applicable additional terms
 #pragma warning(disable : 4714) // function marked as __forceinline not inlined
 #pragma warning(disable : 4996) // unsafe string operations
 
-#include <malloc.h>	 // no malloc.h on mac or unix
+#include <malloc.h>  // no malloc.h on mac or unix
 #include <windows.h> // for qgl.h
-#undef FindText		 // stupid namespace poluting Microsoft monkeys
+#undef FindText      // stupid namespace poluting Microsoft monkeys
 
 #endif /* _WIN32 */
 

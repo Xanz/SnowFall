@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -36,4 +36,4 @@ If you have questions concerning this license or the applicable additional terms
 
 // every time a new demo pk4 file is built, this checksum must be updated.
 // the easiest way to get it is to just run the game and see what it spits out
-#define	DEMO_PAK_CHECKSUM				0xfe75bbef
+#define DEMO_PAK_CHECKSUM 0xfe75bbef

@@ -56,7 +56,7 @@
 #           Better handling of errors with wrong permissions for the directory containing the files. (Jason Trent)
 #           Avoid some race conditions (Ludwig Nussel)
 #
-# (C) 1998-2004 by Stéphane Peter <megastep@megastep.org>
+# (C) 1998-2004 by Stï¿½phane Peter <megastep@megastep.org>
 #
 # This software is released under the terms of the GNU GPL version 2 and above
 # Please read the license at http://www.gnu.org/copyleft/gpl.html

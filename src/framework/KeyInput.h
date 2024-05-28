@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -43,7 +43,8 @@ If you have questions concerning this license or the applicable additional terms
 // western european keyboards are inserted in this table so that those keys
 // are bindable (otherwise they get bound as one of the special keys in this
 // table)
-typedef enum {
+typedef enum
+{
 	K_TAB = 9,
 	K_ENTER = 13,
 	K_ESCAPE = 27,
@@ -89,7 +90,7 @@ typedef enum {
 	K_F10,
 	K_F11,
 	K_F12,
-	K_INVERTED_EXCLAMATION = 161,	// upside down !
+	K_INVERTED_EXCLAMATION = 161, // upside down !
 	K_F13,
 	K_F14,
 	K_F15,
@@ -107,15 +108,15 @@ typedef enum {
 	K_KP_INS,
 	K_KP_DEL,
 	K_KP_SLASH,
-	K_SUPERSCRIPT_TWO = 178,		// superscript 2
+	K_SUPERSCRIPT_TWO = 178, // superscript 2
 	K_KP_MINUS,
-	K_ACUTE_ACCENT = 180,			// accute accent
+	K_ACUTE_ACCENT = 180, // accute accent
 	K_KP_PLUS,
 	K_KP_NUMLOCK,
 	K_KP_STAR,
 	K_KP_EQUALS,
 
-	K_MASCULINE_ORDINATOR = 186,	
+	K_MASCULINE_ORDINATOR = 186,
 	// K_MOUSE enums must be contiguous (no char codes in the middle)
 	K_MOUSE1 = 187,
 	K_MOUSE2,
@@ -156,7 +157,7 @@ typedef enum {
 	K_JOY25,
 	K_JOY26,
 	K_JOY27,
-	K_GRAVE_A = 224,	// lowercase a with grave accent
+	K_GRAVE_A = 224, // lowercase a with grave accent
 	K_JOY28,
 	K_JOY29,
 	K_JOY30,
@@ -164,58 +165,58 @@ typedef enum {
 	K_JOY32,
 
 	K_AUX1 = 230,
-	K_CEDILLA_C = 231,	// lowercase c with Cedilla
-	K_GRAVE_E = 232,	// lowercase e with grave accent
+	K_CEDILLA_C = 231, // lowercase c with Cedilla
+	K_GRAVE_E = 232,   // lowercase e with grave accent
 	K_AUX2,
 	K_AUX3,
 	K_AUX4,
-	K_GRAVE_I = 236,	// lowercase i with grave accent
+	K_GRAVE_I = 236, // lowercase i with grave accent
 	K_AUX5,
 	K_AUX6,
 	K_AUX7,
 	K_AUX8,
-	K_TILDE_N = 241,	// lowercase n with tilde
-	K_GRAVE_O = 242,	// lowercase o with grave accent
+	K_TILDE_N = 241, // lowercase n with tilde
+	K_GRAVE_O = 242, // lowercase o with grave accent
 	K_AUX9,
 	K_AUX10,
 	K_AUX11,
 	K_AUX12,
 	K_AUX13,
 	K_AUX14,
-	K_GRAVE_U = 249,	// lowercase u with grave accent
+	K_GRAVE_U = 249, // lowercase u with grave accent
 	K_AUX15,
 	K_AUX16,
 
-	K_PRINT_SCR	= 252,	// SysRq / PrintScr
-	K_RIGHT_ALT = 253,	// used by some languages as "Alt-Gr"
-	K_LAST_KEY  = 254	// this better be < 256!
+	K_PRINT_SCR = 252, // SysRq / PrintScr
+	K_RIGHT_ALT = 253, // used by some languages as "Alt-Gr"
+	K_LAST_KEY = 254   // this better be < 256!
 } keyNum_t;
 
-
-class idKeyInput {
+class idKeyInput
+{
 public:
-	static void			Init( void );
-	static void			Shutdown( void );
+	static void Init(void);
+	static void Shutdown(void);
 
-	static void			ArgCompletion_KeyName( const idCmdArgs &args, void(*callback)( const char *s ) );
-	static void			PreliminaryKeyEvent( int keyNum, bool down );
-	static bool			IsDown( int keyNum );
-	static int			GetUsercmdAction( int keyNum );
-	static bool			GetOverstrikeMode( void );
-	static void			SetOverstrikeMode( bool state );
-	static void			ClearStates( void );
-	static int			StringToKeyNum( const char *str );
-	static const char *	KeyNumToString( int keyNum, bool localized );
+	static void ArgCompletion_KeyName(const idCmdArgs &args, void (*callback)(const char *s));
+	static void PreliminaryKeyEvent(int keyNum, bool down);
+	static bool IsDown(int keyNum);
+	static int GetUsercmdAction(int keyNum);
+	static bool GetOverstrikeMode(void);
+	static void SetOverstrikeMode(bool state);
+	static void ClearStates(void);
+	static int StringToKeyNum(const char *str);
+	static const char *KeyNumToString(int keyNum, bool localized);
 
-	static void			SetBinding( int keyNum, const char *binding );
-	static const char *	GetBinding( int keyNum );
-	static bool			UnbindBinding( const char *bind );
-	static int			NumBinds( const char *binding );
-	static bool			ExecKeyBinding( int keyNum );
-	static const char *	KeysFromBinding( const char *bind );
-	static const char *	BindingFromKey( const char *key );
-	static bool			KeyIsBoundTo( int keyNum, const char *binding );
-	static void			WriteBindings( idFile *f );
+	static void SetBinding(int keyNum, const char *binding);
+	static const char *GetBinding(int keyNum);
+	static bool UnbindBinding(const char *bind);
+	static int NumBinds(const char *binding);
+	static bool ExecKeyBinding(int keyNum);
+	static const char *KeysFromBinding(const char *bind);
+	static const char *BindingFromKey(const char *key);
+	static bool KeyIsBoundTo(int keyNum, const char *binding);
+	static void WriteBindings(idFile *f);
 };
 
 #endif /* !__KEYINPUT_H__ */

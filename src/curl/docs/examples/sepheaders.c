@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: sepheaders.c,v 1.6 2003/11/19 08:21:34 bagder Exp $
@@ -48,19 +48,21 @@ int main(int argc, char **argv)
   curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, write_data);
 
   /* open the files */
-  headerfile = fopen(headerfilename,"w");
-  if (headerfile == NULL) {
+  headerfile = fopen(headerfilename, "w");
+  if (headerfile == NULL)
+  {
     curl_easy_cleanup(curl_handle);
     return -1;
   }
-  bodyfile = fopen(bodyfilename,"w");
-  if (bodyfile == NULL) {
+  bodyfile = fopen(bodyfilename, "w");
+  if (bodyfile == NULL)
+  {
     curl_easy_cleanup(curl_handle);
     return -1;
   }
 
   /* we want the headers to this file handle */
-  curl_easy_setopt(curl_handle,   CURLOPT_WRITEHEADER ,headerfile);
+  curl_easy_setopt(curl_handle, CURLOPT_WRITEHEADER, headerfile);
 
   /*
    * Notice here that if you want the actual data sent anywhere else but

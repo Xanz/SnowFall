@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: multi-double.c,v 1.3 2002/12/03 12:34:43 bagder Exp $
@@ -48,10 +48,12 @@ int main(int argc, char **argv)
   curl_multi_add_handle(multi_handle, http_handle2);
 
   /* we start some action by calling perform right away */
-  while(CURLM_CALL_MULTI_PERFORM ==
-        curl_multi_perform(multi_handle, &still_running));
+  while (CURLM_CALL_MULTI_PERFORM ==
+         curl_multi_perform(multi_handle, &still_running))
+    ;
 
-  while(still_running) {
+  while (still_running)
+  {
     struct timeval timeout;
     int rc; /* select() return code */
 
@@ -71,17 +73,19 @@ int main(int argc, char **argv)
     /* get file descriptors from the transfers */
     curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
-    rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+    rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
 
-    switch(rc) {
+    switch (rc)
+    {
     case -1:
       /* select error */
       break;
     case 0:
     default:
       /* timeout or readable/writable sockets */
-      while(CURLM_CALL_MULTI_PERFORM ==
-            curl_multi_perform(multi_handle, &still_running));
+      while (CURLM_CALL_MULTI_PERFORM ==
+             curl_multi_perform(multi_handle, &still_running))
+        ;
       break;
     }
   }

@@ -8,8 +8,8 @@ Description:    makeself.sh is a shell script that generates a self-extractable
                 executed (for example an installation script). This is pretty similar
                 to archives generated with WinZip Self-Extractor in the Windows world.
 Keywords:       Installation archive tar winzip
-Author:         Stéphane Peter (megastep@megastep.org)
-Maintained-by:  Stéphane Peter (megastep@megastep.org)
+Author:         Stï¿½phane Peter (megastep@megastep.org)
+Maintained-by:  Stï¿½phane Peter (megastep@megastep.org)
 Original-site:  http://www.megastep.org/makeself/
 Platform:       Unix
 Copying-policy: GPL

@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: ftpupload.c,v 1.4 2004/01/05 22:29:30 bagder Exp $
@@ -22,31 +22,31 @@
  * Example based on source code provided by Erick Nuwendam. Thanks!
  */
 
-#define LOCAL_FILE      "/tmp/uploadthis.txt"
-#define UPLOAD_FILE_AS  "while-uploading.txt"
-#define REMOTE_URL      "ftp://localhost/"  UPLOAD_FILE_AS
-#define RENAME_FILE_TO  "renamed-and-fine.txt"
+#define LOCAL_FILE "/tmp/uploadthis.txt"
+#define UPLOAD_FILE_AS "while-uploading.txt"
+#define REMOTE_URL "ftp://localhost/" UPLOAD_FILE_AS
+#define RENAME_FILE_TO "renamed-and-fine.txt"
 
 int main(int argc, char **argv)
 {
   CURL *curl;
   CURLcode res;
   FILE *ftpfile;
-  FILE * hd_src ;
-  int hd ;
+  FILE *hd_src;
+  int hd;
   struct stat file_info;
 
-  struct curl_slist *headerlist=NULL;
-  char buf_1 [] = "RNFR " UPLOAD_FILE_AS;
-  char buf_2 [] = "RNTO " RENAME_FILE_TO;
+  struct curl_slist *headerlist = NULL;
+  char buf_1[] = "RNFR " UPLOAD_FILE_AS;
+  char buf_2[] = "RNTO " RENAME_FILE_TO;
 
   /* get the file size of the local file */
-  hd = open(LOCAL_FILE, O_RDONLY) ;
+  hd = open(LOCAL_FILE, O_RDONLY);
   fstat(hd, &file_info);
-  close(hd) ;
+  close(hd);
 
   /* get a FILE * of the same file, could also be made with
-     fdopen() from the previous descriptor, but hey this is just 
+     fdopen() from the previous descriptor, but hey this is just
      an example! */
   hd_src = fopen(LOCAL_FILE, "rb");
 
@@ -55,16 +55,17 @@ int main(int argc, char **argv)
 
   /* get a curl handle */
   curl = curl_easy_init();
-  if(curl) {
+  if (curl)
+  {
     /* build a list of commands to pass to libcurl */
     headerlist = curl_slist_append(headerlist, buf_1);
     headerlist = curl_slist_append(headerlist, buf_2);
 
     /* enable uploading */
-    curl_easy_setopt(curl, CURLOPT_UPLOAD, TRUE) ;
+    curl_easy_setopt(curl, CURLOPT_UPLOAD, TRUE);
 
     /* specify target */
-    curl_easy_setopt(curl,CURLOPT_URL, REMOTE_URL);
+    curl_easy_setopt(curl, CURLOPT_URL, REMOTE_URL);
 
     /* pass in that last of FTP commands to run after the transfer */
     curl_easy_setopt(curl, CURLOPT_POSTQUOTE, headerlist);
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
     res = curl_easy_perform(curl);
 
     /* clean up the FTP commands list */
-    curl_slist_free_all (headerlist);
+    curl_slist_free_all(headerlist);
 
     /* always cleanup */
     curl_easy_cleanup(curl);

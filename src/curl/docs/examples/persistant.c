@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: persistant.c,v 1.2 2003/11/19 08:20:13 bagder Exp $
@@ -20,7 +20,8 @@ int main(int argc, char **argv)
   curl_global_init(CURL_GLOBAL_ALL);
 
   curl = curl_easy_init();
-  if(curl) {
+  if (curl)
+  {
     curl_easy_setopt(curl, CURLOPT_VERBOSE, 1);
     curl_easy_setopt(curl, CURLOPT_HEADER, 1);
 

@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -33,7 +33,7 @@
 #endif
 
 #ifdef HAVE_SYS_SOCKET_H
-#include <sys/socket.h>	/* required for send() & recv() prototypes */
+#include <sys/socket.h> /* required for send() & recv() prototypes */
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -60,7 +60,7 @@
 /* returns last node in linked list */
 static struct curl_slist *slist_get_last(struct curl_slist *list)
 {
-  struct curl_slist	*item;
+  struct curl_slist *item;
 
   /* if caller passed us a NULL, return now */
   if (!list)
@@ -68,7 +68,8 @@ static struct curl_slist *slist_get_last(struct curl_slist *list)
 
   /* loop through to find the last item */
   item = list;
-  while (item->next) {
+  while (item->next)
+  {
     item = item->next;
   }
   return item;
@@ -82,19 +83,22 @@ static struct curl_slist *slist_get_last(struct curl_slist *list)
 struct curl_slist *curl_slist_append(struct curl_slist *list,
                                      const char *data)
 {
-  struct curl_slist	*last;
-  struct curl_slist	*new_item;
+  struct curl_slist *last;
+  struct curl_slist *new_item;
 
-  new_item = (struct curl_slist *) malloc(sizeof(struct curl_slist));
-  if (new_item) {
+  new_item = (struct curl_slist *)malloc(sizeof(struct curl_slist));
+  if (new_item)
+  {
     new_item->next = NULL;
     new_item->data = strdup(data);
   }
-  if (new_item == NULL || new_item->data == NULL) {
+  if (new_item == NULL || new_item->data == NULL)
+  {
     return NULL;
   }
 
-  if (list) {
+  if (list)
+  {
     last = slist_get_last(list);
     last->next = new_item;
     return list;
@@ -107,17 +111,19 @@ struct curl_slist *curl_slist_append(struct curl_slist *list,
 /* be nice and clean up resources */
 void curl_slist_free_all(struct curl_slist *list)
 {
-  struct curl_slist	*next;
-  struct curl_slist	*item;
+  struct curl_slist *next;
+  struct curl_slist *item;
 
   if (!list)
     return;
 
   item = list;
-  do {
+  do
+  {
     next = item->next;
-		
-    if (item->data) {
+
+    if (item->data)
+    {
       free(item->data);
     }
     free(item);
@@ -129,7 +135,8 @@ void curl_slist_free_all(struct curl_slist *list)
 
 void Curl_infof(struct SessionHandle *data, const char *fmt, ...)
 {
-  if(data && data->set.verbose) {
+  if (data && data->set.verbose)
+  {
     va_list ap;
     char print_buffer[1024 + 1];
     va_start(ap, fmt);
@@ -147,22 +154,25 @@ void Curl_failf(struct SessionHandle *data, const char *fmt, ...)
 {
   va_list ap;
   va_start(ap, fmt);
-  if(data->set.errorbuffer && !data->state.errorbuf) {
+  if (data->set.errorbuffer && !data->state.errorbuf)
+  {
     vsnprintf(data->set.errorbuffer, CURL_ERROR_SIZE, fmt, ap);
     data->state.errorbuf = TRUE; /* wrote error string */
 
-    if(data->set.verbose) {
+    if (data->set.verbose)
+    {
       size_t len = strlen(data->set.errorbuffer);
-      bool doneit=FALSE;
-      if(len < CURL_ERROR_SIZE - 1) {
+      bool doneit = FALSE;
+      if (len < CURL_ERROR_SIZE - 1)
+      {
         doneit = TRUE;
         data->set.errorbuffer[len] = '\n';
         data->set.errorbuffer[++len] = '\0';
       }
       Curl_debug(data, CURLINFO_TEXT, data->set.errorbuffer, len);
-      if(doneit)
+      if (doneit)
         /* cut off the newline again */
-        data->set.errorbuffer[--len]=0;
+        data->set.errorbuffer[--len] = 0;
     }
   }
   va_end(ap);
@@ -182,24 +192,26 @@ CURLcode Curl_sendf(curl_socket_t sockfd, struct connectdata *conn,
   va_start(ap, fmt);
   s = vaprintf(fmt, ap); /* returns an allocated string */
   va_end(ap);
-  if(!s)
+  if (!s)
     return CURLE_OUT_OF_MEMORY; /* failure */
 
-  bytes_written=0;
+  bytes_written = 0;
   write_len = strlen(s);
   sptr = s;
 
-  while (1) {
+  while (1)
+  {
     /* Write the buffer to the socket */
     res = Curl_write(conn, sockfd, sptr, write_len, &bytes_written);
 
-    if(CURLE_OK != res)
+    if (CURLE_OK != res)
       break;
 
-    if(data->set.verbose)
+    if (data->set.verbose)
       Curl_debug(data, CURLINFO_DATA_OUT, sptr, bytes_written);
 
-    if((size_t)bytes_written != write_len) {
+    if ((size_t)bytes_written != write_len)
+    {
       /* if not all was written at once, we must advance the pointer, decrease
          the size left and try again! */
       write_len -= bytes_written;
@@ -234,17 +246,20 @@ CURLcode Curl_write(struct connectdata *conn,
   int num = (sockfd == conn->sock[SECONDARYSOCKET]);
   /* SSL_write() is said to return 'int' while write() and send() returns
      'size_t' */
-  if (conn->ssl[num].use) {
+  if (conn->ssl[num].use)
+  {
     int err;
     char error_buffer[120]; /* OpenSSL documents that this must be at least
                                120 bytes long. */
     int sslerror;
     int rc = SSL_write(conn->ssl[num].handle, mem, len);
 
-    if(rc < 0) {
+    if (rc < 0)
+    {
       err = SSL_get_error(conn->ssl[num].handle, rc);
-    
-      switch(err) {
+
+      switch (err)
+      {
       case SSL_ERROR_WANT_READ:
       case SSL_ERROR_WANT_WRITE:
         /* The operation did not complete; the same TLS/SSL I/O function
@@ -270,12 +285,14 @@ CURLcode Curl_write(struct connectdata *conn,
     }
     bytes_written = rc;
   }
-  else {
+  else
+  {
 #else
   (void)conn;
 #endif
 #ifdef HAVE_KRB4
-    if(conn->sec_complete) {
+    if (conn->sec_complete)
+    {
       bytes_written = Curl_sec_write(conn, sockfd, mem, len);
     }
     else
@@ -283,13 +300,14 @@ CURLcode Curl_write(struct connectdata *conn,
     {
       bytes_written = (ssize_t)swrite(sockfd, mem, len);
     }
-    if(-1 == bytes_written) {
+    if (-1 == bytes_written)
+    {
       int err = Curl_ourerrno();
 
-      if(
+      if (
 #ifdef WSAEWOULDBLOCK
-        /* This is how Windows does it */
-        (WSAEWOULDBLOCK == err)
+          /* This is how Windows does it */
+          (WSAEWOULDBLOCK == err)
 #else
         /* As pointed out by Christophe Demory on March 11 2003, errno
            may be EWOULDBLOCK or on some systems EAGAIN when it returned
@@ -297,16 +315,16 @@ CURLcode Curl_write(struct connectdata *conn,
            therefor treat both error codes the same here */
         (EWOULDBLOCK == err) || (EAGAIN == err) || (EINTR == err)
 #endif
-        )
+      )
         /* this is just a case of EWOULDBLOCK */
-        bytes_written=0;
+        bytes_written = 0;
     }
 #ifdef USE_SSLEAY
   }
 #endif
 
   *written = bytes_written;
-  retcode = (-1 != bytes_written)?CURLE_OK:CURLE_SEND_ERROR;
+  retcode = (-1 != bytes_written) ? CURLE_OK : CURLE_SEND_ERROR;
 
   return retcode;
 }
@@ -323,32 +341,36 @@ CURLcode Curl_client_write(struct SessionHandle *data,
 {
   size_t wrote;
 
-  if(0 == len)
+  if (0 == len)
     len = strlen(ptr);
 
-  if(type & CLIENTWRITE_BODY) {
+  if (type & CLIENTWRITE_BODY)
+  {
     wrote = data->set.fwrite(ptr, 1, len, data->set.out);
-    if(wrote != len) {
-      failf (data, "Failed writing body");
+    if (wrote != len)
+    {
+      failf(data, "Failed writing body");
       return CURLE_WRITE_ERROR;
     }
   }
-  if((type & CLIENTWRITE_HEADER) &&
-     (data->set.fwrite_header || data->set.writeheader) ) {
+  if ((type & CLIENTWRITE_HEADER) &&
+      (data->set.fwrite_header || data->set.writeheader))
+  {
     /*
      * Write headers to the same callback or to the especially setup
      * header callback function (added after version 7.7.1).
      */
-    curl_write_callback writeit=
-      data->set.fwrite_header?data->set.fwrite_header:data->set.fwrite;
+    curl_write_callback writeit =
+        data->set.fwrite_header ? data->set.fwrite_header : data->set.fwrite;
 
     wrote = writeit(ptr, 1, len, data->set.writeheader);
-    if(wrote != len) {
-      failf (data, "Failed writing header");
+    if (wrote != len)
+    {
+      failf(data, "Failed writing header");
       return CURLE_WRITE_ERROR;
     }
   }
-  
+
   return CURLE_OK;
 }
 
@@ -372,17 +394,20 @@ int Curl_read(struct connectdata *conn, /* connection data */
      us use the correct ssl handle. */
   int num = (sockfd == conn->sock[SECONDARYSOCKET]);
 
-  *n=0; /* reset amount to zero */
+  *n = 0; /* reset amount to zero */
 
-  if (conn->ssl[num].use) {
+  if (conn->ssl[num].use)
+  {
     nread = SSL_read(conn->ssl[num].handle, buf, buffersize);
 
-    if(nread < 0) {
+    if (nread < 0)
+    {
       /* failed SSL_read */
       int err = SSL_get_error(conn->ssl[num].handle, nread);
 
-      switch(err) {
-      case SSL_ERROR_NONE: /* this is not an error */
+      switch (err)
+      {
+      case SSL_ERROR_NONE:        /* this is not an error */
       case SSL_ERROR_ZERO_RETURN: /* no more data */
         break;
       case SSL_ERROR_WANT_READ:
@@ -397,31 +422,33 @@ int Curl_read(struct connectdata *conn, /* connection data */
           int sslerror = ERR_get_error();
           failf(conn->data, "SSL read: %s, errno %d",
                 ERR_error_string(sslerror, error_buffer),
-                Curl_ourerrno() );
+                Curl_ourerrno());
         }
         return CURLE_RECV_ERROR;
       }
     }
   }
-  else {
+  else
+  {
 #else
-    (void)conn;
+  (void)conn;
 #endif
-    *n=0; /* reset amount to zero */
+    *n = 0; /* reset amount to zero */
 #ifdef HAVE_KRB4
-    if(conn->sec_complete)
+    if (conn->sec_complete)
       nread = Curl_sec_read(conn, sockfd, buf, buffersize);
     else
 #endif
       nread = sread(sockfd, buf, buffersize);
 
-    if(-1 == nread) {
+    if (-1 == nread)
+    {
       int err = Curl_ourerrno();
       conn->sockerror = err;
 #ifdef WIN32
-      if(WSAEWOULDBLOCK == err)
+      if (WSAEWOULDBLOCK == err)
 #else
-      if((EWOULDBLOCK == err) || (EAGAIN == err) || (EINTR == err))
+    if ((EWOULDBLOCK == err) || (EAGAIN == err) || (EINTR == err))
 #endif
         return -1;
     }
@@ -439,14 +466,15 @@ int Curl_read(struct connectdata *conn, /* connection data */
 int Curl_debug(struct SessionHandle *data, curl_infotype type,
                char *ptr, size_t size)
 {
-  static const char * const s_infotype[CURLINFO_END] = {
-    "* ", "< ", "> ", "{ ", "} " };
+  static const char *const s_infotype[CURLINFO_END] = {
+      "* ", "< ", "> ", "{ ", "} "};
 
-  if(data->set.fdebug)
+  if (data->set.fdebug)
     return (*data->set.fdebug)(data, type, ptr, size,
                                data->set.debugdata);
 
-  switch(type) {
+  switch (type)
+  {
   case CURLINFO_TEXT:
   case CURLINFO_HEADER_OUT:
   case CURLINFO_HEADER_IN:

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -37,109 +37,118 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
-typedef struct {
-	char					name[128];
-	char					parent[128];
+typedef struct
+{
+	char name[128];
+	char parent[128];
 } maNodeHeader_t;
 
-typedef struct {
-	char					name[128];
-	int						size;
+typedef struct
+{
+	char name[128];
+	int size;
 } maAttribHeader_t;
 
-typedef struct maTransform_s {
-	idVec3					translate;
-	idVec3					rotate;
-	idVec3					scale;
-	maTransform_s*			parent;	
+typedef struct maTransform_s
+{
+	idVec3 translate;
+	idVec3 rotate;
+	idVec3 scale;
+	maTransform_s *parent;
 } maTransform_t;
 
-typedef struct {
-	int						edge[3];
-	int						vertexNum[3];
-	int						tVertexNum[3];
-	int						vertexColors[3];
-	idVec3					vertexNormals[3];
+typedef struct
+{
+	int edge[3];
+	int vertexNum[3];
+	int tVertexNum[3];
+	int vertexColors[3];
+	idVec3 vertexNormals[3];
 } maFace_t;
 
-typedef struct {
-	
-	//Transform to be applied
-	maTransform_t*			transform;
+typedef struct
+{
 
-	//Verts
-	int						numVertexes;
-	idVec3 *				vertexes;
-	int						numVertTransforms;
-	idVec4 *				vertTransforms;
-	int						nextVertTransformIndex;
+	// Transform to be applied
+	maTransform_t *transform;
 
-	//Texture Coordinates
-	int						numTVertexes;
-	idVec2 *				tvertexes;
+	// Verts
+	int numVertexes;
+	idVec3 *vertexes;
+	int numVertTransforms;
+	idVec4 *vertTransforms;
+	int nextVertTransformIndex;
 
-	//Edges
-	int						numEdges;
-	idVec3 *				edges;
+	// Texture Coordinates
+	int numTVertexes;
+	idVec2 *tvertexes;
 
-	//Colors
-	int						numColors;
-	byte*					colors;
+	// Edges
+	int numEdges;
+	idVec3 *edges;
 
-	//Faces
-	int						numFaces;
-	maFace_t *				faces;
+	// Colors
+	int numColors;
+	byte *colors;
 
-	//Normals
-	int						numNormals;
-	idVec3 *				normals;
-	bool					normalsParsed;
-	int						nextNormal;
+	// Faces
+	int numFaces;
+	maFace_t *faces;
+
+	// Normals
+	int numNormals;
+	idVec3 *normals;
+	bool normalsParsed;
+	int nextNormal;
 
 } maMesh_t;
 
-typedef struct {
-	char					name[128];
-	float					uOffset, vOffset;		// max lets you offset by material without changing texCoords
-	float					uTiling, vTiling;		// multiply tex coords by this
-	float					angle;					// in clockwise radians
+typedef struct
+{
+	char name[128];
+	float uOffset, vOffset; // max lets you offset by material without changing texCoords
+	float uTiling, vTiling; // multiply tex coords by this
+	float angle;			// in clockwise radians
 } maMaterial_t;
 
-typedef struct {
-	char					name[128];
-	int						materialRef;
-	char					materialName[128];
+typedef struct
+{
+	char name[128];
+	int materialRef;
+	char materialName[128];
 
-	maMesh_t				mesh;
+	maMesh_t mesh;
 } maObject_t;
 
-
-typedef struct {
-	char					name[128];
-	char					path[1024];
+typedef struct
+{
+	char name[128];
+	char path[1024];
 } maFileNode_t;
 
-typedef struct maMaterialNode_s {
-	char					name[128];
+typedef struct maMaterialNode_s
+{
+	char name[128];
 
-	maMaterialNode_s*		child;
-	maFileNode_t*				file;
+	maMaterialNode_s *child;
+	maFileNode_t *file;
 
 } maMaterialNode_t;
 
-typedef struct maModel_s {
-	ID_TIME_T						timeStamp;
-	idList<maMaterial_t *>		materials;
-	idList<maObject_t *>		objects;
-	idHashTable<maTransform_t*> transforms;
-	
-	//Material Resolution
-	idHashTable<maFileNode_t*>		fileNodes;
-	idHashTable<maMaterialNode_t*>	materialNodes;
+typedef struct maModel_s
+{
+	ID_TIME_T timeStamp;
+	idList<maMaterial_t *> materials;
+	idList<maObject_t *> objects;
+	idHashTable<maTransform_t *> transforms;
+
+	// Material Resolution
+	idHashTable<maFileNode_t *> fileNodes;
+	idHashTable<maMaterialNode_t *> materialNodes;
 
 } maModel_t;
 
-maModel_t	*MA_Load( const char *fileName );
-void		MA_Free( maModel_t *ma );
+maModel_t *MA_Load(const char *fileName);
+void MA_Free(maModel_t *ma);
 
 #endif /* !__MODEL_MA_H__ */

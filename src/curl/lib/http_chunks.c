@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -33,7 +33,7 @@
 #include "urldata.h" /* it includes http_chunks.h */
 #include "sendf.h"   /* for the client write stuff */
 
-#include "content_encoding.h"   /* 08/29/02 jhrg */
+#include "content_encoding.h" /* 08/29/02 jhrg */
 #include "http.h"
 
 #define _MPRINTF_REPLACE /* use our functions only */
@@ -44,7 +44,7 @@
 #include "memdebug.h"
 #endif
 
-/* 
+/*
  * Chunk format (simplified):
  *
  * <HEX SIZE>[ chunk extension ] CRLF
@@ -81,12 +81,11 @@
 
  */
 
-
 void Curl_httpchunk_init(struct connectdata *conn)
 {
   struct Curl_chunker *chunk = &conn->proto.http->chunk;
-  chunk->hexindex=0; /* start at 0 */
-  chunk->dataleft=0; /* no data left yet! */
+  chunk->hexindex = 0;      /* start at 0 */
+  chunk->dataleft = 0;      /* no data left yet! */
   chunk->state = CHUNK_HEX; /* we get hex first! */
 }
 
@@ -103,7 +102,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
                               ssize_t datalen,
                               ssize_t *wrotep)
 {
-  CURLcode result=CURLE_OK;
+  CURLcode result = CURLE_OK;
   struct Curl_chunker *ch = &conn->proto.http->chunk;
   struct Curl_transfer_keeper *k = &conn->keep;
   size_t piece;
@@ -112,29 +111,36 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
 
   *wrote = 0; /* nothing's written yet */
 
-  while(length) {
-    switch(ch->state) {
+  while (length)
+  {
+    switch (ch->state)
+    {
     case CHUNK_HEX:
-      if(isxdigit((int)*datap)) {
-        if(ch->hexindex < MAXNUM_SIZE) {
+      if (isxdigit((int)*datap))
+      {
+        if (ch->hexindex < MAXNUM_SIZE)
+        {
           ch->hexbuffer[ch->hexindex] = *datap;
           datap++;
           length--;
           ch->hexindex++;
         }
-        else {
+        else
+        {
           return CHUNKE_TOO_LONG_HEX; /* longer hex than we support */
         }
       }
-      else {
-        if(0 == ch->hexindex) {
+      else
+      {
+        if (0 == ch->hexindex)
+        {
           /* This is illegal data, we received junk where we expected
              a hexadecimal digit. */
           return CHUNKE_ILLEGAL_HEX;
         }
         /* length and datap are unmodified */
-        ch->hexbuffer[ch->hexindex]=0;
-        ch->datasize=strtoul(ch->hexbuffer, NULL, 16);
+        ch->hexbuffer[ch->hexindex] = 0;
+        ch->datasize = strtoul(ch->hexbuffer, NULL, 16);
         ch->state = CHUNK_POSTHEX;
       }
       break;
@@ -143,7 +149,7 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       /* In this state, we're waiting for CRLF to arrive. We support
          this to allow so called chunk-extensions to show up here
          before the CRLF comes. */
-      if(*datap == '\r')
+      if (*datap == '\r')
         ch->state = CHUNK_CR;
       length--;
       datap++;
@@ -151,11 +157,14 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
 
     case CHUNK_CR:
       /* waiting for the LF */
-      if(*datap == '\n') {
+      if (*datap == '\n')
+      {
         /* we're now expecting data to come, unless size was zero! */
-        if(0 == ch->datasize) {
+        if (0 == ch->datasize)
+        {
           ch->state = CHUNK_STOP; /* stop reading! */
-          if(1 == length) {
+          if (1 == length)
+          {
             /* This was the final byte, return right now */
             return CHUNKE_STOP;
           }
@@ -176,59 +185,61 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
          We expect another 'datasize' of data. We have 'length' right now,
          it can be more or less than 'datasize'. Get the smallest piece.
       */
-      piece = (ch->datasize >= length)?length:ch->datasize;
+      piece = (ch->datasize >= length) ? length : ch->datasize;
 
       /* Write the data portion available */
       /* Added content-encoding here; untested but almost identical to the
          tested code in transfer.c. 08/29/02 jhrg */
 #ifdef HAVE_LIBZ
-      switch (conn->keep.content_encoding) {
-        case IDENTITY:
+      switch (conn->keep.content_encoding)
+      {
+      case IDENTITY:
 #endif
-          if(!k->ignorebody)
-            result = Curl_client_write(conn->data, CLIENTWRITE_BODY, datap,
-                                       piece);
+        if (!k->ignorebody)
+          result = Curl_client_write(conn->data, CLIENTWRITE_BODY, datap,
+                                     piece);
 #ifdef HAVE_LIBZ
-          break;
+        break;
 
-        case DEFLATE: 
-          /* update conn->keep.str to point to the chunk data. */
-          conn->keep.str = datap;
-          result = Curl_unencode_deflate_write(conn->data, &conn->keep, piece);
-          break;
+      case DEFLATE:
+        /* update conn->keep.str to point to the chunk data. */
+        conn->keep.str = datap;
+        result = Curl_unencode_deflate_write(conn->data, &conn->keep, piece);
+        break;
 
-        case GZIP:
-          /* update conn->keep.str to point to the chunk data. */
-          conn->keep.str = datap;
-          result = Curl_unencode_gzip_write(conn->data, &conn->keep, piece);
-          break;
+      case GZIP:
+        /* update conn->keep.str to point to the chunk data. */
+        conn->keep.str = datap;
+        result = Curl_unencode_gzip_write(conn->data, &conn->keep, piece);
+        break;
 
-        case COMPRESS:
-        default:
-          failf (conn->data,
-                 "Unrecognized content encoding type. "
-                 "libcurl understands `identity', `deflate' and `gzip' "
-                 "content encodings.");
-          return CHUNKE_BAD_ENCODING;
+      case COMPRESS:
+      default:
+        failf(conn->data,
+              "Unrecognized content encoding type. "
+              "libcurl understands `identity', `deflate' and `gzip' "
+              "content encodings.");
+        return CHUNKE_BAD_ENCODING;
       }
 #endif
 
-      if(result)
+      if (result)
         return CHUNKE_WRITE_ERROR;
 
       *wrote += piece;
 
       ch->datasize -= piece; /* decrease amount left to expect */
-      datap += piece;    /* move read pointer forward */
-      length -= piece;   /* decrease space left in this round */
+      datap += piece;        /* move read pointer forward */
+      length -= piece;       /* decrease space left in this round */
 
-      if(0 == ch->datasize)
+      if (0 == ch->datasize)
         /* end of data this round, we now expect a trailing CRLF */
         ch->state = CHUNK_POSTCR;
       break;
 
     case CHUNK_POSTCR:
-      if(*datap == '\r') {
+      if (*datap == '\r')
+      {
         ch->state = CHUNK_POSTLF;
         datap++;
         length--;
@@ -238,7 +249,8 @@ CHUNKcode Curl_httpchunk_read(struct connectdata *conn,
       break;
 
     case CHUNK_POSTLF:
-      if(*datap == '\n') {
+      if (*datap == '\n')
+      {
         /*
          * The last one before we go back to hex state and start all
          * over.

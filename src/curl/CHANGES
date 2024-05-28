@@ -20,7 +20,7 @@ Daniel (18 March 2004)
 Daniel (17 March 2004)
 - Watz pointed out a few missing files in the MSVC project description file.
 
-- Günter Knauf brought patches, code and makefiles to build curl on Novell
+- Gï¿½nter Knauf brought patches, code and makefiles to build curl on Novell
   NetWare.
 
 Daniel (15 March 2004)
@@ -60,8 +60,8 @@ Daniel (4 March 2004)
 - Improved PUT/POST with NTLM/Digest authentication, the so called issue 12.
 
 - Modified the test HTTP server a lot to work with the upcoming changes for
-  PUT/POST with NTLM/Digest authentication (like test case 88). Added Andrés
-  García's win32-changes. Improved the logging.
+  PUT/POST with NTLM/Digest authentication (like test case 88). Added Andrï¿½s
+  Garcï¿½a's win32-changes. Improved the logging.
 
 - Fixed the file:-related progress/getinfo stuff a bit more.
 
@@ -71,7 +71,7 @@ Daniel (4 March 2004)
   could erroneously re-use a previous connection that was sent with
   Connection: close. Christopher R. Palmer reported.
 
-- Andrés García patched curl to prevent warnings while compiling with mingw,
+- Andrï¿½s Garcï¿½a patched curl to prevent warnings while compiling with mingw,
   mainly because it is now possible to have both WIN32 and HAVE_CONFIG_H
   defined.
 
@@ -220,7 +220,7 @@ Daniel (15 February 2004)
 - Fixed a case where a host cache entry was not flagged in-use properly when a
   cached entry was used.
 
-- Andrés García's patch that checks for winmm in the configure script was
+- Andrï¿½s Garcï¿½a's patch that checks for winmm in the configure script was
   applied.
 
 Daniel (13 February 2004)
@@ -249,7 +249,7 @@ Daniel (11 February 2004)
 - 'configure --disable-manual' completely disables the built-in manual from
   the curl command tool.
 
-- Andrés García fixed the configure script and a minor source edit, and now
+- Andrï¿½s Garcï¿½a fixed the configure script and a minor source edit, and now
   he has managed to get msys/mingw to run configure and then build!
 
 Daniel (9 February 2004)
@@ -269,7 +269,7 @@ Daniel (9 February 2004)
   it runs on windows with GTK as well!
 
 Daniel (6 February 2004)
-- Andrés García made the configure script find gethostbyname() fine when run
+- Andrï¿½s Garcï¿½a made the configure script find gethostbyname() fine when run
   with mingw on windows.
 
 - Modified the ldap code to use proper function pointers all over (instead of
@@ -284,7 +284,7 @@ Daniel (5 February 2004)
   define HAVE_ZLIB_H and HAVE_LIBZ if both the lib and the header is found.
   If one is missing, none of the defines is set.
 
-- Andrés García fixed the Mingw makefiles.
+- Andrï¿½s Garcï¿½a fixed the Mingw makefiles.
 
 - Len Krause reported that curl 7.9.X could do uploading from stdin without
   doing chunked encoding, which current curl cannot do even if you disable
@@ -691,7 +691,7 @@ Daniel (10 November)
 - Kang-Jin Lee pointed out that the generated ca-bundle.h file shouldn't be
   written in the source dir if a different build dir is used.
 
-- After Sébastien Willemijns' bug report, we now check the separators properly
+- After Sï¿½bastien Willemijns' bug report, we now check the separators properly
   in the 229-reply servers respond on a EPSV command and bail out better if
   the reply string is not RFC2428-compliant.
 
@@ -827,7 +827,7 @@ Daniel (22 October)
   to build a static libcurl that links with a shared OpenSSL using MSVC.
 
 Daniel (21 October)
-- Andrés García updated the mingw32 makefiles.
+- Andrï¿½s Garcï¿½a updated the mingw32 makefiles.
 
 Version 7.10.8-pre5 (21 October 2003)
 
@@ -1027,7 +1027,7 @@ Daniel (3 September)
 - Peter Pentchev found and fixed two problems in the test suite's web server
   code, that made it segfault at times.
 
-- Jörg Mueller-Tolk improved the proxy user+password handling, especially
+- Jï¿½rg Mueller-Tolk improved the proxy user+password handling, especially
   when providing a blank password.
 
 Daniel (2 September)
@@ -1226,7 +1226,7 @@ Daniel (1 August)
 Version 7.10.7-pre1 (31 July 2003)
 
 Daniel (30 July)
-- Jörg Müller-Tolk updated the VC makefile.
+- Jï¿½rg Mï¿½ller-Tolk updated the VC makefile.
 
 - Daniel Noguerol made the ftp code output "Accept-Ranges: bytes" in similar
   style like other faked HTTP headers when NOBODY and HEADER are used. I
@@ -1248,7 +1248,7 @@ Daniel (29 July)
 Version 7.10.6 (28 July 2003)
 
 Daniel (28 July)
-- François Pons brought a patch that once again made curl deal with ftp and
+- Franï¿½ois Pons brought a patch that once again made curl deal with ftp and
   "double slash" as indicating the root directory. In the RFC1738-fix of April
   30, that ability was removed (since it is not the "right" way). So, starting
   now we can list the root dir of an ftp server both these ways:
@@ -1260,7 +1260,7 @@ Daniel (24 July)
 - Henry Bland pointed out that we included sys/resource.h without good reason
   in several source files. Without it included, QNX builds better...
 
-- Andrés García updated the mingw makefiles.
+- Andrï¿½s Garcï¿½a updated the mingw makefiles.
 
 Daniel (23 July)
 - Tracy Boehrer experienced DNS cache problems and did some nice debugging
@@ -1759,7 +1759,7 @@ Daniel (25 Mar)
   difference and the connection would thus be used erroneously.
 
 Daniel (24 Mar)
-- Götz Babin-Ebell pointed out that the ca-bundle.crt file contained a
+- Gï¿½tz Babin-Ebell pointed out that the ca-bundle.crt file contained a
   certificate from Trustcenter that was a demo certificate only that was never
   intended to be part of a CA bundle.
 

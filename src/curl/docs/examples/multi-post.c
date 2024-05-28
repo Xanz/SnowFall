@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: multi-post.c,v 1.1 2002/05/06 13:38:28 bagder Exp $
@@ -24,9 +24,9 @@ int main(int argc, char *argv[])
   CURLM *multi_handle;
   int still_running;
 
-  struct HttpPost *formpost=NULL;
-  struct HttpPost *lastptr=NULL;
-  struct curl_slist *headerlist=NULL;
+  struct HttpPost *formpost = NULL;
+  struct HttpPost *lastptr = NULL;
+  struct curl_slist *headerlist = NULL;
   char buf[] = "Expect:";
 
   /* Fill in the file upload field */
@@ -43,7 +43,6 @@ int main(int argc, char *argv[])
                CURLFORM_COPYCONTENTS, "postit2.c",
                CURLFORM_END);
 
-
   /* Fill in the submit field too, even if this is rarely needed */
   curl_formadd(&formpost,
                &lastptr,
@@ -57,8 +56,9 @@ int main(int argc, char *argv[])
   /* initalize custom header list (stating that Expect: 100-continue is not
      wanted */
   headerlist = curl_slist_append(headerlist, buf);
-  if(curl && multi_handle) {
-    int perform=0;
+  if (curl && multi_handle)
+  {
+    int perform = 0;
 
     /* what URL that receives this POST */
     curl_easy_setopt(curl, CURLOPT_URL,
@@ -70,10 +70,12 @@ int main(int argc, char *argv[])
 
     curl_multi_add_handle(multi_handle, curl);
 
-    while(CURLM_CALL_MULTI_PERFORM ==
-          curl_multi_perform(multi_handle, &still_running));
+    while (CURLM_CALL_MULTI_PERFORM ==
+           curl_multi_perform(multi_handle, &still_running))
+      ;
 
-    while(still_running) {
+    while (still_running)
+    {
       struct timeval timeout;
       int rc; /* select() return code */
 
@@ -93,9 +95,10 @@ int main(int argc, char *argv[])
       /* get file descriptors from the transfers */
       curl_multi_fdset(multi_handle, &fdread, &fdwrite, &fdexcep, &maxfd);
 
-      rc = select(maxfd+1, &fdread, &fdwrite, &fdexcep, &timeout);
+      rc = select(maxfd + 1, &fdread, &fdwrite, &fdexcep, &timeout);
 
-      switch(rc) {
+      switch (rc)
+      {
       case -1:
         /* select error */
         break;
@@ -104,8 +107,9 @@ int main(int argc, char *argv[])
       default:
         /* timeout or readable/writable sockets */
         printf("perform!\n");
-        while(CURLM_CALL_MULTI_PERFORM ==
-              curl_multi_perform(multi_handle, &still_running));
+        while (CURLM_CALL_MULTI_PERFORM ==
+               curl_multi_perform(multi_handle, &still_running))
+          ;
         printf("running: %d!\n", still_running);
         break;
       }
@@ -120,7 +124,7 @@ int main(int argc, char *argv[])
     curl_formfree(formpost);
 
     /* free slist */
-    curl_slist_free_all (headerlist);
+    curl_slist_free_all(headerlist);
   }
   return 0;
 }

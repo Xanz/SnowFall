@@ -199,7 +199,7 @@ select_ncolors(j_decompress_ptr cinfo, int Ncolors[])
     for (i = 1; i < nc; i++)
       temp *= iroot;
   } while (temp <= (long)max_colors); /* repeat till iroot exceeds root */
-  iroot--;                            /* now iroot = floor(root) */
+  iroot--; /* now iroot = floor(root) */
 
   /* Must have at least 2 color values per component */
   if (iroot < 2)

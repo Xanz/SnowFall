@@ -1,10 +1,10 @@
 #ifndef __SETUP_H
 #define __SETUP_H
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -12,7 +12,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -116,25 +116,25 @@ typedef unsigned char bool;
 #include <floss.h>
 #endif
 
-#if defined(HAVE_X509_H) && defined(HAVE_SSL_H) && defined(HAVE_RSA_H) && \
-defined(HAVE_PEM_H) && defined(HAVE_ERR_H) && defined(HAVE_CRYPTO_H) && \
-defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
-  /* the six important includes files all exist and so do both libs,
-     defined SSLeay usage */
+#if defined(HAVE_X509_H) && defined(HAVE_SSL_H) && defined(HAVE_RSA_H) &&   \
+    defined(HAVE_PEM_H) && defined(HAVE_ERR_H) && defined(HAVE_CRYPTO_H) && \
+    defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
+/* the six important includes files all exist and so do both libs,
+   defined SSLeay usage */
 #define USE_SSLEAY 1
 #endif
-#if defined(HAVE_OPENSSL_X509_H) && defined(HAVE_OPENSSL_SSL_H) && \
-defined(HAVE_OPENSSL_RSA_H) && defined(HAVE_OPENSSL_PEM_H) && \
-defined(HAVE_OPENSSL_ERR_H) && defined(HAVE_OPENSSL_CRYPTO_H) && \
-defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
-  /* the six important includes files all exist and so do both libs,
-     defined SSLeay usage */
+#if defined(HAVE_OPENSSL_X509_H) && defined(HAVE_OPENSSL_SSL_H) &&   \
+    defined(HAVE_OPENSSL_RSA_H) && defined(HAVE_OPENSSL_PEM_H) &&    \
+    defined(HAVE_OPENSSL_ERR_H) && defined(HAVE_OPENSSL_CRYPTO_H) && \
+    defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
+/* the six important includes files all exist and so do both libs,
+   defined SSLeay usage */
 #define USE_SSLEAY 1
 #define USE_OPENSSL 1
 #endif
 
 #ifndef STDC_HEADERS /* no standard C headers! */
-#ifdef	VMS
+#ifdef VMS
 #include "../include/curl/stdcheaders.h"
 #else
 #include <curl/stdcheaders.h>
@@ -158,7 +158,6 @@ defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
 #define SEND_4TH_ARG 0
 #endif
 
-
 /* Below we define four functions. They should
    1. close a socket
    2. read from a socket
@@ -171,10 +170,10 @@ defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
 #ifdef WIN32
 
 #ifndef WIN32_LEAN_AND_MEAN
-#define WIN32_LEAN_AND_MEAN  /* Prevent including <winsock*.h> in <windows.h> */
+#define WIN32_LEAN_AND_MEAN /* Prevent including <winsock*.h> in <windows.h> */
 #endif
 
-#include <winsock2.h>        /* required by telnet.c */
+#include <winsock2.h> /* required by telnet.c */
 
 #if defined(ENABLE_IPV6) || defined(USE_SSLEAY)
 #include <ws2tcpip.h>
@@ -182,28 +181,28 @@ defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
 
 #if !defined(__GNUC__) || defined(__MINGW32__)
 #define sclose(x) closesocket(x)
-#define sread(x,y,z) recv(x,y,z, SEND_4TH_ARG)
-#define swrite(x,y,z) (size_t)send(x,y,z, SEND_4TH_ARG)
+#define sread(x, y, z) recv(x, y, z, SEND_4TH_ARG)
+#define swrite(x, y, z) (size_t) send(x, y, z, SEND_4TH_ARG)
 #undef HAVE_ALARM
 #else
-     /* gcc-for-win is still good :) */
+/* gcc-for-win is still good :) */
 #define sclose(x) close(x)
-#define sread(x,y,z) recv(x,y,z, SEND_4TH_ARG)
-#define swrite(x,y,z) send(x,y,z, SEND_4TH_ARG)
+#define sread(x, y, z) recv(x, y, z, SEND_4TH_ARG)
+#define swrite(x, y, z) send(x, y, z, SEND_4TH_ARG)
 #define HAVE_ALARM
 #endif
 
-#define DIR_CHAR      "\\"
-#define DOT_CHAR      "_"
+#define DIR_CHAR "\\"
+#define DOT_CHAR "_"
 
 #else
 
 #ifdef DJGPP
-#define sclose(x)         close_s(x)
-#define sread(x,y,z)      read_s(x,y,z)
-#define swrite(x,y,z)     write_s(x,y,z)
-#define select(n,r,w,x,t) select_s(n,r,w,x,t)
-#define ioctl(x,y,z) ioctlsocket(x,y,(char *)(z))
+#define sclose(x) close_s(x)
+#define sread(x, y, z) read_s(x, y, z)
+#define swrite(x, y, z) write_s(x, y, z)
+#define select(n, r, w, x, t) select_s(n, r, w, x, t)
+#define ioctl(x, y, z) ioctlsocket(x, y, (char *)(z))
 #define IOCTL_3_ARGS
 #include <tcp.h>
 #ifdef word
@@ -214,12 +213,12 @@ defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
 
 #ifdef __BEOS__
 #define sclose(x) closesocket(x)
-#define sread(x,y,z) (ssize_t)recv(x,y,z, SEND_4TH_ARG)
-#define swrite(x,y,z) (ssize_t)send(x,y,z, SEND_4TH_ARG)
+#define sread(x, y, z) (ssize_t) recv(x, y, z, SEND_4TH_ARG)
+#define swrite(x, y, z) (ssize_t) send(x, y, z, SEND_4TH_ARG)
 #else
 #define sclose(x) close(x)
-#define sread(x,y,z) recv(x,y,z, SEND_4TH_ARG)
-#define swrite(x,y,z) send(x,y,z, SEND_4TH_ARG)
+#define sread(x, y, z) recv(x, y, z, SEND_4TH_ARG)
+#define swrite(x, y, z) send(x, y, z, SEND_4TH_ARG)
 #endif
 
 #define HAVE_ALARM
@@ -232,16 +231,16 @@ defined(HAVE_LIBSSL) && defined(HAVE_LIBCRYPTO)
 #define sclose(x) CloseSocket(x)
 #endif
 
-#define DIR_CHAR      "/"
-#define DOT_CHAR      "."
+#define DIR_CHAR "/"
+#define DOT_CHAR "."
 
 #ifdef DJGPP
 #undef DOT_CHAR
-#define DOT_CHAR      "_"
+#define DOT_CHAR "_"
 #endif
 
 #ifndef fileno /* sunos 4 have this as a macro! */
-int fileno( FILE *stream);
+int fileno(FILE *stream);
 #endif
 
 #endif
@@ -260,7 +259,7 @@ typedef int curl_socket_t;
 #endif
 
 #if defined(WIN32) && !defined(__CYGWIN32__) && !defined(USE_ARES) && !defined(ENABLE_IPV6)
-#define USE_THREADING_GETHOSTBYNAME  /* Cygwin uses alarm() function */
+#define USE_THREADING_GETHOSTBYNAME /* Cygwin uses alarm() function */
 #endif
 
 /*

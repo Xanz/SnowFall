@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: post-callback.c,v 1.3 2003/12/08 14:14:26 bagder Exp $
@@ -15,9 +15,10 @@
 #include <string.h>
 #include <curl/curl.h>
 
-char data[]="this is what we post to the silly web server";
+char data[] = "this is what we post to the silly web server";
 
-struct WriteThis {
+struct WriteThis
+{
   char *readptr;
   int sizeleft;
 };
@@ -26,17 +27,18 @@ size_t read_callback(void *ptr, size_t size, size_t nmemb, void *userp)
 {
   struct WriteThis *pooh = (struct WriteThis *)userp;
 
-  if(size*nmemb < 1)
+  if (size * nmemb < 1)
     return 0;
 
-  if(pooh->sizeleft) {
+  if (pooh->sizeleft)
+  {
     *(char *)ptr = pooh->readptr[0]; /* copy one single byte */
     pooh->readptr++;                 /* advance pointer */
     pooh->sizeleft--;                /* less data left */
     return 1;                        /* we return 1 byte at a time! */
   }
 
-  return -1;                         /* no more data left to deliver */
+  return -1; /* no more data left to deliver */
 }
 
 int main(void)
@@ -50,7 +52,8 @@ int main(void)
   pooh.sizeleft = strlen(data);
 
   curl = curl_easy_init();
-  if(curl) {
+  if (curl)
+  {
     /* First set the URL that is about to receive our POST. */
     curl_easy_setopt(curl, CURLOPT_URL,
                      "http://receivingsite.com.pooh/index.cgi");

@@ -50,18 +50,19 @@ static void decodeQuantum(unsigned char *dest, const char *src)
 {
   unsigned int x = 0;
   int i;
-  for(i = 0; i < 4; i++) {
-    if(src[i] >= 'A' && src[i] <= 'Z')
+  for (i = 0; i < 4; i++)
+  {
+    if (src[i] >= 'A' && src[i] <= 'Z')
       x = (x << 6) + (unsigned int)(src[i] - 'A' + 0);
-    else if(src[i] >= 'a' && src[i] <= 'z')
+    else if (src[i] >= 'a' && src[i] <= 'z')
       x = (x << 6) + (unsigned int)(src[i] - 'a' + 26);
-    else if(src[i] >= '0' && src[i] <= '9')
+    else if (src[i] >= '0' && src[i] <= '9')
       x = (x << 6) + (unsigned int)(src[i] - '0' + 52);
-    else if(src[i] == '+')
+    else if (src[i] == '+')
       x = (x << 6) + 62;
-    else if(src[i] == '/')
+    else if (src[i] == '/')
       x = (x << 6) + 63;
-    else if(src[i] == '=')
+    else if (src[i] == '=')
       x = (x << 6);
   }
 
@@ -85,32 +86,34 @@ size_t Curl_base64_decode(const char *src, char *dest)
   int i;
   int numQuantums;
   unsigned char lastQuantum[3];
-  size_t rawlen=0;
+  size_t rawlen = 0;
 
-  while((src[length] != '=') && src[length])
+  while ((src[length] != '=') && src[length])
     length++;
-  while(src[length+equalsTerm] == '=')
+  while (src[length + equalsTerm] == '=')
     equalsTerm++;
 
   numQuantums = (length + equalsTerm) / 4;
 
   rawlen = (numQuantums * 3) - equalsTerm;
 
-  for(i = 0; i < numQuantums - 1; i++) {
+  for (i = 0; i < numQuantums - 1; i++)
+  {
     decodeQuantum((unsigned char *)dest, src);
-    dest += 3; src += 4;
+    dest += 3;
+    src += 4;
   }
 
   decodeQuantum(lastQuantum, src);
-  for(i = 0; i < 3 - equalsTerm; i++)
+  for (i = 0; i < 3 - equalsTerm; i++)
     dest[i] = lastQuantum[i];
 
   return rawlen;
 }
 
 /* ---- Base64 Encoding --- */
-static char table64[]=
-  "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+static char table64[] =
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 /*
  * Curl_base64_encode()
@@ -131,16 +134,19 @@ size_t Curl_base64_encode(const char *inp, size_t insize, char **outptr)
 
   char *indata = (char *)inp;
 
-  if(0 == insize)
+  if (0 == insize)
     insize = strlen(indata);
 
-  base64data = output = (char*)malloc(insize*4/3+4);
-  if(NULL == output)
+  base64data = output = (char *)malloc(insize * 4 / 3 + 4);
+  if (NULL == output)
     return 0;
 
-  while(insize > 0) {
-    for (i = inputparts = 0; i < 3; i++) {
-      if(insize > 0) {
+  while (insize > 0)
+  {
+    for (i = inputparts = 0; i < 3; i++)
+    {
+      if (insize > 0)
+      {
         inputparts++;
         ibuf[i] = *indata;
         indata++;
@@ -150,12 +156,13 @@ size_t Curl_base64_encode(const char *inp, size_t insize, char **outptr)
         ibuf[i] = 0;
     }
 
-    obuf [0] = (ibuf [0] & 0xFC) >> 2;
-    obuf [1] = ((ibuf [0] & 0x03) << 4) | ((ibuf [1] & 0xF0) >> 4);
-    obuf [2] = ((ibuf [1] & 0x0F) << 2) | ((ibuf [2] & 0xC0) >> 6);
-    obuf [3] = ibuf [2] & 0x3F;
+    obuf[0] = (ibuf[0] & 0xFC) >> 2;
+    obuf[1] = ((ibuf[0] & 0x03) << 4) | ((ibuf[1] & 0xF0) >> 4);
+    obuf[2] = ((ibuf[1] & 0x0F) << 2) | ((ibuf[2] & 0xC0) >> 6);
+    obuf[3] = ibuf[2] & 0x3F;
 
-    switch(inputparts) {
+    switch (inputparts)
+    {
     case 1: /* only one byte read */
       sprintf(output, "%c%c==",
               table64[obuf[0]],
@@ -172,12 +179,12 @@ size_t Curl_base64_encode(const char *inp, size_t insize, char **outptr)
               table64[obuf[0]],
               table64[obuf[1]],
               table64[obuf[2]],
-              table64[obuf[3]] );
+              table64[obuf[3]]);
       break;
     }
     output += 4;
   }
-  *output=0;
+  *output = 0;
   *outptr = base64data; /* make it return the actual data memory */
 
   return strlen(base64data); /* return the length of the new data */
@@ -185,7 +192,6 @@ size_t Curl_base64_encode(const char *inp, size_t insize, char **outptr)
 /* ---- End of Base64 Encoding ---- */
 
 /************* TEST HARNESS STUFF ****************/
-
 
 #ifdef TEST_ENCODE
 /* encoding test harness. Read in standard input and write out the length
@@ -207,9 +213,10 @@ int main(int argc, char **argv, char **envp)
   base64Len = Curl_base64_encode(data, dataLen, &base64);
 
   fprintf(stderr, "%d\n", base64Len);
-  fprintf(stdout, "%s",   base64);
+  fprintf(stdout, "%s", base64);
 
-  free(base64); free(data);
+  free(base64);
+  free(data);
   return 0;
 }
 #endif
@@ -234,30 +241,32 @@ int main(int argc, char **argv, char **envp)
   int i, j;
 
   base64 = (char *)suck(&base64Len);
-  data = (unsigned char *)malloc(base64Len * 3/4 + 8);
+  data = (unsigned char *)malloc(base64Len * 3 / 4 + 8);
   dataLen = Curl_base64_decode(base64, data);
 
   fprintf(stderr, "%d\n", dataLen);
 
-  for(i=0; i < dataLen; i+=0x10) {
+  for (i = 0; i < dataLen; i += 0x10)
+  {
     printf("0x%02x: ", i);
-    for(j=0; j < 0x10; j++)
-      if((j+i) < dataLen)
-        printf("%02x ", data[i+j]);
+    for (j = 0; j < 0x10; j++)
+      if ((j + i) < dataLen)
+        printf("%02x ", data[i + j]);
       else
         printf("   ");
 
     printf(" | ");
 
-    for(j=0; j < 0x10; j++)
-      if((j+i) < dataLen)
-        printf("%c", isgraph(data[i+j])?data[i+j]:'.');
+    for (j = 0; j < 0x10; j++)
+      if ((j + i) < dataLen)
+        printf("%c", isgraph(data[i + j]) ? data[i + j] : '.');
       else
         break;
     puts("");
   }
 
-  free(base64); free(data);
+  free(base64);
+  free(data);
   return 0;
 }
 #endif
@@ -271,13 +280,14 @@ void *suck(int *lenptr)
   int lastread;
   int len = 0;
 
-  do {
+  do
+  {
     cursize *= 2;
     buf = (unsigned char *)realloc(buf, cursize);
     memset(buf + len, 0, cursize - len);
     lastread = fread(buf + len, 1, cursize - len, stdin);
     len += lastread;
-  } while(!feof(stdin));
+  } while (!feof(stdin));
 
   lenptr[0] = len;
   return (void *)buf;

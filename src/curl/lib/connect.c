@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -59,7 +59,7 @@
 #undef in_addr_t
 #define in_addr_t unsigned long
 #endif
-#ifdef	VMS
+#ifdef VMS
 #include <in.h>
 #include <inet.h>
 #endif
@@ -78,8 +78,8 @@
 #include <windows.h>
 #define EINPROGRESS WSAEINPROGRESS
 #define EWOULDBLOCK WSAEWOULDBLOCK
-#define EISCONN     WSAEISCONN
-#define ENOTSOCK    WSAENOTSOCK
+#define EISCONN WSAEISCONN
+#define ENOTSOCK WSAENOTSOCK
 #define ECONNREFUSED WSAECONNREFUSED
 #endif
 
@@ -111,8 +111,8 @@ int Curl_ourerrno(void)
  *  Set the socket to either blocking or non-blocking mode.
  */
 
-int Curl_nonblock(curl_socket_t sockfd,    /* operate on this */
-                  int nonblock   /* TRUE or FALSE */)
+int Curl_nonblock(curl_socket_t sockfd, /* operate on this */
+                  int nonblock /* TRUE or FALSE */)
 {
 #undef SETBLOCK
 #ifdef HAVE_O_NONBLOCK
@@ -174,9 +174,8 @@ int Curl_nonblock(curl_socket_t sockfd,    /* operate on this */
  * 1    select() timeout
  * 2    select() returned with an error condition
  */
-static
-int waitconnect(curl_socket_t sockfd, /* socket */
-                long timeout_msec)
+static int waitconnect(curl_socket_t sockfd, /* socket */
+                       long timeout_msec)
 {
   fd_set fd;
   fd_set errfd;
@@ -196,21 +195,21 @@ int waitconnect(curl_socket_t sockfd, /* socket */
   FD_ZERO(&errfd);
   FD_SET(sockfd, &errfd);
 
-  interval.tv_sec = timeout_msec/1000;
-  timeout_msec -= interval.tv_sec*1000;
+  interval.tv_sec = timeout_msec / 1000;
+  timeout_msec -= interval.tv_sec * 1000;
 
-  interval.tv_usec = timeout_msec*1000;
+  interval.tv_usec = timeout_msec * 1000;
 
-  rc = select(sockfd+1, NULL, &fd, &errfd, &interval);
-  if(-1 == rc)
+  rc = select(sockfd + 1, NULL, &fd, &errfd, &interval);
+  if (-1 == rc)
     /* error, no connect here, try next */
     return -1;
-  
-  else if(0 == rc)
+
+  else if (0 == rc)
     /* timeout, no connect today */
     return 1;
 
-  if(FD_ISSET(sockfd, &errfd))
+  if (FD_ISSET(sockfd, &errfd))
     /* error condition caught */
     return 2;
 
@@ -228,8 +227,9 @@ static CURLcode bindlocal(struct connectdata *conn,
   /*************************************************************
    * Select device to bind socket to
    *************************************************************/
-  if (strlen(data->set.device)<255) {
-    struct Curl_dns_entry *h=NULL;
+  if (strlen(data->set.device) < 255)
+  {
+    struct Curl_dns_entry *h = NULL;
     size_t size;
     char myhost[256] = "";
     in_addr_t in;
@@ -237,36 +237,39 @@ static CURLcode bindlocal(struct connectdata *conn,
     bool was_iface = FALSE;
 
     /* First check if the given name is an IP address */
-    in=inet_addr(data->set.device);
-      
-    if((in == CURL_INADDR_NONE) &&
-       Curl_if2ip(data->set.device, myhost, sizeof(myhost))) {
+    in = inet_addr(data->set.device);
+
+    if ((in == CURL_INADDR_NONE) &&
+        Curl_if2ip(data->set.device, myhost, sizeof(myhost)))
+    {
       /*
        * We now have the numerical IPv4-style x.y.z.w in the 'myhost' buffer
        */
       rc = Curl_resolv(conn, myhost, 0, &h);
-      if(rc == 1)
+      if (rc == 1)
         (void)Curl_wait_for_resolv(conn, &h);
 
-      if(h)
+      if (h)
         was_iface = TRUE;
     }
 
-    if(!was_iface) {
+    if (!was_iface)
+    {
       /*
        * This was not an interface, resolve the name as a host name
        * or IP number
        */
       rc = Curl_resolv(conn, data->set.device, 0, &h);
-      if(rc == 1)
+      if (rc == 1)
         (void)Curl_wait_for_resolv(conn, &h);
 
-      if(h)
+      if (h)
         /* we know data->set.device is shorter than the myhost array */
         strcpy(myhost, data->set.device);
     }
 
-    if(! *myhost) {
+    if (!*myhost)
+    {
       /* need to fix this
          h=Curl_gethost(data,
          getmyhost(*myhost,sizeof(myhost)),
@@ -288,12 +291,14 @@ static CURLcode bindlocal(struct connectdata *conn,
      * interfaces to go out the external interface.
      *
      */
-    if (was_iface) {
+    if (was_iface)
+    {
       /* Only bind to the interface when specified as interface, not just as a
        * hostname or ip address.
        */
       if (setsockopt(sockfd, SOL_SOCKET, SO_BINDTODEVICE,
-                     data->set.device, strlen(data->set.device)+1) != 0) {
+                     data->set.device, strlen(data->set.device) + 1) != 0)
+      {
         /* printf("Failed to BINDTODEVICE, socket: %d  device: %s error: %s\n",
            sockfd, data->set.device, strerror(errno)); */
         infof(data, "SO_BINDTODEVICE %s failed\n",
@@ -304,25 +309,29 @@ static CURLcode bindlocal(struct connectdata *conn,
     }
 #endif
 
-    in=inet_addr(myhost);
-    if (CURL_INADDR_NONE != in) {
+    in = inet_addr(myhost);
+    if (CURL_INADDR_NONE != in)
+    {
 
-      if ( h ) {
+      if (h)
+      {
         Curl_addrinfo *addr = h->addr;
 
         Curl_resolv_unlock(data, h);
         /* we don't need it anymore after this function has returned */
 
 #ifdef ENABLE_IPV6
-        if( bind(sockfd, addr->ai_addr, addr->ai_addrlen) >= 0) {
+        if (bind(sockfd, addr->ai_addr, addr->ai_addrlen) >= 0)
+        {
           /* we succeeded to bind */
           struct sockaddr_in6 add;
 
           bindworked = TRUE;
-	
+
           size = sizeof(add);
-          if(getsockname(sockfd, (struct sockaddr *) &add,
-                         (socklen_t *)&size)<0) {
+          if (getsockname(sockfd, (struct sockaddr *)&add,
+                          (socklen_t *)&size) < 0)
+          {
             failf(data, "getsockname() failed");
             return CURLE_HTTP_PORT_FAILED;
           }
@@ -336,24 +345,28 @@ static CURLcode bindlocal(struct connectdata *conn,
           sa.sin_family = AF_INET;
           sa.sin_addr.s_addr = in;
           sa.sin_port = 0; /* get any port */
-	
-          if( bind(sockfd, (struct sockaddr *)&sa, sizeof(sa)) >= 0) {
+
+          if (bind(sockfd, (struct sockaddr *)&sa, sizeof(sa)) >= 0)
+          {
             /* we succeeded to bind */
             struct sockaddr_in add;
-	
+
             bindworked = TRUE;
-            
+
             size = sizeof(add);
-            if(getsockname(sockfd, (struct sockaddr *) &add,
-                           (socklen_t *)&size)<0) {
+            if (getsockname(sockfd, (struct sockaddr *)&add,
+                            (socklen_t *)&size) < 0)
+            {
               failf(data, "getsockname() failed");
               return CURLE_HTTP_PORT_FAILED;
             }
           }
         }
 #endif
-        if(!bindworked) {
-          switch(errno) {
+        if (!bindworked)
+        {
+          switch (errno)
+          {
           case EBADF:
             failf(data, "Invalid descriptor: %d", errno);
             break;
@@ -381,18 +394,20 @@ static CURLcode bindlocal(struct connectdata *conn,
             failf(data, "errno %d", errno);
             break;
           } /* end of switch(errno) */
-	
+
           return CURLE_HTTP_PORT_FAILED;
         } /* end of else */
-	
+
       } /* end of if  h */
-      else {
-	failf(data,"could't find my own IP address (%s)", myhost);
-	return CURLE_HTTP_PORT_FAILED;
+      else
+      {
+        failf(data, "could't find my own IP address (%s)", myhost);
+        return CURLE_HTTP_PORT_FAILED;
       }
     } /* end of inet_addr */
 
-    else {
+    else
+    {
       failf(data, "could't find my own IP address (%s)", myhost);
       return CURLE_HTTP_PORT_FAILED;
     }
@@ -413,14 +428,14 @@ static bool verifyconnect(curl_socket_t sockfd)
 #if defined(SO_ERROR) && !defined(WIN32)
   int err = 0;
   socklen_t errSize = sizeof(err);
-  if( -1 == getsockopt(sockfd, SOL_SOCKET, SO_ERROR,
+  if (-1 == getsockopt(sockfd, SOL_SOCKET, SO_ERROR,
                        (void *)&err, &errSize))
     err = Curl_ourerrno();
 
   if ((0 == err) || (EISCONN == err))
     /* we are connected, awesome! */
     return TRUE;
-  
+
   /* This wasn't a successful connect */
   return FALSE;
 #else
@@ -443,31 +458,35 @@ CURLcode Curl_is_connected(struct connectdata *conn,
 
   *connected = FALSE; /* a very negative world view is best */
 
-  if(data->set.timeout || data->set.connecttimeout) {
+  if (data->set.timeout || data->set.connecttimeout)
+  {
     /* there is a timeout set */
 
     /* Evaluate in milliseconds how much time that has passed */
     long has_passed = Curl_tvdiff(Curl_tvnow(), data->progress.start);
 
     /* subtract the most strict timeout of the ones */
-    if(data->set.timeout && data->set.connecttimeout) {
+    if (data->set.timeout && data->set.connecttimeout)
+    {
       if (data->set.timeout < data->set.connecttimeout)
-        has_passed -= data->set.timeout*1000;
-      else 
-        has_passed -= data->set.connecttimeout*1000;
+        has_passed -= data->set.timeout * 1000;
+      else
+        has_passed -= data->set.connecttimeout * 1000;
     }
-    else if(data->set.timeout)
-      has_passed -= data->set.timeout*1000;
+    else if (data->set.timeout)
+      has_passed -= data->set.timeout * 1000;
     else
-      has_passed -= data->set.connecttimeout*1000;
+      has_passed -= data->set.connecttimeout * 1000;
 
-    if(has_passed > 0 ) {
+    if (has_passed > 0)
+    {
       /* time-out, bail out, go home */
       failf(data, "Connection time-out");
       return CURLE_OPERATION_TIMEOUTED;
     }
   }
-  if(conn->bits.tcpconnect) {
+  if (conn->bits.tcpconnect)
+  {
     /* we are connected already! */
     *connected = TRUE;
     return CURLE_OK;
@@ -476,8 +495,10 @@ CURLcode Curl_is_connected(struct connectdata *conn,
   /* check for connect without timeout as we want to return immediately */
   rc = waitconnect(sockfd, 0);
 
-  if(0 == rc) {
-    if (verifyconnect(sockfd)) {
+  if (0 == rc)
+  {
+    if (verifyconnect(sockfd))
+    {
       /* we are connected, awesome! */
       *connected = TRUE;
       return CURLE_OK;
@@ -486,7 +507,8 @@ CURLcode Curl_is_connected(struct connectdata *conn,
     failf(data, "Connection failed");
     return CURLE_COULDNT_CONNECT;
   }
-  else if(1 != rc) {
+  else if (1 != rc)
+  {
     int error = Curl_ourerrno();
     failf(data, "Failed connect to %s:%d, errno: %d",
           conn->hostname, conn->port, error);
@@ -503,24 +525,23 @@ CURLcode Curl_is_connected(struct connectdata *conn,
   return CURLE_OK;
 }
 
-
 /*
  * TCP connect to the given host with timeout, proxy or remote doesn't matter.
  * There might be more than one IP address to try out. Fill in the passed
  * pointer with the connected socket.
  */
 
-CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
+CURLcode Curl_connecthost(struct connectdata *conn,          /* context */
                           struct Curl_dns_entry *remotehost, /* use this one */
-                          int port,                  /* connect to this */
-                          curl_socket_t *sockconn,   /* the connected socket */
-                          Curl_ipconnect **addr,     /* the one we used */
-                          bool *connected)           /* really connected? */
+                          int port,                          /* connect to this */
+                          curl_socket_t *sockconn,           /* the connected socket */
+                          Curl_ipconnect **addr,             /* the one we used */
+                          bool *connected)                   /* really connected? */
 {
   struct SessionHandle *data = conn->data;
   int rc;
-  curl_socket_t sockfd= CURL_SOCKET_BAD;
-  int aliasindex=0;
+  curl_socket_t sockfd = CURL_SOCKET_BAD;
+  int aliasindex = 0;
   char *hostname;
 
   struct timeval after;
@@ -528,48 +549,51 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
 
 #ifdef ENABLE_IPV6
   struct addrinfo *ai;
-#endif  
+#endif
 
   /*************************************************************
    * Figure out what maximum time we have left
    *************************************************************/
-  long timeout_ms=300000; /* milliseconds, default to five minutes */
+  long timeout_ms = 300000; /* milliseconds, default to five minutes */
 
   *connected = FALSE; /* default to not connected */
 
-  if(data->set.timeout || data->set.connecttimeout) {
+  if (data->set.timeout || data->set.connecttimeout)
+  {
     double has_passed;
 
     /* Evaluate in milliseconds how much time that has passed */
     has_passed = Curl_tvdiff(Curl_tvnow(), data->progress.start);
 
 #ifndef min
-#define min(a, b)   ((a) < (b) ? (a) : (b))
+#define min(a, b) ((a) < (b) ? (a) : (b))
 #endif
 
     /* get the most strict timeout of the ones converted to milliseconds */
-    if(data->set.timeout && data->set.connecttimeout) {
+    if (data->set.timeout && data->set.connecttimeout)
+    {
       if (data->set.timeout < data->set.connecttimeout)
-        timeout_ms = data->set.timeout*1000;
-      else 
-        timeout_ms = data->set.connecttimeout*1000;
+        timeout_ms = data->set.timeout * 1000;
+      else
+        timeout_ms = data->set.connecttimeout * 1000;
     }
-    else if(data->set.timeout)
-      timeout_ms = data->set.timeout*1000;
+    else if (data->set.timeout)
+      timeout_ms = data->set.timeout * 1000;
     else
-      timeout_ms = data->set.connecttimeout*1000;
+      timeout_ms = data->set.connecttimeout * 1000;
 
     /* subtract the passed time */
     timeout_ms -= (long)has_passed;
 
-    if(timeout_ms < 0) {
+    if (timeout_ms < 0)
+    {
       /* a precaution, no need to continue if time already is up */
       failf(data, "Connection time-out");
       return CURLE_OPERATION_TIMEOUTED;
     }
   }
 
-  hostname = data->change.proxy?conn->proxyhost:conn->hostname;
+  hostname = data->change.proxy ? conn->proxyhost : conn->hostname;
   infof(data, "About to connect() to %s port %d\n",
         hostname, port);
 
@@ -577,7 +601,8 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
   /*
    * Connecting with a getaddrinfo chain
    */
-  for (ai = remotehost->addr; ai; ai = ai->ai_next, aliasindex++) {
+  for (ai = remotehost->addr; ai; ai = ai->ai_next, aliasindex++)
+  {
     sockfd = socket(ai->ai_family, ai->ai_socktype, ai->ai_protocol);
     if (sockfd == CURL_SOCKET_BAD)
       continue;
@@ -588,20 +613,22 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
 
   /* This is the loop that attempts to connect to all IP-addresses we
      know for the given host. One by one. */
-  for(rc=-1, aliasindex=0;
-      rc && (struct in_addr *)remotehost->addr->h_addr_list[aliasindex];
-      aliasindex++) {
+  for (rc = -1, aliasindex = 0;
+       rc && (struct in_addr *)remotehost->addr->h_addr_list[aliasindex];
+       aliasindex++)
+  {
     struct sockaddr_in serv_addr;
 
     /* create an IPv4 TCP socket */
     sockfd = socket(AF_INET, SOCK_STREAM, 0);
-    if(CURL_SOCKET_BAD == sockfd) {
+    if (CURL_SOCKET_BAD == sockfd)
+    {
       failf(data, "couldn't create socket");
       return CURLE_COULDNT_CONNECT; /* big time error */
     }
 
     /* nasty address work before connect can be made */
-    memset((char *) &serv_addr, '\0', sizeof(serv_addr));
+    memset((char *)&serv_addr, '\0', sizeof(serv_addr));
     memcpy((char *)&(serv_addr.sin_addr),
            (struct in_addr *)remotehost->addr->h_addr_list[aliasindex],
            sizeof(struct in_addr));
@@ -609,11 +636,12 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
     serv_addr.sin_port = htons((unsigned short)port);
 #endif
 
-    if(conn->data->set.device) {
+    if (conn->data->set.device)
+    {
       /* user selected to bind the outgoing socket to a specified "device"
          before doing connect */
       CURLcode res = bindlocal(conn, sockfd);
-      if(res)
+      if (res)
         return res;
     }
 
@@ -629,10 +657,12 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
     rc = connect(sockfd, (struct sockaddr *)&serv_addr, sizeof(serv_addr));
 #endif
 
-    if(-1 == rc) {
-      int error=Curl_ourerrno();
+    if (-1 == rc)
+    {
+      int error = Curl_ourerrno();
 
-      switch (error) {
+      switch (error)
+      {
       case EINPROGRESS:
       case EWOULDBLOCK:
 #if defined(EAGAIN) && EAGAIN != EWOULDBLOCK
@@ -643,31 +673,34 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
       case EAGAIN:
 #endif
         /* asynchronous connect, wait for connect or timeout */
-        if(data->state.used_interface == Curl_if_multi)
+        if (data->state.used_interface == Curl_if_multi)
           /* don't hang when doing multi */
           timeout_ms = 0;
-        
+
         rc = waitconnect(sockfd, timeout_ms);
         break;
       default:
         /* unknown error, fallthrough and try another address! */
         failf(data, "Failed to connect to %s IP number %d: %d",
-              hostname, aliasindex+1, error);
+              hostname, aliasindex + 1, error);
         break;
       }
     }
 
     /* The '1 == rc' comes from the waitconnect(), and not from connect().
        We can be sure of this since connect() cannot return 1. */
-    if((1 == rc) && (data->state.used_interface == Curl_if_multi)) {
+    if ((1 == rc) && (data->state.used_interface == Curl_if_multi))
+    {
       /* Timeout when running the multi interface, we return here with a
          CURLE_OK return code. */
       rc = 0;
       break;
     }
-      
-    if(0 == rc) {
-      if (verifyconnect(sockfd)) {
+
+    if (0 == rc)
+    {
+      if (verifyconnect(sockfd))
+      {
         /* we are connected, awesome! */
         *connected = TRUE; /* this is a true connect */
         break;
@@ -683,13 +716,15 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
     /* get a new timeout for next attempt */
     after = Curl_tvnow();
     timeout_ms -= Curl_tvdiff(after, before);
-    if(timeout_ms < 0) {
+    if (timeout_ms < 0)
+    {
       failf(data, "connect() timed out!");
       return CURLE_OPERATION_TIMEOUTED;
     }
     before = after;
   }
-  if (sockfd == CURL_SOCKET_BAD) {
+  if (sockfd == CURL_SOCKET_BAD)
+  {
     /* no good connect was made */
     *sockconn = -1;
     failf(data, "Connect failed");
@@ -699,7 +734,8 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
   /* leave the socket in non-blocking mode */
 
   /* store the address we use */
-  if(addr) {
+  if (addr)
+  {
 #ifdef ENABLE_IPV6
     *addr = ai;
 #else
@@ -708,8 +744,8 @@ CURLcode Curl_connecthost(struct connectdata *conn,  /* context */
   }
 
   /* allow NULL-pointers to get passed in */
-  if(sockconn)
-    *sockconn = sockfd;    /* the socket descriptor we've connected */
+  if (sockconn)
+    *sockconn = sockfd; /* the socket descriptor we've connected */
 
   return CURLE_OK;
 }

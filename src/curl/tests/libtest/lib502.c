@@ -9,7 +9,7 @@ int test(char *URL)
   CURL *c;
   CURLM *m;
   CURLMcode res;
-  int running=1;
+  int running = 1;
 
   curl_global_init(CURL_GLOBAL_ALL);
   c = curl_easy_init();
@@ -17,9 +17,11 @@ int test(char *URL)
   m = curl_multi_init();
 
   res = curl_multi_add_handle(m, c);
-  while (running) {
+  while (running)
+  {
     res = curl_multi_perform(m, &running);
-    if (running <= 0) {
+    if (running <= 0)
+    {
       fprintf(stderr, "nothing left running.\n");
       break;
     }
@@ -30,4 +32,3 @@ int test(char *URL)
 
   return res;
 }
-

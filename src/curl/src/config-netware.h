@@ -184,7 +184,7 @@
 
 /* If zlib is available */
 #undef HAVE_LIBZ
-//#define HAVE_LIBZ 1
+// #define HAVE_LIBZ 1
 
 /* Define to 1 if you have the <limits.h> header file. */
 #define HAVE_LIMITS_H 1
@@ -458,7 +458,7 @@
    System headers sometimes define this.
    We just want to avoid a redefinition error message.  */
 #ifndef _ALL_SOURCE
-# undef _ALL_SOURCE
+#undef _ALL_SOURCE
 #endif
 
 /* Number of bits in a file offset, on hosts where this is settable. */
@@ -481,5 +481,3 @@
 
 /* the signed version of size_t */
 #undef ssize_t
-
-

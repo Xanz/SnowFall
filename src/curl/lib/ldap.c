@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -36,12 +36,12 @@
 
 #if defined(WIN32) && !defined(__GNUC__)
 #else
-# ifdef HAVE_UNISTD_H
-#  include <unistd.h>
-# endif
-# ifdef HAVE_DLFCN_H
-#  include <dlfcn.h>
-# endif
+#ifdef HAVE_UNISTD_H
+#include <unistd.h>
+#endif
+#ifdef HAVE_DLFCN_H
+#include <dlfcn.h>
+#endif
 #endif
 
 #include "urldata.h"
@@ -54,12 +54,13 @@
 #define _MPRINTF_REPLACE /* use our functions only */
 #include <curl/mprintf.h>
 
-typedef void * (*dynafunc)(void *input);
+typedef void *(*dynafunc)(void *input);
 
-#define DYNA_GET_FUNCTION(type, fnc) \
+#define DYNA_GET_FUNCTION(type, fnc)   \
   (fnc) = (type)DynaGetFunction(#fnc); \
-  if ((fnc) == NULL) { \
-    return CURLE_FUNCTION_NOT_FOUND; \
+  if ((fnc) == NULL)                   \
+  {                                    \
+    return CURLE_FUNCTION_NOT_FOUND;   \
   }
 
 /***********************************************************************
@@ -70,7 +71,8 @@ static void *liblber = NULL;
 static void DynaOpen(void)
 {
 #if defined(HAVE_DLOPEN) || defined(HAVE_LIBDL)
-  if (libldap == NULL) {
+  if (libldap == NULL)
+  {
     /*
      * libldap.so should be able to resolve its dependency on
      * liblber.so automatically, but since it does not we will
@@ -78,16 +80,16 @@ static void DynaOpen(void)
      */
     liblber = dlopen("liblber.so",
 #ifdef RTLD_LAZY_GLOBAL /* It turns out some systems use this: */
-           RTLD_LAZY_GLOBAL
+                     RTLD_LAZY_GLOBAL
 #else
 #ifdef RTLD_GLOBAL
-           RTLD_LAZY | RTLD_GLOBAL
+                     RTLD_LAZY | RTLD_GLOBAL
 #else
-           /* and some systems don't have the RTLD_GLOBAL symbol */
-           RTLD_LAZY
+                     /* and some systems don't have the RTLD_GLOBAL symbol */
+                     RTLD_LAZY
 #endif
 #endif
-           );
+    );
     libldap = dlopen("libldap.so", RTLD_LAZY);
   }
 #endif
@@ -96,13 +98,15 @@ static void DynaOpen(void)
 static void DynaClose(void)
 {
 #if defined(HAVE_DLOPEN) || defined(HAVE_LIBDL)
-  if (libldap) {
+  if (libldap)
+  {
     dlclose(libldap);
-    libldap=NULL;
+    libldap = NULL;
   }
-  if (liblber) {
+  if (liblber)
+  {
     dlclose(liblber);
-    liblber=NULL;
+    liblber = NULL;
   }
 #endif
 }
@@ -112,29 +116,30 @@ static dynafunc DynaGetFunction(const char *name)
   dynafunc func = (dynafunc)NULL;
 
 #if defined(HAVE_DLOPEN) || defined(HAVE_LIBDL)
-  if (libldap) {
-    func = (dynafunc) dlsym(libldap, name);
+  if (libldap)
+  {
+    func = (dynafunc)dlsym(libldap, name);
   }
 #endif
-  
+
   return func;
 }
 
 /***********************************************************************
  */
-typedef struct ldap_url_desc {
-	struct ldap_url_desc *lud_next;
-        char    *lud_scheme;
-	char    *lud_host;
-	int     lud_port;
-	char    *lud_dn;
-	char    **lud_attrs;
-	int     lud_scope;
-	char    *lud_filter;
-	char    **lud_exts;
-	int     lud_crit_exts;
+typedef struct ldap_url_desc
+{
+  struct ldap_url_desc *lud_next;
+  char *lud_scheme;
+  char *lud_host;
+  int lud_port;
+  char *lud_dn;
+  char **lud_attrs;
+  int lud_scope;
+  char *lud_filter;
+  char **lud_exts;
+  int lud_crit_exts;
 } LDAPURLDesc;
-
 
 CURLcode Curl_ldap(struct connectdata *conn)
 {
@@ -157,7 +162,7 @@ CURLcode Curl_ldap(struct connectdata *conn)
   void (*ldap_value_free)(char **);
   void (*ldap_memfree)(void *);
   void (*ber_free)(void *, int);
- 
+
   void *server;
   LDAPURLDesc *ludp;
   void *result;
@@ -165,12 +170,13 @@ CURLcode Curl_ldap(struct connectdata *conn)
   void *ber;
   void *attribute;
 
-  struct SessionHandle *data=conn->data;
-  
+  struct SessionHandle *data = conn->data;
+
   infof(data, "LDAP: %s\n", data->change.url);
 
   DynaOpen();
-  if (libldap == NULL) {
+  if (libldap == NULL)
+  {
     failf(data, "The needed LDAP library/libraries couldn't be opened");
     return CURLE_LIBRARY_NOT_FOUND;
   }
@@ -195,54 +201,66 @@ CURLcode Curl_ldap(struct connectdata *conn)
   DYNA_GET_FUNCTION(void (*)(char **), ldap_value_free);
   DYNA_GET_FUNCTION(void (*)(void *), ldap_memfree);
   DYNA_GET_FUNCTION(void (*)(void *, int), ber_free);
-  
+
   server = ldap_init(conn->hostname, conn->port);
-  if (server == NULL) {
+  if (server == NULL)
+  {
     failf(data, "LDAP: Cannot connect to %s:%d",
-	  conn->hostname, conn->port);
+          conn->hostname, conn->port);
     status = CURLE_COULDNT_CONNECT;
   }
-  else {
+  else
+  {
     rc = ldap_simple_bind_s(server,
-                            conn->bits.user_passwd?conn->user:NULL,
-                            conn->bits.user_passwd?conn->passwd:NULL);
-    if (rc != 0) {
+                            conn->bits.user_passwd ? conn->user : NULL,
+                            conn->bits.user_passwd ? conn->passwd : NULL);
+    if (rc != 0)
+    {
       failf(data, "LDAP: %s", ldap_err2string(rc));
       status = CURLE_LDAP_CANNOT_BIND;
     }
-    else {
+    else
+    {
       rc = ldap_url_parse(data->change.url, &ludp);
-      if (rc != 0) {
-	failf(data, "LDAP: %s", ldap_err2string(rc));
-	status = CURLE_LDAP_INVALID_URL;
+      if (rc != 0)
+      {
+        failf(data, "LDAP: %s", ldap_err2string(rc));
+        status = CURLE_LDAP_INVALID_URL;
       }
-      else {
-	rc = ldap_search_s(server, ludp->lud_dn, ludp->lud_scope,
+      else
+      {
+        rc = ldap_search_s(server, ludp->lud_dn, ludp->lud_scope,
                            ludp->lud_filter, ludp->lud_attrs, 0, &result);
-	if (rc != 0) {
-	  failf(data, "LDAP: %s", ldap_err2string(rc));
-	  status = CURLE_LDAP_SEARCH_FAILED;
-	}
-	else {
-	  for (entryIterator = ldap_first_entry(server, result);
-	       entryIterator;
-	       entryIterator = ldap_next_entry(server, entryIterator)) {
+        if (rc != 0)
+        {
+          failf(data, "LDAP: %s", ldap_err2string(rc));
+          status = CURLE_LDAP_SEARCH_FAILED;
+        }
+        else
+        {
+          for (entryIterator = ldap_first_entry(server, result);
+               entryIterator;
+               entryIterator = ldap_next_entry(server, entryIterator))
+          {
             char *dn = ldap_get_dn(server, entryIterator);
             char **vals;
             int i;
-            
+
             Curl_client_write(data, CLIENTWRITE_BODY, (char *)"DN: ", 4);
             Curl_client_write(data, CLIENTWRITE_BODY, dn, 0);
             Curl_client_write(data, CLIENTWRITE_BODY, (char *)"\n", 1);
-            for(attribute = ldap_first_attribute(server, entryIterator,
-                                                 &ber); 
-                attribute; 
-                attribute = ldap_next_attribute(server, entryIterator,
-                                                ber) ) {
+            for (attribute = ldap_first_attribute(server, entryIterator,
+                                                  &ber);
+                 attribute;
+                 attribute = ldap_next_attribute(server, entryIterator,
+                                                 ber))
+            {
               vals = ldap_get_values(server, entryIterator, attribute);
-              if (vals != NULL) {
-                for(i = 0; (vals[i] != NULL); i++) {
-                  Curl_client_write(data, CLIENTWRITE_BODY, (char*)"\t", 1);
+              if (vals != NULL)
+              {
+                for (i = 0; (vals[i] != NULL); i++)
+                {
+                  Curl_client_write(data, CLIENTWRITE_BODY, (char *)"\t", 1);
                   Curl_client_write(data, CLIENTWRITE_BODY, attribute, 0);
                   Curl_client_write(data, CLIENTWRITE_BODY, (char *)": ", 2);
                   Curl_client_write(data, CLIENTWRITE_BODY, vals[i], 0);
@@ -254,14 +272,15 @@ CURLcode Curl_ldap(struct connectdata *conn)
               ldap_value_free(vals);
             }
             Curl_client_write(data, CLIENTWRITE_BODY, (char *)"\n", 1);
-            
+
             ldap_memfree(attribute);
             ldap_memfree(dn);
-            if (ber) ber_free(ber, 0);
+            if (ber)
+              ber_free(ber, 0);
           }
-	}
+        }
 
-	ldap_free_urldesc(ludp);
+        ldap_free_urldesc(ludp);
       }
       ldap_unbind_s(server);
     }
@@ -270,7 +289,7 @@ CURLcode Curl_ldap(struct connectdata *conn)
 
   /* no data to transfer */
   Curl_Transfer(conn, -1, -1, FALSE, NULL, -1, NULL);
-  
+
   return status;
 }
 #endif

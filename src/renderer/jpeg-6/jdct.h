@@ -138,7 +138,7 @@ EXTERN void jpeg_idct_1x1
  * the fudge factor is correct for either sign of X.
  */
 
-#define DESCALE(x, n) RIGHT_SHIFT((x) + (ONE << ((n)-1)), n)
+#define DESCALE(x, n) RIGHT_SHIFT((x) + (ONE << ((n) - 1)), n)
 
 /* Multiply an INT32 variable by an INT32 constant to yield an INT32 result.
  * This macro is used only when the two inputs will actually be no more than

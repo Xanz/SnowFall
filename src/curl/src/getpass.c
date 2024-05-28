@@ -39,7 +39,7 @@
 #include "getpass.h"
 
 #ifndef WIN32
-#ifdef	VMS
+#ifdef VMS
 #include <stdio.h>
 #include <string.h>
 #include descrip
@@ -53,15 +53,16 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   struct _iosb iosb;
   $DESCRIPTOR(ttdesc, "TT");
 
-  buffer[0]='\0';
-  sts = sys$assign(&ttdesc, &chan,0,0);
-  if (sts & 1) {
+  buffer[0] = '\0';
+  sts = sys$assign(&ttdesc, &chan, 0, 0);
+  if (sts & 1)
+  {
     sts = sys$qiow(0, chan,
                    IO$_READPROMPT | IO$M_NOECHO,
                    &iosb, 0, 0, buffer, buflen, 0, 0,
                    prompt, strlen(prompt));
 
-    if((sts & 1) && (iosb.iosb$w_status&1))
+    if ((sts & 1) && (iosb.iosb$w_status & 1))
       buffer[iosb.iosb$w_bcnt] = '\0';
 
     sts = sys$dassgn(chan);
@@ -70,13 +71,13 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
 }
 #else /* VMS */
 #ifdef HAVE_TERMIOS_H
-#  if !defined(HAVE_TCGETATTR) && !defined(HAVE_TCSETATTR) 
-#    undef HAVE_TERMIOS_H
-#  endif
+#if !defined(HAVE_TCGETATTR) && !defined(HAVE_TCSETATTR)
+#undef HAVE_TERMIOS_H
+#endif
 #endif
 
 #ifndef RETSIGTYPE
-#  define RETSIGTYPE void
+#define RETSIGTYPE void
 #endif
 
 #ifdef HAVE_UNISTD_H
@@ -85,12 +86,12 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
 #include <stdio.h>
 #include <signal.h>
 #ifdef HAVE_TERMIOS_H
-#  include <termios.h>
+#include <termios.h>
 #else
-#  ifdef HAVE_TERMIO_H
-#  include <termio.h>
-#  else
-#  endif
+#ifdef HAVE_TERMIO_H
+#include <termio.h>
+#else
+#endif
 #endif
 
 /* The last #include file should be: */
@@ -103,9 +104,11 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   FILE *infp;
   char infp_fclose = 0;
   FILE *outfp;
-  RETSIGTYPE (*sigint)(int);
+  RETSIGTYPE(*sigint)
+  (int);
 #ifdef SIGTSTP
-  RETSIGTYPE (*sigtstp)(int);
+  RETSIGTYPE(*sigtstp)
+  (int);
 #endif
   size_t bytes_read;
   int infd;
@@ -114,11 +117,11 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   struct termios orig;
   struct termios noecho;
 #else
-#  ifdef HAVE_TERMIO_H
+#ifdef HAVE_TERMIO_H
   struct termio orig;
-  struct termio noecho;  
-#  else
-#  endif
+  struct termio noecho;
+#else
+#endif
 #endif
 
   sigint = signal(SIGINT, SIG_IGN);
@@ -126,8 +129,8 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   sigtstp = signal(SIGTSTP, SIG_IGN);
 #endif
 
-  infp=fopen("/dev/tty", "r");
-  if( NULL == infp )
+  infp = fopen("/dev/tty", "r");
+  if (NULL == infp)
     infp = stdin;
   else
     infp_fclose = 1;
@@ -145,29 +148,29 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   noecho.c_lflag &= ~ECHO;
   tcsetattr(outfd, TCSANOW, &noecho);
 #else
-#  ifdef HAVE_TERMIO_H
+#ifdef HAVE_TERMIO_H
   ioctl(outfd, TCGETA, &orig);
   noecho = orig;
   noecho.c_lflag &= ~ECHO;
   ioctl(outfd, TCSETA, &noecho);
-#  else
-#  endif
+#else
+#endif
 #endif
 
   fputs(prompt, outfp);
   fflush(outfp);
 
-  bytes_read=read(infd, buffer, buflen);
-  buffer[bytes_read > 0 ? (bytes_read -1) : 0] = '\0';
+  bytes_read = read(infd, buffer, buflen);
+  buffer[bytes_read > 0 ? (bytes_read - 1) : 0] = '\0';
 
   /* print a new line if needed */
 #ifdef HAVE_TERMIOS_H
   fputs("\n", outfp);
 #else
-#  ifdef HAVE_TERMIO_H
+#ifdef HAVE_TERMIO_H
   fputs("\n", outfp);
-#  else
-#  endif
+#else
+#endif
 #endif
 
   /*
@@ -177,46 +180,47 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
 #ifdef HAVE_TERMIOS_H
   tcsetattr(outfd, TCSAFLUSH, &orig);
 #else
-#  ifdef HAVE_TERMIO_H
+#ifdef HAVE_TERMIO_H
   ioctl(outfd, TCSETA, &orig);
-#  else
-#  endif
+#else
 #endif
-  
+#endif
+
   signal(SIGINT, sigint);
 #ifdef SIGTSTP
   signal(SIGTSTP, sigtstp);
 #endif
 
-  if(infp_fclose)
+  if (infp_fclose)
     fclose(infp);
 
   return buffer; /* we always return success */
 }
 #endif /* VMS */
-#else /* WIN32 */
+#else  /* WIN32 */
 #include <stdio.h>
 #include <conio.h>
 char *getpass_r(const char *prompt, char *buffer, size_t buflen)
 {
   size_t i;
   printf("%s", prompt);
- 
-  for(i=0; i<buflen; i++) {
+
+  for (i = 0; i < buflen; i++)
+  {
     buffer[i] = getch();
-    if ( buffer[i] == '\r' ) {
+    if (buffer[i] == '\r')
+    {
       buffer[i] = 0;
       break;
     }
-    else
-      if ( buffer[i] == '\b')
-        /* remove this letter and if this is not the first key, remove the
-           previous one as well */
-        i = i - (i>=1?2:1);
+    else if (buffer[i] == '\b')
+      /* remove this letter and if this is not the first key, remove the
+         previous one as well */
+      i = i - (i >= 1 ? 2 : 1);
   }
   /* if user didn't hit ENTER, terminate buffer */
-  if (i==buflen)
-    buffer[buflen-1]=0;
+  if (i == buflen)
+    buffer[buflen - 1] = 0;
 
   return buffer; /* we always return success */
 }

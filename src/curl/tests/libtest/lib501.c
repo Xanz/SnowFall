@@ -11,4 +11,3 @@ int test(char *URL)
   curl_easy_cleanup(curl);
   return res;
 }
-

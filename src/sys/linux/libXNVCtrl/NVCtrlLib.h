@@ -12,11 +12,10 @@
  *  defined.
  */
 
-Bool XNVCTRLQueryExtension (
+Bool XNVCTRLQueryExtension(
     Display *dpy,
     int *event_basep,
-    int *error_basep
-);
+    int *error_basep);
 
 /*
  *  XNVCTRLQueryVersion -
@@ -26,12 +25,10 @@ Bool XNVCTRLQueryExtension (
  *  numbers.
  */
 
-Bool XNVCTRLQueryVersion (
+Bool XNVCTRLQueryVersion(
     Display *dpy,
     int *major,
-    int *minor
-);
-
+    int *minor);
 
 /*
  *  XNVCTRLIsNvScreen
@@ -40,10 +37,9 @@ Bool XNVCTRLQueryVersion (
  *  driver.  Returns False otherwise.
  */
 
-Bool XNVCTRLIsNvScreen (
+Bool XNVCTRLIsNvScreen(
     Display *dpy,
-    int screen
-);
+    int screen);
 
 /*
  *  XNVCTRLSetAttribute -
@@ -59,13 +55,12 @@ Bool XNVCTRLIsNvScreen (
  *     BadMatch - The NVIDIA driver is not present on that screen.
  */
 
-void XNVCTRLSetAttribute (
+void XNVCTRLSetAttribute(
     Display *dpy,
     int screen,
     unsigned int display_mask,
     unsigned int attribute,
-    int value
-);
+    int value);
 
 /*
  *  XNVCTRLQueryAttribute -
@@ -82,14 +77,12 @@ void XNVCTRLSetAttribute (
  *     BadMatch - The NVIDIA driver is not present on that screen.
  */
 
-
-Bool XNVCTRLQueryAttribute (
+Bool XNVCTRLQueryAttribute(
     Display *dpy,
     int screen,
     unsigned int display_mask,
     unsigned int attribute,
-    int *value
-);
+    int *value);
 
 /*
  *  XNVCTRLQueryStringAttribute -
@@ -105,13 +98,12 @@ Bool XNVCTRLQueryAttribute (
  *     BadAlloc - Insufficient resources to fulfill the request.
  */
 
-Bool XNVCTRLQueryStringAttribute (
+Bool XNVCTRLQueryStringAttribute(
     Display *dpy,
     int screen,
     unsigned int display_mask,
     unsigned int attribute,
-    char **ptr
-);
+    char **ptr);
 
 /*
  * XNVCTRLQueryValidAttributeValues -
@@ -122,13 +114,12 @@ Bool XNVCTRLQueryStringAttribute (
  * of NVCTRLAttributeValidValues in NVCtrl.h.
  */
 
-Bool XNVCTRLQueryValidAttributeValues (
+Bool XNVCTRLQueryValidAttributeValues(
     Display *dpy,
     int screen,
     unsigned int display_mask,
-    unsigned int attribute,                                 
-    NVCTRLAttributeValidValuesRec *values
-);
+    unsigned int attribute,
+    NVCTRLAttributeValidValuesRec *values);
 
 /*
  * XNVCtrlSelectNotify -
@@ -142,23 +133,21 @@ Bool XNVCTRLQueryValidAttributeValues (
  * controlled by the NVIDIA driver.
  */
 
-Bool XNVCtrlSelectNotify (
+Bool XNVCtrlSelectNotify(
     Display *dpy,
     int screen,
     int type,
-    Bool onoff
-);
-
-
+    Bool onoff);
 
 /*
  * XNVCtrlEvent structure
  */
 
-typedef struct {
+typedef struct
+{
     int type;
     unsigned long serial;
-    Bool send_event;  /* always FALSE, we don't allow send_events */
+    Bool send_event; /* always FALSE, we don't allow send_events */
     Display *display;
     Time time;
     int screen;
@@ -167,11 +156,11 @@ typedef struct {
     int value;
 } XNVCtrlAttributeChangedEvent;
 
-typedef union {
+typedef union
+{
     int type;
     XNVCtrlAttributeChangedEvent attribute_changed;
     long pad[24];
 } XNVCtrlEvent;
-
 
 #endif /* __NVCTRLLIB_H */

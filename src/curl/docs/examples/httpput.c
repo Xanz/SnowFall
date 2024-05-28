@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: httpput.c,v 1.5 2004/01/05 22:29:30 bagder Exp $
@@ -40,26 +40,26 @@ int main(int argc, char **argv)
   CURL *curl;
   CURLcode res;
   FILE *ftpfile;
-  FILE * hd_src ;
-  int hd ;
+  FILE *hd_src;
+  int hd;
   struct stat file_info;
 
   char *file;
   char *url;
 
-  if(argc < 3)
+  if (argc < 3)
     return 1;
- 
-  file= argv[1];
+
+  file = argv[1];
   url = argv[2];
-  
+
   /* get the file size of the local file */
-  hd = open(file, O_RDONLY) ;
+  hd = open(file, O_RDONLY);
   fstat(hd, &file_info);
-  close(hd) ;
+  close(hd);
 
   /* get a FILE * of the same file, could also be made with
-     fdopen() from the previous descriptor, but hey this is just 
+     fdopen() from the previous descriptor, but hey this is just
      an example! */
   hd_src = fopen(file, "rb");
 
@@ -68,19 +68,20 @@ int main(int argc, char **argv)
 
   /* get a curl handle */
   curl = curl_easy_init();
-  if(curl) {
+  if (curl)
+  {
     /* we want to use our own read function */
     curl_easy_setopt(curl, CURLOPT_READFUNCTION, read_callback);
 
     /* enable uploading */
-    curl_easy_setopt(curl, CURLOPT_UPLOAD, TRUE) ;
+    curl_easy_setopt(curl, CURLOPT_UPLOAD, TRUE);
 
     /* HTTP PUT please */
     curl_easy_setopt(curl, CURLOPT_PUT, TRUE);
 
     /* specify target URL, and note that this URL should include a file
        name, not only a directory */
-    curl_easy_setopt(curl,CURLOPT_URL, url);
+    curl_easy_setopt(curl, CURLOPT_URL, url);
 
     /* now specify which file to upload */
     curl_easy_setopt(curl, CURLOPT_READDATA, hd_src);

@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -77,15 +77,16 @@ it is set to lessThan for blended transparent surfaces
 
 ==================
 */
-static void RB_ARB_DrawInteraction( const drawInteraction_t *din ) {
+static void RB_ARB_DrawInteraction(const drawInteraction_t *din)
+{
 	const drawSurf_t *surf = din->surf;
-	const srfTriangles_t	*tri = din->surf->geo;
+	const srfTriangles_t *tri = din->surf->geo;
 
 	// set the vertex arrays, which may not all be enabled on a given pass
-	idDrawVert *ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
-	glVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), ac->xyz.ToFloatPtr() );
-	GL_SelectTexture( 0 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof( idDrawVert ), (void *)&ac->st );
+	idDrawVert *ac = (idDrawVert *)vertexCache.Position(tri->ambientCache);
+	glVertexPointer(3, GL_FLOAT, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
+	GL_SelectTexture(0);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(idDrawVert), (void *)&ac->st);
 
 	//-----------------------------------------------------
 	//
@@ -97,44 +98,44 @@ static void RB_ARB_DrawInteraction( const drawInteraction_t *din ) {
 	//
 	// draw light falloff to the alpha channel
 	//
-	GL_State( GLS_COLORMASK | GLS_DEPTHMASK | backEnd.depthFunc );
+	GL_State(GLS_COLORMASK | GLS_DEPTHMASK | backEnd.depthFunc);
 
-	glColor3f( 1, 1, 1 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glTexGenfv( GL_S, GL_OBJECT_PLANE, din->lightProjection[3].ToFloatPtr() );
-	glTexCoord2f( 0, 0.5 );
+	glColor3f(1, 1, 1);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_GEN_S);
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, din->lightProjection[3].ToFloatPtr());
+	glTexCoord2f(0, 0.5);
 
 // ATI R100 can't do partial texgens
-#define	NO_MIXED_TEXGEN
+#define NO_MIXED_TEXGEN
 
 #ifdef NO_MIXED_TEXGEN
-idVec4	plane;
-plane[0] = 0;
-plane[1] = 0;
-plane[2] = 0;
-plane[3] = 0.5;
-glEnable( GL_TEXTURE_GEN_T );
-glTexGenfv( GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr() );
+	idVec4 plane;
+	plane[0] = 0;
+	plane[1] = 0;
+	plane[2] = 0;
+	plane[3] = 0.5;
+	glEnable(GL_TEXTURE_GEN_T);
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
-plane[0] = 0;
-plane[1] = 0;
-plane[2] = 0;
-plane[3] = 1;
-glEnable( GL_TEXTURE_GEN_Q );
-glTexGenfv( GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr() );
+	plane[0] = 0;
+	plane[1] = 0;
+	plane[2] = 0;
+	plane[3] = 1;
+	glEnable(GL_TEXTURE_GEN_Q);
+	glTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
 #endif
 
 	din->lightFalloffImage->Bind();
 
 	// draw it
-	RB_DrawElementsWithCounters( tri );
+	RB_DrawElementsWithCounters(tri);
 
-	glDisable( GL_TEXTURE_GEN_S );
+	glDisable(GL_TEXTURE_GEN_S);
 #ifdef NO_MIXED_TEXGEN
-glDisable( GL_TEXTURE_GEN_T );
-glDisable( GL_TEXTURE_GEN_Q );
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_Q);
 #endif
 
 #if 0
@@ -151,51 +152,54 @@ return;
 #endif
 
 	// we can't do bump mapping with standard calls, so skip it
-	if ( glConfig.envDot3Available && glConfig.cubeMapAvailable ) {
+	if (glConfig.envDot3Available && glConfig.cubeMapAvailable)
+	{
 		//
 		// draw the bump map result onto the alpha channel
 		//
-		GL_State( GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ZERO | GLS_COLORMASK | GLS_DEPTHMASK 
-			| backEnd.depthFunc );
+		GL_State(GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ZERO | GLS_COLORMASK | GLS_DEPTHMASK | backEnd.depthFunc);
 
 		// texture 0 will be the per-surface bump map
-		GL_SelectTexture( 0 );
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-//	FIXME: matrix work!	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
+		GL_SelectTexture(0);
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		//	FIXME: matrix work!	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
 		din->bumpImage->Bind();
 
 		// texture 1 is the normalization cube map
 		// the texccords are the non-normalized vector towards the light origin
-		GL_SelectTexture( 1 );
-		if ( din->ambientLight ) {
-			globalImages->ambientNormalMap->Bind();	// fixed value
-		} else {
+		GL_SelectTexture(1);
+		if (din->ambientLight)
+		{
+			globalImages->ambientNormalMap->Bind(); // fixed value
+		}
+		else
+		{
 			globalImages->normalCubeMapImage->Bind();
 		}
-		glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-		glTexCoordPointer( 3, GL_FLOAT, sizeof( lightingCache_t ), ((lightingCache_t *)vertexCache.Position(tri->lightingCache))->localLightVector.ToFloatPtr() );
+		glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+		glTexCoordPointer(3, GL_FLOAT, sizeof(lightingCache_t), ((lightingCache_t *)vertexCache.Position(tri->lightingCache))->localLightVector.ToFloatPtr());
 
 		// I just want alpha = Dot( texture0, texture1 )
-		GL_TexEnv( GL_COMBINE_ARB );
+		GL_TexEnv(GL_COMBINE_ARB);
 
-		glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGBA_ARB );
-		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE );
-		glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB );
-		glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR );
-		glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
-		glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1 );
-		glTexEnvi( GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1 );
+		glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGBA_ARB);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+		glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR);
+		glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1);
+		glTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1);
 
 		// draw it
-		RB_DrawElementsWithCounters( tri );
+		RB_DrawElementsWithCounters(tri);
 
-		GL_TexEnv( GL_MODULATE );
+		GL_TexEnv(GL_MODULATE);
 
 		globalImages->BindNull();
-		glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+		glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-		GL_SelectTexture( 0 );
-//		RB_FinishStageTexture( &surfaceStage->texture, surf );
+		GL_SelectTexture(0);
+		//		RB_FinishStageTexture( &surfaceStage->texture, surf );
 	}
 
 	//-----------------------------------------------------
@@ -204,64 +208,68 @@ return;
 	//
 	//-----------------------------------------------------
 	// don't trash alpha
-	GL_State( GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ONE | GLS_ALPHAMASK | GLS_DEPTHMASK 
-	| backEnd.depthFunc );
+	GL_State(GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ONE | GLS_ALPHAMASK | GLS_DEPTHMASK | backEnd.depthFunc);
 
 	// texture 0 will get the surface color texture
-	GL_SelectTexture( 0 );
+	GL_SelectTexture(0);
 
 	// select the vertex color source
-	if ( din->vertexColor == SVC_IGNORE ) {
-		glColor4fv( din->diffuseColor.ToFloatPtr() );
-	} else {
+	if (din->vertexColor == SVC_IGNORE)
+	{
+		glColor4fv(din->diffuseColor.ToFloatPtr());
+	}
+	else
+	{
 		// FIXME: does this not get diffuseColor blended in?
-		glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof( idDrawVert ), (void *)&ac->color );
-		glEnableClientState( GL_COLOR_ARRAY );
+		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(idDrawVert), (void *)&ac->color);
+		glEnableClientState(GL_COLOR_ARRAY);
 
-		if ( din->vertexColor == SVC_INVERSE_MODULATE ) {
-			GL_TexEnv( GL_COMBINE_ARB );
-			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB );
-			glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR );
-			glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_ONE_MINUS_SRC_COLOR );
-			glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1 );
+		if (din->vertexColor == SVC_INVERSE_MODULATE)
+		{
+			GL_TexEnv(GL_COMBINE_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR);
+			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_ONE_MINUS_SRC_COLOR);
+			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1);
 		}
 	}
 
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	// FIXME: does this not get the texture matrix?
-//	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
+	//	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
 	din->diffuseImage->Bind();
 
 	// texture 1 will get the light projected texture
-	GL_SelectTexture( 1 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glEnable( GL_TEXTURE_GEN_Q );
-	glTexGenfv( GL_S, GL_OBJECT_PLANE, din->lightProjection[0].ToFloatPtr() );
-	glTexGenfv( GL_T, GL_OBJECT_PLANE, din->lightProjection[1].ToFloatPtr() );
-	glTexGenfv( GL_Q, GL_OBJECT_PLANE, din->lightProjection[2].ToFloatPtr() );
+	GL_SelectTexture(1);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_Q);
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, din->lightProjection[0].ToFloatPtr());
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, din->lightProjection[1].ToFloatPtr());
+	glTexGenfv(GL_Q, GL_OBJECT_PLANE, din->lightProjection[2].ToFloatPtr());
 
 	din->lightImage->Bind();
 
 	// draw it
-	RB_DrawElementsWithCounters( tri );
+	RB_DrawElementsWithCounters(tri);
 
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
-	glDisable( GL_TEXTURE_GEN_Q );
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_Q);
 
 	globalImages->BindNull();
-	GL_SelectTexture( 0 );
+	GL_SelectTexture(0);
 
-	if ( din->vertexColor != SVC_IGNORE ) {
-		glDisableClientState( GL_COLOR_ARRAY );
-		GL_TexEnv( GL_MODULATE );
+	if (din->vertexColor != SVC_IGNORE)
+	{
+		glDisableClientState(GL_COLOR_ARRAY);
+		GL_TexEnv(GL_MODULATE);
 	}
 
-//	RB_FinishStageTexture( &surfaceStage->texture, surf );
+	//	RB_FinishStageTexture( &surfaceStage->texture, surf );
 }
 
 /*
@@ -277,62 +285,64 @@ it is set to lessThan for blended transparent surfaces
 
 ==================
 */
-static void RB_ARB_DrawThreeTextureInteraction( const drawInteraction_t *din ) {
+static void RB_ARB_DrawThreeTextureInteraction(const drawInteraction_t *din)
+{
 	const drawSurf_t *surf = din->surf;
-	const srfTriangles_t	*tri = din->surf->geo;
+	const srfTriangles_t *tri = din->surf->geo;
 
 	// set the vertex arrays, which may not all be enabled on a given pass
-	idDrawVert *ac = (idDrawVert *)vertexCache.Position( tri->ambientCache );
-	glVertexPointer( 3, GL_FLOAT, sizeof( idDrawVert ), ac->xyz.ToFloatPtr() );
-	GL_SelectTexture( 0 );
-	glTexCoordPointer( 2, GL_FLOAT, sizeof( idDrawVert ), (void *)&ac->st );
-	glColor3f( 1, 1, 1 );
+	idDrawVert *ac = (idDrawVert *)vertexCache.Position(tri->ambientCache);
+	glVertexPointer(3, GL_FLOAT, sizeof(idDrawVert), ac->xyz.ToFloatPtr());
+	GL_SelectTexture(0);
+	glTexCoordPointer(2, GL_FLOAT, sizeof(idDrawVert), (void *)&ac->st);
+	glColor3f(1, 1, 1);
 
 	//
 	// bump map dot cubeMap into the alpha channel
 	//
-	GL_State( GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO | GLS_COLORMASK | GLS_DEPTHMASK 
-		| backEnd.depthFunc );
+	GL_State(GLS_SRCBLEND_ONE | GLS_DSTBLEND_ZERO | GLS_COLORMASK | GLS_DEPTHMASK | backEnd.depthFunc);
 
 	// texture 0 will be the per-surface bump map
-	GL_SelectTexture( 0 );
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-//	FIXME: matrix work!	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
+	GL_SelectTexture(0);
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	//	FIXME: matrix work!	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
 	din->bumpImage->Bind();
 
 	// texture 1 is the normalization cube map
 	// the texccords are the non-normalized vector towards the light origin
-	GL_SelectTexture( 1 );
-	if ( din->ambientLight ) {
-		globalImages->ambientNormalMap->Bind();	// fixed value
-	} else {
+	GL_SelectTexture(1);
+	if (din->ambientLight)
+	{
+		globalImages->ambientNormalMap->Bind(); // fixed value
+	}
+	else
+	{
 		globalImages->normalCubeMapImage->Bind();
 	}
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
-	glTexCoordPointer( 3, GL_FLOAT, sizeof( lightingCache_t ), ((lightingCache_t *)vertexCache.Position(tri->lightingCache))->localLightVector.ToFloatPtr() );
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+	glTexCoordPointer(3, GL_FLOAT, sizeof(lightingCache_t), ((lightingCache_t *)vertexCache.Position(tri->lightingCache))->localLightVector.ToFloatPtr());
 
 	// I just want alpha = Dot( texture0, texture1 )
-	GL_TexEnv( GL_COMBINE_ARB );
+	GL_TexEnv(GL_COMBINE_ARB);
 
-	glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGBA_ARB );
-	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE );
-	glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB );
-	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR );
-	glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR );
-	glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1 );
-	glTexEnvi( GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1 );
+	glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_DOT3_RGBA_ARB);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+	glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PREVIOUS_ARB);
+	glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR);
+	glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_SRC_COLOR);
+	glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1);
+	glTexEnvi(GL_TEXTURE_ENV, GL_ALPHA_SCALE, 1);
 
 	// draw it
-	RB_DrawElementsWithCounters( tri );
+	RB_DrawElementsWithCounters(tri);
 
-	GL_TexEnv( GL_MODULATE );
+	GL_TexEnv(GL_MODULATE);
 
 	globalImages->BindNull();
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
 
-	GL_SelectTexture( 0 );
-//		RB_FinishStageTexture( &surfaceStage->texture, surf );
-
+	GL_SelectTexture(0);
+	//		RB_FinishStageTexture( &surfaceStage->texture, surf );
 
 	//-----------------------------------------------------
 	//
@@ -340,123 +350,131 @@ static void RB_ARB_DrawThreeTextureInteraction( const drawInteraction_t *din ) {
 	//
 	//-----------------------------------------------------
 	// multiply result by alpha, but don't trash alpha
-	GL_State( GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ONE | GLS_ALPHAMASK | GLS_DEPTHMASK 
-	| backEnd.depthFunc );
+	GL_State(GLS_SRCBLEND_DST_ALPHA | GLS_DSTBLEND_ONE | GLS_ALPHAMASK | GLS_DEPTHMASK | backEnd.depthFunc);
 
 	// texture 0 will get the surface color texture
-	GL_SelectTexture( 0 );
+	GL_SelectTexture(0);
 
 	// select the vertex color source
-	if ( din->vertexColor == SVC_IGNORE ) {
-		glColor4fv( din->diffuseColor.ToFloatPtr() );
-	} else {
+	if (din->vertexColor == SVC_IGNORE)
+	{
+		glColor4fv(din->diffuseColor.ToFloatPtr());
+	}
+	else
+	{
 		// FIXME: does this not get diffuseColor blended in?
-		glColorPointer( 4, GL_UNSIGNED_BYTE, sizeof( idDrawVert ), (void *)&ac->color );
-		glEnableClientState( GL_COLOR_ARRAY );
+		glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(idDrawVert), (void *)&ac->color);
+		glEnableClientState(GL_COLOR_ARRAY);
 
-		if ( din->vertexColor == SVC_INVERSE_MODULATE ) {
-			GL_TexEnv( GL_COMBINE_ARB );
-			glTexEnvi( GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE );
-			glTexEnvi( GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB );
-			glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR );
-			glTexEnvi( GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_ONE_MINUS_SRC_COLOR );
-			glTexEnvi( GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1 );
+		if (din->vertexColor == SVC_INVERSE_MODULATE)
+		{
+			GL_TexEnv(GL_COMBINE_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_COMBINE_RGB_ARB, GL_MODULATE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE0_RGB_ARB, GL_TEXTURE);
+			glTexEnvi(GL_TEXTURE_ENV, GL_SOURCE1_RGB_ARB, GL_PRIMARY_COLOR_ARB);
+			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND0_RGB_ARB, GL_SRC_COLOR);
+			glTexEnvi(GL_TEXTURE_ENV, GL_OPERAND1_RGB_ARB, GL_ONE_MINUS_SRC_COLOR);
+			glTexEnvi(GL_TEXTURE_ENV, GL_RGB_SCALE_ARB, 1);
 		}
 	}
 
-	glEnableClientState( GL_TEXTURE_COORD_ARRAY );
+	glEnableClientState(GL_TEXTURE_COORD_ARRAY);
 	// FIXME: does this not get the texture matrix?
-//	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
+	//	RB_BindStageTexture( surfaceRegs, &surfaceStage->texture, surf );
 	din->diffuseImage->Bind();
 
 	// texture 1 will get the light projected texture
-	GL_SelectTexture( 1 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glEnable( GL_TEXTURE_GEN_Q );
-	glTexGenfv( GL_S, GL_OBJECT_PLANE, din->lightProjection[0].ToFloatPtr() );
-	glTexGenfv( GL_T, GL_OBJECT_PLANE, din->lightProjection[1].ToFloatPtr() );
-	glTexGenfv( GL_Q, GL_OBJECT_PLANE, din->lightProjection[2].ToFloatPtr() );
+	GL_SelectTexture(1);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_Q);
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, din->lightProjection[0].ToFloatPtr());
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, din->lightProjection[1].ToFloatPtr());
+	glTexGenfv(GL_Q, GL_OBJECT_PLANE, din->lightProjection[2].ToFloatPtr());
 	din->lightImage->Bind();
 
 	// texture 2 will get the light falloff texture
-	GL_SelectTexture( 2 );
-	glDisableClientState( GL_TEXTURE_COORD_ARRAY );
-	glEnable( GL_TEXTURE_GEN_S );
-	glEnable( GL_TEXTURE_GEN_T );
-	glEnable( GL_TEXTURE_GEN_Q );
+	GL_SelectTexture(2);
+	glDisableClientState(GL_TEXTURE_COORD_ARRAY);
+	glEnable(GL_TEXTURE_GEN_S);
+	glEnable(GL_TEXTURE_GEN_T);
+	glEnable(GL_TEXTURE_GEN_Q);
 
-	glTexGenfv( GL_S, GL_OBJECT_PLANE, din->lightProjection[3].ToFloatPtr() );
+	glTexGenfv(GL_S, GL_OBJECT_PLANE, din->lightProjection[3].ToFloatPtr());
 
-	idVec4	plane;
+	idVec4 plane;
 	plane[0] = 0;
 	plane[1] = 0;
 	plane[2] = 0;
 	plane[3] = 0.5;
-	glTexGenfv( GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr() );
+	glTexGenfv(GL_T, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
 	plane[0] = 0;
 	plane[1] = 0;
 	plane[2] = 0;
 	plane[3] = 1;
-	glTexGenfv( GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr() );
+	glTexGenfv(GL_Q, GL_OBJECT_PLANE, plane.ToFloatPtr());
 
 	din->lightFalloffImage->Bind();
 
 	// draw it
-	RB_DrawElementsWithCounters( tri );
+	RB_DrawElementsWithCounters(tri);
 
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
-	glDisable( GL_TEXTURE_GEN_Q );
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_Q);
 	globalImages->BindNull();
 
-	GL_SelectTexture( 1 );
-	glDisable( GL_TEXTURE_GEN_S );
-	glDisable( GL_TEXTURE_GEN_T );
-	glDisable( GL_TEXTURE_GEN_Q );
+	GL_SelectTexture(1);
+	glDisable(GL_TEXTURE_GEN_S);
+	glDisable(GL_TEXTURE_GEN_T);
+	glDisable(GL_TEXTURE_GEN_Q);
 	globalImages->BindNull();
 
-	GL_SelectTexture( 0 );
+	GL_SelectTexture(0);
 
-	if ( din->vertexColor != SVC_IGNORE ) {
-		glDisableClientState( GL_COLOR_ARRAY );
-		GL_TexEnv( GL_MODULATE );
+	if (din->vertexColor != SVC_IGNORE)
+	{
+		glDisableClientState(GL_COLOR_ARRAY);
+		GL_TexEnv(GL_MODULATE);
 	}
 
-//	RB_FinishStageTexture( &surfaceStage->texture, surf );
+	//	RB_FinishStageTexture( &surfaceStage->texture, surf );
 }
-
 
 /*
 ==================
 RB_CreateDrawInteractions
 ==================
 */
-static void RB_CreateDrawInteractions( const drawSurf_t *surf ) {
-	if ( !surf ) {
+static void RB_CreateDrawInteractions(const drawSurf_t *surf)
+{
+	if (!surf)
+	{
 		return;
 	}
 
 	// force a space calculation
 	backEnd.currentSpace = NULL;
 
-	if ( r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3 ) {
-		for ( ; surf ; surf = surf->nextOnLight ) {
+	if (r_useTripleTextureARB.GetBool() && glConfig.maxTextureUnits >= 3)
+	{
+		for (; surf; surf = surf->nextOnLight)
+		{
 			// break it up into multiple primitive draw interactions if necessary
-			RB_CreateSingleDrawInteractions( surf, RB_ARB_DrawThreeTextureInteraction );
+			RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawThreeTextureInteraction);
 		}
-	} else {
-		for ( ; surf ; surf = surf->nextOnLight ) {
+	}
+	else
+	{
+		for (; surf; surf = surf->nextOnLight)
+		{
 			// break it up into multiple primitive draw interactions if necessary
-			RB_CreateSingleDrawInteractions( surf, RB_ARB_DrawInteraction );
+			RB_CreateSingleDrawInteractions(surf, RB_ARB_DrawInteraction);
 		}
 	}
 }
-
-
 
 /*
 ==================
@@ -464,43 +482,51 @@ RB_RenderViewLight
 
 ==================
 */
-static void RB_RenderViewLight( viewLight_t *vLight ) {
+static void RB_RenderViewLight(viewLight_t *vLight)
+{
 	backEnd.vLight = vLight;
 
 	// do fogging later
-	if ( vLight->lightShader->IsFogLight() ) {
+	if (vLight->lightShader->IsFogLight())
+	{
 		return;
 	}
-	if ( vLight->lightShader->IsBlendLight() ) {
+	if (vLight->lightShader->IsBlendLight())
+	{
 		return;
 	}
 
-	RB_LogComment( "---------- RB_RenderViewLight 0x%p ----------\n", vLight );
+	RB_LogComment("---------- RB_RenderViewLight 0x%p ----------\n", vLight);
 
 	// clear the stencil buffer if needed
-	if ( vLight->globalShadows || vLight->localShadows ) {
+	if (vLight->globalShadows || vLight->localShadows)
+	{
 		backEnd.currentScissor = vLight->scissorRect;
-		if ( r_useScissor.GetBool() ) {
-			glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
-				backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
-				backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
-				backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1 );
+		if (r_useScissor.GetBool())
+		{
+			glScissor(backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1,
+					  backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
+					  backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
+					  backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1);
 		}
-		glClear( GL_STENCIL_BUFFER_BIT );
-	} else {
+		glClear(GL_STENCIL_BUFFER_BIT);
+	}
+	else
+	{
 		// no shadows, so no need to read or write the stencil buffer
 		// we might in theory want to use GL_ALWAYS instead of disabling
 		// completely, to satisfy the invarience rules
-		glStencilFunc( GL_ALWAYS, 128, 255 );
+		glStencilFunc(GL_ALWAYS, 128, 255);
 	}
 
 	backEnd.depthFunc = GLS_DEPTHFUNC_EQUAL;
-	RB_StencilShadowPass( vLight->globalShadows );
-	RB_CreateDrawInteractions( vLight->localInteractions );
-	RB_StencilShadowPass( vLight->localShadows );
-	RB_CreateDrawInteractions( vLight->globalInteractions );
+	RB_StencilShadowPass(vLight->globalShadows);
+	RB_CreateDrawInteractions(vLight->localInteractions);
+	RB_StencilShadowPass(vLight->localShadows);
+	RB_CreateDrawInteractions(vLight->globalInteractions);
 
-	if ( r_skipTranslucent.GetBool() ) {
+	if (r_skipTranslucent.GetBool())
+	{
 		return;
 	}
 
@@ -508,22 +534,22 @@ static void RB_RenderViewLight( viewLight_t *vLight ) {
 	// the shadow isn't calculated at their point, and the shadow
 	// behind them may be depth fighting with a back side, so there
 	// isn't any reasonable thing to do
-	glStencilFunc( GL_ALWAYS, 128, 255 );
+	glStencilFunc(GL_ALWAYS, 128, 255);
 	backEnd.depthFunc = GLS_DEPTHFUNC_LESS;
-	RB_CreateDrawInteractions( vLight->translucentInteractions );
+	RB_CreateDrawInteractions(vLight->translucentInteractions);
 }
-
 
 /*
 ==================
 RB_ARB_DrawInteractions
 ==================
 */
-void RB_ARB_DrawInteractions( void ) {
-	glEnable( GL_STENCIL_TEST );
+void RB_ARB_DrawInteractions(void)
+{
+	glEnable(GL_STENCIL_TEST);
 
-	for ( viewLight_t *vLight = backEnd.viewDef->viewLights ; vLight ; vLight = vLight->next ) {
-		RB_RenderViewLight( vLight );
+	for (viewLight_t *vLight = backEnd.viewDef->viewLights; vLight; vLight = vLight->next)
+	{
+		RB_RenderViewLight(vLight);
 	}
 }
-

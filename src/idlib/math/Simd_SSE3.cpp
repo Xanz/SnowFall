@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,7 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "Simd_SSE2.h"
 #include "Simd_SSE3.h"
 
-
 //===============================================================
 //
 //	SSE3 implementation of idSIMDProcessor
@@ -49,7 +48,8 @@ If you have questions concerning this license or the applicable additional terms
 idSIMD_SSE3::GetName
 ============
 */
-const char * idSIMD_SSE3::GetName( void ) const {
+const char *idSIMD_SSE3::GetName(void) const
+{
 	return "MMX & SSE & SSE2 & SSE3";
 }
 
@@ -57,10 +57,10 @@ const char * idSIMD_SSE3::GetName( void ) const {
 
 #include <xmmintrin.h>
 
-#define SHUFFLEPS( x, y, z, w )		(( (x) & 3 ) << 6 | ( (y) & 3 ) << 4 | ( (z) & 3 ) << 2 | ( (w) & 3 ))
-#define R_SHUFFLEPS( x, y, z, w )	(( (w) & 3 ) << 6 | ( (z) & 3 ) << 4 | ( (y) & 3 ) << 2 | ( (x) & 3 ))
-#define SHUFFLEPD( x, y )			(( (x) & 1 ) << 1 | ( (y) & 1 ))
-#define R_SHUFFLEPD( x, y )			(( (y) & 1 ) << 1 | ( (x) & 1 ))
+#define SHUFFLEPS(x, y, z, w) (((x) & 3) << 6 | ((y) & 3) << 4 | ((z) & 3) << 2 | ((w) & 3))
+#define R_SHUFFLEPS(x, y, z, w) (((w) & 3) << 6 | ((z) & 3) << 4 | ((y) & 3) << 2 | ((x) & 3))
+#define SHUFFLEPD(x, y) (((x) & 1) << 1 | ((y) & 1))
+#define R_SHUFFLEPD(x, y) (((y) & 1) << 1 | ((x) & 1))
 
 /*
 
@@ -106,141 +106,99 @@ const char * idSIMD_SSE3::GetName( void ) const {
 
 */
 
-#define _eax	0x00
-#define _ecx	0x01
-#define _edx	0x02
-#define _ebx	0x03
-#define _esp	0x04
-#define _ebp	0x05
-#define _esi	0x06
-#define _edi	0x07
+#define _eax 0x00
+#define _ecx 0x01
+#define _edx 0x02
+#define _ebx 0x03
+#define _esp 0x04
+#define _ebp 0x05
+#define _esi 0x06
+#define _edi 0x07
 
-#define _xmm0	0xC0
-#define _xmm1	0xC1
-#define _xmm2	0xC2
-#define _xmm3	0xC3
-#define _xmm4	0xC4
-#define _xmm5	0xC5
-#define _xmm6	0xC6
-#define _xmm7	0xC7
+#define _xmm0 0xC0
+#define _xmm1 0xC1
+#define _xmm2 0xC2
+#define _xmm3 0xC3
+#define _xmm4 0xC4
+#define _xmm5 0xC5
+#define _xmm6 0xC6
+#define _xmm7 0xC7
 
-#define RSCALE( s )		( (s&2)<<5 ) | ( (s&4)<<5 ) | ( (s&8)<<3 ) | ( (s&8)<<4 )
+#define RSCALE(s) ((s & 2) << 5) | ((s & 4) << 5) | ((s & 8) << 3) | ((s & 8) << 4)
 
-#define ADDRESS_ADDC( reg0, constant )						0x40 | ( reg0 & 7 )	\
-	_asm _emit constant
+#define ADDRESS_ADDC(reg0, constant) 0x40 | (reg0 & 7) _asm _emit constant
 
-#define ADDRESS_ADDR( reg0, reg1 )							0x04				\
-	_asm _emit ( ( reg1 & 7 ) << 3 ) | ( reg0 & 7 )
+#define ADDRESS_ADDR(reg0, reg1) 0x04 _asm _emit((reg1 & 7) << 3) | (reg0 & 7)
 
-#define ADDRESS_ADDRC( reg0, reg1, constant )				0x44				\
-	_asm _emit ( ( reg1 & 7 ) << 3 ) | ( reg0 & 7 )								\
-	_asm _emit constant
+#define ADDRESS_ADDRC(reg0, reg1, constant) 0x44 _asm _emit((reg1 & 7) << 3) | (reg0 & 7) _asm _emit constant
 
-#define ADDRESS_SCALEADDR( reg0, reg1, scale )				0x04				\
-	_asm _emit ( ( reg1 & 7 ) << 3 ) | ( reg0 & 7 ) | RSCALE( scale )
+#define ADDRESS_SCALEADDR(reg0, reg1, scale) 0x04 _asm _emit((reg1 & 7) << 3) | (reg0 & 7) | RSCALE(scale)
 
-#define ADDRESS_SCALEADDRC( reg0, reg1, scale, constant )	0x44				\
-	_asm _emit ( ( reg1 & 7 ) << 3 ) | ( reg0 & 7 ) | RSCALE( scale )			\
-	_asm _emit constant
-
+#define ADDRESS_SCALEADDRC(reg0, reg1, scale, constant) 0x44 _asm _emit((reg1 & 7) << 3) | (reg0 & 7) | RSCALE(scale) _asm _emit constant
 
 // Packed Single-FP Add/Subtract ( dst[0]=dst[0]+src[0], dst[1]=dst[1]-src[1], dst[2]=dst[2]+src[2], dst[3]=dst[3]-src[3] )
-#define addsubps( dst, src )						\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0xD0									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define addsubps(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0xD0 _asm _emit((dst & 7) << 3) | src
 
 // Packed Double-FP Add/Subtract ( dst[0]=dst[0]+src[0], dst[1]=dst[1]-src[1] )
-#define addsubpd( dst, src )						\
-	_asm _emit 0x66									\
-	_asm _emit 0x0F									\
-	_asm _emit 0xD0									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define addsubpd(dst, src) \
+	_asm _emit 0x66 _asm _emit 0x0F _asm _emit 0xD0 _asm _emit((dst & 7) << 3) | src
 
 // Packed Single-FP Horizontal Add ( dst[0]=dst[0]+dst[1], dst[1]=dst[2]+dst[3], dst[2]=src[0]+src[1], dst[3]=src[2]+src[3] )
-#define haddps( dst, src )							\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x7C									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define haddps(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0x7C _asm _emit((dst & 7) << 3) | src
 
 // Packed Double-FP Horizontal Add ( dst[0]=dst[0]+dst[1], dst[1]=src[0]+src[1] )
-#define haddpd( dst, src )							\
-	_asm _emit 0x66									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x7C									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define haddpd(dst, src) \
+	_asm _emit 0x66 _asm _emit 0x0F _asm _emit 0x7C _asm _emit((dst & 7) << 3) | src
 
 // Packed Single-FP Horizontal Subtract ( dst[0]=dst[0]-dst[1], dst[1]=dst[2]-dst[3], dst[2]=src[0]-src[1], dst[3]=src[2]-src[3] )
-#define hsubps( dst, src )							\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x7D									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define hsubps(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0x7D _asm _emit((dst & 7) << 3) | src
 
 // Packed Double-FP Horizontal Subtract ( dst[0]=dst[0]-dst[1], dst[1]=src[0]-src[1] )
-#define hsubpd( dst, src )							\
-	_asm _emit 0x66									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x7D									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define hsubpd(dst, src) \
+	_asm _emit 0x66 _asm _emit 0x0F _asm _emit 0x7D _asm _emit((dst & 7) << 3) | src
 
 // Move Packed Single-FP Low and Duplicate ( dst[0]=src[0], dst[1]=src[0], dst[2]=src[2], dst[3]=src[2] )
-#define movsldup( dst, src )						\
-	_asm _emit 0xF3									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x12									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define movsldup(dst, src) \
+	_asm _emit 0xF3 _asm _emit 0x0F _asm _emit 0x12 _asm _emit((dst & 7) << 3) | src
 
 // Move One Double-FP Low and Duplicate ( dst[0]=src[0], dst[1]=src[0] )
-#define movdldup( dst, src )						\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x12									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define movdldup(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0x12 _asm _emit((dst & 7) << 3) | src
 
 // Move Packed Single-FP High and Duplicate ( dst[0]=src[1], dst[1]=src[1], dst[2]=src[3], dst[3]=src[3] )
-#define movshdup( dst, src )						\
-	_asm _emit 0xF3									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x16									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define movshdup(dst, src) \
+	_asm _emit 0xF3 _asm _emit 0x0F _asm _emit 0x16 _asm _emit((dst & 7) << 3) | src
 
 // Move One Double-FP High and Duplicate ( dst[0]=src[1], dst[1]=src[1] )
-#define movdhdup( dst, src )						\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0x16									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define movdhdup(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0x16 _asm _emit((dst & 7) << 3) | src
 
 // Load Unaligned Integer 128 bits
-#define lddqu( dst, src )							\
-	_asm _emit 0xF2									\
-	_asm _emit 0x0F									\
-	_asm _emit 0xF0									\
-	_asm _emit ( ( dst & 7 ) << 3 ) | src
+#define lddqu(dst, src) \
+	_asm _emit 0xF2 _asm _emit 0x0F _asm _emit 0xF0 _asm _emit((dst & 7) << 3) | src
 
+#define DRAWVERT_SIZE 60
+#define DRAWVERT_XYZ_OFFSET (0 * 4)
+#define DRAWVERT_ST_OFFSET (3 * 4)
+#define DRAWVERT_NORMAL_OFFSET (5 * 4)
+#define DRAWVERT_TANGENT0_OFFSET (8 * 4)
+#define DRAWVERT_TANGENT1_OFFSET (11 * 4)
+#define DRAWVERT_COLOR_OFFSET (14 * 4)
 
-#define DRAWVERT_SIZE				60
-#define DRAWVERT_XYZ_OFFSET			(0*4)
-#define DRAWVERT_ST_OFFSET			(3*4)
-#define DRAWVERT_NORMAL_OFFSET		(5*4)
-#define DRAWVERT_TANGENT0_OFFSET	(8*4)
-#define DRAWVERT_TANGENT1_OFFSET	(11*4)
-#define DRAWVERT_COLOR_OFFSET		(14*4)
-
-#define JOINTQUAT_SIZE				(7*4)
-#define JOINTMAT_SIZE				(4*3*4)
-#define JOINTWEIGHT_SIZE			(4*4)
-
+#define JOINTQUAT_SIZE (7 * 4)
+#define JOINTMAT_SIZE (4 * 3 * 4)
+#define JOINTWEIGHT_SIZE (4 * 4)
 
 /*
 ============
 SSE3_Dot
 ============
 */
-float SSE3_Dot( const idVec4 &v1, const idVec4 &v2 ) {
+float SSE3_Dot(const idVec4 &v1, const idVec4 &v2)
+{
 	float d;
 	__asm {
 		mov		esi, v1
@@ -259,7 +217,8 @@ float SSE3_Dot( const idVec4 &v1, const idVec4 &v2 ) {
 idSIMD_SSE3::GetName
 ============
 */
-const char * idSIMD_SSE3::GetName( void ) const {
+const char *idSIMD_SSE3::GetName(void) const
+{
 	return "MMX & SSE & SSE2 & SSE3";
 }
 
@@ -268,13 +227,14 @@ const char * idSIMD_SSE3::GetName( void ) const {
 idSIMD_SSE3::TransformVerts
 ============
 */
-void VPCALL idSIMD_SSE3::TransformVerts( idDrawVert *verts, const int numVerts, const idJointMat *joints, const idVec4 *weights, const int *index, const int numWeights ) {
+void VPCALL idSIMD_SSE3::TransformVerts(idDrawVert *verts, const int numVerts, const idJointMat *joints, const idVec4 *weights, const int *index, const int numWeights)
+{
 #if 1
 
-	assert( sizeof( idDrawVert ) == DRAWVERT_SIZE );
-	assert( (int)&((idDrawVert *)0)->xyz == DRAWVERT_XYZ_OFFSET );
-	assert( sizeof( idVec4 ) == JOINTWEIGHT_SIZE );
-	assert( sizeof( idJointMat ) == JOINTMAT_SIZE );
+	assert(sizeof(idDrawVert) == DRAWVERT_SIZE);
+	assert((int)&((idDrawVert *)0)->xyz == DRAWVERT_XYZ_OFFSET);
+	assert(sizeof(idVec4) == JOINTWEIGHT_SIZE);
+	assert(sizeof(idJointMat) == JOINTMAT_SIZE);
 
 	__asm
 	{
@@ -299,9 +259,9 @@ void VPCALL idSIMD_SSE3::TransformVerts( idDrawVert *verts, const int numVerts, 
 		add			esi, JOINTWEIGHT_SIZE
 		movaps		xmm1, xmm2
 
-		mulps		xmm0, [edi+ebx+ 0]						// xmm0 = m0, m1, m2, t0
-		mulps		xmm1, [edi+ebx+16]						// xmm1 = m3, m4, m5, t1
-		mulps		xmm2, [edi+ebx+32]						// xmm2 = m6, m7, m8, t2
+		mulps		xmm0, [edi+ebx+ 0] // xmm0 = m0, m1, m2, t0
+		mulps		xmm1, [edi+ebx+16] // xmm1 = m3, m4, m5, t1
+		mulps		xmm2, [edi+ebx+32] // xmm2 = m6, m7, m8, t2
 
 		cmp			dword ptr [edx-4], 0
 
@@ -315,9 +275,9 @@ void VPCALL idSIMD_SSE3::TransformVerts( idDrawVert *verts, const int numVerts, 
 		add			esi, JOINTWEIGHT_SIZE
 		movaps		xmm4, xmm5
 
-		mulps		xmm3, [edi+ebx+ 0]						// xmm3 = m0, m1, m2, t0
-		mulps		xmm4, [edi+ebx+16]						// xmm4 = m3, m4, m5, t1
-		mulps		xmm5, [edi+ebx+32]						// xmm5 = m6, m7, m8, t2
+		mulps		xmm3, [edi+ebx+ 0] // xmm3 = m0, m1, m2, t0
+		mulps		xmm4, [edi+ebx+16] // xmm4 = m3, m4, m5, t1
+		mulps		xmm5, [edi+ebx+32] // xmm5 = m6, m7, m8, t2
 
 		cmp			dword ptr [edx-4], 0
 
@@ -348,13 +308,15 @@ void VPCALL idSIMD_SSE3::TransformVerts( idDrawVert *verts, const int numVerts, 
 	int i, j;
 	const byte *jointsPtr = (byte *)joints;
 
-	for( j = i = 0; i < numVerts; i++ ) {
+	for (j = i = 0; i < numVerts; i++)
+	{
 		idVec3 v;
 
-		v = ( *(idJointMat *) ( jointsPtr + index[j*2+0] ) ) * weights[j];
-		while( index[j*2+1] == 0 ) {
+		v = (*(idJointMat *)(jointsPtr + index[j * 2 + 0])) * weights[j];
+		while (index[j * 2 + 1] == 0)
+		{
 			j++;
-			v += ( *(idJointMat *) ( jointsPtr + index[j*2+0] ) ) * weights[j];
+			v += (*(idJointMat *)(jointsPtr + index[j * 2 + 0])) * weights[j];
 		}
 		j++;
 

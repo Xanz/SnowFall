@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 GPL Source Code
-Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1999-2011 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).  
+This file is part of the Doom 3 GPL Source Code (?Doom 3 Source Code?).
 
 Doom 3 Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -31,15 +31,15 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
-
 /*
 ================
 idGuiModel::idGuiModel
 ================
 */
-idGuiModel::idGuiModel() {
-	indexes.SetGranularity( 1000 );
-	verts.SetGranularity( 1000 );
+idGuiModel::idGuiModel()
+{
+	indexes.SetGranularity(1000);
+	verts.SetGranularity(1000);
 }
 
 /*
@@ -49,10 +49,11 @@ idGuiModel::Clear
 Begins collecting draw commands into surfaces
 ================
 */
-void idGuiModel::Clear() {
-	surfaces.SetNum( 0, false );
-	indexes.SetNum( 0, false );
-	verts.SetNum( 0, false );
+void idGuiModel::Clear()
+{
+	surfaces.SetNum(0, false);
+	indexes.SetNum(0, false);
+	verts.SetNum(0, false);
 	AdvanceSurf();
 }
 
@@ -61,45 +62,48 @@ void idGuiModel::Clear() {
 idGuiModel::WriteToDemo
 ================
 */
-void idGuiModel::WriteToDemo( idDemoFile *demo ) {
-	int		i, j;
+void idGuiModel::WriteToDemo(idDemoFile *demo)
+{
+	int i, j;
 
 	i = verts.Num();
-	demo->WriteInt( i );
-	for ( j = 0; j < i; j++ )
+	demo->WriteInt(i);
+	for (j = 0; j < i; j++)
 	{
-		demo->WriteVec3( verts[j].xyz );
-		demo->WriteVec2( verts[j].st );
-		demo->WriteVec3( verts[j].normal );
-		demo->WriteVec3( verts[j].tangents[0] );
-		demo->WriteVec3( verts[j].tangents[1] );
-		demo->WriteUnsignedChar( verts[j].color[0] );
-		demo->WriteUnsignedChar( verts[j].color[1] );
-		demo->WriteUnsignedChar( verts[j].color[2] );
-		demo->WriteUnsignedChar( verts[j].color[3] );
+		demo->WriteVec3(verts[j].xyz);
+		demo->WriteVec2(verts[j].st);
+		demo->WriteVec3(verts[j].normal);
+		demo->WriteVec3(verts[j].tangents[0]);
+		demo->WriteVec3(verts[j].tangents[1]);
+		demo->WriteUnsignedChar(verts[j].color[0]);
+		demo->WriteUnsignedChar(verts[j].color[1]);
+		demo->WriteUnsignedChar(verts[j].color[2]);
+		demo->WriteUnsignedChar(verts[j].color[3]);
 	}
-	
+
 	i = indexes.Num();
-	demo->WriteInt( i );
-	for ( j = 0; j < i; j++ ) {
-		demo->WriteInt(indexes[j] );
+	demo->WriteInt(i);
+	for (j = 0; j < i; j++)
+	{
+		demo->WriteInt(indexes[j]);
 	}
-	
+
 	i = surfaces.Num();
-	demo->WriteInt( i );
-	for ( j = 0 ; j < i ; j++ ) {
-		guiModelSurface_t	*surf = &surfaces[j];
-		
-		demo->WriteInt( (int&)surf->material );
-		demo->WriteFloat( surf->color[0] );
-		demo->WriteFloat( surf->color[1] );
-		demo->WriteFloat( surf->color[2] );
-		demo->WriteFloat( surf->color[3] );
-		demo->WriteInt( surf->firstVert );
-		demo->WriteInt( surf->numVerts );
-		demo->WriteInt( surf->firstIndex );
-		demo->WriteInt( surf->numIndexes );
-		demo->WriteHashString( surf->material->GetName() );
+	demo->WriteInt(i);
+	for (j = 0; j < i; j++)
+	{
+		guiModelSurface_t *surf = &surfaces[j];
+
+		demo->WriteInt((int &)surf->material);
+		demo->WriteFloat(surf->color[0]);
+		demo->WriteFloat(surf->color[1]);
+		demo->WriteFloat(surf->color[2]);
+		demo->WriteFloat(surf->color[3]);
+		demo->WriteInt(surf->firstVert);
+		demo->WriteInt(surf->numVerts);
+		demo->WriteInt(surf->firstIndex);
+		demo->WriteInt(surf->numIndexes);
+		demo->WriteHashString(surf->material->GetName());
 	}
 }
 
@@ -108,48 +112,51 @@ void idGuiModel::WriteToDemo( idDemoFile *demo ) {
 idGuiModel::ReadFromDemo
 ================
 */
-void idGuiModel::ReadFromDemo( idDemoFile *demo ) {
-	int		i, j;
+void idGuiModel::ReadFromDemo(idDemoFile *demo)
+{
+	int i, j;
 
 	i = verts.Num();
-	demo->ReadInt( i );
-	verts.SetNum( i, false );
-	for ( j = 0; j < i; j++ )
+	demo->ReadInt(i);
+	verts.SetNum(i, false);
+	for (j = 0; j < i; j++)
 	{
-		demo->ReadVec3( verts[j].xyz );
-		demo->ReadVec2( verts[j].st );
-		demo->ReadVec3( verts[j].normal );
-		demo->ReadVec3( verts[j].tangents[0] );
-		demo->ReadVec3( verts[j].tangents[1] );
-		demo->ReadUnsignedChar( verts[j].color[0] );
-		demo->ReadUnsignedChar( verts[j].color[1] );
-		demo->ReadUnsignedChar( verts[j].color[2] );
-		demo->ReadUnsignedChar( verts[j].color[3] );
+		demo->ReadVec3(verts[j].xyz);
+		demo->ReadVec2(verts[j].st);
+		demo->ReadVec3(verts[j].normal);
+		demo->ReadVec3(verts[j].tangents[0]);
+		demo->ReadVec3(verts[j].tangents[1]);
+		demo->ReadUnsignedChar(verts[j].color[0]);
+		demo->ReadUnsignedChar(verts[j].color[1]);
+		demo->ReadUnsignedChar(verts[j].color[2]);
+		demo->ReadUnsignedChar(verts[j].color[3]);
 	}
-	
+
 	i = indexes.Num();
-	demo->ReadInt( i );
-	indexes.SetNum( i, false );
-	for ( j = 0; j < i; j++ ) {
-		demo->ReadInt(indexes[j] );
+	demo->ReadInt(i);
+	indexes.SetNum(i, false);
+	for (j = 0; j < i; j++)
+	{
+		demo->ReadInt(indexes[j]);
 	}
-	
+
 	i = surfaces.Num();
-	demo->ReadInt( i );
-	surfaces.SetNum( i, false );
-	for ( j = 0 ; j < i ; j++ ) {
-		guiModelSurface_t	*surf = &surfaces[j];
-		
-		demo->ReadInt( (int&)surf->material );
-		demo->ReadFloat( surf->color[0] );
-		demo->ReadFloat( surf->color[1] );
-		demo->ReadFloat( surf->color[2] );
-		demo->ReadFloat( surf->color[3] );
-		demo->ReadInt( surf->firstVert );
-		demo->ReadInt( surf->numVerts );
-		demo->ReadInt( surf->firstIndex );
-		demo->ReadInt( surf->numIndexes );
-		surf->material = declManager->FindMaterial( demo->ReadHashString() );
+	demo->ReadInt(i);
+	surfaces.SetNum(i, false);
+	for (j = 0; j < i; j++)
+	{
+		guiModelSurface_t *surf = &surfaces[j];
+
+		demo->ReadInt((int &)surf->material);
+		demo->ReadFloat(surf->color[0]);
+		demo->ReadFloat(surf->color[1]);
+		demo->ReadFloat(surf->color[2]);
+		demo->ReadFloat(surf->color[3]);
+		demo->ReadInt(surf->firstVert);
+		demo->ReadInt(surf->numVerts);
+		demo->ReadInt(surf->firstIndex);
+		demo->ReadInt(surf->numIndexes);
+		surf->material = declManager->FindMaterial(demo->ReadHashString());
 	}
 }
 
@@ -158,46 +165,49 @@ void idGuiModel::ReadFromDemo( idDemoFile *demo ) {
 EmitSurface
 ================
 */
-void idGuiModel::EmitSurface( guiModelSurface_t *surf, float modelMatrix[16], float modelViewMatrix[16], bool depthHack ) {
-	srfTriangles_t	*tri;
+void idGuiModel::EmitSurface(guiModelSurface_t *surf, float modelMatrix[16], float modelViewMatrix[16], bool depthHack)
+{
+	srfTriangles_t *tri;
 
-	if ( surf->numVerts == 0 ) {
-		return;		// nothing in the surface
+	if (surf->numVerts == 0)
+	{
+		return; // nothing in the surface
 	}
 
 	// copy verts and indexes
-	tri = (srfTriangles_t *)R_ClearedFrameAlloc( sizeof( *tri ) );
+	tri = (srfTriangles_t *)R_ClearedFrameAlloc(sizeof(*tri));
 
 	tri->numIndexes = surf->numIndexes;
 	tri->numVerts = surf->numVerts;
-	tri->indexes = (glIndex_t *)R_FrameAlloc( tri->numIndexes * sizeof( tri->indexes[0] ) );
-	memcpy( tri->indexes, &indexes[surf->firstIndex], tri->numIndexes * sizeof( tri->indexes[0] ) );
+	tri->indexes = (glIndex_t *)R_FrameAlloc(tri->numIndexes * sizeof(tri->indexes[0]));
+	memcpy(tri->indexes, &indexes[surf->firstIndex], tri->numIndexes * sizeof(tri->indexes[0]));
 
 	// we might be able to avoid copying these and just let them reference the list vars
 	// but some things, like deforms and recursive
 	// guis, need to access the verts in cpu space, not just through the vertex range
-	tri->verts = (idDrawVert *)R_FrameAlloc( tri->numVerts * sizeof( tri->verts[0] ) );
-	memcpy( tri->verts, &verts[surf->firstVert], tri->numVerts * sizeof( tri->verts[0] ) );
+	tri->verts = (idDrawVert *)R_FrameAlloc(tri->numVerts * sizeof(tri->verts[0]));
+	memcpy(tri->verts, &verts[surf->firstVert], tri->numVerts * sizeof(tri->verts[0]));
 
 	// move the verts to the vertex cache
-	tri->ambientCache = vertexCache.AllocFrameTemp( tri->verts, tri->numVerts * sizeof( tri->verts[0] ) );
+	tri->ambientCache = vertexCache.AllocFrameTemp(tri->verts, tri->numVerts * sizeof(tri->verts[0]));
 
 	// if we are out of vertex cache, don't create the surface
-	if ( !tri->ambientCache ) {
+	if (!tri->ambientCache)
+	{
 		return;
 	}
 
 	renderEntity_t renderEntity;
-	memset( &renderEntity, 0, sizeof( renderEntity ) );
-	memcpy( renderEntity.shaderParms, surf->color, sizeof( surf->color ) );
+	memset(&renderEntity, 0, sizeof(renderEntity));
+	memcpy(renderEntity.shaderParms, surf->color, sizeof(surf->color));
 
-	viewEntity_t *guiSpace = (viewEntity_t *)R_ClearedFrameAlloc( sizeof( *guiSpace ) );
-	memcpy( guiSpace->modelMatrix, modelMatrix, sizeof( guiSpace->modelMatrix ) );
-	memcpy( guiSpace->modelViewMatrix, modelViewMatrix, sizeof( guiSpace->modelViewMatrix ) );
+	viewEntity_t *guiSpace = (viewEntity_t *)R_ClearedFrameAlloc(sizeof(*guiSpace));
+	memcpy(guiSpace->modelMatrix, modelMatrix, sizeof(guiSpace->modelMatrix));
+	memcpy(guiSpace->modelViewMatrix, modelViewMatrix, sizeof(guiSpace->modelViewMatrix));
 	guiSpace->weaponDepthHack = depthHack;
 
 	// add the surface, which might recursively create another gui
-	R_AddDrawSurf( tri, guiSpace, &renderEntity, surf->material, tr.viewDef->scissor );
+	R_AddDrawSurf(tri, guiSpace, &renderEntity, surf->material, tr.viewDef->scissor);
 }
 
 /*
@@ -205,14 +215,16 @@ void idGuiModel::EmitSurface( guiModelSurface_t *surf, float modelMatrix[16], fl
 EmitToCurrentView
 ====================
 */
-void idGuiModel::EmitToCurrentView( float modelMatrix[16], bool depthHack ) {
-	float	modelViewMatrix[16];
+void idGuiModel::EmitToCurrentView(float modelMatrix[16], bool depthHack)
+{
+	float modelViewMatrix[16];
 
-	myGlMultMatrix( modelMatrix, tr.viewDef->worldSpace.modelViewMatrix, 
-			modelViewMatrix );
+	myGlMultMatrix(modelMatrix, tr.viewDef->worldSpace.modelViewMatrix,
+				   modelViewMatrix);
 
-	for ( int i = 0 ; i < surfaces.Num() ; i++ ) {
-		EmitSurface( &surfaces[i], modelMatrix, modelViewMatrix, depthHack );
+	for (int i = 0; i < surfaces.Num(); i++)
+	{
+		EmitSurface(&surfaces[i], modelMatrix, modelViewMatrix, depthHack);
 	}
 }
 
@@ -223,34 +235,39 @@ idGuiModel::EmitFullScreen
 Creates a view that covers the screen and emit the surfaces
 ================
 */
-void idGuiModel::EmitFullScreen( void ) {
-	viewDef_t	*viewDef;
+void idGuiModel::EmitFullScreen(void)
+{
+	viewDef_t *viewDef;
 
-	if ( surfaces[0].numVerts == 0 ) {
+	if (surfaces[0].numVerts == 0)
+	{
 		return;
 	}
 
-	viewDef = (viewDef_t *)R_ClearedFrameAlloc( sizeof( *viewDef ) );
+	viewDef = (viewDef_t *)R_ClearedFrameAlloc(sizeof(*viewDef));
 
 	// for gui editor
-	if ( !tr.viewDef || !tr.viewDef->isEditor ) {
+	if (!tr.viewDef || !tr.viewDef->isEditor)
+	{
 		viewDef->renderView.x = 0;
 		viewDef->renderView.y = 0;
 		viewDef->renderView.width = SCREEN_WIDTH;
 		viewDef->renderView.height = SCREEN_HEIGHT;
 
-		tr.RenderViewToViewport( &viewDef->renderView, &viewDef->viewport );
+		tr.RenderViewToViewport(&viewDef->renderView, &viewDef->viewport);
 
 		viewDef->scissor.x1 = 0;
 		viewDef->scissor.y1 = 0;
 		viewDef->scissor.x2 = viewDef->viewport.x2 - viewDef->viewport.x1;
 		viewDef->scissor.y2 = viewDef->viewport.y2 - viewDef->viewport.y1;
-	} else {
+	}
+	else
+	{
 		viewDef->renderView.x = tr.viewDef->renderView.x;
 		viewDef->renderView.y = tr.viewDef->renderView.y;
 		viewDef->renderView.width = tr.viewDef->renderView.width;
 		viewDef->renderView.height = tr.viewDef->renderView.height;
-		
+
 		viewDef->viewport.x1 = tr.viewDef->renderView.x;
 		viewDef->viewport.x2 = tr.viewDef->renderView.x + tr.viewDef->renderView.width;
 		viewDef->viewport.y1 = tr.viewDef->renderView.y;
@@ -279,21 +296,22 @@ void idGuiModel::EmitFullScreen( void ) {
 	viewDef->worldSpace.modelViewMatrix[15] = 1.0f;
 
 	viewDef->maxDrawSurfs = surfaces.Num();
-	viewDef->drawSurfs = (drawSurf_t **)R_FrameAlloc( viewDef->maxDrawSurfs * sizeof( viewDef->drawSurfs[0] ) );
+	viewDef->drawSurfs = (drawSurf_t **)R_FrameAlloc(viewDef->maxDrawSurfs * sizeof(viewDef->drawSurfs[0]));
 	viewDef->numDrawSurfs = 0;
 
-	viewDef_t	*oldViewDef = tr.viewDef;
+	viewDef_t *oldViewDef = tr.viewDef;
 	tr.viewDef = viewDef;
 
 	// add the surfaces to this view
-	for ( int i = 0 ; i < surfaces.Num() ; i++ ) {
-		EmitSurface( &surfaces[i], viewDef->worldSpace.modelMatrix, viewDef->worldSpace.modelViewMatrix, false );
+	for (int i = 0; i < surfaces.Num(); i++)
+	{
+		EmitSurface(&surfaces[i], viewDef->worldSpace.modelMatrix, viewDef->worldSpace.modelViewMatrix, false);
 	}
 
 	tr.viewDef = oldViewDef;
 
 	// add the command to draw this view
-	R_AddDrawViewCmd( viewDef );
+	R_AddDrawViewCmd(viewDef);
 }
 
 /*
@@ -301,16 +319,20 @@ void idGuiModel::EmitFullScreen( void ) {
 AdvanceSurf
 =============
 */
-void idGuiModel::AdvanceSurf() {
-	guiModelSurface_t	s;
+void idGuiModel::AdvanceSurf()
+{
+	guiModelSurface_t s;
 
-	if ( surfaces.Num() ) {
+	if (surfaces.Num())
+	{
 		s.color[0] = surf->color[0];
 		s.color[1] = surf->color[1];
 		s.color[2] = surf->color[2];
 		s.color[3] = surf->color[3];
 		s.material = surf->material;
-	} else {
+	}
+	else
+	{
 		s.color[0] = 1;
 		s.color[1] = 1;
 		s.color[2] = 1;
@@ -322,8 +344,8 @@ void idGuiModel::AdvanceSurf() {
 	s.numVerts = 0;
 	s.firstVert = verts.Num();
 
-	surfaces.Append( s );
-	surf = &surfaces[ surfaces.Num() - 1 ];
+	surfaces.Append(s);
+	surf = &surfaces[surfaces.Num() - 1];
 }
 
 /*
@@ -331,16 +353,19 @@ void idGuiModel::AdvanceSurf() {
 SetColor
 =============
 */
-void idGuiModel::SetColor( float r, float g, float b, float a ) {
-	if ( !glConfig.isInitialized ) {
+void idGuiModel::SetColor(float r, float g, float b, float a)
+{
+	if (!glConfig.isInitialized)
+	{
 		return;
 	}
-	if ( r == surf->color[0] && g == surf->color[1]
-		&& b == surf->color[2] && a == surf->color[3] ) {
-		return;	// no change
+	if (r == surf->color[0] && g == surf->color[1] && b == surf->color[2] && a == surf->color[3])
+	{
+		return; // no change
 	}
 
-	if ( surf->numVerts ) {
+	if (surf->numVerts)
+	{
 		AdvanceSurf();
 	}
 
@@ -356,60 +381,79 @@ void idGuiModel::SetColor( float r, float g, float b, float a ) {
 DrawStretchPic
 =============
 */
-void idGuiModel::DrawStretchPic( const idDrawVert *dverts, const glIndex_t *dindexes, int vertCount, int indexCount, const idMaterial *hShader, 
-									   bool clip, float min_x, float min_y, float max_x, float max_y ) {
-	if ( !glConfig.isInitialized ) {
+void idGuiModel::DrawStretchPic(const idDrawVert *dverts, const glIndex_t *dindexes, int vertCount, int indexCount, const idMaterial *hShader,
+								bool clip, float min_x, float min_y, float max_x, float max_y)
+{
+	if (!glConfig.isInitialized)
+	{
 		return;
 	}
-	if ( !( dverts && dindexes && vertCount && indexCount && hShader ) ) {
+	if (!(dverts && dindexes && vertCount && indexCount && hShader))
+	{
 		return;
 	}
 
 	// break the current surface if we are changing to a new material
-	if ( hShader != surf->material ) {
-		if ( surf->numVerts ) {
+	if (hShader != surf->material)
+	{
+		if (surf->numVerts)
+		{
 			AdvanceSurf();
 		}
-		const_cast<idMaterial *>(hShader)->EnsureNotPurged();	// in case it was a gui item started before a level change
+		const_cast<idMaterial *>(hShader)->EnsureNotPurged(); // in case it was a gui item started before a level change
 		surf->material = hShader;
 	}
 
 	// add the verts and indexes to the current surface
 
-	if ( clip ) {
+	if (clip)
+	{
 		int i, j;
 
 		// FIXME:	this is grim stuff, and should be rewritten if we have any significant
 		//			number of guis asking for clipping
 		idFixedWinding w;
-		for ( i = 0; i < indexCount; i += 3 ) {
+		for (i = 0; i < indexCount; i += 3)
+		{
 			w.Clear();
 			w.AddPoint(idVec5(dverts[dindexes[i]].xyz.x, dverts[dindexes[i]].xyz.y, dverts[dindexes[i]].xyz.z, dverts[dindexes[i]].st.x, dverts[dindexes[i]].st.y));
-			w.AddPoint(idVec5(dverts[dindexes[i+1]].xyz.x, dverts[dindexes[i+1]].xyz.y, dverts[dindexes[i+1]].xyz.z, dverts[dindexes[i+1]].st.x, dverts[dindexes[i+1]].st.y));
-			w.AddPoint(idVec5(dverts[dindexes[i+2]].xyz.x, dverts[dindexes[i+2]].xyz.y, dverts[dindexes[i+2]].xyz.z, dverts[dindexes[i+2]].st.x, dverts[dindexes[i+2]].st.y));
+			w.AddPoint(idVec5(dverts[dindexes[i + 1]].xyz.x, dverts[dindexes[i + 1]].xyz.y, dverts[dindexes[i + 1]].xyz.z, dverts[dindexes[i + 1]].st.x, dverts[dindexes[i + 1]].st.y));
+			w.AddPoint(idVec5(dverts[dindexes[i + 2]].xyz.x, dverts[dindexes[i + 2]].xyz.y, dverts[dindexes[i + 2]].xyz.z, dverts[dindexes[i + 2]].st.x, dverts[dindexes[i + 2]].st.y));
 
-			for ( j = 0; j < 3; j++ ) {
-				if ( w[j].x < min_x || w[j].x > max_x ||
-					w[j].y < min_y || w[j].y > max_y ) {
+			for (j = 0; j < 3; j++)
+			{
+				if (w[j].x < min_x || w[j].x > max_x ||
+					w[j].y < min_y || w[j].y > max_y)
+				{
 					break;
 				}
 			}
-			if ( j < 3 ) {
+			if (j < 3)
+			{
 				idPlane p;
-				p.Normal().y = p.Normal().z = 0.0f; p.Normal().x = 1.0f; p.SetDist( min_x );
-				w.ClipInPlace( p );
-				p.Normal().y = p.Normal().z = 0.0f; p.Normal().x = -1.0f; p.SetDist( -max_x );
-				w.ClipInPlace( p );
-				p.Normal().x = p.Normal().z = 0.0f; p.Normal().y = 1.0f; p.SetDist( min_y );
-				w.ClipInPlace( p );
-				p.Normal().x = p.Normal().z = 0.0f; p.Normal().y = -1.0f; p.SetDist( -max_y );
-				w.ClipInPlace( p );
+				p.Normal().y = p.Normal().z = 0.0f;
+				p.Normal().x = 1.0f;
+				p.SetDist(min_x);
+				w.ClipInPlace(p);
+				p.Normal().y = p.Normal().z = 0.0f;
+				p.Normal().x = -1.0f;
+				p.SetDist(-max_x);
+				w.ClipInPlace(p);
+				p.Normal().x = p.Normal().z = 0.0f;
+				p.Normal().y = 1.0f;
+				p.SetDist(min_y);
+				w.ClipInPlace(p);
+				p.Normal().x = p.Normal().z = 0.0f;
+				p.Normal().y = -1.0f;
+				p.SetDist(-max_y);
+				w.ClipInPlace(p);
 			}
 
-			int	numVerts = verts.Num();
-			verts.SetNum( numVerts + w.GetNumPoints(), false );
-			for ( j = 0 ; j < w.GetNumPoints() ; j++ ) {
-				idDrawVert *dv = &verts[numVerts+j];
+			int numVerts = verts.Num();
+			verts.SetNum(numVerts + w.GetNumPoints(), false);
+			for (j = 0; j < w.GetNumPoints(); j++)
+			{
+				idDrawVert *dv = &verts[numVerts + j];
 
 				dv->xyz.x = w[j].x;
 				dv->xyz.y = w[j].y;
@@ -422,30 +466,33 @@ void idGuiModel::DrawStretchPic( const idDrawVert *dverts, const glIndex_t *dind
 			}
 			surf->numVerts += w.GetNumPoints();
 
-			for ( j = 2; j < w.GetNumPoints(); j++ ) {
-				indexes.Append( numVerts - surf->firstVert );
-				indexes.Append( numVerts + j - 1 - surf->firstVert );
-				indexes.Append( numVerts + j - surf->firstVert );
+			for (j = 2; j < w.GetNumPoints(); j++)
+			{
+				indexes.Append(numVerts - surf->firstVert);
+				indexes.Append(numVerts + j - 1 - surf->firstVert);
+				indexes.Append(numVerts + j - surf->firstVert);
 				surf->numIndexes += 3;
 			}
 		}
-
-	} else {
+	}
+	else
+	{
 
 		int numVerts = verts.Num();
 		int numIndexes = indexes.Num();
 
-		verts.AssureSize( numVerts + vertCount );
-		indexes.AssureSize( numIndexes + indexCount );
+		verts.AssureSize(numVerts + vertCount);
+		indexes.AssureSize(numIndexes + indexCount);
 
 		surf->numVerts += vertCount;
 		surf->numIndexes += indexCount;
 
-		for ( int i = 0; i < indexCount; i++ ) {
+		for (int i = 0; i < indexCount; i++)
+		{
 			indexes[numIndexes + i] = numVerts + dindexes[i] - surf->firstVert;
 		}
 
-		memcpy( &verts[numVerts], dverts, vertCount * sizeof( verts[0] ) );
+		memcpy(&verts[numVerts], dverts, vertCount * sizeof(verts[0]));
 	}
 }
 
@@ -456,40 +503,48 @@ DrawStretchPic
 x/y/w/h are in the 0,0 to 640,480 range
 =============
 */
-void idGuiModel::DrawStretchPic( float x, float y, float w, float h, float s1, float t1, float s2, float t2, const idMaterial *hShader ) {
+void idGuiModel::DrawStretchPic(float x, float y, float w, float h, float s1, float t1, float s2, float t2, const idMaterial *hShader)
+{
 	idDrawVert verts[4];
 	glIndex_t indexes[6];
 
-	if ( !glConfig.isInitialized ) {
+	if (!glConfig.isInitialized)
+	{
 		return;
 	}
-	if ( !hShader ) {
+	if (!hShader)
+	{
 		return;
 	}
 
 	// clip to edges, because the pic may be going into a guiShader
 	// instead of full screen
-	if ( x < 0 ) {
-		s1 += ( s2 - s1 ) * -x / w;
+	if (x < 0)
+	{
+		s1 += (s2 - s1) * -x / w;
 		w += x;
 		x = 0;
 	}
-	if ( y < 0 ) {
-		t1 += ( t2 - t1 ) * -y / h;
+	if (y < 0)
+	{
+		t1 += (t2 - t1) * -y / h;
 		h += y;
 		y = 0;
 	}
-	if ( x + w > 640 ) {
-		s2 -= ( s2 - s1 ) * ( x + w - 640 ) / w;
+	if (x + w > 640)
+	{
+		s2 -= (s2 - s1) * (x + w - 640) / w;
 		w = 640 - x;
 	}
-	if ( y + h > 480 ) {
-		t2 -= ( t2 - t1 ) * ( y + h - 480 ) / h;
+	if (y + h > 480)
+	{
+		t2 -= (t2 - t1) * (y + h - 480) / h;
 		h = 480 - y;
 	}
-	
-	if ( w <= 0 || h <= 0 ) {
-		return;		// completely clipped away
+
+	if (w <= 0 || h <= 0)
+	{
+		return; // completely clipped away
 	}
 
 	indexes[0] = 3;
@@ -555,7 +610,7 @@ void idGuiModel::DrawStretchPic( float x, float y, float w, float h, float s1, f
 	verts[3].tangents[1][1] = 1;
 	verts[3].tangents[1][2] = 0;
 
-	DrawStretchPic( &verts[0], &indexes[0], 4, 6, hShader, false, 0.0f, 0.0f, 640.0f, 480.0f );
+	DrawStretchPic(&verts[0], &indexes[0], 4, 6, hShader, false, 0.0f, 0.0f, 640.0f, 480.0f);
 }
 
 /*
@@ -565,16 +620,19 @@ DrawStretchTri
 x/y/w/h are in the 0,0 to 640,480 range
 =============
 */
-void idGuiModel::DrawStretchTri( idVec2 p1, idVec2 p2, idVec2 p3, idVec2 t1, idVec2 t2, idVec2 t3, const idMaterial *material ) {
+void idGuiModel::DrawStretchTri(idVec2 p1, idVec2 p2, idVec2 p3, idVec2 t1, idVec2 t2, idVec2 t3, const idMaterial *material)
+{
 	idDrawVert tempVerts[3];
 	glIndex_t tempIndexes[3];
 	int vertCount = 3;
 	int indexCount = 3;
 
-	if ( !glConfig.isInitialized ) {
+	if (!glConfig.isInitialized)
+	{
 		return;
 	}
-	if ( !material ) {
+	if (!material)
+	{
 		return;
 	}
 
@@ -625,28 +683,29 @@ void idGuiModel::DrawStretchTri( idVec2 p1, idVec2 p2, idVec2 p3, idVec2 t1, idV
 	tempVerts[2].tangents[1][2] = 0;
 
 	// break the current surface if we are changing to a new material
-	if ( material != surf->material ) {
-		if ( surf->numVerts ) {
+	if (material != surf->material)
+	{
+		if (surf->numVerts)
+		{
 			AdvanceSurf();
 		}
-		const_cast<idMaterial *>(material)->EnsureNotPurged();	// in case it was a gui item started before a level change
+		const_cast<idMaterial *>(material)->EnsureNotPurged(); // in case it was a gui item started before a level change
 		surf->material = material;
 	}
-
 
 	int numVerts = verts.Num();
 	int numIndexes = indexes.Num();
 
-	verts.AssureSize( numVerts + vertCount );
-	indexes.AssureSize( numIndexes + indexCount );
+	verts.AssureSize(numVerts + vertCount);
+	indexes.AssureSize(numIndexes + indexCount);
 
 	surf->numVerts += vertCount;
 	surf->numIndexes += indexCount;
 
-	for ( int i = 0; i < indexCount; i++ ) {
+	for (int i = 0; i < indexCount; i++)
+	{
 		indexes[numIndexes + i] = numVerts + tempIndexes[i] - surf->firstVert;
 	}
 
-	memcpy( &verts[numVerts], tempVerts, vertCount * sizeof( verts[0] ) );
+	memcpy(&verts[numVerts], tempVerts, vertCount * sizeof(verts[0]));
 }
-

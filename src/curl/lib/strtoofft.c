@@ -1,8 +1,8 @@
 /***************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * Copyright (C) 1998 - 2004, Daniel Stenberg, <daniel@haxx.se>, et al.
@@ -10,7 +10,7 @@
  * This software is licensed as described in the file COPYING, which
  * you should have received as part of this distribution. The terms
  * are also available at http://curl.haxx.se/docs/copyright.html.
- * 
+ *
  * You may opt to use, copy, modify, merge, publish, distribute and/or sell
  * copies of the Software, and permit persons to whom the Software is
  * furnished to do so, under the terms of the COPYING file.
@@ -47,35 +47,44 @@ curlx_strtoll(const char *nptr, char **endptr, int base)
 
   /* Skip leading whitespace. */
   end = (char *)nptr;
-  while (isspace((int)end[0])) {
+  while (isspace((int)end[0]))
+  {
     end++;
   }
 
   /* Handle the sign, if any. */
-  if (end[0] == '-') {
+  if (end[0] == '-')
+  {
     is_negative = 1;
     end++;
   }
-  else if (end[0] == '+') {
+  else if (end[0] == '+')
+  {
     end++;
   }
-  else if (end[0] == '\0') {
+  else if (end[0] == '\0')
+  {
     /* We had nothing but perhaps some whitespace -- there was no number. */
-    if (endptr) {
+    if (endptr)
+    {
       *endptr = end;
     }
     return 0;
   }
 
   /* Handle special beginnings, if present and allowed. */
-  if (end[0] == '0' && end[1] == 'x') {
-    if (base == 16 || base == 0) {
+  if (end[0] == '0' && end[1] == 'x')
+  {
+    if (base == 16 || base == 0)
+    {
       end += 2;
       base = 16;
     }
   }
-  else if (end[0] == '0') {
-    if (base == 8 || base == 0) {
+  else if (end[0] == '0')
+  {
+    if (base == 8 || base == 0)
+    {
       end++;
       base = 8;
     }
@@ -84,7 +93,8 @@ curlx_strtoll(const char *nptr, char **endptr, int base)
   /* Matching strtol, if the base is 0 and it doesn't look like
    * the number is octal or hex, we assume it's base 10.
    */
-  if (base == 0) {
+  if (base == 0)
+  {
     base = 10;
   }
 
@@ -93,9 +103,11 @@ curlx_strtoll(const char *nptr, char **endptr, int base)
   overflow = 0;
   for (i = get_char(end[0], base);
        i != -1;
-       end++, i = get_char(end[0], base)) {
+       end++, i = get_char(end[0], base))
+  {
     newval = base * value + i;
-    if (newval < value) {
+    if (newval < value)
+    {
       /* We've overflowed. */
       overflow = 1;
       break;
@@ -104,13 +116,16 @@ curlx_strtoll(const char *nptr, char **endptr, int base)
       value = newval;
   }
 
-  if (!overflow) {
-    if (is_negative) {
+  if (!overflow)
+  {
+    if (is_negative)
+    {
       /* Fix the sign. */
       value *= -1;
     }
   }
-  else {
+  else
+  {
     if (is_negative)
       value = 0x8000000000000000L;
     else
@@ -138,20 +153,24 @@ curlx_strtoll(const char *nptr, char **endptr, int base)
 static int get_char(char c, int base)
 {
   int value = -1;
-  if (c <= '9' && c >= '0') {
+  if (c <= '9' && c >= '0')
+  {
     value = c - '0';
   }
-  else if (c <= 'Z' && c >= 'A') {
+  else if (c <= 'Z' && c >= 'A')
+  {
     value = c - 'A' + 10;
   }
-  else if (c <= 'z' && c >= 'a') {
+  else if (c <= 'z' && c >= 'a')
+  {
     value = c - 'a' + 10;
   }
 
-  if (value >= base) {
+  if (value >= base)
+  {
     value = -1;
   }
 
   return value;
 }
-#endif  /* Only present if we need strtoll, but don't have it. */
+#endif /* Only present if we need strtoll, but don't have it. */

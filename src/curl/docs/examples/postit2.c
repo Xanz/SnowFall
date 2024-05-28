@@ -1,8 +1,8 @@
 /*****************************************************************************
- *                                  _   _ ____  _     
- *  Project                     ___| | | |  _ \| |    
- *                             / __| | | | |_) | |    
- *                            | (__| |_| |  _ <| |___ 
+ *                                  _   _ ____  _
+ *  Project                     ___| | | |  _ \| |
+ *                             / __| | | | |_) | |
+ *                            | (__| |_| |  _ <| |___
  *                             \___|\___/|_| \_\_____|
  *
  * $Id: postit2.c,v 1.2 2003/11/19 08:21:34 bagder Exp $
@@ -33,9 +33,9 @@ int main(int argc, char *argv[])
   CURL *curl;
   CURLcode res;
 
-  struct HttpPost *formpost=NULL;
-  struct HttpPost *lastptr=NULL;
-  struct curl_slist *headerlist=NULL;
+  struct HttpPost *formpost = NULL;
+  struct HttpPost *lastptr = NULL;
+  struct curl_slist *headerlist = NULL;
   char buf[] = "Expect:";
 
   curl_global_init(CURL_GLOBAL_ALL);
@@ -53,7 +53,6 @@ int main(int argc, char *argv[])
                CURLFORM_COPYNAME, "filename",
                CURLFORM_COPYCONTENTS, "postit2.c",
                CURLFORM_END);
-  
 
   /* Fill in the submit field too, even if this is rarely needed */
   curl_formadd(&formpost,
@@ -66,10 +65,11 @@ int main(int argc, char *argv[])
   /* initalize custom header list (stating that Expect: 100-continue is not
      wanted */
   headerlist = curl_slist_append(headerlist, buf);
-  if(curl) {
+  if (curl)
+  {
     /* what URL that receives this POST */
     curl_easy_setopt(curl, CURLOPT_URL, "http://curl.haxx.se/examplepost.cgi");
-    if ( (argc == 2) && (!strcmp(argv[1], "noexpectheader")) )
+    if ((argc == 2) && (!strcmp(argv[1], "noexpectheader")))
       /* only disable 100-continue header if explicitly requested */
       curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headerlist);
     curl_easy_setopt(curl, CURLOPT_HTTPPOST, formpost);
@@ -81,7 +81,7 @@ int main(int argc, char *argv[])
     /* then cleanup the formpost chain */
     curl_formfree(formpost);
     /* free slist */
-    curl_slist_free_all (headerlist);
+    curl_slist_free_all(headerlist);
   }
   return 0;
 }
