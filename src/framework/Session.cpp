@@ -1717,16 +1717,6 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 		sw->UnPause();
 	}
 
-	if (!noFadeWipe)
-	{
-		// capture the current screen and start a wipe
-		StartWipe("wipeMaterial", true);
-
-		// immediately complete the wipe to fade out the level transition
-		// run the wipe to completion
-		CompleteWipe();
-	}
-
 	// extract the map name from serverinfo
 	idStr mapString = mapSpawnData.serverInfo.GetString("si_map");
 
@@ -1883,18 +1873,15 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 
 	if (guiLoading && bytesNeededForMapLoad)
 	{
-		float pct = guiLoading->State().GetFloat("map_loading");
-		if (pct < 0.0f)
-		{
-			pct = 0.0f;
-		}
+		// float pct = guiLoading->State().GetFloat("map_loading");
+		float n = fileSystem->GetReadCount();
+		float pct = (n / bytesNeededForMapLoad);
 		while (pct < 1.0f)
 		{
 			guiLoading->SetStateFloat("map_loading", pct);
 			guiLoading->StateChanged(com_frameTime);
 			Sys_GenerateEvents();
 			UpdateScreen();
-			pct += 0.05f;
 		}
 	}
 

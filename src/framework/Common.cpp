@@ -2950,7 +2950,6 @@ void idCommonLocal::GUIFrame(bool execCmd, bool network)
 {
 	Sys_GenerateEvents();
 	eventLoop->RunEventLoop(execCmd); // and execute any commands
-	com_frameTime = com_ticNumber * FPS_TO_MSEC();
 	if (network)
 	{
 		idAsyncNetwork::RunFrame();
