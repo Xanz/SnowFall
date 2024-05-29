@@ -17,10 +17,6 @@ file(GLOB SYS src/sys/*.cpp src/sys/*.h)
 file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE TOOLS src/tools/*.cpp src/tools/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
-file(GLOB_RECURSE OGG_SRC external/OggVorbis/oggsrc/*.c external/OggVorbis/oggsrc/*.cpp external/OggVorbis/oggsrc/*.h)
-file(GLOB_RECURSE OGG external/OggVorbis/ogg/*.c external/OggVorbis/ogg/*.cpp external/OggVorbis/ogg/*.h)
-file(GLOB_RECURSE VORBIS external/OggVorbis/vorbis/*.c external/OggVorbis/vorbis/*.cpp external/OggVorbis/vorbis/*.h)
-file(GLOB_RECURSE VORBIS_SRC external/OggVorbis/vorbissrc/*.c external/OggVorbis/vorbissrc/*.cpp external/OggVorbis/vorbissrc/*.h)
 
 set(D3Source
     ${D3GAME}
@@ -31,10 +27,6 @@ set(D3Source
     ${D3GAME_SCRIPT}
     ${FRAMEWORK}
     ${IDLIB}
-    ${OGG_SRC}
-    ${OGG}
-    ${VORBIS}
-    ${VORBIS_SRC}
     ${CM}
     ${RENDERER}
     ${SOUND}
