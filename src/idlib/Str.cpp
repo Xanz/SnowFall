@@ -658,8 +658,9 @@ bool idStr::StripTrailingOnce(const char *string)
 idStr::Replace
 ============
 */
-void idStr::Replace(const char *old, const char *nw)
+int idStr::Replace(const char *old, const char *nw)
 {
+	int iReplaced = 0;
 	int oldLen, newLen, i, j, count;
 	idStr oldString(data);
 
@@ -689,6 +690,7 @@ void idStr::Replace(const char *old, const char *nw)
 				memcpy(data + j, nw, newLen);
 				i += oldLen - 1;
 				j += newLen;
+				iReplaced++;
 			}
 			else
 			{
@@ -699,6 +701,7 @@ void idStr::Replace(const char *old, const char *nw)
 		data[j] = 0;
 		len = strlen(data);
 	}
+	return iReplaced;
 }
 
 /*

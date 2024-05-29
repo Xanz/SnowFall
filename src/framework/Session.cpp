@@ -914,7 +914,7 @@ void idSessionLocal::StartRecordingRenderDemo(const char *demoName)
 	writeDemo->WriteInt(RENDERDEMO_VERSION);
 
 	// if we are in a map already, dump the current state
-	sw->StartWritingDemo(writeDemo);
+	// sw->StartWritingDemo(writeDemo);
 	rw->StartWritingDemo(writeDemo);
 }
 
@@ -930,7 +930,7 @@ void idSessionLocal::StopRecordingRenderDemo()
 		common->Printf("idSessionLocal::StopRecordingRenderDemo: not recording\n");
 		return;
 	}
-	sw->StopWritingDemo();
+	// sw->StopWritingDemo();
 	rw->StopWritingDemo();
 
 	writeDemo->Close();
@@ -1117,7 +1117,7 @@ void idSessionLocal::BeginAVICapture(const char *demoName)
 	aviCaptureMode = true;
 	aviDemoFrameCount = 0;
 	aviTicStart = 0;
-	sw->AVIOpen(va("demos/%s/", aviDemoShortName.c_str()), aviDemoShortName.c_str());
+	// sw->AVIOpen(va("demos/%s/", aviDemoShortName.c_str()), aviDemoShortName.c_str());
 }
 
 /*
@@ -1132,7 +1132,7 @@ void idSessionLocal::EndAVICapture()
 		return;
 	}
 
-	sw->AVIClose();
+	// sw->AVIClose();
 
 	// write a .roqParam file so the demo can be converted to a roq file
 	idFile *f = fileSystem->OpenFileWrite(va("demos/%s/%s.roqParam",
@@ -1846,7 +1846,7 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 	if (!reloadingSameMap)
 	{
 		renderSystem->EndLevelLoad();
-		soundSystem->EndLevelLoad(mapString.c_str());
+		soundSystem->EndLevelLoad();
 		declManager->EndLevelLoad();
 		SetBytesNeededForMapLoad(mapString.c_str(), fileSystem->GetReadCount());
 	}
@@ -2557,7 +2557,7 @@ void idSessionLocal::AdvanceRenderDemo(bool singleFrameOnly)
 		}
 		if (ds == DS_SOUND)
 		{
-			sw->ProcessDemoCommand(readDemo);
+			// sw->ProcessDemoCommand(readDemo);
 			continue;
 		}
 		// appears in v1.2, with savegame format 17
@@ -2833,6 +2833,8 @@ idSessionLocal::Frame
 */
 void idSessionLocal::Frame()
 {
+	soundSystem->Render();
+
 	// Editors that completely take over the game
 	if (com_editorActive && (com_editors & (EDITOR_RADIANT | EDITOR_GUI)))
 	{

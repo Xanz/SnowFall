@@ -310,29 +310,29 @@ float SCR_DrawSoundDecoders(float y)
 
 	index = -1;
 	numActiveDecoders = 0;
-	while ((index = soundSystem->GetSoundDecoderInfo(index, decoderInfo)) != -1)
-	{
-		int localTime = decoderInfo.current44kHzTime - decoderInfo.start44kHzTime;
-		int sampleTime = decoderInfo.num44kHzSamples / decoderInfo.numChannels;
-		int percent;
-		if (localTime > sampleTime)
-		{
-			if (decoderInfo.looping)
-			{
-				percent = (localTime % sampleTime) * 100 / sampleTime;
-			}
-			else
-			{
-				percent = 100;
-			}
-		}
-		else
-		{
-			percent = localTime * 100 / sampleTime;
-		}
-		SCR_DrawTextLeftAlign(y, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.c_str(), decoderInfo.name.c_str(), decoderInfo.numBytes >> 10);
-		numActiveDecoders++;
-	}
+	// while ((index = soundSystem->GetSoundDecoderInfo(index, decoderInfo)) != -1)
+	// {
+	// 	int localTime = decoderInfo.current44kHzTime - decoderInfo.start44kHzTime;
+	// 	int sampleTime = decoderInfo.num44kHzSamples / decoderInfo.numChannels;
+	// 	int percent;
+	// 	if (localTime > sampleTime)
+	// 	{
+	// 		if (decoderInfo.looping)
+	// 		{
+	// 			percent = (localTime % sampleTime) * 100 / sampleTime;
+	// 		}
+	// 		else
+	// 		{
+	// 			percent = 100;
+	// 		}
+	// 	}
+	// 	else
+	// 	{
+	// 		percent = localTime * 100 / sampleTime;
+	// 	}
+	// 	SCR_DrawTextLeftAlign(y, "%3d: %3d%% (%1.2f) %s: %s (%dkB)", numActiveDecoders, percent, decoderInfo.lastVolume, decoderInfo.format.c_str(), decoderInfo.name.c_str(), decoderInfo.numBytes >> 10);
+	// 	numActiveDecoders++;
+	// }
 	return y;
 }
 

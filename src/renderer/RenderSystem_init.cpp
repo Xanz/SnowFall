@@ -705,7 +705,6 @@ void R_InitOpenGL(void)
 
 	// input and sound systems need to be tied to the new window
 	Sys_InitInput();
-	soundSystem->InitHW();
 
 	// get our config strings
 	glConfig.vendor_string = (const char *)glGetString(GL_VENDOR);
@@ -2128,7 +2127,7 @@ void R_VidRestart_f(const idCmdArgs &args)
 	if (full)
 	{
 		// free all of our texture numbers
-		soundSystem->ShutdownHW();
+		soundSystem->Shutdown();
 		Sys_ShutdownInput();
 		globalImages->PurgeAllImages();
 		// free the context and close the window

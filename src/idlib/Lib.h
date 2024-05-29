@@ -247,4 +247,7 @@ ID_INLINE T Min(T x, T y) { return (x < y) ? x : y; }
 #include "MapFile.h"
 #include "Timer.h"
 
+// swap class
+#include "Swap.h"
+
 #endif /* !__LIB_H__ */

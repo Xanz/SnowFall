@@ -618,3 +618,19 @@ void AssertFailed(const char *file, int line, const char *expression)
 	kill(getpid(), SIGINT);
 #endif
 }
+
+/*
+===============
+idLib::Printf
+===============
+*/
+void Printf(const char *fmt, ...)
+{
+	va_list argptr;
+	va_start(argptr, fmt);
+	if (common)
+	{
+		common->VPrintf(fmt, argptr);
+	}
+	va_end(argptr);
+}

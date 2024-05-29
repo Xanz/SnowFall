@@ -35,6 +35,15 @@ If you have questions concerning this license or the applicable additional terms
 
 #define ID_TIME_T time_t
 
+typedef signed char int8;
+typedef unsigned char uint8;
+typedef short int int16;
+typedef unsigned short int uint16;
+typedef int int32;
+typedef unsigned int uint32;
+typedef long long int64;
+typedef unsigned long long uint64;
+
 #ifdef _WIN32
 
 #define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS // prevent auto literal to string conversion

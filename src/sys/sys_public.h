@@ -55,6 +55,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define ID_INLINE __forceinline
 #define ID_STATIC_TEMPLATE static
+#define ID_INLINE_EXTERN __forceinline
 
 #define assertmem(x, y) assert(_CrtIsValidPointer(x, y, true))
 

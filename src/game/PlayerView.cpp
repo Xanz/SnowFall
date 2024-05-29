@@ -394,7 +394,7 @@ void idPlayerView::CalculateShake()
 {
 	idVec3 origin, matrix;
 
-	float shakeVolume = gameSoundWorld->CurrentShakeAmplitudeForPosition(gameLocal.time, player->firstPersonViewOrigin);
+	float shakeVolume = soundSystem->CurrentShakeAmplitudeForPosition(1, gameLocal.time, player->firstPersonViewOrigin);
 	//
 	// shakeVolume should somehow be molded into an angle here
 	// it should be thought of as being in the range 0.0 -> 1.0, although
@@ -465,7 +465,7 @@ void idPlayerView::SingleView(idUserInterface *hud, const renderView_t *view)
 	}
 
 	// place the sound origin for the player
-	gameSoundWorld->PlaceListener(view->vieworg, view->viewaxis, player->entityNumber + 1, gameLocal.time, hud ? hud->State().GetString("location") : "Undefined");
+	soundSystem->PlaceListener(view->vieworg, view->viewaxis, player->entityNumber + 1, gameLocal.time, hud ? hud->State().GetString("location") : "Undefined");
 
 	// if the objective system is up, don't do normal drawing
 	if (player->objectiveSystemOpen)

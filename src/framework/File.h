@@ -111,6 +111,22 @@ public:
 	virtual int WriteVec4(const idVec4 &vec);
 	virtual int WriteVec6(const idVec6 &vec);
 	virtual int WriteMat3(const idMat3 &mat);
+
+	template <class type>
+	ID_INLINE size_t ReadBig(type &c)
+	{
+		size_t r = Read(&c, sizeof(c));
+		idSwap::Big(c);
+		return r;
+	}
+
+	template <class type>
+	ID_INLINE size_t WriteBig(const type &c)
+	{
+		type b = c;
+		idSwap::Big(b);
+		return Write(&b, sizeof(b));
+	}
 };
 
 class idFile_Memory : public idFile

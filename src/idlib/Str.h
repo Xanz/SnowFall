@@ -229,7 +229,7 @@ public:
 	void Strip(const char *string);							  // strip string from front and end as many times as the string occurs
 	void StripTrailingWhitespace(void);						  // strip trailing white space characters
 	idStr &StripQuotes(void);								  // strip quotes around string
-	void Replace(const char *old, const char *nw);
+	int Replace(const char *old, const char *nw);
 
 	// file name methods
 	int FileNameHash(void) const;						// hash key for the filename (skips extension)
