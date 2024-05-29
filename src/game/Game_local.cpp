@@ -4544,7 +4544,7 @@ bool idGameLocal::SkipCinematic(void)
 	if (!skipCinematic)
 	{
 		skipCinematic = true;
-		cinematicMaxSkipTime = gameLocal.time + SEC2MS(g_cinematicMaxSkipTime.GetFloat());
+		cinematicMaxSkipTime = Sys_Milliseconds() + SEC2MS(g_cinematicMaxSkipTime.GetFloat());
 
 		// Added to skip cinematic sound.
 		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime);
