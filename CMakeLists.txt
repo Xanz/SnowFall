@@ -43,11 +43,12 @@ add_compile_definitions(WIN32)
 add_compile_definitions(_USE_32BIT_TIME_T)
 add_compile_definitions(_XKEYCHECK_H)
 add_compile_definitions(USE_OPENAL)
+# add_compile_definitions(LIBTYPE=STATIC)
 add_definitions(-DUSE_OPENAL)
 
 # Needed so that VSCode can syntax check correctly.
-include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/openal external/glfw/include external/glew/include)
-link_directories(external/openal/libs/Win32 external/glfw/libs external/glew/lib/Release/Win32)
+include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/glfw/include external/glew/include)
+link_directories(external/openal/build/Release external/glfw/build/src/Release external/glew/lib/Release/Win32)
 
 set(LIBS dbghelp dinput8 dsound dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32)
 
