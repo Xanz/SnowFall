@@ -567,7 +567,7 @@ void idSessionLocal::ShowLoadingGui()
 	int force = 10;
 	while (Sys_Milliseconds() < stop || force-- > 0)
 	{
-		com_frameTime = com_ticNumber * FPS_TO_MSEC();
+		com_frameTime = Sys_Milliseconds();
 		session->Frame();
 		session->UpdateScreen(false);
 	}
@@ -575,7 +575,7 @@ void idSessionLocal::ShowLoadingGui()
 	int stop = com_ticNumber + 1000.0f / FPS_TO_MSEC() * 1.0f;
 	while (com_ticNumber < stop)
 	{
-		com_frameTime = com_ticNumber * FPS_TO_MSEC();
+		com_frameTime = Sys_Milliseconds();
 		session->Frame();
 		session->UpdateScreen(false);
 	}
