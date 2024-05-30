@@ -266,7 +266,7 @@ static void MouseKey_Callback(GLFWwindow *window, int button, int action, int mo
 static void Key_Callback(GLFWwindow *window, int key, int scancode, int action, int mods)
 {
 	// Backspace needs to be handled here.
-	if (key == GLFW_KEY_BACKSPACE)
+	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
 		Sys_QueEvent(GetTickCount(), SE_CHAR, K_BACKSPACE, 1, 0, NULL);
 		return;
