@@ -1873,16 +1873,12 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 
 	if (guiLoading && bytesNeededForMapLoad)
 	{
-		// float pct = guiLoading->State().GetFloat("map_loading");
 		float n = fileSystem->GetReadCount();
 		float pct = (n / bytesNeededForMapLoad);
-		while (pct < 1.0f)
-		{
-			guiLoading->SetStateFloat("map_loading", pct);
-			guiLoading->StateChanged(com_frameTime);
-			Sys_GenerateEvents();
-			UpdateScreen();
-		}
+		guiLoading->SetStateFloat("map_loading", pct);
+		guiLoading->StateChanged(com_frameTime);
+		Sys_GenerateEvents();
+		UpdateScreen();
 	}
 
 	// capture the current screen and start a wipe
@@ -2637,7 +2633,6 @@ void idSessionLocal::PacifierUpdate()
 	{
 		float n = fileSystem->GetReadCount();
 		float pct = (n / bytesNeededForMapLoad);
-		// pct = idMath::ClampFloat( 0.0f, 100.0f, pct );
 		guiLoading->SetStateFloat("map_loading", pct);
 		guiLoading->StateChanged(com_frameTime);
 	}
