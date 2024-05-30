@@ -52,84 +52,6 @@ If you have questions concerning this license or the applicable additional terms
 
 static void GLW_InitExtensions(void);
 
-// WGL_ARB_extensions_string
-PFNWGLGETEXTENSIONSSTRINGARBPROC wglGetExtensionsStringARB;
-
-// WGL_EXT_swap_interval
-PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
-
-// WGL_ARB_pixel_format
-PFNWGLGETPIXELFORMATATTRIBIVARBPROC wglGetPixelFormatAttribivARB;
-PFNWGLGETPIXELFORMATATTRIBFVARBPROC wglGetPixelFormatAttribfvARB;
-PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARB;
-
-// WGL_ARB_pbuffer
-PFNWGLCREATEPBUFFERARBPROC wglCreatePbufferARB;
-PFNWGLGETPBUFFERDCARBPROC wglGetPbufferDCARB;
-PFNWGLRELEASEPBUFFERDCARBPROC wglReleasePbufferDCARB;
-PFNWGLDESTROYPBUFFERARBPROC wglDestroyPbufferARB;
-PFNWGLQUERYPBUFFERARBPROC wglQueryPbufferARB;
-
-// WGL_ARB_render_texture
-PFNWGLBINDTEXIMAGEARBPROC wglBindTexImageARB;
-PFNWGLRELEASETEXIMAGEARBPROC wglReleaseTexImageARB;
-PFNWGLSETPBUFFERATTRIBARBPROC wglSetPbufferAttribARB;
-
-/* ARB_pixel_format */
-#define WGL_NUMBER_PIXEL_FORMATS_ARB 0x2000
-#define WGL_DRAW_TO_WINDOW_ARB 0x2001
-#define WGL_DRAW_TO_BITMAP_ARB 0x2002
-#define WGL_ACCELERATION_ARB 0x2003
-#define WGL_NEED_PALETTE_ARB 0x2004
-#define WGL_NEED_SYSTEM_PALETTE_ARB 0x2005
-#define WGL_SWAP_LAYER_BUFFERS_ARB 0x2006
-#define WGL_SWAP_METHOD_ARB 0x2007
-#define WGL_NUMBER_OVERLAYS_ARB 0x2008
-#define WGL_NUMBER_UNDERLAYS_ARB 0x2009
-#define WGL_TRANSPARENT_ARB 0x200A
-#define WGL_SHARE_DEPTH_ARB 0x200C
-#define WGL_SHARE_STENCIL_ARB 0x200D
-#define WGL_SHARE_ACCUM_ARB 0x200E
-#define WGL_SUPPORT_GDI_ARB 0x200F
-#define WGL_SUPPORT_OPENGL_ARB 0x2010
-#define WGL_DOUBLE_BUFFER_ARB 0x2011
-#define WGL_STEREO_ARB 0x2012
-#define WGL_PIXEL_TYPE_ARB 0x2013
-#define WGL_COLOR_BITS_ARB 0x2014
-#define WGL_RED_BITS_ARB 0x2015
-#define WGL_RED_SHIFT_ARB 0x2016
-#define WGL_GREEN_BITS_ARB 0x2017
-#define WGL_GREEN_SHIFT_ARB 0x2018
-#define WGL_BLUE_BITS_ARB 0x2019
-#define WGL_BLUE_SHIFT_ARB 0x201A
-#define WGL_ALPHA_BITS_ARB 0x201B
-#define WGL_ALPHA_SHIFT_ARB 0x201C
-#define WGL_ACCUM_BITS_ARB 0x201D
-#define WGL_ACCUM_RED_BITS_ARB 0x201E
-#define WGL_ACCUM_GREEN_BITS_ARB 0x201F
-#define WGL_ACCUM_BLUE_BITS_ARB 0x2020
-#define WGL_ACCUM_ALPHA_BITS_ARB 0x2021
-#define WGL_DEPTH_BITS_ARB 0x2022
-#define WGL_STENCIL_BITS_ARB 0x2023
-#define WGL_AUX_BUFFERS_ARB 0x2024
-#define WGL_NO_ACCELERATION_ARB 0x2025
-#define WGL_GENERIC_ACCELERATION_ARB 0x2026
-#define WGL_FULL_ACCELERATION_ARB 0x2027
-#define WGL_SWAP_EXCHANGE_ARB 0x2028
-#define WGL_SWAP_COPY_ARB 0x2029
-#define WGL_SWAP_UNDEFINED_ARB 0x202A
-#define WGL_TYPE_RGBA_ARB 0x202B
-#define WGL_TYPE_COLORINDEX_ARB 0x202C
-#define WGL_TRANSPARENT_RED_VALUE_ARB 0x2037
-#define WGL_TRANSPARENT_GREEN_VALUE_ARB 0x2038
-#define WGL_TRANSPARENT_BLUE_VALUE_ARB 0x2039
-#define WGL_TRANSPARENT_ALPHA_VALUE_ARB 0x203A
-#define WGL_TRANSPARENT_INDEX_VALUE_ARB 0x203B
-
-/* ARB_multisample */
-#define WGL_SAMPLE_BUFFERS_ARB 0x2041
-#define WGL_SAMPLES_ARB 0x2042
-
 // Adds raw mouse input.
 idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1", 0, 1);
 
@@ -175,37 +97,6 @@ GLW_GetWGLExtensionsWithFakeWindow
 */
 void GLW_CheckWGLExtensions(HDC hDC)
 {
-	wglGetExtensionsStringARB = (PFNWGLGETEXTENSIONSSTRINGARBPROC)
-		GLimp_ExtensionPointer("wglGetExtensionsStringARB");
-	if (wglGetExtensionsStringARB)
-	{
-		glConfig.wgl_extensions_string = (const char *)wglGetExtensionsStringARB(hDC);
-	}
-	else
-	{
-		glConfig.wgl_extensions_string = "";
-	}
-
-	// WGL_EXT_swap_control
-	wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)GLimp_ExtensionPointer("wglSwapIntervalEXT");
-	r_swapInterval.SetModified(); // force a set next frame
-
-	// WGL_ARB_pixel_format
-	wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)GLimp_ExtensionPointer("wglGetPixelFormatAttribivARB");
-	wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)GLimp_ExtensionPointer("wglGetPixelFormatAttribfvARB");
-	wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)GLimp_ExtensionPointer("wglChoosePixelFormatARB");
-
-	// WGL_ARB_pbuffer
-	wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)GLimp_ExtensionPointer("wglCreatePbufferARB");
-	wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)GLimp_ExtensionPointer("wglGetPbufferDCARB");
-	wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)GLimp_ExtensionPointer("wglReleasePbufferDCARB");
-	wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)GLimp_ExtensionPointer("wglDestroyPbufferARB");
-	wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)GLimp_ExtensionPointer("wglQueryPbufferARB");
-
-	// WGL_ARB_render_texture
-	wglBindTexImageARB = (PFNWGLBINDTEXIMAGEARBPROC)GLimp_ExtensionPointer("wglBindTexImageARB");
-	wglReleaseTexImageARB = (PFNWGLRELEASETEXIMAGEARBPROC)GLimp_ExtensionPointer("wglReleaseTexImageARB");
-	wglSetPbufferAttribARB = (PFNWGLSETPBUFFERATTRIBARBPROC)GLimp_ExtensionPointer("wglSetPbufferAttribARB");
 }
 
 static void MouseKey_Callback(GLFWwindow *window, int button, int action, int mods)
@@ -678,25 +569,3 @@ void GLimp_WakeBackEnd(void *data)
 }
 
 //===================================================================
-
-/*
-===================
-GLimp_ExtensionPointer
-
-Returns a function pointer for an OpenGL extension entry point
-===================
-*/
-GLExtension_t GLimp_ExtensionPointer(const char *name)
-{
-	void (*proc)(void);
-
-	// proc = (GLExtension_t)glewget( name );
-	proc = glfwGetProcAddress(name);
-
-	if (!proc)
-	{
-		common->Printf("Couldn't find proc address for: %s\n", name);
-	}
-
-	return proc;
-}

@@ -69,24 +69,24 @@ RB_ARB2_DrawInteraction
 void RB_ARB2_DrawInteraction(const drawInteraction_t *din)
 {
 	// load all the vertex program parameters
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, din->localLightOrigin.ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_VIEW_ORIGIN, din->localViewOrigin.ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_S, din->lightProjection[0].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_T, din->lightProjection[1].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_Q, din->lightProjection[2].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_FALLOFF_S, din->lightProjection[3].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_S, din->bumpMatrix[0].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_T, din->bumpMatrix[1].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_S, din->diffuseMatrix[0].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_T, din->diffuseMatrix[1].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_S, din->specularMatrix[0].ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_T, din->specularMatrix[1].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, din->localLightOrigin.ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_VIEW_ORIGIN, din->localViewOrigin.ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_S, din->lightProjection[0].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_T, din->lightProjection[1].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_PROJECT_Q, din->lightProjection[2].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_FALLOFF_S, din->lightProjection[3].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_S, din->bumpMatrix[0].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_BUMP_MATRIX_T, din->bumpMatrix[1].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_S, din->diffuseMatrix[0].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_DIFFUSE_MATRIX_T, din->diffuseMatrix[1].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_S, din->specularMatrix[0].ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_SPECULAR_MATRIX_T, din->specularMatrix[1].ToFloatPtr());
 
 	// testing fragment based normal mapping
 	if (r_testARBProgram.GetBool())
 	{
-		qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2, din->localLightOrigin.ToFloatPtr());
-		qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 3, din->localViewOrigin.ToFloatPtr());
+		glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 2, din->localLightOrigin.ToFloatPtr());
+		glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 3, din->localViewOrigin.ToFloatPtr());
 	}
 
 	static const float zero[4] = {0, 0, 0, 0};
@@ -96,22 +96,22 @@ void RB_ARB2_DrawInteraction(const drawInteraction_t *din)
 	switch (din->vertexColor)
 	{
 	case SVC_IGNORE:
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, zero);
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, one);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, zero);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, one);
 		break;
 	case SVC_MODULATE:
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, one);
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, zero);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, one);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, zero);
 		break;
 	case SVC_INVERSE_MODULATE:
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, negOne);
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, one);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_MODULATE, negOne);
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_COLOR_ADD, one);
 		break;
 	}
 
 	// set the constant colors
-	qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, din->diffuseColor.ToFloatPtr());
-	qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, din->specularColor.ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, din->diffuseColor.ToFloatPtr());
+	glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, din->specularColor.ToFloatPtr());
 
 	// set the textures
 
@@ -158,13 +158,13 @@ void RB_ARB2_CreateDrawInteractions(const drawSurf_t *surf)
 	// bind the vertex program
 	if (r_testARBProgram.GetBool())
 	{
-		qglBindProgramARB(GL_VERTEX_PROGRAM_ARB, VPROG_TEST);
-		qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FPROG_TEST);
+		glBindProgramARB(GL_VERTEX_PROGRAM_ARB, VPROG_TEST);
+		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FPROG_TEST);
 	}
 	else
 	{
-		qglBindProgramARB(GL_VERTEX_PROGRAM_ARB, VPROG_INTERACTION);
-		qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FPROG_INTERACTION);
+		glBindProgramARB(GL_VERTEX_PROGRAM_ARB, VPROG_INTERACTION);
+		glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, FPROG_INTERACTION);
 	}
 
 	glEnable(GL_VERTEX_PROGRAM_ARB);

@@ -221,93 +221,6 @@ idCVar r_materialOverride("r_materialOverride", "", CVAR_RENDERER, "overrides al
 
 idCVar r_debugRenderToTexture("r_debugRenderToTexture", "0", CVAR_RENDERER | CVAR_INTEGER, "");
 
-void(APIENTRY *qglMultiTexCoord2fARB)(GLenum texture, GLfloat s, GLfloat t);
-void(APIENTRY *qglMultiTexCoord2fvARB)(GLenum texture, GLfloat *st);
-void(APIENTRY *qglActiveTextureARB)(GLenum texture);
-void(APIENTRY *qglClientActiveTextureARB)(GLenum texture);
-
-void(APIENTRY *qglCombinerParameterfvNV)(GLenum pname, const GLfloat *params);
-void(APIENTRY *qglCombinerParameterivNV)(GLenum pname, const GLint *params);
-void(APIENTRY *qglCombinerParameterfNV)(GLenum pname, const GLfloat param);
-void(APIENTRY *qglCombinerParameteriNV)(GLenum pname, const GLint param);
-void(APIENTRY *qglCombinerInputNV)(GLenum stage, GLenum portion, GLenum variable, GLenum input,
-								   GLenum mapping, GLenum componentUsage);
-void(APIENTRY *qglCombinerOutputNV)(GLenum stage, GLenum portion, GLenum abOutput, GLenum cdOutput,
-									GLenum sumOutput, GLenum scale, GLenum bias, GLboolean abDotProduct,
-									GLboolean cdDotProduct, GLboolean muxSum);
-void(APIENTRY *qglFinalCombinerInputNV)(GLenum variable, GLenum input, GLenum mapping, GLenum componentUsage);
-
-void(APIENTRY *qglVertexArrayRangeNV)(GLsizei length, void *pointer);
-// TTimo: wgl vs glX
-// http://oss.sgi.com/projects/ogl-sample/registry/NV/vertex_array_range.txt
-// since APIs are the same anyway, let's be wgl/glX agnostic
-void *(APIENTRY *qAllocateMemoryNV)(GLsizei size, float readFrequency, float writeFrequency, float priority);
-void(APIENTRY *qFreeMemoryNV)(void *pointer);
-#ifdef GLX_VERSION_1_1
-#define Q_ALLOCATE_MEMORY_NV "glXAllocateMemoryNV"
-#define Q_FREE_MEMORY_NV "glXFreeMemoryNV"
-#else
-#define Q_ALLOCATE_MEMORY_NV "wglAllocateMemoryNV"
-#define Q_FREE_MEMORY_NV "wglFreeMemoryNV"
-#endif
-
-void(APIENTRY *qglTexImage3D)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *);
-
-void(APIENTRY *qglColorTableEXT)(int, int, int, int, int, const void *);
-
-// ATI_fragment_shader
-PFNGLGENFRAGMENTSHADERSATIPROC qglGenFragmentShadersATI;
-PFNGLBINDFRAGMENTSHADERATIPROC qglBindFragmentShaderATI;
-PFNGLDELETEFRAGMENTSHADERATIPROC qglDeleteFragmentShaderATI;
-PFNGLBEGINFRAGMENTSHADERATIPROC qglBeginFragmentShaderATI;
-PFNGLENDFRAGMENTSHADERATIPROC qglEndFragmentShaderATI;
-PFNGLPASSTEXCOORDATIPROC qglPassTexCoordATI;
-PFNGLSAMPLEMAPATIPROC qglSampleMapATI;
-PFNGLCOLORFRAGMENTOP1ATIPROC qglColorFragmentOp1ATI;
-PFNGLCOLORFRAGMENTOP2ATIPROC qglColorFragmentOp2ATI;
-PFNGLCOLORFRAGMENTOP3ATIPROC qglColorFragmentOp3ATI;
-PFNGLALPHAFRAGMENTOP1ATIPROC qglAlphaFragmentOp1ATI;
-PFNGLALPHAFRAGMENTOP2ATIPROC qglAlphaFragmentOp2ATI;
-PFNGLALPHAFRAGMENTOP3ATIPROC qglAlphaFragmentOp3ATI;
-PFNGLSETFRAGMENTSHADERCONSTANTATIPROC qglSetFragmentShaderConstantATI;
-
-// EXT_stencil_two_side
-PFNGLACTIVESTENCILFACEEXTPROC qglActiveStencilFaceEXT;
-
-// ATI_separate_stencil
-PFNGLSTENCILOPSEPARATEATIPROC qglStencilOpSeparateATI;
-PFNGLSTENCILFUNCSEPARATEATIPROC qglStencilFuncSeparateATI;
-
-// ARB_texture_compression
-PFNGLCOMPRESSEDTEXIMAGE2DARBPROC qglCompressedTexImage2DARB;
-PFNGLGETCOMPRESSEDTEXIMAGEARBPROC qglGetCompressedTexImageARB;
-
-// ARB_vertex_buffer_object
-PFNGLBINDBUFFERARBPROC qglBindBufferARB;
-PFNGLDELETEBUFFERSARBPROC qglDeleteBuffersARB;
-PFNGLGENBUFFERSARBPROC qglGenBuffersARB;
-PFNGLISBUFFERARBPROC qglIsBufferARB;
-PFNGLBUFFERDATAARBPROC qglBufferDataARB;
-PFNGLBUFFERSUBDATAARBPROC qglBufferSubDataARB;
-PFNGLGETBUFFERSUBDATAARBPROC qglGetBufferSubDataARB;
-PFNGLMAPBUFFERARBPROC qglMapBufferARB;
-PFNGLUNMAPBUFFERARBPROC qglUnmapBufferARB;
-PFNGLGETBUFFERPARAMETERIVARBPROC qglGetBufferParameterivARB;
-PFNGLGETBUFFERPOINTERVARBPROC qglGetBufferPointervARB;
-
-// ARB_vertex_program / ARB_fragment_program
-PFNGLVERTEXATTRIBPOINTERARBPROC qglVertexAttribPointerARB;
-PFNGLENABLEVERTEXATTRIBARRAYARBPROC qglEnableVertexAttribArrayARB;
-PFNGLDISABLEVERTEXATTRIBARRAYARBPROC qglDisableVertexAttribArrayARB;
-PFNGLPROGRAMSTRINGARBPROC qglProgramStringARB;
-PFNGLBINDPROGRAMARBPROC qglBindProgramARB;
-PFNGLGENPROGRAMSARBPROC qglGenProgramsARB;
-PFNGLPROGRAMENVPARAMETER4FVARBPROC qglProgramEnvParameter4fvARB;
-PFNGLPROGRAMLOCALPARAMETER4FVARBPROC qglProgramLocalParameter4fvARB;
-
-// GL_EXT_depth_bounds_test
-PFNGLDEPTHBOUNDSEXTPROC qglDepthBoundsEXT;
-
 /*
 =================
 R_CheckExtension
@@ -339,10 +252,6 @@ static void R_CheckPortableExtensions(void)
 	glConfig.multitextureAvailable = R_CheckExtension("GL_ARB_multitexture");
 	if (glConfig.multitextureAvailable)
 	{
-		qglMultiTexCoord2fARB = (void(APIENTRY *)(GLenum, GLfloat, GLfloat))GLimp_ExtensionPointer("glMultiTexCoord2fARB");
-		qglMultiTexCoord2fvARB = (void(APIENTRY *)(GLenum, GLfloat *))GLimp_ExtensionPointer("glMultiTexCoord2fvARB");
-		qglActiveTextureARB = (void(APIENTRY *)(GLenum))GLimp_ExtensionPointer("glActiveTextureARB");
-		qglClientActiveTextureARB = (void(APIENTRY *)(GLenum))GLimp_ExtensionPointer("glClientActiveTextureARB");
 		glGetIntegerv(GL_MAX_TEXTURE_UNITS_ARB, (GLint *)&glConfig.maxTextureUnits);
 		if (glConfig.maxTextureUnits > MAX_MULTITEXTURE_UNITS)
 		{
@@ -376,8 +285,6 @@ static void R_CheckPortableExtensions(void)
 	if (R_CheckExtension("GL_ARB_texture_compression") && R_CheckExtension("GL_EXT_texture_compression_s3tc"))
 	{
 		glConfig.textureCompressionAvailable = true;
-		qglCompressedTexImage2DARB = (PFNGLCOMPRESSEDTEXIMAGE2DARBPROC)GLimp_ExtensionPointer("glCompressedTexImage2DARB");
-		qglGetCompressedTexImageARB = (PFNGLGETCOMPRESSEDTEXIMAGEARBPROC)GLimp_ExtensionPointer("glGetCompressedTexImageARB");
 	}
 	else
 	{
@@ -414,16 +321,12 @@ static void R_CheckPortableExtensions(void)
 	glConfig.sharedTexturePaletteAvailable = R_CheckExtension("GL_EXT_shared_texture_palette");
 	if (glConfig.sharedTexturePaletteAvailable)
 	{
-		qglColorTableEXT = (void(APIENTRY *)(int, int, int, int, int, const void *))GLimp_ExtensionPointer("glColorTableEXT");
 	}
 
 	// GL_EXT_texture3D (not currently used for anything)
 	glConfig.texture3DAvailable = R_CheckExtension("GL_EXT_texture3D");
 	if (glConfig.texture3DAvailable)
 	{
-		qglTexImage3D =
-			(void(APIENTRY *)(GLenum, GLint, GLint, GLsizei, GLsizei, GLsizei, GLint, GLenum, GLenum, const GLvoid *))
-				GLimp_ExtensionPointer("glTexImage3D");
 	}
 
 	// EXT_stencil_wrap
@@ -445,38 +348,18 @@ static void R_CheckPortableExtensions(void)
 	glConfig.registerCombinersAvailable = R_CheckExtension("GL_NV_register_combiners");
 	if (glConfig.registerCombinersAvailable)
 	{
-		qglCombinerParameterfvNV = (void(APIENTRY *)(GLenum pname, const GLfloat *params))
-			GLimp_ExtensionPointer("glCombinerParameterfvNV");
-		qglCombinerParameterivNV = (void(APIENTRY *)(GLenum pname, const GLint *params))
-			GLimp_ExtensionPointer("glCombinerParameterivNV");
-		qglCombinerParameterfNV = (void(APIENTRY *)(GLenum pname, const GLfloat param))
-			GLimp_ExtensionPointer("glCombinerParameterfNV");
-		qglCombinerParameteriNV = (void(APIENTRY *)(GLenum pname, const GLint param))
-			GLimp_ExtensionPointer("glCombinerParameteriNV");
-		qglCombinerInputNV = (void(APIENTRY *)(GLenum stage, GLenum portion, GLenum variable, GLenum input,
-											   GLenum mapping, GLenum componentUsage))
-			GLimp_ExtensionPointer("glCombinerInputNV");
-		qglCombinerOutputNV = (void(APIENTRY *)(GLenum stage, GLenum portion, GLenum abOutput, GLenum cdOutput,
-												GLenum sumOutput, GLenum scale, GLenum bias, GLboolean abDotProduct,
-												GLboolean cdDotProduct, GLboolean muxSum))
-			GLimp_ExtensionPointer("glCombinerOutputNV");
-		qglFinalCombinerInputNV = (void(APIENTRY *)(GLenum variable, GLenum input, GLenum mapping, GLenum componentUsage))
-			GLimp_ExtensionPointer("glFinalCombinerInputNV");
 	}
 
 	// GL_EXT_stencil_two_side
 	glConfig.twoSidedStencilAvailable = R_CheckExtension("GL_EXT_stencil_two_side");
 	if (glConfig.twoSidedStencilAvailable)
 	{
-		qglActiveStencilFaceEXT = (PFNGLACTIVESTENCILFACEEXTPROC)GLimp_ExtensionPointer("glActiveStencilFaceEXT");
 	}
 	else
 	{
 		glConfig.atiTwoSidedStencilAvailable = R_CheckExtension("GL_ATI_separate_stencil");
 		if (glConfig.atiTwoSidedStencilAvailable)
 		{
-			qglStencilFuncSeparateATI = (PFNGLSTENCILFUNCSEPARATEATIPROC)GLimp_ExtensionPointer("glStencilFuncSeparateATI");
-			qglStencilOpSeparateATI = (PFNGLSTENCILOPSEPARATEATIPROC)GLimp_ExtensionPointer("glStencilOpSeparateATI");
 		}
 	}
 
@@ -489,51 +372,18 @@ static void R_CheckPortableExtensions(void)
 	}
 	if (glConfig.atiFragmentShaderAvailable)
 	{
-		qglGenFragmentShadersATI = (PFNGLGENFRAGMENTSHADERSATIPROC)GLimp_ExtensionPointer("glGenFragmentShadersATI");
-		qglBindFragmentShaderATI = (PFNGLBINDFRAGMENTSHADERATIPROC)GLimp_ExtensionPointer("glBindFragmentShaderATI");
-		qglDeleteFragmentShaderATI = (PFNGLDELETEFRAGMENTSHADERATIPROC)GLimp_ExtensionPointer("glDeleteFragmentShaderATI");
-		qglBeginFragmentShaderATI = (PFNGLBEGINFRAGMENTSHADERATIPROC)GLimp_ExtensionPointer("glBeginFragmentShaderATI");
-		qglEndFragmentShaderATI = (PFNGLENDFRAGMENTSHADERATIPROC)GLimp_ExtensionPointer("glEndFragmentShaderATI");
-		qglPassTexCoordATI = (PFNGLPASSTEXCOORDATIPROC)GLimp_ExtensionPointer("glPassTexCoordATI");
-		qglSampleMapATI = (PFNGLSAMPLEMAPATIPROC)GLimp_ExtensionPointer("glSampleMapATI");
-		qglColorFragmentOp1ATI = (PFNGLCOLORFRAGMENTOP1ATIPROC)GLimp_ExtensionPointer("glColorFragmentOp1ATI");
-		qglColorFragmentOp2ATI = (PFNGLCOLORFRAGMENTOP2ATIPROC)GLimp_ExtensionPointer("glColorFragmentOp2ATI");
-		qglColorFragmentOp3ATI = (PFNGLCOLORFRAGMENTOP3ATIPROC)GLimp_ExtensionPointer("glColorFragmentOp3ATI");
-		qglAlphaFragmentOp1ATI = (PFNGLALPHAFRAGMENTOP1ATIPROC)GLimp_ExtensionPointer("glAlphaFragmentOp1ATI");
-		qglAlphaFragmentOp2ATI = (PFNGLALPHAFRAGMENTOP2ATIPROC)GLimp_ExtensionPointer("glAlphaFragmentOp2ATI");
-		qglAlphaFragmentOp3ATI = (PFNGLALPHAFRAGMENTOP3ATIPROC)GLimp_ExtensionPointer("glAlphaFragmentOp3ATI");
-		qglSetFragmentShaderConstantATI = (PFNGLSETFRAGMENTSHADERCONSTANTATIPROC)GLimp_ExtensionPointer("glSetFragmentShaderConstantATI");
 	}
 
 	// ARB_vertex_buffer_object
 	glConfig.ARBVertexBufferObjectAvailable = R_CheckExtension("GL_ARB_vertex_buffer_object");
 	if (glConfig.ARBVertexBufferObjectAvailable)
 	{
-		qglBindBufferARB = (PFNGLBINDBUFFERARBPROC)GLimp_ExtensionPointer("glBindBufferARB");
-		qglDeleteBuffersARB = (PFNGLDELETEBUFFERSARBPROC)GLimp_ExtensionPointer("glDeleteBuffersARB");
-		qglGenBuffersARB = (PFNGLGENBUFFERSARBPROC)GLimp_ExtensionPointer("glGenBuffersARB");
-		qglIsBufferARB = (PFNGLISBUFFERARBPROC)GLimp_ExtensionPointer("glIsBufferARB");
-		qglBufferDataARB = (PFNGLBUFFERDATAARBPROC)GLimp_ExtensionPointer("glBufferDataARB");
-		qglBufferSubDataARB = (PFNGLBUFFERSUBDATAARBPROC)GLimp_ExtensionPointer("glBufferSubDataARB");
-		qglGetBufferSubDataARB = (PFNGLGETBUFFERSUBDATAARBPROC)GLimp_ExtensionPointer("glGetBufferSubDataARB");
-		qglMapBufferARB = (PFNGLMAPBUFFERARBPROC)GLimp_ExtensionPointer("glMapBufferARB");
-		qglUnmapBufferARB = (PFNGLUNMAPBUFFERARBPROC)GLimp_ExtensionPointer("glUnmapBufferARB");
-		qglGetBufferParameterivARB = (PFNGLGETBUFFERPARAMETERIVARBPROC)GLimp_ExtensionPointer("glGetBufferParameterivARB");
-		qglGetBufferPointervARB = (PFNGLGETBUFFERPOINTERVARBPROC)GLimp_ExtensionPointer("glGetBufferPointervARB");
 	}
 
 	// ARB_vertex_program
 	glConfig.ARBVertexProgramAvailable = R_CheckExtension("GL_ARB_vertex_program");
 	if (glConfig.ARBVertexProgramAvailable)
 	{
-		qglVertexAttribPointerARB = (PFNGLVERTEXATTRIBPOINTERARBPROC)GLimp_ExtensionPointer("glVertexAttribPointerARB");
-		qglEnableVertexAttribArrayARB = (PFNGLENABLEVERTEXATTRIBARRAYARBPROC)GLimp_ExtensionPointer("glEnableVertexAttribArrayARB");
-		qglDisableVertexAttribArrayARB = (PFNGLDISABLEVERTEXATTRIBARRAYARBPROC)GLimp_ExtensionPointer("glDisableVertexAttribArrayARB");
-		qglProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)GLimp_ExtensionPointer("glProgramStringARB");
-		qglBindProgramARB = (PFNGLBINDPROGRAMARBPROC)GLimp_ExtensionPointer("glBindProgramARB");
-		qglGenProgramsARB = (PFNGLGENPROGRAMSARBPROC)GLimp_ExtensionPointer("glGenProgramsARB");
-		qglProgramEnvParameter4fvARB = (PFNGLPROGRAMENVPARAMETER4FVARBPROC)GLimp_ExtensionPointer("glProgramEnvParameter4fvARB");
-		qglProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)GLimp_ExtensionPointer("glProgramLocalParameter4fvARB");
 	}
 
 	// ARB_fragment_program
@@ -547,10 +397,6 @@ static void R_CheckPortableExtensions(void)
 		if (glConfig.ARBFragmentProgramAvailable)
 		{
 			// these are the same as ARB_vertex_program
-			qglProgramStringARB = (PFNGLPROGRAMSTRINGARBPROC)GLimp_ExtensionPointer("glProgramStringARB");
-			qglBindProgramARB = (PFNGLBINDPROGRAMARBPROC)GLimp_ExtensionPointer("glBindProgramARB");
-			qglProgramEnvParameter4fvARB = (PFNGLPROGRAMENVPARAMETER4FVARBPROC)GLimp_ExtensionPointer("glProgramEnvParameter4fvARB");
-			qglProgramLocalParameter4fvARB = (PFNGLPROGRAMLOCALPARAMETER4FVARBPROC)GLimp_ExtensionPointer("glProgramLocalParameter4fvARB");
 		}
 	}
 
@@ -564,7 +410,6 @@ static void R_CheckPortableExtensions(void)
 	glConfig.depthBoundsTestAvailable = R_CheckExtension("EXT_depth_bounds_test");
 	if (glConfig.depthBoundsTestAvailable)
 	{
-		qglDepthBoundsEXT = (PFNGLDEPTHBOUNDSEXTPROC)GLimp_ExtensionPointer("glDepthBoundsEXT");
 	}
 }
 
@@ -2037,10 +1882,8 @@ void GfxInfo_f(const idCmdArgs &args)
 
 #ifdef _WIN32
 	// WGL_EXT_swap_interval
-	typedef BOOL(WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int interval);
-	extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
-	if (r_swapInterval.GetInteger() && wglSwapIntervalEXT)
+	if (r_swapInterval.GetInteger())
 	{
 		common->Printf("Forcing swapInterval %i\n", r_swapInterval.GetInteger());
 	}
