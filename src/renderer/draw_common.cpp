@@ -664,7 +664,7 @@ void RB_SetProgramEnvironment(void)
 
 	parm[2] = 0;
 	parm[3] = 1;
-	qglProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm );
+	glProgramEnvParameter4fvARB( GL_VERTEX_PROGRAM_ARB, 0, parm );
 #else
 	// screen power of two correction factor, assuming the copy to _currentRender
 	// also copied an extra row and column for the bilerp
@@ -678,17 +678,17 @@ void RB_SetProgramEnvironment(void)
 
 	parm[2] = 0;
 	parm[3] = 1;
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 0, parm);
 #endif
 
-	qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, parm);
+	glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 0, parm);
 
 	// window coord to 0.0 to 1.0 conversion
 	parm[0] = 1.0 / w;
 	parm[1] = 1.0 / h;
 	parm[2] = 0;
 	parm[3] = 1;
-	qglProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, parm);
+	glProgramEnvParameter4fvARB(GL_FRAGMENT_PROGRAM_ARB, 1, parm);
 
 	//
 	// set eye position in global space
@@ -697,7 +697,7 @@ void RB_SetProgramEnvironment(void)
 	parm[1] = backEnd.viewDef->renderView.vieworg[1];
 	parm[2] = backEnd.viewDef->renderView.vieworg[2];
 	parm[3] = 1.0;
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 1, parm);
 }
 
 /*
@@ -720,7 +720,7 @@ void RB_SetProgramEnvironmentSpace(void)
 	// set eye position in local space
 	R_GlobalPointToLocal(space->modelMatrix, backEnd.viewDef->renderView.vieworg, *(idVec3 *)parm);
 	parm[3] = 1.0;
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 5, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 5, parm);
 
 	// we need the model matrix without it being combined with the view matrix
 	// so we can transform local vectors to global coordinates
@@ -728,17 +728,17 @@ void RB_SetProgramEnvironmentSpace(void)
 	parm[1] = space->modelMatrix[4];
 	parm[2] = space->modelMatrix[8];
 	parm[3] = space->modelMatrix[12];
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 6, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 6, parm);
 	parm[0] = space->modelMatrix[1];
 	parm[1] = space->modelMatrix[5];
 	parm[2] = space->modelMatrix[9];
 	parm[3] = space->modelMatrix[13];
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 7, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 7, parm);
 	parm[0] = space->modelMatrix[2];
 	parm[1] = space->modelMatrix[6];
 	parm[2] = space->modelMatrix[10];
 	parm[3] = space->modelMatrix[14];
-	qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 8, parm);
+	glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, 8, parm);
 }
 
 /*
@@ -869,18 +869,18 @@ void RB_STD_T_RenderShaderPasses(const drawSurf_t *surf)
 				continue;
 			}
 			glColorPointer(4, GL_UNSIGNED_BYTE, sizeof(idDrawVert), (void *)&ac->color);
-			qglVertexAttribPointerARB(9, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
-			qglVertexAttribPointerARB(10, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[1].ToFloatPtr());
+			glVertexAttribPointerARB(9, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[0].ToFloatPtr());
+			glVertexAttribPointerARB(10, 3, GL_FLOAT, false, sizeof(idDrawVert), ac->tangents[1].ToFloatPtr());
 			glNormalPointer(GL_FLOAT, sizeof(idDrawVert), ac->normal.ToFloatPtr());
 
 			glEnableClientState(GL_COLOR_ARRAY);
-			qglEnableVertexAttribArrayARB(9);
-			qglEnableVertexAttribArrayARB(10);
+			glEnableVertexAttribArrayARB(9);
+			glEnableVertexAttribArrayARB(10);
 			glEnableClientState(GL_NORMAL_ARRAY);
 
 			GL_State(pStage->drawStateBits);
 
-			qglBindProgramARB(GL_VERTEX_PROGRAM_ARB, newStage->vertexProgram);
+			glBindProgramARB(GL_VERTEX_PROGRAM_ARB, newStage->vertexProgram);
 			glEnable(GL_VERTEX_PROGRAM_ARB);
 
 			// megaTextures bind a lot of images and set a lot of parameters
@@ -899,7 +899,7 @@ void RB_STD_T_RenderShaderPasses(const drawSurf_t *surf)
 				parm[1] = regs[newStage->vertexParms[i][1]];
 				parm[2] = regs[newStage->vertexParms[i][2]];
 				parm[3] = regs[newStage->vertexParms[i][3]];
-				qglProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, i, parm);
+				glProgramLocalParameter4fvARB(GL_VERTEX_PROGRAM_ARB, i, parm);
 			}
 
 			for (int i = 0; i < newStage->numFragmentProgramImages; i++)
@@ -910,7 +910,7 @@ void RB_STD_T_RenderShaderPasses(const drawSurf_t *surf)
 					newStage->fragmentProgramImages[i]->Bind();
 				}
 			}
-			qglBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, newStage->fragmentProgram);
+			glBindProgramARB(GL_FRAGMENT_PROGRAM_ARB, newStage->fragmentProgram);
 			glEnable(GL_FRAGMENT_PROGRAM_ARB);
 
 			// draw it
@@ -934,11 +934,11 @@ void RB_STD_T_RenderShaderPasses(const drawSurf_t *surf)
 			glDisable(GL_VERTEX_PROGRAM_ARB);
 			glDisable(GL_FRAGMENT_PROGRAM_ARB);
 			// Fixme: Hack to get around an apparent bug in ATI drivers.  Should remove as soon as it gets fixed.
-			qglBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
+			glBindProgramARB(GL_VERTEX_PROGRAM_ARB, 0);
 
 			glDisableClientState(GL_COLOR_ARRAY);
-			qglDisableVertexAttribArrayARB(9);
-			qglDisableVertexAttribArrayARB(10);
+			glDisableVertexAttribArrayARB(9);
+			glDisableVertexAttribArrayARB(10);
 			glDisableClientState(GL_NORMAL_ARRAY);
 			continue;
 		}
@@ -1159,7 +1159,7 @@ static void RB_T_Shadow(const drawSurf_t *surf)
 
 		R_GlobalPointToLocal(surf->space->modelMatrix, backEnd.vLight->globalLightOrigin, localLight.ToVec3());
 		localLight.w = 0.0f;
-		qglProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, localLight.ToFloatPtr());
+		glProgramEnvParameter4fvARB(GL_VERTEX_PROGRAM_ARB, PP_LIGHT_ORIGIN, localLight.ToFloatPtr());
 	}
 
 	tri = surf->geo;
@@ -1215,7 +1215,7 @@ static void RB_T_Shadow(const drawSurf_t *surf)
 	// set depth bounds
 	if (glConfig.depthBoundsTestAvailable && r_useDepthBoundsTest.GetBool())
 	{
-		qglDepthBoundsEXT(surf->scissorRect.zmin, surf->scissorRect.zmax);
+		glDepthBoundsEXT(surf->scissorRect.zmin, surf->scissorRect.zmax);
 	}
 
 	// debug visualization
@@ -1716,21 +1716,21 @@ void RB_STD_FogAllLights(void)
 			// units from the origin
 			backEnd.currentScissor = vLight->scissorRect;
 			if ( r_useScissor.GetBool() ) {
-				qglScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
+				glScissor( backEnd.viewDef->viewport.x1 + backEnd.currentScissor.x1, 
 					backEnd.viewDef->viewport.y1 + backEnd.currentScissor.y1,
 					backEnd.currentScissor.x2 + 1 - backEnd.currentScissor.x1,
 					backEnd.currentScissor.y2 + 1 - backEnd.currentScissor.y1 );
 			}
-			qglClear( GL_STENCIL_BUFFER_BIT );
+			glClear( GL_STENCIL_BUFFER_BIT );
 
-			qglEnable( GL_STENCIL_TEST );
+			glEnable( GL_STENCIL_TEST );
 
 			// only pass on the cleared stencil values
-			qglStencilFunc( GL_EQUAL, 128, 255 );
+			glStencilFunc( GL_EQUAL, 128, 255 );
 
 			// when we pass the stencil test and depth test and are going to draw,
 			// increment the stencil buffer so we don't ever draw on that pixel again
-			qglStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
+			glStencilOp( GL_KEEP, GL_KEEP, GL_INCR );
 		}
 #endif
 
