@@ -1,0 +1,126 @@
+windowDef Desktop
+{
+	rect	0, 0, 640, 480
+	backcolor	0, 0, 0, 0
+	selected	0
+	menugui	1
+
+	onActivate {
+		setFocus "Note" ;
+	}
+
+	onEsc {
+		set "cmd" "close";
+	}
+
+	windowDef NoteBox
+	{
+		rect	20, 200, 600, 260
+		textscale	0.25
+		bordersize	1
+		bordercolor	0.7, 1, 1, 1
+		backcolor	0, 0, 0, 0.2
+		visible	1
+		windowDef Msg
+		{
+			rect	3, 5, 40, 15
+			textscale	0.25
+			text	"#str_02623"
+		}
+		editDef Note
+		{
+			rect	45,5,545,60
+			textscale	0.25
+			text	"gui::note"
+			textalign	0
+			forecolor	1, 1, 1, 0.8
+			backcolor	0.1, 0.1, 0.1, 0.5
+			bordercolor	0.3 ,0.52 ,0.5 ,0.5
+			bordersize	1
+			visible	1
+			showcursor	1
+			wrap	1
+			maxchars	500
+		}
+		listDef Person
+		{
+			rect	45,70,302,180
+			forecolor	1, 1, 1, 1
+			bordercolor	0.3 ,0.52 ,0.5 ,0.5
+			bordersize	1
+			textscale	0.25
+			listName	"person"
+			font	"fonts/an"
+			visible	1
+			multipleSel 1
+		}
+		windowDef SeverityParent
+		{
+			rect	375,71,215,23
+			forecolor	1, 1, 1, 1
+			bordercolor	0.3 ,0.52 ,0.5 ,0.5
+			bordersize	1
+			textscale	0.25
+			font	"fonts/an"
+			text	"#str_04217"
+			visible	1
+			choiceDef Severity
+			{
+				rect	67,1,146,20
+				forecolor	1, 1, 1, 1
+				textscale	0.25
+				font	"fonts/an"
+				choices	"#str_04241"
+				choiceType	0
+				gui	"severity"
+				visible	1
+			}
+		}
+		windowDef ButtonSave
+		{
+			rect	375,230,101,20
+			forecolor	1,1,1,1
+			bordersize	1
+			bordercolor	0.3 ,0.52 ,0.5 ,0.5
+			textscale	0.25
+			font	"fonts/an"
+			text	"#str_04218"
+			visible	1
+			textalign	1
+			wantenter	1
+
+			onAction {
+				set "cmd" "note";
+			}
+			onMouseEnter {
+				transition "backcolor" "0 0 0 0" "0.3 0.52 0.5 0.5" "200"
+			}
+			onMouseExit {
+				transition "backcolor" "0.3 0.52 0.5 0.5" "0 0 0 0" "200"
+			}
+		}
+		windowDef ButtonClose
+		{
+			rect	482,230,108,20
+			forecolor	1,1,1,1
+			bordersize	1
+			bordercolor	0.3 ,0.52 ,0.5 ,0.5
+			textscale	0.25
+			font	"fonts/an"
+			text	"#str_02507"
+			visible	1
+			textalign	1
+			wantenter	1
+
+			onAction {
+				set "cmd" "close";
+			}
+			onMouseEnter {
+				transition "backcolor" "0 0 0 0" "0.3 0.52 0.5 0.5" "200"
+			}
+			onMouseExit {
+				transition "backcolor" "0.3 0.52 0.5 0.5" "0 0 0 0" "200"
+			}
+		}
+	}
+}

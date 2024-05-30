@@ -1,0 +1,725 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	visible	1
+	background	"guis/assets/common/bg_rc.tga"
+	matcolor	0,0,0,0
+	float	"trigone"	0
+
+	onEvent {
+		if ("gui::gui_parm1" == 0) {
+			set "trigone" "0" ;
+			set "TriggerButton1::noevents" "0" ;
+			set "TriggerButton2::noevents" "0" ;
+			set "NoTriggerButton::visible" "1" ;
+			set "NoTriggerButton1::visible" "1" ;
+			set "TriggerButton1::visible" "0" ;
+			set "TriggerButton2::visible" "0" ;
+			set "Button::visible" "0" ;
+			set "ButtonPad1::matcolor" "0.4 0.6 0.8 0" ;
+			set "ButtonPad2::matcolor" "0.4 0.6 0.8 0" ;
+			set "ButtonPad3::matcolor" "0.4 0.6 0.8 0" ;
+			set "ButtonPad4::matcolor" "0.4 0.6 0.8 0" ;
+			set "TextPad1::forecolor" "1 1 1 0" ;
+			set "TextPad2::forecolor" "1 1 1 0" ;
+			set "TextDControl::forecolor" "0.6 0.8 1 0" ;
+			
+			set "TRCorner::matcolor" "1 0.2 0 0.4" ;
+			set "Top2::matcolor" "1 0.2 0 0.4" ;
+			set "BRCorner::matcolor" "1 0.2 0 0.4" ;
+			set "RightSpacer::matcolor" "1 0.2 0 0.4" ;
+			set "Right2::matcolor" "1 0.2 0 0.4" ;
+			set "LeftSpacer::matcolor" "1 0.2 0 0.4" ;
+			set "Left2::matcolor" "1 0.2 0 0.4" ;
+			set "TLCorner::matcolor" "1 0.2 0 0.4" ;
+			set "BLCorner::matcolor" "1 0.2 0 0.4" ;
+			set "Bottom1::matcolor" "1 0.2 0 0.4" ;
+			set "Bglow::matcolor" "1 0.2 0 0.1" ;
+			set "BG1::matcolor" "1 0 0 0.5" ;
+			
+			set "Spin6::rect" "272 175 53 27" ;
+			set "Spin6::matcolor" "1 1 1 0" ;
+			set "Spin5::rect" "255 164 88 49" ;
+			set "Spin5::matcolor" "1 1 1 0.01" ;
+			set "Spin4::rect" "224 146 150 84" ;
+			set "Spin4::matcolor" "1 1 1 0.02" ;
+			set "Spin3::rect" "177 119 244 140" ;
+			set "Spin3::matcolor" "1 1 1 0.03" ;
+			set "Spin2::rect" "108 74 384 229" ;
+			set "Spin2::matcolor" "1 1 1 0.04" ;
+			set "Spin1::rect" "0 0 604 378" ;
+			set "Spin1::matcolor" "1 1 1 0.05" ;
+			set "Spin0::rect" "-176 -114 963 615" ;
+			set "Spin0::matcolor" "1 1 1 0.06" ;
+		}	
+		if ("gui::gui_parm1" == 1) {
+			set "NoTriggerButton::visible" "0" ;
+			set "NoTriggerButton1::visible" "0" ;
+			set "TriggerButton1::visible" "1" ;
+			set "TriggerButton2::visible" "0" ;
+			set "TriggerButton1::rect" "83 92 479 226" ;
+			set "TriggerButton2::rect" "0 0 0 0" ;
+			set "Button::visible" "1" ;
+			set "ButtonPad1::matcolor" "0.4 0.6 0.8 0.6" ;
+			set "ButtonPad2::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "ButtonPad3::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "ButtonPad4::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "TextPad1::forecolor" "1 1 1 0.6" ;
+			set "TextPad2::forecolor" "1 1 1 0.2" ;
+			set "TextDControl::forecolor" "0.6 0.8 1 0.7" ;
+			if ("trigone" == 0) {
+				set "trigone" "1" ;
+				resetTime "spin" "0" ;
+				resetTime "bgframe" "0" ;
+			}
+		}
+		if ("gui::gui_parm1" == 2) {
+			set "NoTriggerButton::visible" "0" ;
+			set "NoTriggerButton1::visible" "0" ;
+			set "TriggerButton1::visible" "0" ;
+			set "TriggerButton2::visible" "1" ;
+			set "TriggerButton2::rect" "83 92 479 226" ;
+			set "TriggerButton1::rect" "0 0 0 0" ;
+			set "Button::visible" "1" ;
+			set "ButtonPad1::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "ButtonPad2::matcolor" "0.4 0.6 0.8 0.6" ;
+			set "ButtonPad3::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "ButtonPad4::matcolor" "0.4 0.6 0.8 0.2" ;
+			set "TextPad1::forecolor" "1 1 1 0.2" ;
+			set "TextPad2::forecolor" "1 1 1 0.6" ;
+			set "TextDControl::forecolor" "0.6 0.8 1 0.7" ;
+			if ("trigone" == 0) {
+				set "trigone" "1" ;
+				resetTime "spin" "0" ;
+				resetTime "bgframe" "0" ;
+			}
+		}
+	}
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,0,0,1
+	}
+	windowDef BGHexGrid
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.05
+		matscalex	10
+		matscaley	9
+	}
+	windowDef leftFlair1a
+	{
+		rect	8,165,99,135
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.05
+	}
+	windowDef leftFlair1b
+	{
+		rect	18,418,95,-38
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.2
+	}
+	windowDef leftFlair
+	{
+		rect	18,249,99,83
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.2
+	}
+	windowDef rightFlair1a
+	{
+		rect	534,165,-99,135
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.05
+	}
+	windowDef rightFlair1b
+	{
+		rect	528,418,-95,-38
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.2
+	}
+	windowDef rightFlair
+	{
+		rect	524,249,-99,83
+		visible	1
+		background	"guis/assets/teleporter/stationflair"
+		matcolor	1,1,1,0.2
+	}
+	windowDef Spin
+	{
+		rect	19,75,603,346
+		visible	1
+		notime	1
+
+		onTime 0 {
+			transition "Spin6::rect" "272 175 53 27" "255 164 88 49" "500" ;
+			transition "Spin6::matcolor" "1 1 1 0" "1 1 1 0.01" "500" ;
+			transition "Spin5::rect" "255 164 88 49" "224 146 150 84" "500" ;
+			transition "Spin5::matcolor" "1 1 1 0.01" "1 1 1 0.02" "500" ;
+			transition "Spin4::rect" "224 146 150 84" "177 119 244 140" "500" ;
+			transition "Spin4::matcolor" "1 1 1 0.02" "1 1 1 0.03" "500" ;
+			transition "Spin3::rect" "177 119 244 140" "108 74 384 229" "500" ;
+			transition "Spin3::matcolor" "1 1 1 0.03" "1 1 1 0.04" "500" ;
+			transition "Spin2::rect" "108 74 384 229" "0 0 604 378" "500" ;
+			transition "Spin2::matcolor" "1 1 1 0.04" "1 1 1 0.05" "500" ;
+			transition "Spin1::rect" "0 0 604 378" "-176 -114 963 615" "500" ;
+			transition "Spin1::matcolor" "1 1 1 0.05" "1 1 1 0.06" "500" ;
+			transition "Spin0::rect" "-176 -114 963 615" "-297 -300 1234 921" "500" ;
+			transition "Spin0::matcolor" "1 1 1 0.06" "1 1 1 0.07" "500" ;
+		}
+
+		onTime 488 {
+			resetTime "0" ;
+		}
+
+		windowDef Spin0
+		{
+			rect	-176,-114,963,615
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.06
+		}
+		windowDef Spin1
+		{
+			rect	0,0,604,378
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.05
+		}
+		windowDef Spin2
+		{
+			rect	108,74,384,229
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.04
+		}
+		windowDef Spin3
+		{
+			rect	177,119,244,140
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.03
+		}
+		windowDef Spin4
+		{
+			rect	224,146,150,84
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.02
+		}
+		windowDef Spin5
+		{
+			rect	255,164,88,49
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0.01
+		}
+		windowDef Spin6
+		{
+			rect	272,175,53,27
+			visible	1
+			background	"gui/teleporter/spin"
+			matcolor	1,1,1,0
+		}
+	}
+	windowDef NoTriggerButton
+	{
+		rect	23,46,594,275
+		visible	1
+		text	"#str_01180"
+		textscale	1.3
+		textalign	1
+		forecolor	1,0,0,0.6
+		cursor	1
+		textaligny	30
+		font	"fonts/bank"
+
+		onTime 0 {
+			transition "forecolor" "1 0 0 0.9" "1 0 0 0.6" "1000" ;
+		}
+
+		onTime 1000 {
+			transition "forecolor" "1 0 0 0.6" "1 0 0 0.9" "100" ;
+		}
+
+		onTime 1100 {
+			resetTime "0" ;
+		}
+
+		onAction {
+			set "cmd" "play guisounds_error" ;
+		}
+
+	}
+	windowDef NoTriggerButton1
+	{
+		rect	22,336,599,78
+		visible	1
+		text	"#str_01181"
+		textscale	0.55
+		textalign	1
+		forecolor	1,1,1,0.8
+		cursor	1
+		font	"fonts/micro"
+	}
+	windowDef button
+	{
+		rect	60,68,525,269
+		visible	0
+		windowDef ButtonBGBlack
+		{
+			rect	49,28,422,-205
+			nocursor	1
+			background	"guis/assets/cpuserver/bg.tga"
+			matcolor	0, 0, 0, 0.7
+			visible	1
+		}
+		windowDef BtnMM
+		{
+			rect	-11,109,543,42
+			visible	0
+			background	"guis/assets/lightswitch/linebar"
+			matcolor	1, 1, 1, 0.2
+		}
+		windowDef BtnBM
+		{
+			rect	244,220,32,32
+			visible	1
+			background	"guis/assets/lightswitch/linemiddle"
+			matcolor	1, 1, 1, 0.4
+
+			onTime 0 {
+				transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+			}
+
+			onTime 500 {
+				transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef BtnBR
+		{
+			rect	260,124,-238,-133
+			visible	1
+			background	"guis/assets/lightswitch/linecorner"
+			matcolor	0.8,0.95,1,0.3
+		}
+		windowDef BtnBL
+		{
+			rect	22,124,238,-133
+			visible	1
+			background	"guis/assets/lightswitch/linecorner"
+			matcolor	0.8,0.95,1,0.3
+		}
+		windowDef BtnTM
+		{
+			rect	244,10,32,32
+			visible	1
+			background	"guis/assets/lightswitch/linemiddle"
+			matcolor	1, 1, 1, 0.4
+
+			onTime 0 {
+				transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+			}
+
+			onTime 500 {
+				transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef BtnTR
+		{
+			rect	260,0,-238,133
+			visible	1
+			background	"guis/assets/lightswitch/linecorner"
+			matcolor	0.8,0.95,1,0.3
+		}
+		windowDef BtnTL
+		{
+			rect	22,0,238,133
+			visible	1
+			background	"guis/assets/lightswitch/linecorner"
+			matcolor	0.8,0.95,1,0.3
+		}
+		windowDef BtnLeft
+		{
+			rect	34,112,20,39
+			visible	1
+			background	"guis/assets/lightswitch/linemiddle"
+			matcolor	1, 1, 1, 0.4
+
+			onTime 0 {
+				transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+			}
+
+			onTime 500 {
+				transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef BtnRight
+		{
+			rect	466,112,20,39
+			visible	1
+			background	"guis/assets/lightswitch/linemiddle"
+			matcolor	1, 1, 1, 0.4
+
+			onTime 0 {
+				transition "matcolor" "1 1 1 0.5" "1 1 1 0.1" "500" ;
+			}
+
+			onTime 500 {
+				transition "matcolor" "1 1 1 0.1" "1 1 1 0.5" "500" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+	windowDef BGFrame
+	{
+		rect	3,3,634,474
+		visible	1
+		notime	1
+
+		onTime 0 {
+			transition "TRCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "Top2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "BRCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "RightSpacer::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "Right2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "LeftSpacer::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "Left2::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "TLCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "BLCorner::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "Bottom1::matcolor" "1 0.2 0 0.4" "0.6 0.9 1 0.4" "500" ;
+			transition "Bglow::matcolor" "1 0.2 0 0.1" "0.4 0.8 1 0.1" "500" ;
+			transition "BG1::matcolor" "1 0 0 0.5" "1 1 1 0.5" "500" ;
+		}
+
+		windowDef TRCorner
+		{
+			rect	589,0,-45,40
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef Top2
+		{
+			rect	45,0,544,40
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef BRCorner
+		{
+			rect	544,435,90,40
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef RightSpacer
+		{
+			rect	454,40,-180,49
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerLarge"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef Right2
+		{
+			rect	588,89,46,346
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef LeftSpacer
+		{
+			rect	0,40,180,49
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerLarge"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef Left2
+		{
+			rect	0,89,-46,346
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef TLCorner
+		{
+			rect	0,0,45,40
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef BLCorner
+		{
+			rect	0,435,-90,40
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	1,0.2,0,0.4
+		}
+		windowDef Bottom1
+		{
+			rect	90,435,454,-40
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	1,0.2,0,0.4
+		}
+	}
+	windowDef TriggerButton2
+	{
+		rect	83,92,479,226
+		visible	0
+		text	"#str_00902"
+		textscale	1.1
+		textalign	1
+		forecolor	1,1,1,0.8
+		font	"fonts/bank"
+
+		onAction {
+			set "cmd" "play guisounds_chirpconnect" ;
+		}
+
+		onActionRelease {
+			set "cmd" "activate teleport_relay1_2 ; play guisounds_click" ;
+			set "noevents" "1" ;
+			//	ResetTime	"Text2" "0" ;
+		}
+
+	}
+	windowDef TriggerButton1
+	{
+		rect	83,92,479,226
+		visible	0
+		text	"#str_00902"
+		textscale	1.1
+		textalign	1
+		forecolor	1,1,1,0.8
+		font	"fonts/bank"
+
+		onAction {
+			set "cmd" "play guisounds_chirpconnect" ;
+		}
+
+		onActionRelease {
+			set "cmd" "activate teleport_relay1_1 ; play guisounds_click" ;
+			set "noevents" "1" ;
+			//	ResetTime	"Text2" "0" ;
+		}
+
+	}
+	windowDef ButtonBG3
+	{
+		rect	25,401,591,-20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.4
+	}
+	windowDef ButtonBG2
+	{
+		rect	25,350,591,-51
+		visible	1
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,1,1,0.4
+	}
+	windowDef ButtonBG1
+	{
+		rect	25,330,591,20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.4
+	}
+	windowDef ButtonPad
+	{
+		rect	7,319,624,117
+		visible	1
+		windowDef ButtonPad1
+		{
+			rect	30,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef ButtonPad1o
+		{
+			rect	30,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef TextPad1
+		{
+			rect	38,40,125,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01125"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+		}
+		windowDef ButtonPad2
+		{
+			rect	171,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef ButtonPad2o
+		{
+			rect	171,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef TextPad2
+		{
+			rect	179,40,125,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01128"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+		}
+		windowDef ButtonPad3
+		{
+			rect	312,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef ButtonPad3o
+		{
+			rect	312,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0.6,0.1,0
+		}
+		windowDef TextPad3
+		{
+			rect	319,40,125,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01125"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+		}
+		windowDef ButtonPad4
+		{
+			rect	454,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.4,0.6,0.8,0
+		}
+		windowDef ButtonPad4o
+		{
+			rect	454,39,142,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0.6,0.1,0
+		}
+		windowDef TextPad4
+		{
+			rect	461,40,125,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01125"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+		}
+		windowDef TextDControl
+		{
+			rect	43,15,544,33
+			visible	1
+			text	"#str_00904"
+			forecolor	0.6,0.8,1,0
+			textscale	0.38
+			font	"fonts/micro"
+		}
+	}
+	windowDef TextTitle1
+	{
+		rect	30,12,585,57
+		visible	1
+		text	"#str_01099"
+		forecolor	1,1,1,0.6
+		textscale	0.74
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	1, 0.2, 0, 0.1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,7,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Reflect
+	{
+		rect	0,-8,-646,470
+		matcolor	1 ,1 ,1 ,0.15
+		visible	0
+		background	"gui/reflect1"
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+}

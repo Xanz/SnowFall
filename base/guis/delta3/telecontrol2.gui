@@ -1,0 +1,1488 @@
+windowDef Desktop
+{
+	comment	"gui_parm1 = script name to run when Scan for Active Pads is clicked.\n\ngui_parm2 will run when Pad1 is clicked.\n\ngui_parm3 will run when Pad2 is clicked\n\ngui_parm4 will run when Pad3 is clicked\n\ngui_parm5 will run one time, on whichever Pad1 or Pad2 is clicked first."
+	rect	0 ,0 ,640 ,480
+	visible	1
+	background	"guis/assets/common/bg_rc.tga"
+	matcolor	0,0,0,1
+	float	"parm5click"	0
+	float "selection"	0
+
+	onTrigger {
+		set "desktop::parm5click" "0" ;
+		
+		set "TextDestination::forecolor" "1 0 0 0.8" ;
+		set "TextDestination::text" "#str_01145" ;
+		
+		set "TextPad1::noevents" "0" ;
+		set "TextPad2::noevents" "0" ;
+		set "TextPad3::noevents" "0" ;		
+		set "Target1::noevents" "0" ;
+		set "Target2::noevents" "0" ;
+		set "Target3::noevents" "0" ;
+		
+		set "Target1::background" "gui/teleporter/targetstatic" ;
+		set "ButtonPad1::matcolor" "0.6 0.8 1 0.4" ;
+		set "ButtonPad1o::matcolor" "0.6 0.8 1 0.4" ;
+		set "Target1::matcolor" "1 1 1 1" ;
+		set "Selected1::matcolor" "1 0 0 0" ;
+		set "Target2::background" "gui/teleporter/targetstatic" ;
+		set "ButtonPad2::matcolor" "0.6 0.8 1 0.4" ;
+		set "ButtonPad2o::matcolor" "0.6 0.8 1 0.4" ;
+		set "Target2::matcolor" "1 1 1 1" ;
+		set "Selected2::matcolor" "1 0 0 0" ;
+		
+		set "Target3::background" "gui/teleporter/targetstatic" ;
+		set "ButtonPad3::matcolor" "0.6 0.8 1 0.4" ;
+		set "ButtonPad3o::matcolor" "0.6 0.8 1 0.4" ;
+		set "Target3::matcolor" "1 1 1 1" ;
+		set "Selected3::matcolor" "1 0 0 0" ;		
+		
+		if ("selection" == 1) { 
+			set "SourceText::text" "#str_03428" ;
+			set "selection" "0" ;
+		}
+		if ("selection" == 2) { 
+			set "SourceText::text" "#str_03430" ;
+			set "selection" "0" ;
+		}
+		if ("selection" == 3) { 
+			set "SourceText::text" "#str_03431" ;
+			set "selection" "0" ;
+		}		
+	}
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,1,1,0.5
+	}
+	windowDef BGHexGrid
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.07
+		matscalex	15
+		matscaley	9
+	}
+	windowDef Bg2Clamp
+	{
+		rect	24,29,250,384
+		visible	1
+		windowDef BG2
+		{
+			rect	-12,-25,630,470
+			visible	1
+			background	"guis/assets/common/scibox/bg2"
+			matcolor	1,1,1,0.8
+			backcolor	0,0,0,1
+		}
+	}
+	windowDef MapClamp
+	{
+		rect	25,30,249,383
+		visible	1
+		windowDef MapGrid
+		{
+			rect	-28,-6,415,400
+			visible	1
+			background	"gui/grid2"
+			matcolor	1,1,1,0.2
+			matscalex	10
+			matscaley	10
+		}
+		windowDef Map
+		{
+			rect	-21,2,395,380
+			visible	1
+			background	"guis/assets/teleporter/delta3map"
+			matcolor	1,1,1,subtleflick[ time * 0.002 ] / 1
+		}
+		windowDef Selected
+		{
+			rect	168,62,153,112
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0,0,0
+			notime	1
+
+			onTime 0 {
+				transition "matcolor" "1 0 0 0.8" "1 0 0 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "matcolor" "1 0 0 0.8" "1 0 0 0" "100" ;
+			}
+
+			onTime 200 {
+				transition "matcolor" "1 0 0 0.8" "1 0 0 0" "100" ;
+			}
+
+		}
+		windowDef Target1
+		{
+			rect	200,95,36,35
+			visible	1
+			background	"gui/teleporter/targetstatic"
+			matcolor	0,0,0,0
+			noevents	1
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 1 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm2" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm2" ;
+				}
+				resetTime "TextPad1" "0" ;
+				set "desktop::selection" "1" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+		}
+		windowDef Target2
+		{
+			rect	0,124,36,35
+			visible	1
+			background	"gui/teleporter/targetstatic"
+			matcolor	0,0,0,0
+			noevents	1
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 2 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm3" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm3" ;
+				}
+				resetTime "TextPad2" "0" ;
+				set "desktop::selection" "2" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+		}
+		windowDef Target3
+		{
+			rect	40,146,36,35
+			visible	1
+			background	"gui/teleporter/targetstatic"
+			matcolor	0,0,0,0
+			noevents	1
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 3 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm4" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm4" ;
+				}
+				resetTime "TextPad3" "0" ;
+				set "desktop::selection" "3" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+		}
+		windowDef Selected1
+		{
+			rect	200,95,36,35
+			visible	1
+			background	"guis/assets/teleporter/selected"
+			matcolor	1,0,0,0
+		}
+		windowDef Selected2
+		{
+			rect	0,124,36,35
+			visible	1
+			background	"guis/assets/teleporter/selected"
+			matcolor	1,0,0,0
+		}
+		windowDef Selected3
+		{
+			rect	40,146,36,35
+			visible	1
+			background	"guis/assets/teleporter/selected"
+			matcolor	1,0,0,0
+		}
+		windowDef Pulse1
+		{
+			rect	8,25,320,219
+			visible	1
+			background	"gui/teleporter/pulsescan"
+			matcolor	0,0,0,0
+		}
+		windowDef Pulse2
+		{
+			rect	54,59,227,153
+			visible	1
+			background	"gui/teleporter/pulsescan"
+			matcolor	0,0,0,0
+		}
+		windowDef Pulse3
+		{
+			rect	94,83,149,105
+			visible	1
+			background	"gui/teleporter/pulsescan"
+			matcolor	0,0,0,0
+		}
+		windowDef AreaMapBG
+		{
+			rect	-8,1,269,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0.4
+		}
+		windowDef AreaMapTxt
+		{
+			rect	2,0,141,28
+			visible	1
+			forecolor	1,1,1,0.7
+			text	"#str_01096"
+			textscale	0.38
+			font	"fonts/micro"
+		}
+		windowDef EffectiveAreaBG
+		{
+			rect	-8,194,269,25
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0
+		}
+		windowDef EffectiveAreaTxt
+		{
+			rect	9,192,219,28
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01097"
+			textscale	0.38
+			font	"fonts/micro"
+		}
+		windowDef ControlStationSlct
+		{
+			rect	180,174,20,22
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.8,1,1,0
+		}
+		windowDef ControlStationBG
+		{
+			rect	157,194,87,44
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0
+		}
+		windowDef ControlStationTxt
+		{
+			rect	152,195,95,44
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01146"
+			textscale	0.32
+			font	"fonts/an"
+			textalign	1
+		}
+		windowDef TpStationSlct
+		{
+			rect	202,137,20,22
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0.8,1,1,0
+		}
+		windowDef TpStationBG
+		{
+			rect	104,125,101,44
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	0,0,0,0
+		}
+		windowDef TpStationTxt
+		{
+			rect	100,119,108,44
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01147"
+			textscale	0.32
+			font	"fonts/an"
+			textalign	1
+		}
+	}
+	windowDef MapBGLines
+	{
+		rect	0,0,294,480
+		visible	1
+		windowDef MapBg11
+		{
+			rect	12,17,275,20
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG12
+		{
+			rect	12,37,275,-372
+			visible	1
+			background	"guis/assets/teleporter/grid4"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG13
+		{
+			rect	12,409,275,-20
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBg21
+		{
+			rect	21,27,257,20
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG22
+		{
+			rect	21,47,257,-351
+			visible	1
+			background	"guis/assets/teleporter/grid4"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG23
+		{
+			rect	21,398,257,-20
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBg31
+		{
+			rect	12,430,275,16
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG32
+		{
+			rect	12,446,275,-16
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+	}
+	windowDef Zoom
+	{
+		rect	16,21,267,403
+		visible	1
+		windowDef ZoomLeft
+		{
+			rect	-2,1,9,402
+			visible	1
+			background	"gui/teleporter/zoomV"
+			matcolor	1,1,1,0.7
+			matscaley	10
+		}
+		windowDef ZoomRight
+		{
+			rect	258,1,9,402
+			visible	1
+			background	"gui/teleporter/zoomV"
+			matcolor	1,1,1,0.7
+			matscaley	10
+		}
+		windowDef ZoomTop
+		{
+			rect	12,1,251,10
+			visible	1
+			background	"gui/teleporter/zoomH"
+			matscalex	6
+			matcolor	1,1,1,0.7
+		}
+		windowDef ZoomBottom
+		{
+			rect	12,395,251,10
+			visible	1
+			background	"gui/teleporter/zoomH"
+			matscalex	6
+			matcolor	1,1,1,0.7
+		}
+	}
+	windowDef BGFrame
+	{
+		rect	3,3,634,474
+		visible	1
+		windowDef TMCorner
+		{
+			rect	276,-1,-47,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornersmall2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TRCorner
+		{
+			rect	589,-1,45,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top2
+		{
+			rect	323,-1,266,30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BMCorner
+		{
+			rect	276,445,-47,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom2
+		{
+			rect	323,445,266,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BRCorner
+		{
+			rect	589,445,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Left1
+		{
+			rect	-1,29,-23,416
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right1
+		{
+			rect	611,29,23,31
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef RightSpacer
+		{
+			rect	589,60,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right2
+		{
+			rect	611,90,23,106
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid1
+		{
+			rect	285,29,-23,31
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef MidSpacer
+		{
+			rect	285,60,-45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid2
+		{
+			rect	285,90,-23,106
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TLCorner
+		{
+			rect	-1,-1,23,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BLCorner
+		{
+			rect	-1,445,24,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom1
+		{
+			rect	23,445,253,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top1
+		{
+			rect	22,-1,254,30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef MidSpacer1
+		{
+			rect	285,196,-45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef RightSpacer1
+		{
+			rect	589,196,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid3
+		{
+			rect	285,226,-23,219
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right3
+		{
+			rect	611,226,23,219
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+	}
+	windowDef ButtonArea
+	{
+		rect	293,27,344,184
+		visible	1
+		windowDef ButtonBG3
+		{
+			rect	8,159,325,-20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBG2
+		{
+			rect	8,80,325,-79
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBG1
+		{
+			rect	8,60,325,20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBarRight
+		{
+			rect	310,64,17,34
+			visible	1
+			background	"guis/assets/common/scibox/fillRight"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef ButtonBarCenter
+		{
+			rect	31,64,279,34
+			visible	1
+			background	"guis/assets/common/scibox/fillCenter"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef ButtonBarLeft
+		{
+			rect	14,64,17,34
+			visible	1
+			background	"guis/assets/common/scibox/fillLeft"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef TextArea
+		{
+			rect	83,66,232,34
+			visible	1
+			text	"#str_01100"
+			forecolor	1,1,1,0.9
+			textscale	0.33
+			font	"fonts/micro"
+		}
+		windowDef TextInitiateScan2
+		{
+			rect	17,90,307,77
+			visible	1
+			text	"#str_01101"
+			forecolor	1,0.7,0.2,0
+			textscale	0.6
+			font	"fonts/micro"
+			textalign	1
+			notime	1
+
+			onTime 0 {
+				transition "forecolor" "1 1 1 1" "1 0.7 0.2 0" "800" ;
+			}
+
+			onTime 700 {
+				resetTime "AnimScan" "0" ;
+			}
+
+		}
+	}
+	windowDef TextStatus
+	{
+		rect	18,431,151,33
+		visible	1
+		text	"#str_00280"
+		forecolor	1,1,1,0.9
+		textscale	0.4
+		font	"fonts/micro"
+	}
+	windowDef TextStatus1
+	{
+		rect	18,431,151,33
+		visible	1
+		text	"#str_00073"
+		forecolor	1,1,1,0
+		textscale	0.4
+		font	"fonts/micro"
+	}
+	windowDef TextStatus2
+	{
+		rect	206,431,76,33
+		visible	1
+		text	"#str_01102"
+		forecolor	1,1,1,0
+		textscale	0.4
+		font	"fonts/micro"
+	}
+	windowDef TextTitle1
+	{
+		rect	313,15,322,33
+		visible	1
+		text	"#str_01146"
+		forecolor	1,1,1,0.9
+		textscale	0.452
+		font	"fonts/micro"
+	}
+	windowDef TextTitle2
+	{
+		rect	314,38,322,33
+		visible	1
+		text	"#str_01148"
+		forecolor	1,1,1,0.4
+		textscale	0.49
+		font	"fonts/micro"
+	}
+	windowDef TextTitle3
+	{
+		rect	341,65,249,22
+		visible	1
+		text	"#str_01104"
+		forecolor	1,0,0,0
+		textscale	0.32
+		font	"fonts/micro"
+	}
+	windowDef TextDControl
+	{
+		rect	305,228,316,33
+		visible	1
+		text	"#str_01105"
+		forecolor	0.7,0.9,1,0.7
+		textscale	0.409
+		font	"fonts/micro"
+	}
+	windowDef TextDestinationClip
+	{
+		rect	305,254,316,33
+		windowDef TextDestination
+		{
+			rect	0,0,316,33
+			visible	1
+			text	"#str_01106"
+			forecolor	1,0,0,0.8
+			textscale	0.35
+			font	"fonts/micro"
+		}
+	}
+	windowDef SourceTextClamp
+	{
+		rect	336,285,285,236
+		visible	1
+		windowDef SourceText
+		{
+			rect	0,0,285,236
+			visible	1
+			forecolor	1,1,1,1
+			text	"#str_01107"
+			textscale	0.38
+			font	"fonts/an"
+		}
+	}
+	windowDef SourceText1a
+	{
+		rect	336,293,285,54
+		visible	1
+		forecolor	1,1,1,0
+		text	"#str_01149"
+		textscale	0.38
+		font	"fonts/an"
+	}
+	windowDef SourceText1
+	{
+		rect	336,293,285,54
+		visible	1
+		forecolor	1,1,1,0
+		text	""
+		textscale	0.38
+		font	"fonts/an"
+		notime	1
+
+		onTime 0 {
+			set "text" "#str_01109" ;
+		}
+
+		onTime 50 {
+			set "text" "#str_01110" ;
+		}
+
+		onTime 100 {
+			set "text" "#str_01111" ;
+		}
+
+		onTime 150 {
+			set "text" "#str_01112" ;
+		}
+
+		onTime 200 {
+			set "text" "#str_01113" ;
+		}
+
+		onTime 250 {
+			set "text" "#str_01114" ;
+		}
+
+		onTime 300 {
+			set "text" "#str_01115" ;
+		}
+
+		onTime 350 {
+			set "text" "#str_01116" ;
+		}
+
+		onTime 400 {
+			set "text" "#str_01117" ;
+		}
+
+	}
+	windowDef SourceText2
+	{
+		rect	336,362,285,29
+		visible	1
+		forecolor	1,1,1,0
+		text	"#str_01118"
+		textscale	0.38
+		font	"fonts/an"
+
+		onTime 0 {
+			set "text" "#str_01150" ;
+		}
+
+		onTime 40 {
+			set "text" "#str_01151" ;
+		}
+
+		onTime 80 {
+			set "text" "#str_01152" ;
+		}
+
+		onTime 120 {
+			set "text" "#str_01153" ;
+		}
+
+		onTime 160 {
+			set "text" "#str_01154" ;
+		}
+
+		onTime 200 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef SourceText2a
+	{
+		rect	336,362,285,29
+		visible	1
+		forecolor	1,1,1,0
+		text	"#str_01155"
+		textscale	0.38
+		font	"fonts/an"
+	}
+	windowDef SourceText3
+	{
+		rect	336,408,285,54
+		visible	1
+		forecolor	1,1,1,0
+		text	"#str_01156"
+		textscale	0.38
+		font	"fonts/an"
+	}
+	windowDef PadButtons
+	{
+		rect	298,117,332,140
+		visible	1
+		notime	1
+
+		onTime 0 {
+			transition "ButtonPad1::matcolor" "0.2 0.6 1 0" "0.4 0.8 1 0.2" "500" ;
+		}
+
+		onTime 100 {
+			transition "ButtonPad2::matcolor" "0 0.6 1 0" "0.4 0.8 1 0.2" "500" ;
+		}
+
+		onTime 200 {
+			transition "ButtonPad3::matcolor" "0 0.6 1 0" "0.4 0.8 1 0.2" "500" ;
+		}
+
+		onTime 300 {
+			transition "ButtonPad4::matcolor" "0 0.6 1 0" "0.4 0.8 1 0.2" "500" ;
+		}
+
+		windowDef ButtonPad1
+		{
+			rect	15,6,151,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad2
+		{
+			rect	166,6,151,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad4
+		{
+			rect	166,67,151,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad3
+		{
+			rect	15,67,151,58
+			visible	1
+			background	"guis/assets/teleporter/button1"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad1o
+		{
+			rect	15,6,151,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad2o
+		{
+			rect	166,6,151,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0.6,0,0
+		}
+		windowDef ButtonPad3o
+		{
+			rect	15,67,151,58
+			visible	1
+			background	"guis/assets/teleporter/button2"
+			matcolor	1,0.6,0,0
+		}
+		windowDef TextPad1
+		{
+			rect	23,7,133,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01125"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+
+			onmouseEnter {
+				transition "ButtonPad1::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.6" "200" ;
+				transition "ButtonPad1o::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.8" "200" ;
+			}
+
+			onmouseExit {
+				transition "ButtonPad1::matcolor" "0.8 0.9 1 0.6" "0.6 0.8 1 0.4" "200" ;
+				transition "ButtonPad1o::matcolor" "0.8 0.9 1 0.8" "0.6 0.8 1 0.4" "200" ;
+			}
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 1 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm2" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm2" ;
+				}
+				resetTime "0" ;
+				set "desktop::selection" "1" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+			onTime 0 {
+				set	"Target1::background" "gui/teleporter/target" ;
+				set	"Target2::background" "gui/teleporter/targetstatic" ;
+				set	"Target3::background" "gui/teleporter/targetstatic" ;
+				set "TextDestination::text" "#str_01126" ;
+				transition "TextDestination::forecolor" "1 1 1 1" "1 1 1 0.6" "400" ;
+				set "SourceText::text" "#str_01157" ;
+				set "Target1::matcolor" "1 0.2 0.2 1" ;
+				transition "Selected1::matcolor" "1 0 0 0.6" "1 0 0 0" "500" ;
+				transition "Selected1::rect" "190 85 56 55" "200 95 36 35" "200" ;
+				set "Target2::matcolor" "1 1 1 1" ;
+				set "Selected2::matcolor" "1 0 0 0" ;
+				set "Target3::matcolor" "1 1 1 1" ;
+				set "Selected3::matcolor" "1 0 0 0" ;
+				transition "ButtonPad1::matcolor" "0.8 0.9 1 0.6" "1 0.6 0.1 0.4" "200" ;
+				transition "ButtonPad1o::matcolor" "1 1 1 0.6" "1 0.6 0.2 0.4" "200" ;
+				set "ButtonPad2::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad2o::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad3::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad3o::matcolor" "0.6 0.8 1 0.4" ;
+			}
+
+			onTime 1000 {
+				set "Target2::noevents" "0" ;
+				set "TextPad2::noevents" "0" ;
+				set "Target3::noevents" "0" ;
+				set "TextPad3::noevents" "0" ;
+			}
+
+		}
+		windowDef TextPad2
+		{
+			rect	174,7,133,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01158"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+
+			onmouseEnter {
+				transition "ButtonPad2::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.6" "200" ;
+				transition "ButtonPad2o::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.8" "200" ;
+			}
+
+			onmouseExit {
+				transition "ButtonPad2::matcolor" "0.8 0.9 1 0.6" "0.6 0.8 1 0.4" "200" ;
+				transition "ButtonPad2o::matcolor" "0.8 0.9 1 0.8" "0.6 0.8 1 0.4" "200" ;
+			}
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 2 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm3" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm3" ;
+				}
+				resetTime "0" ;
+				set "desktop::selection" "2" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+			onTime 0 { 
+				set	"Target3::background" "gui/teleporter/targetstatic" ;
+				set	"Target2::background" "gui/teleporter/target" ;
+				set	"Target1::background" "gui/teleporter/targetstatic" ;
+				set "TextDestination::text" "#str_01159" ;
+				transition "TextDestination::forecolor" "1 1 1 1" "1 1 1 0.6" "400" ;
+				set "SourceText::text" "#str_01160" ;
+				set "Target2::matcolor" "1 0.2 0.2 1" ;
+				transition "Selected2::matcolor" "1 0 0 0.6" "1 0 0 0" "500" ;
+				transition "Selected2::rect" "-10 114 56 55" "0 124 36 35" "200" ;
+				set "Target1::matcolor" "1 1 1 1" ;
+				set "Selected1::matcolor" "1 0 0 0" ;
+				set "Target3::matcolor" "1 1 1 1" ;
+				set "Selected3::matcolor" "1 0 0 0" ;
+				transition "ButtonPad2::matcolor" "0.8 0.9 1 0.6" "1 0.6 0.1 0.4" "200" ;
+				transition "ButtonPad2o::matcolor" "1 1 1 0.6" "1 0.6 0.2 0.4" "200" ;
+				set "ButtonPad1::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad1o::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad3::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad3o::matcolor" "0.6 0.8 1 0.4" ;
+			}
+
+			onTime 1000 {
+				set "TextPad1::noevents" "0" ;
+				set "Target1::noevents" "0" ;
+				set "Target3::noevents" "0" ;
+				set "TextPad3::noevents" "0" ;
+			}
+
+		}
+		windowDef TextPad3
+		{
+			rect	23,68,133,56
+			visible	1
+			forecolor	1,1,1,0
+			text	"#str_01161"
+			textscale	0.32
+			font	"fonts/micro"
+			textalign	1
+			textaligny	4
+			noevents	1
+			notime	1
+
+			onmouseEnter {
+				transition "ButtonPad3::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.6" "200" ;
+				transition "ButtonPad3o::matcolor" "0.6 0.8 1 0.4" "0.8 0.9 1 0.8" "200" ;
+			}
+
+			onmouseExit {
+				transition "ButtonPad3::matcolor" "0.8 0.9 1 0.6" "0.6 0.8 1 0.4" "200" ;
+				transition "ButtonPad3o::matcolor" "0.8 0.9 1 0.8" "0.6 0.8 1 0.4" "200" ;
+			}
+
+			onAction {
+				set	"cmd" "setkeyval teleport_trigger2 gui_parm1 3 ; play guisounds_line" ;
+				if ("desktop::parm5click" == 0) {
+					runScript "gui::gui_parm4" ; runScript "gui::gui_parm5" ;
+					set "desktop::parm5click" "1" ;
+				} else {
+					runScript	"gui::gui_parm4" ;
+				}
+				resetTime "0" ;
+				set "desktop::selection" "3" ;
+				set "TextPad1::noevents" "1" ;
+				set "TextPad2::noevents" "1" ;
+				set "TextPad3::noevents" "1" ;
+				set "Target1::noevents" "1" ;
+				set "Target2::noevents" "1" ;
+				set "Target3::noevents" "1" ;
+			}
+
+			onTime 0 { 
+				set	"Target3::background" "gui/teleporter/target" ;
+				set	"Target2::background" "gui/teleporter/targetstatic" ;
+				set	"Target1::background" "gui/teleporter/targetstatic" ;
+				set "TextDestination::text" "#str_01162" ;
+				transition "TextDestination::forecolor" "1 1 1 1" "1 1 1 0.6" "400" ;
+				set "SourceText::text" "#str_01163" ;
+				set "Target3::matcolor" "1 0.2 0.2 1" ;
+				transition "Selected3::matcolor" "1 0 0 0.6" "1 0 0 0" "500" ;
+				transition "Selected3::rect" "30 136 56 55" "40 146 36 35" "200" ;
+				set "Target1::matcolor" "1 1 1 1" ;
+				set "Selected1::matcolor" "1 0 0 0" ;
+				set "Target2::matcolor" "1 1 1 1" ;
+				set "Selected2::matcolor" "1 0 0 0" ;
+				transition "ButtonPad3::matcolor" "0.8 0.9 1 0.6" "1 0.6 0.1 0.4" "200" ;
+				transition "ButtonPad3o::matcolor" "1 1 1 0.6" "1 0.6 0.2 0.4" "200" ;
+				set "ButtonPad1::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad1o::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad2::matcolor" "0.6 0.8 1 0.4" ;
+				set "ButtonPad2o::matcolor" "0.6 0.8 1 0.4" ;
+			}
+
+			onTime 1000 {
+				set "TextPad1::noevents" "0" ;
+				set "Target1::noevents" "0" ;
+				set "Target2::noevents" "0" ;
+				set "TextPad2::noevents" "0" ;
+			}
+
+		}
+		windowDef TextInitiateScan
+		{
+			rect	12,0,307,77
+			visible	1
+			text	"#str_01131"
+			forecolor	1,0.7,0.2,0.6
+			textscale	0.6
+			font	"fonts/micro"
+			textalign	1
+
+			onAction {
+				set "cmd" "play guisounds_connect2" ;
+				runScript	"gui::gui_parm1" ;
+				set "noevents" "1" ;
+				set "visible" "0" ;
+				set "rect" "0 0 0 0" ;
+				resetTime "TextInitiateScan2" "0" ;
+			}
+
+			onTime 0 {
+				transition "forecolor" "1 0.7 0.2 0.8" "1 0.7 0.2 0.4" "500" ;
+			}
+
+			onTime 500 {
+				transition "forecolor" "1 0.7 0.2 0.4" "1 0.7 0.2 0.8" "500" ;
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+	windowDef ClickCatch
+	{
+		rect	0,0,0,0
+
+		onAction {
+			set	"cmd" "play guisounds_disconnect2" ;
+			transition "TextTitle3::forecolor" "1 0 0 0.9" "1 0 0 0" "1000" "0" "0.8" ;
+		}
+
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+	windowDef Static1
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+	windowDef Reflect
+	{
+		rect	-1,-9,-646,470
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef AnimScan
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			set "Static1::rect" "0 0 640 480" ;
+			set "clickcatch::rect" "0 0 640 480" ;
+			transition "TextDestinationClip::rect" "305 254 316 33" "305 266 316 33" "500" ;
+			transition "TextDestination::forecolor" "1 0 0 0.8" "1 1 1 0.5" "500" ;
+			transition "TextDControl::forecolor" "0.6 0.8 1 0.7" "0.6 0.8 1 0" "400" ;
+			
+			transition "SourceText::forecolor" "1 1 1 1" "1 1 1 0" "200" ;
+			transition "SourceTextClamp::rect" "336 285 285 236" "336 293 0 236" "600" ;
+			transition "SourceText1a::forecolor" "1 1 1 0" "1 1 1 1" "400" ;
+			
+			transition "MidSpacer1::rect" "285 196 -45 30" "285 243 -45 30" "700" "0" "0.8" ;
+			transition "RightSpacer1::rect" "589 196 45 30" "589 243 45 30" "700" "0" "0.8" ;
+			
+			transition "Mid2::rect" "285 90 -23 106" "285 90 -23 153" "700" "0" "0.8" ;
+			transition "Mid3::rect" "285 226 -23 219" "285 273 -23 172" "700" "0" "0.8" ;
+			transition "Right2::rect" "611 90 23 106" "611 90 23 153" "700" "0" "0.8" ;
+			transition "Right3::rect" "611 226 23 219" "611 273 23 172" "700" "0" "0.8" ;
+			
+			transition "ButtonArea::rect" "293 27 344 184" "293 74 344 184" "700" "0" "0.8" ;	
+			transition "ButtonBG2::rect" "8 80 325 -79" "8 33 325 -126" "700" "0" "0.8" ;
+			transition "ButtonBG1::rect" "8 60 325 20" "8 13 325 20" "700" "0" "0.8" ;
+			
+			transition "TextArea::rect" "83 66 232 34" "35 19 280 34" "700" "0" "0.8" ;
+			transition "ButtonBarRight::rect" "310 64 17 34" "310 17 17 34" "700" "0" "0.8" ;
+			transition "ButtonBarCenter::rect" "31 64 279 34" "31 17 279 34" "700" "0" "0.8" ;
+			transition "ButtonBarLeft::rect" "14 64 17 34" "14 17 17 34" "700" "0" "0.8" ;
+			
+			set "TextStatus::text" "#str_01132" ;
+			
+			//transition "AreaMapBG::matcolor" "0 0 0 0.4" "0 0 0 0" "500" ;
+			//transition "AreaMapTxt::forecolor" "1 1 1 0.7" "1 1 1 0" "500" ;
+		}
+
+		onTime 700 {
+			//	resetTime "PadButtons" "0" ;
+			
+		}
+
+		onTime 800 {
+			resetTime "Selected" "0" ;
+			set "cmd" "play guisounds_ping2" ;
+		}
+
+		onTime 1000 {
+			set "TextArea::text" "#str_01133" ;
+			transition "ZoomLeft::rect" "-2 1 9 402" "-2 1 9 450" "1500" "0.2" "0.6" ;
+			transition "ZoomRight::rect" "258 1 9 402" "258 1 9 450" "1500" "0.2" "0.6" ;
+			transition "ZoomTop::rect" "12 1 251 10" "-112 1 376 10" "1500" "0.2" "0.6" ;
+			transition "ZoomBottom::rect" "12 395 251 10" "-112 395 376 10" "1500" "0.2" "0.6" ;
+			
+			transition "Map::rect" "-21 2 395 380" "-265 -18 514 474" "1500" "0.2" "0.6" ;
+			transition "MapGrid::rect" "-28 -6 415 400" "-275 -28 540 499" "1500" "0.2" "0.6" ;
+		}
+
+		onTime 2300 {
+			set "SourceText1a::text" "#str_01134" ;
+		}
+
+		onTime 2350 {
+			set "SourceText1a::text" "#str_01135" ;
+		}
+
+		onTime 2400 {
+			set "SourceText1a::text" "#str_01136" ;
+			set "Selected::rect" "-10 60 268 148" ;
+			resetTime "Selected" "0" ;
+			set "cmd" "play guisounds_ping2" ;
+			transition "EffectiveAreaBG::matcolor" "0 0 0 0" "0 0 0 0.7" "500" ;
+			transition "EffectiveAreaTxt::forecolor" "1 1 1 0" "1 1 1 1" "500" ;
+		}
+
+		onTime 2450 {
+			set "SourceText1a::text" "#str_01137" ;
+		}
+
+		onTime 2500 {
+			set "SourceText1a::text" "#str_01138" ;
+		}
+
+		onTime 2550 {
+			set "SourceText1a::text" " " ;
+		}
+
+		onTime 2600 {
+			set "SourceText1a::text" "#str_01139" ;
+		}
+
+		onTime 2650 {
+			set "SourceText1a::text" "#str_01140" ;
+		}
+
+		onTime 2700 {
+			set "SourceText1a::text" "#str_01141" ;
+		}
+
+		onTime 3200 {
+			set "TextArea::text" "#str_01164" ;
+			resetTime "PadButtons" "0" ;
+		}
+
+		onTime 3400 {
+			transition "EffectiveAreaBG::matcolor" "0 0 0 0.7" "0 0 0 0" "500" ;
+			transition "EffectiveAreaTxt::forecolor" "1 1 1 1" "1 1 1 0" "500" ;
+			
+			transition "ControlStationSlct::matcolor" "1 0 0 1" "0.8 1 1 0" "1000" ;
+			transition "ControlStationBG::matcolor" "0 0 0 0" "0 0 0 0.75" "500" ;
+			transition "ControlStationBG::rect" "208 194 17 44" "157 194 87 44" "500" ;
+		}
+
+		onTime 3800 {
+			transition "ControlStationTxt::forecolor" "1 1 1 0" "1 1 1 1" "500" ;
+			transition "TpStationSlct::matcolor" "1 0 0 1" "0.8 1 1 0" "1000" ;
+			transition "TpStationBG::matcolor" "0 0 0 0" "0 0 0 0.75" "500" ;
+			transition "TpStationBG::rect" "145 118 19 44" "104 118 101 44" "500" ;
+		}
+
+		onTime 4200 {
+			transition "TpStationTxt::forecolor" "1 1 1 0" "1 1 1 1" "500" ;
+		}
+
+		onTime 4400 {
+			transition "ControlStationSlct::matcolor" "0.8 1 1 0" "1 1 1 1" "700" ;
+			set "ControlStationSlct::background" "guis/assets/teleporter/selected" ;
+		}
+
+		onTime 4800 {
+			transition "TpStationSlct::matcolor" "0.8 1 1 0" "1 1 1 1" "700" ;
+			set "TpStationSlct::background" "guis/assets/teleporter/selected" ;
+		}
+
+		onTime 4900 {
+			transition "SourceText1a::forecolor" "1 1 1 1" "1 1 1 0" "400" ;
+			transition "SourceText1::forecolor" "1 1 1 0" "1 1 1 1" "400" ;
+			resetTime "SourceText1" "0" ;
+			transition "Pulse3::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+			set "TextStatus::text" "#str_00073" ;
+		}
+
+		onTime 5000 {
+			transition "SourceText2::forecolor" "1 1 1 0" "1 1 1 1" "400" ;
+			transition "Pulse3::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+			//	transition "MapHighlight::matcolor" "1 1 1 0" "1 1 1 1" "1000" ;
+			transition "Pulse2::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+			
+			//	set "cmd" "play guisounds_ping" ;
+		}
+
+		onTime 5100 {
+			transition "Pulse2::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+			transition "Pulse1::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+			set "cmd" "play guisounds_pinglow" ;
+		}
+
+		onTime 5200 {
+			transition "Pulse1::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+		}
+
+		onTime 6200 {
+			//	transition "MapHighlight::matcolor" "1 1 1 1" "1 1 1 0" "800" ;
+			set "SourceText3::forecolor" "1 1 1 1" ;
+			transition "TextStatus2::forecolor" "1 1 1 1" "1 1 1 0" "800" ;
+			
+			transition "ButtonPad1::matcolor" "0.6 0.8 1 0.8" "0.6 0.8 1 0.4" "500" ;
+			transition "ButtonPad1o::matcolor" "1 1 1 0.6" "0.6 0.8 1 0.4" "500" ;
+			transition "TextPad1::forecolor" "1 1 1 0" "1 1 1 0.8" "500" ;
+			transition "Target1::matcolor" "0 0 0 0" "1 1 1 1" "300" ;
+			transition "Selected1::matcolor" "1 0 0 0.6" "1 0 0 0" "700" ;
+			set "cmd" "play guisounds_click3" ;
+		}
+
+		onTime 6900 {
+			transition "Pulse3::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+		}
+
+		onTime 7000 {
+			transition "Pulse3::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+			//	transition "MapHighlight::matcolor" "1 1 1 0" "1 1 1 1" "1000" ;
+			transition "Pulse2::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+			
+			//	set "cmd" "play guisounds_ping" ;
+		}
+
+		onTime 7100 {
+			transition "Pulse2::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+			transition "Pulse1::matcolor" "0 0 0 0" "0.5 0.5 0.5 1" "100" ;
+			
+			set "cmd" "play guisounds_pinglow" ;
+		}
+
+		onTime 7200 {
+			transition "Pulse1::matcolor" "0.5 0.5 0.5 1" "0 0 0 0" "1000" ;
+			
+			transition "ButtonPad2::matcolor" "0.6 0.8 1 0.8" "0.6 0.8 1 0.4" "500" ;
+			transition "ButtonPad2o::matcolor" "1 1 1 0.6" "0.6 0.8 1 0.4" "500" ;
+			transition "TextPad2::forecolor" "1 1 1 0" "1 1 1 0.8" "500" ;
+			transition "Target2::matcolor" "0 0 0 0" "1 1 1 1" "300" ;
+			transition "Selected2::matcolor" "1 0 0 0.6" "1 0 0 0" "700" ;	
+			
+			set "SourceText3::text" "#str_01165" ;
+		}
+
+		onTime 8200 {
+			//	transition "MapHighlight::matcolor" "1 1 1 1" "1 1 1 0" "800" ;
+			transition "SourceText2::forecolor" "1 1 1 1" "1 1 1 0" "400" ;
+			transition "SourceText2a::forecolor" "1 1 1 0" "1 1 1 1" "400" ;
+			set "SourceText3::text" "#str_01166" ;
+			transition "ButtonPad3::matcolor" "0.6 0.8 1 0.8" "0.6 0.8 1 0.4" "500" ;
+			transition "ButtonPad3o::matcolor" "1 1 1 0.6" "0.6 0.8 1 0.4" "500" ;
+			transition "TextPad3::forecolor" "1 1 1 0" "1 1 1 0.8" "500" ;
+			transition "Target3::matcolor" "0 0 0 0" "1 1 1 1" "300" ;
+			transition "Selected3::matcolor" "1 0 0 0.6" "1 0 0 0" "700" ;
+			set "cmd" "play guisounds_click3" ;
+			transition "TextStatus2::forecolor" "1 1 1 1" "1 1 1 0" "800" ;
+			
+			set "SourceText::text" "#str_01144" ;
+			
+			set "SourceTextClamp::rect" "336 66 0 236" ;
+		}
+
+		onTime 9200 {
+			transition "TextDestination::forecolor" "1 1 1 1" "1 0 0 0.8" "500" ;
+			transition "TextDestinationClip::rect" "305 266 10 33" "305 266 316 33" "500" ;
+			set "TextDestination::text" "#str_01145" ;
+			set "clickcatch::rect" "0 0 0 0" ;
+			set "Static1::rect" "0 0 -640 480" ;
+		}
+
+		onTime 9300 {
+			set "TextPad1::noevents" "0" ;
+			set "TextPad2::noevents" "0" ;
+			set "TextPad3::noevents" "0" ;
+			set "Target1::noevents" "0" ;
+			set "Target2::noevents" "0" ;
+			set "Target3::noevents" "0" ;
+		}
+
+		onTime 10200 {
+			set "TextStatus::text" "#str_00280" ;
+			transition "SourceText::forecolor" "1 1 1 0" "1 1 1 1" "400" ;
+			transition "SourceTextClamp::rect" "336 293 0 236" "336 293 285 236" "700" ;
+			transition "SourceText1::forecolor" "1 1 1 1" "1 1 1 0" "400" ;
+			transition "SourceText2a::forecolor" "1 1 1 1" "1 1 1 0" "400" ;
+			transition "SourceText3::forecolor" "1 1 1 1" "1 1 1 0" "400" ;
+		}
+
+	}
+	windowDef Addhighlight
+	{
+		rect	0,7,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.6 ,0.6 ,1
+		visible	1
+	}
+	windowDef scanpulse1
+	{
+		rect	23,30,252,383
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-252,2000
+			matcolor	1,1,1,0.05
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+}

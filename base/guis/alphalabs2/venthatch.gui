@@ -1,0 +1,1011 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,1
+	visible	1
+	windowDef StatusArea
+	{
+		rect	1,1,638,112
+		visible	1
+		windowDef bar1Left
+		{
+			rect	5,7,-32,27
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef bar1Mid
+		{
+			rect	37,7,560,27
+			visible	1
+			background	"guis/assets/common/titlebar_mid"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef bar1Right
+		{
+			rect	597,7,38,27
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef bar2Left
+		{
+			rect	5,55,-32,-27
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef bar2Mid
+		{
+			rect	37,55,560,27
+			visible	1
+			background	"guis/assets/common/titlebar_mid"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef bar2Right
+		{
+			rect	597,55,38,-27
+			visible	1
+			background	"guis/assets/common/titlebar_corner"
+			matcolor	0.32,0.38,0.38,0.7
+		}
+		windowDef TextMainTitle
+		{
+			rect	14,17,610,51
+			text	"#str_00108"
+			font	"fonts/micro"
+			textscale	0.75
+			forecolor	0.49,0.53,0.49,0.7
+			visible	1
+			textalign	1
+		}
+	}
+	windowDef BGImageClip
+	{
+		rect	6,375,628,98
+		visible	1
+		windowDef BgImage
+		{
+			rect	-18,-370,877,494
+			visible	1
+			background	"guis/assets/common/infobg1"
+			matcolor	1, 1, 1, 0.7
+		}
+	}
+	windowDef GridAreaParent
+	{
+		rect	24,255,360,389
+		visible	1
+		windowDef MapBg111
+		{
+			rect	5,5,342,15
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	0.3,0.3,0.3,0.7
+		}
+		windowDef MapBG121
+		{
+			rect	5,20,342,-119
+			visible	1
+			background	"guis/assets/teleporter/grid4"
+			matcolor	0.3,0.3,0.3,0.7
+		}
+		windowDef MapBG131
+		{
+			rect	5,139,342,-15
+			visible	1
+			background	"guis/assets/teleporter/grid3"
+			matcolor	0.3,0.3,0.3,0.7
+		}
+		windowDef MapGrid
+		{
+			rect	9,9,334,143
+			visible	1
+			background	"gui/grid2"
+			matcolor	1,1,1,0.1
+			matscalex	7
+			matscaley	3
+			windowDef bigballglow
+			{
+				rect	-7,-424,1203,644
+				visible	1
+				background	"gui/thermal/glow"
+				matcolor	0.18,0.18,0.2,1
+			}
+		}
+	}
+	windowDef TextNum1
+	{
+		rect	42,266,58,137
+		visible	1
+		text	"12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6"
+		forecolor	1,1,1,0.1
+		textscale	0.33
+		font	"fonts/micro"
+
+		onTime 600 {
+			set "text" "12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6" ;
+		}
+
+		onTime 550 {
+			set "text" "1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1" ;
+		}
+
+		onTime 500 {
+			set "text" "18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71" ;
+		}
+
+		onTime 450 {
+			set "text" "12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2" ;
+		}
+
+		onTime 400 {
+			set "text" "8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8" ;
+		}
+
+		onTime 350 {
+			set "text" "7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82" ;
+		}
+
+		onTime 300 {
+			set "text" "0.29\n0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69" ;
+		}
+
+		onTime 250 {
+			set "text" "0.3\n1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29" ;
+		}
+
+		onTime 200 {
+			set "text" "1.56\n20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3" ;
+		}
+
+		onTime 150 {
+			set "text" "20.2\n18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56" ;
+		}
+
+		onTime 100 {
+			set "text" "18.1\n19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2" ;
+		}
+
+		onTime 50 {
+			set "text" "19.9\n14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1" ;
+		}
+
+		onTime 0 {
+			set "text" "14.6\n12.1\n1.71\n18.2\n12.8\n8.82\n7.69\n0.29\n0.3\n1.56\n20.2\n18.1\n19.9" ;
+		}
+
+		onTime 650 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef ButtonAreaParent1
+	{
+		rect	383,80,501,364
+		visible	1
+		windowDef ButtonAreaBoxTop1
+		{
+			rect	6,9,222,18
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.6
+		}
+		windowDef ButtonAreaBoxMid1
+		{
+			rect	6,27,222,-291
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.6
+		}
+		windowDef ButtonAreaBoxBtm1
+		{
+			rect	6,318,222,-18
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.6
+		}
+	}
+	windowDef ButtonAreaParent
+	{
+		rect	13,78,367,173
+		visible	1
+		windowDef ButtonAreaBoxTop
+		{
+			rect	8,11,357,20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.6
+		}
+		windowDef ButtonAreaBoxMid
+		{
+			rect	8,31,357,-119
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.6
+		}
+		windowDef ButtonAreaBoxBtm
+		{
+			rect	8,150,357,-20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.6
+		}
+	}
+	windowDef scanpulse
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-640,3000
+			matcolor	1,1,1,0.03
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+	windowDef Fill1
+	{
+		rect	43,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+
+		onTime 0 {
+			transition "Fill1::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill5::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 250 {
+			transition "Fill2::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill6::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 500 {
+			transition "Fill3::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill7::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 750 {
+			transition "Fill4::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill8::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 1000 {
+			transition "Fill5::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill1::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 1250 {
+			transition "Fill6::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill2::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 1500 {
+			transition "Fill7::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill3::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 1750 {
+			transition "Fill8::matcolor" "0.9 1 1 0.4" "0.9 1 1 0" "500" ;
+			transition "Fill4::matcolor" "0.9 1 1 0" "0.9 1 1 0.4" "500" ;
+		}
+
+		onTime 2000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Fill2
+	{
+		rect	66,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill3
+	{
+		rect	88,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill4
+	{
+		rect	110,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill5
+	{
+		rect	133,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill6
+	{
+		rect	156,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill7
+	{
+		rect	178,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef Fill8
+	{
+		rect	200,444,28,24
+		background	"guis/assets/kiosk/titlefill"
+		visible	1
+		matcolor	0.9, 1, 1, 0.4
+	}
+	windowDef TriggerButtonBG
+	{
+		rect	38,100,326,136
+		backcolor	1, 0.6, 0.2, 0.2
+		visible	1
+	}
+	windowDef TriggerButton
+	{
+		rect	27,94,345,149
+		background	"guis/assets/smdoor/bg2"
+		matcolor	1, 1, 1, 0.5
+		text	"#str_00109"
+		textscale	0.8
+		textalign	1
+		forecolor	1, 0.9, 0.5, 0.8
+		cursor	1
+		textaligny	25
+		visible	1
+		float	"hatch"	0
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0.5" "1 1 1 0.8" "200" ; 
+			transition	"forecolor" "1 0.9 0.5 0.8" "1 1 1 0.8" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.8" "1 1 1 0.5" "200" ; 
+			transition	"forecolor" "1 1 1 0.8" "1 0.9 0.5 0.8" "200" ; 
+		}
+
+		onAction {
+			set "cmd" "activate ; play guisounds_click" ;
+			transition	"matcolor" "1 1 1 0.5" "1 1 1 0" "300" ; 
+			transition	"TriggerButtonBG::backcolor" "1 0.6 0.2 0.2" "1 0.6 0.2 0" "300" ;
+			transition	"forecolor" "1 1 1 0.8" "1 1 1 0.0" "300" ; 
+			ResetTime	"Text2" "0" ;
+			set "hatch" "1" ;
+			set "noevents" "1" ;
+		}
+
+	}
+	windowDef TriggerButtonTop
+	{
+		rect	27,94,345,149
+		text	"#str_00110"
+		textscale	0.8
+		textalign	1
+		forecolor	1, 1, 1, 0
+		cursor	1
+		textaligny	17
+		visible	1
+	}
+	windowDef Text2
+	{
+		rect	40,364,400,100
+		text	""
+		textscale	0.74
+		textalign	1
+		forecolor	1, 1, 1, 0
+		visible	1
+		notime	1
+
+		onTime 0 {
+			set "TriggerButton::visible" "0" ;
+		}
+
+		onTime 300 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0" "1 1 1 0.4" "300" ;
+		}
+
+		onTime 1000 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0.4" "1 1 1 0" "300" ;
+		}
+
+		onTime 1300 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0" "1 1 1 0.4" "300" ;
+		}
+
+		onTime 2000 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0.4" "1 1 1 0" "300" ;
+		}
+
+		onTime 2300 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0" "1 1 1 0.4" "300" ;
+		}
+
+		onTime 3000 {
+			transition "TriggerButtonTop::forecolor" "1 1 1 0.4" "1 1 1 0" "300" ;
+		}
+
+		onTime 3800 {
+			set "TriggerButtonTop::textscale" "0.68" ;
+			set "TriggerButtonTop::textaligny" "10" ;
+			set "TriggerButtonTop::text" "#str_00111" ;
+			transition "TriggerButtonTop::forecolor" "1 1 1 0" "1 1 1 0.6" "300" ;
+		}
+
+		onTime 5800 {
+			set "TriggerButtonTop::text" "#str_00112" ;
+		}
+
+		onTime 5900 {
+			set "TriggerButtonTop::text" "#str_00113" ;
+		}
+
+		onTime 6000 {
+			set "TriggerButtonTop::text" "#str_00114" ;
+		}
+
+	}
+	windowDef BarPARENT
+	{
+		rect	34,169,332,236
+		visible	1
+		windowDef Bar1
+		{
+			rect	0 ,0 ,640 ,480
+			visible	1
+			background	"gui/bar"
+			matcolor	1, 1, 1, 0.2
+
+			onTime 0 {
+				transition "rect" "0 0 640 480" "0 240 640 0" "600" ;
+			}
+
+			onTime 600 {
+				transition "rect" "0 240 640 0" "0 0 640 -480" "600" ;
+			}
+
+			onTime 1200 {
+				transition "rect" "0 0 640 -480" "0 240 640 0" "600" ;
+			}
+
+			onTime 1800 {
+				transition "rect" "0 240 640 0" "0 0 640 480" "600" ;
+			}
+
+			onTime 2400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar2
+		{
+			rect	0 ,40 ,640 ,400
+			visible	1
+			background	"gui/bar"
+			matcolor	1, 1, 1, 0.3
+
+			onTime 0 {
+				transition "rect" "0 40 640 400" "0 240 640 0" "150" ;
+			}
+
+			onTime 150 {
+				transition "rect" "0 240 640 0" "0 40 640 -400" "150" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 40 640 -400" "0 240 640 0" "150" ;
+			}
+
+			onTime 450 {
+				transition "rect" "0 240 640 0" "0 40 640 400" "150" ;
+			}
+
+			onTime 600 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar3
+		{
+			rect	0 ,80 ,640 ,320
+			visible	1
+			background	"gui/bar"
+			matcolor	1, 1, 1, 0.4
+
+			onTime 0 {
+				transition "rect" "0 80 640 320" "0 240 640 0" "300" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 80 640 -320" "300" ;
+			}
+
+			onTime 600 {
+				transition "rect" "0 80 640 -320" "0 240 640 0" "300" ;
+			}
+
+			onTime 900 {
+				transition "rect" "0 240 640 0" "0 80 640 320" "300" ;
+			}
+
+			onTime 1200 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar4
+		{
+			rect	0 ,120 ,640 ,240
+			visible	1
+			background	"gui/bar"
+			matcolor	1, 1, 1, 0.3
+
+			onTime 0 {
+				transition "rect" "0 120 640 240" "0 240 640 0" "150" ;
+			}
+
+			onTime 150 {
+				transition "rect" "0 240 640 0" "0 120 640 -240" "150" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 120 640 -240" "0 240 640 0" "150" ;
+			}
+
+			onTime 450 {
+				transition "rect" "0 240 640 0" "0 120 640 240" "150" ;
+			}
+
+			onTime 600 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar5
+		{
+			rect	0 ,160 ,640 ,160
+			visible	1
+			background	"gui/bar"
+			matcolor	1, 1, 1, 0.2
+
+			onTime 0 {
+				transition "rect" "0 160 640 160" "0 240 640 0" "600" ;
+			}
+
+			onTime 600 {
+				transition "rect" "0 240 640 0" "0 160 640 -160" "600" ;
+			}
+
+			onTime 1200 {
+				transition "rect" "0 160 640 -160" "0 240 640 0" "600" ;
+			}
+
+			onTime 1800 {
+				transition "rect" "0 240 640 0" "0 160 640 160" "600" ;
+			}
+
+			onTime 2400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar6
+		{
+			rect	0 ,160 ,640 ,160
+			visible	1
+			background	"gui/bar2"
+			matcolor	0.3, 0.8, 0.9, 0.2
+
+			onTime 0 {
+				transition "rect" "0 160 640 160" "0 240 640 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "rect" "0 240 640 0" "0 160 640 -160" "100" ;
+			}
+
+			onTime 200 {
+				transition "rect" "0 160 640 -160" "0 240 640 0" "100" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 160 640 160" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar7
+		{
+			rect	0 ,170 ,640 ,150
+			visible	1
+			background	"gui/bar2"
+			matcolor	0.3, 0.8, 0.9, 0.2
+
+			onTime 0 {
+				transition "rect" "0 170 640 150" "0 240 640 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "rect" "0 240 640 0" "0 170 640 -150" "100" ;
+			}
+
+			onTime 200 {
+				transition "rect" "0 170 640 -150" "0 240 640 0" "100" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 170 640 150" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar8
+		{
+			rect	0 ,180 ,640 ,140
+			visible	1
+			background	"gui/bar2"
+			matcolor	0.3, 0.8, 0.9, 0.2
+
+			onTime 0 {
+				transition "rect" "0 180 640 140" "0 240 640 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "rect" "0 240 640 0" "0 180 640 -140" "100" ;
+			}
+
+			onTime 200 {
+				transition "rect" "0 180 640 -140" "0 240 640 0" "100" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 180 640 140" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar9
+		{
+			rect	0 ,190 ,640 ,130
+			visible	1
+			background	"gui/bar2"
+			matcolor	0.3, 0.8, 0.9, 0.2
+
+			onTime 0 {
+				transition "rect" "0 190 640 130" "0 240 640 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "rect" "0 240 640 0" "0 190 640 -130" "100" ;
+			}
+
+			onTime 200 {
+				transition "rect" "0 190 640 -130" "0 240 640 0" "100" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 190 640 130" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar10
+		{
+			rect	0 ,200 ,640 ,120
+			visible	1
+			background	"gui/bar2"
+			matcolor	0.3, 0.8, 0.9, 0.2
+
+			onTime 0 {
+				transition "rect" "0 200 640 120" "0 240 640 0" "100" ;
+			}
+
+			onTime 100 {
+				transition "rect" "0 240 640 0" "0 200 640 -120" "100" ;
+			}
+
+			onTime 200 {
+				transition "rect" "0 200 640 -120" "0 240 640 0" "100" ;
+			}
+
+			onTime 300 {
+				transition "rect" "0 240 640 0" "0 200 640 120" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+	windowDef LeftText1
+	{
+		rect	183,441,200,39
+		text	"#str_00115"
+		textscale	0.4
+		forecolor	1,1,1,0.4
+		visible	1
+	}
+	windowDef LeftText2
+	{
+		rect	176,266,200,70
+		text	"#str_00116"
+		textscale	0.4
+		forecolor	1,1,1,0.4
+		visible	1
+	}
+	windowDef RightText1
+	{
+		rect	405,98,200,70
+		text	"#str_00117"
+		textscale	0.35
+		forecolor	0.4, 0.7, 1, 0.5
+		visible	1
+	}
+	windowDef RightText2
+	{
+		rect	405,116,200,200
+		visible	1
+
+		onTime 0 {
+			transition "RightText2Nest::forecolor" "0.8 0.4 0.2 0.5" "0.8 0.4 0.2 0" "500" ;
+		}
+
+		onTime 400 {
+			transition "RightText4Nest::forecolor" "0.8 0.4 0.2 0.5" "0.8 0.4 0.2 0" "500" ;
+		}
+
+		onTime 800 {
+			transition "RightText6Nest::forecolor" "0.8 0.4 0.2 0.5" "0.8 0.4 0.2 0" "500" ;
+		}
+
+		onTime 2000 {
+			transition "RightText2Nest::forecolor" "0.8 0.4 0.2 0" "0.8 0.4 0.2 0.5" "200" ;
+			transition "RightText2::rect" "405 116 0 0" "405 116 200 100" "500" ;
+		}
+
+		onTime 3000 {
+			transition "RightText4Nest::forecolor" "0.8 0.4 0.2 0" "0.8 0.4 0.2 0.5" "200" ;
+			transition "RightText4::rect" "405 231 0 0" "405 231 200 20" "500" ;
+		}
+
+		onTime 4000 {
+			transition "RightText6Nest::forecolor" "0.8 0.4 0.2 0" "0.8 0.4 0.2 0.5" "200" ;
+			transition "RightText6::rect" "405 290 0 0" "405 290 200 150" "500" ;
+		}
+
+		onTime 6000 {
+			resetTime "0" ;
+		}
+
+		windowDef RightText2Nest
+		{
+			rect	0,0,200,200
+			text	"#str_00118"
+			textscale	0.35
+			forecolor	0.8, 0.4, 0.2, 0.5
+			visible	1
+		}
+
+	}
+	windowDef RightText3
+	{
+		rect	405,213,200,70
+		visible	1
+	
+		windowDef RightText3Nest
+		{
+			rect	0,0,200,70
+			text	"#str_00119"
+			textscale	0.35
+			forecolor	0.4, 0.7, 1, 0.5
+			visible	1
+		}
+	}
+	windowDef RightText4
+	{
+		rect	405,231,200,100
+		visible	1
+		
+		windowDef RightText4Nest
+		{
+			rect	0,0,200,100
+			text	"-24.1"
+			textscale	0.35
+			forecolor	0.8, 0.4, 0.2, 0.5
+			visible	1
+		}
+	}
+	windowDef RightText5
+	{
+		rect	405,272,200,70
+		visible	1
+		
+		windowDef RightText5Nest
+		{
+			rect	0,0,200,70
+			text	"#str_00120"
+			textscale	0.35
+			forecolor	0.4, 0.7, 1, 0.5
+			visible	1
+		}
+	}
+	windowDef RightText6
+	{
+		rect	0,0,200,200
+		visible	1
+		
+		windowDef RightText6Nest
+		{
+			rect	0,0,200,200
+			text	"#str_00121"
+	
+			textscale	0.35
+			forecolor	0.8, 0.4, 0.2, 0.5
+			visible	1
+		}
+	}
+	windowDef TempGrid
+	{
+		rect	399,449,200,20
+		visible	1
+		background	"guis/assets/rodstat2/temp2"
+		matcolor	1 ,1 ,1 ,0.5
+
+		onTime 0 {
+			transition "TempLid::rect" "520 429 20 7" "530 429 20 7" "8000" "0.5" "0.5" ;
+		}
+
+		onTime 8000 {
+			transition "TempLid::rect" "530 429 20 7" "520 429 20 7" "8000" "0.5" "0.5" ;
+		}
+
+		onTime 16000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef TempLid
+	{
+		rect	527,436,20,7
+		visible	0
+		background	"guis/assets/airlock/status"
+		matcolor	1 ,1 ,1 ,1
+
+		onTime 0 {
+			transition "matcolor" "1 1 0 1" "1 0.8 0 1" "1000" ;
+		}
+
+		onTime 1000 {
+			transition "matcolor" "1 0.8 0 1" "1 1 0 1" "1000" ;
+		}
+
+		onTime 2000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Bglow
+	{
+		rect	0,-14,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+
+		onTime 0 {
+			transition "matcolor" "0.4 0.8 1 0.08" "0.4 0.8 1 0.07" "150" ;
+		}
+
+		onTime 150 {
+			transition "matcolor" "0.4 0.8 1 0.07" "0.4 0.8 1 0.08" "150" ;
+		}
+
+		onTime 300 {
+			transition "matcolor" "0.4 0.8 1 0.08" "0.4 0.8 1 0.07" "150" ;
+		}
+
+		onTime 450 {
+			transition "matcolor" "0.4 0.8 1 0.07" "0.4 0.8 1 0.08" "150" ;
+		}
+
+		onTime 600 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,-660 ,500
+		visible	0
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 6
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdfade [ time * .0025 ] / 5
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.5 ,0.5 ,1
+		visible	1
+	}
+	windowDef Addhighlight2
+	{
+		rect	0 ,200 ,640 ,-280
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.5 ,0.5 ,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+		matscaley	1.5
+	}
+	windowDef Dirt
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt1"
+		noevents	1
+	}
+	windowDef Reflect
+	{
+		rect	10 ,-15 ,620 ,470
+		matcolor	1 ,1 ,1 ,0.1
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Bglow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4,0.5,0.5,0.1
+	}
+}

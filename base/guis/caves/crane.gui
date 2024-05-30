@@ -1,0 +1,876 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+	comment "gui_parm2 is reported to the gui from the script to show the current rotation number (15 is default, ranges from 0 to 105).\nThe upper left forward button will run the script in gui_parm6.\nLower left back runs gui_parm9.\nBoth will only run while holding down the mouse, and mouse release or moving off of the button run gui_parm12.\nThe large left arrow will run the scrit defined in gui_parm7 on the first click, and gui_parm12 on the 2nd, then repeats.\nLarge right arrow runs gui_parm8 on first click and gui_parm12 on 2nd, then repeats.\nThe 2 arrows on the right will both run gui_parm12 on click."
+/*
+	float cranerecall 1
+
+	onActivate {
+		set "cranerecall" "0" ;
+	}
+	onDeactivate {
+		set "cranerecall" "1" ;
+	}
+*/
+	onEvent {
+/*
+		if ("gui::gui_parm2" == 15) { 
+			if ("cranerecall" == 1) { 
+				if ("TriggerButtonRight::active" == 1) { 
+					transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+					set "SpinCirc::rect" "246 78 152 224" ;
+					transition "SpinCirc::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+					transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					set "TriggerButtonRight::active" "0" ;
+					set "StatusText::idle" "0" ;
+					resetTime "StatusText" "0" ;
+					set "StatusText::text" "Stopped" ;
+				}
+			}
+		}
+*/
+		if ("gui::gui_parm2" == 105) { 
+			if ("TriggerButtonRight::active" == 1) { 
+				runScript	"gui::gui_parm12" ;
+				transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				set "SpinCirc::rect" "246 78 152 224" ;
+				set	"cmd"	"play guisounds_click1" ;
+				transition "SpinCirc::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+				transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonRight::active" "0" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00278" ;
+			}
+		}
+		if ("gui::gui_parm2" == 15) { 
+			if ("TriggerButtonLeft::active" == 1) { 
+				runScript	"gui::gui_parm12" ;
+				transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				set "SpinCirc::rect" "246 78 -152 224" ;
+				set	"cmd"	"play guisounds_click1" ;
+				transition "SpinCirc::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+				transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonLeft::active" "0" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00278" ;
+			}
+		}
+
+		if ("gui::gui_parm3" == 0) { 
+			if ("TriggerButtonFore::active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "TriggerButtonFore::active"	"0" ;
+				transition "ArrowFore::matcolor" "1 1 1 0.5" "0 0 0 0.7" "200" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00279" ;
+			}
+		}
+
+		if ("gui::gui_parm3" == 90) { 
+			if ("TriggerButtonBack::active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "TriggerButtonBack::active"	"0" ;
+				transition "ArrowBack::matcolor" "1 1 1 0.5" "0 0 0 0.6" "200" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00279" ;
+			}
+		}
+	}
+
+	windowDef Background
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		windowDef BgFill
+		{
+			rect	32, 32, 576, 416
+			backcolor	0.494,0.572,0.580,1
+			visible	1
+		}
+		windowDef Top
+		{
+			rect	37,5,566,-32
+			background	"gui/caves/horiz"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Bottom
+		{
+			rect	37,443,566,32
+			background	"gui/caves/horiz"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Left
+		{
+			rect	5, 32, -32, 416
+			background	"gui/caves/verts"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Right
+		{
+			rect	603, 32, 32, 416
+			background	"gui/caves/verts"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Corner1
+		{
+			rect	5, 5 ,-32 ,-32
+			background	"gui/caves/corner"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Corner2
+		{
+			rect	603, 5 ,32 ,-32
+			background	"gui/caves/corner"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Corner3
+		{
+			rect	5,443,-64,32
+			background	"gui/caves/corner2"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Corner4
+		{
+			rect	571,443,64,32
+			background	"gui/caves/corner2"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef InsetLineLeft1
+		{
+			rect	5,359,-32,84
+			background	"gui/caves/vertl"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef InsetLineRight
+		{
+			rect	603,359,32,84
+			background	"gui/caves/vertl"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef InsetLeft1
+		{
+			rect	5,359,-32,-32
+			background	"gui/caves/verta"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+		windowDef Inset3
+		{
+			rect	603,359,32,-32
+			background	"gui/caves/verta"
+			matcolor	0.85, 0.85, 1, 1
+			visible	1
+		}
+	}
+	windowDef TopInset1
+	{
+		rect	82,5,-32,64
+		background	"guis/assets/caverns/horiz2a"
+		matcolor	0.85, 0.85, 1, 1
+		visible	1
+	}
+	windowDef TopInset2
+	{
+		rect	114,5,415,64
+		background	"guis/assets/caverns/horiz2b"
+		matcolor	0.85, 0.85, 1, 1
+		visible	1
+	}
+	windowDef TopInset3
+	{
+		rect	529,5,32,64
+		background	"guis/assets/caverns/horiz2a"
+		matcolor	0.85, 0.85, 1, 1
+		visible	1
+	}
+	windowDef Title1
+	{
+		rect	65,333,54,-128
+		background	"gui/caves/title1"
+		matcolor	0.85, 0.85, 1, 0.3
+		visible	1
+	}
+	windowDef Title2
+	{
+		rect	119,333,403,128
+		background	"gui/caves/title2"
+		matcolor	0.85, 0.85, 1, 0.3
+		visible	1
+	}
+	windowDef Title3
+	{
+		rect	522,333,-54,-128
+		background	"gui/caves/title1"
+		matcolor	0.85, 0.85, 1, 0.3
+		visible	1
+	}
+	windowDef UACLogo1
+	{
+		rect	78,365,135,68
+		background	"guis/assets/cpuserver/logo.tga"
+		visible	1
+		matcolor	0.53, 0.6, 0.55, pdinout[ time * 0.001 ]/1.5
+	}
+	windowDef UACLogo2
+	{
+		rect	78,365,135,68
+		background	"guis/assets/cpuserver/logo2.tga"
+		visible	1
+		matcolor	0.5, 0.6, 0.6, 1
+	}
+	windowDef StatusText
+	{
+		rect	217,364,325,96
+		text	"#str_00280"
+		textscale	0.8
+		font	"fonts/bank"
+		textalign	2
+		forecolor	0.85,1,1,0.6
+		visible	1
+		notime 1
+		float "idle" 0
+
+		onTime 1500 {
+			if ("idle" == 0) { 
+				set "text" "#str_00280" ;
+			}
+		}
+
+	}
+	windowDef LBCornerL
+	{
+		rect	92,328,-32,32
+		background	"guis/assets/caverns/box2c"
+		matcolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef LBBottom
+	{
+		rect	124,328,-395,32
+		background	"guis/assets/caverns/box2h"
+		matcolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef LBSideL
+	{
+		rect	92,44,-32,284
+		background	"guis/assets/caverns/box2v"
+		matcolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef LBSideR
+	{
+		rect	519,44,32,284
+		background	"guis/assets/caverns/box2v"
+		matcolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef LBCornerR
+	{
+		rect	519,328,32,32
+		background	"guis/assets/caverns/box2c"
+		matcolor	1, 1, 1, 0.4
+		visible	1
+	}
+	windowDef LBFill
+	{
+		rect	124,44,395,284
+		visible	1
+		backcolor	0.517,0.615,0.517,0.4
+	}
+	windowDef ArrowFore
+	{
+		rect	30,42,55,67
+		visible	1
+		background	"guis/assets/caverns/arrowud"
+		matcolor	0,0,0,0.4
+	}
+	windowDef ArrowBack
+	{
+		rect	30,301,55,-67
+		visible	1
+		background	"guis/assets/caverns/arrowud"
+		matcolor	0,0,0,0.4
+	}
+	windowDef ArrowUp
+	{
+		rect	555,42,55,67
+		visible	1
+		background	"guis/assets/caverns/arrowud"
+		matcolor	0,0,0,0.4
+	}
+	windowDef ArrowDown
+	{
+		rect	555,302,55,-67
+		visible	1
+		background	"guis/assets/caverns/arrowud"
+		matcolor	0,0,0,0.4
+	}
+	windowDef ABoxTL
+	{
+		rect	108,48,201,132
+		visible	1
+		background	"guis/assets/caverns/cranebox"
+		matcolor	1,1,1,0.15
+	}
+	windowDef ABoxBL
+	{
+		rect	108,201,201,-133
+		visible	1
+		background	"guis/assets/caverns/cranebox"
+		matcolor	1,1,1,0.15
+	}
+	windowDef ABoxTR
+	{
+		rect	334,48,-201,132
+		visible	1
+		background	"guis/assets/caverns/cranebox"
+		matcolor	1,1,1,0.15
+	}
+	windowDef ABoxBR
+	{
+		rect	334,201,-201,-133
+		visible	1
+		background	"guis/assets/caverns/cranebox"
+		matcolor	1,1,1,0.15
+	}
+	windowDef ArrowLeftHighlight
+	{
+		rect	114,89,130,203
+		visible	0
+		background	"guis/assets/caverns/arrowlr"
+		matcolor	0,0,0,0.2
+
+		onTime 0 {
+			transition "matcolor" "0 0 0 0.1" "0 0 0 0.2" "300" ;
+		}
+
+		onTime 300 {
+			transition "matcolor" "0 0 0 0.2" "0 0 0 0.1" "300" ;
+		}
+
+		onTime 600 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef ArrowRightHighlight
+	{
+		rect	399,89,-130,203
+		visible	0
+		background	"guis/assets/caverns/arrowlr"
+		matcolor	0,0,0,0.2
+
+		onTime 0 {
+			transition "matcolor" "0 0 0 0.1" "0 0 0 0.2" "300" ;
+		}
+
+		onTime 300 {
+			transition "matcolor" "0 0 0 0.2" "0 0 0 0.1" "300" ;
+		}
+
+		onTime 600 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef ArrowLeft
+	{
+		rect	114,89,130,203
+		visible	1
+		background	"guis/assets/caverns/arrowlr"
+		matcolor	0,0,0,0.2
+	}
+	windowDef ArrowRight
+	{
+		rect	399,89,-130,203
+		visible	1
+		background	"guis/assets/caverns/arrowlr"
+		matcolor	0,0,0,0.2
+	}
+	windowDef Circ
+	{
+		rect	246,78,152,224
+		visible	1
+		background	"guis/assets/caverns/circ"
+		matcolor	1,1,1,0.1
+	}
+	windowDef SpinCirc
+	{
+		rect	246,78,152,224
+		visible	1
+		background	"guis/assets/caverns/spincirc"
+		matcolor	0,0,0,0.3
+	}
+	windowDef SpinCircL
+	{
+		rect	246,78,152,224
+		visible	1
+		background	"gui/caves/cranespinl"
+		matcolor	0,0,0,0
+	}
+	windowDef SpinCircR
+	{
+		rect	246,78,152,224
+		visible	1
+		background	"gui/caves/cranespinr"
+		matcolor	0,0,0,0
+	}
+	windowDef IconUpDown
+	{
+		rect	552,119,64,124
+		visible	1
+		background	"guis/assets/caverns/craneud"
+		matcolor	0, 0, 0, 0.4
+	}
+	windowDef IconForeBack
+	{
+		rect	48,119,20,172
+		visible	1
+		background	"guis/assets/caverns/craneud1"
+		matcolor	0, 0, 0, 0.3
+	}
+	windowDef IconForeBackBox
+	{
+	//	rect	35,143,46,66
+		rect	35, (120 + "gui::gui_parm3"),46,66
+		visible	1
+		background	"guis/assets/caverns/craneud2"
+		matcolor	0, 0, 0, 0.4
+	}
+	windowDef RotateText
+	{
+		rect	260,144,124,99
+		text	"gui::gui_parm2"
+		textscale	1.4
+		textalign	1
+		forecolor	0, 0, 0, 0.3
+		visible	1
+	}
+	windowDef Flicker1
+	{
+		rect	5 ,5 ,630 ,-470
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0.6, 0.9, 1, 0.1
+		visible	0
+
+		onTime 0 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "400" ;
+		}
+
+		onTime 800 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 1500 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "300" ;
+		}
+
+		onTime 2000 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 3500 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Flicker2
+	{
+		rect	5, 5 ,-630 ,470
+		visible	1
+		background	"gui/testmat"
+		matcolor	1, 1, 1, 0.08
+	}
+	windowDef Static
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+		noevents	1
+	}
+	windowDef Mask
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+		noevents	1
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 3.5
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.8 ,0.8 ,0.6 ,1
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,486
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef OuterGlowBar1
+	{
+		rect	0,0,320,480
+		visible	1
+		windowDef OuterGlowBar
+		{
+			rect	3,0,-348,480
+			background	"gui/outerglowbar"
+			matcolor	0.8, 1, 1 ,1
+			visible	1
+		}
+	}
+	windowDef OuterGlowBar11
+	{
+		rect	320,0,320,480
+		visible	1
+		windowDef OuterGlowBar2
+		{
+			rect	-31,0,348,480
+			background	"gui/outerglowbar"
+			matcolor	0.8, 1, 1 ,1
+			visible	1
+		}
+	}
+	windowDef scanlinesAlt
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	5 ,5 ,630 ,-470
+		matcolor	1, 1, 1 ,0.6
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Dirt3
+	{
+		rect	5 ,5 ,-630 ,-470
+		matcolor	0.25, 0.13, 0.05 ,0.2
+		visible	1
+		background	"guis/assets/common/dirt7"
+		noevents	1
+	}
+	windowDef Reflect
+	{
+		rect	2,-7,640,588
+		matcolor	1 ,1 ,1 ,0.3
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef TriggerButtonFore
+	{
+		rect	27,39,60,70
+		cursor	1
+		visible	1
+		float	"active"	0
+
+		onAction {
+			set	"cmd"	"play guisounds_beep1" ;
+			runScript	"gui::gui_parm6" ; 
+			set "active" 	"1" ;
+			transition "ArrowFore::matcolor" "1 1 1 1" "1 1 1 0.5" "500" ;
+			set "StatusText::idle" "1" ;
+			set "StatusText::text" "#str_00281" ;
+
+			if ("TriggerButtonRight::active" == 1) { 
+				transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonRight::active" "0" ;
+			}
+			if ("TriggerButtonLeft::active" == 1) { 
+				transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonLeft::active" "0" ;
+			}
+		}
+
+		onMouseExit {
+			if ("active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "active" 	"0" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00282" ;
+			}
+			transition "ArrowFore::matcolor" "0 0 0 0.7" "0 0 0 0.4" "300" ;
+		}
+
+		onActionRelease { 
+			if ("active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "active" 	"0" ;
+				transition "ArrowFore::matcolor" "1 1 1 0.5" "0 0 0 0.7" "200" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00282" ;
+			}
+		}
+
+		onMouseEnter {
+			transition "ArrowFore::matcolor" "0 0 0 0.4" "0 0 0 0.7" "300" ;
+		}
+
+	}
+	windowDef TriggerButtonBack
+	{
+		rect	25,299,63,71
+		cursor	1
+		visible	1
+		float	"active"	0
+
+		onAction {
+			set	"cmd"	"play guisounds_beep1" ;
+			runScript	"gui::gui_parm9" ; 
+			set "active" 	"1" ;
+			transition "ArrowBack::matcolor" "1 1 1 0.8" "1 1 1 0.5" "500" ;
+			set "StatusText::idle" "1" ;
+			set "StatusText::text" "#str_00281" ;
+
+			if ("TriggerButtonRight::active" == 1) { 
+				transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonRight::active" "0" ;
+			}
+			if ("TriggerButtonLeft::active" == 1) { 
+				transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonLeft::active" "0" ;
+			}
+		}
+
+		onMouseExit {
+			if ("active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "active" 	"0" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00282" ;
+			}
+			transition "ArrowBack::matcolor" "0 0 0 0.6" "0 0 0 0.4" "300" ;
+		}
+
+		onActionRelease { 
+			if ("active" == 1) { 
+				set	"cmd"	"play guisounds_click1" ;
+				runScript	"gui::gui_parm12" ;
+				set "active" 	"0" ;
+				transition "ArrowBack::matcolor" "1 1 1 0.5" "0 0 0 0.6" "200" ;
+				set "StatusText::idle" "0" ;
+				resetTime "StatusText" "0" ;
+				set "StatusText::text" "#str_00282" ;
+			}
+		}
+
+		onMouseEnter {
+			transition "ArrowBack::matcolor" "0 0 0 0.4" "0 0 0 0.6" "300" ;
+		}
+
+	}
+	windowDef TriggerButtonLeft
+	{
+		rect	116,64,129,264
+		cursor	1
+		visible	1
+		float	"active"	0
+
+		onAction {
+			if ("gui::gui_parm2" != 15) { 		
+				if ("active" == 1) { 
+					transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+					set "SpinCirc::rect" "246 78 -152 224" ;
+					set	"cmd"	"play guisounds_click1" ;
+					transition "SpinCirc::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+					transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					runScript	"gui::gui_parm12" ;
+					set "active" 	"0" ;
+					set "StatusText::idle" "0" ;
+					resetTime "StatusText" "0" ;
+					set "StatusText::text" "#str_00282" ;
+				} else {
+					transition "ArrowLeft::matcolor" "1 1 1 0.6" "1 1 1 0.4" "200" ;
+					set	"cmd"	"play guisounds_beep1" ;
+					transition "SpinCirc::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					transition "SpinCircL::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+					runScript	"gui::gui_parm7" ; 
+					set "active" 	"1" ;
+					set "StatusText::idle" "1" ;
+					set "StatusText::text" "#str_00281" ;
+				}
+				if ("TriggerButtonRight::active" == 1) { 
+					transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+					transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					set "TriggerButtonRight::active" "0" ;
+				}
+			} else {
+				set	"cmd"	"play guisounds_error1" ;
+				transition "ArrowLeft::matcolor" "0.3 0 0 0.6" "0 0 0 0.2" "300" ;
+			}
+		}
+
+		onMouseEnter {
+			set "ArrowLeftHighlight::visible" "1" ;
+		}
+
+		onMouseExit {
+			set "ArrowLeftHighlight::visible" "0" ;
+		}
+
+	}
+	windowDef TriggerButtonRight
+	{
+		rect	397,60,128,265
+		cursor	1
+		visible	1
+		float	"active"	0
+
+		onAction {
+			if ("gui::gui_parm2" != 105) { 
+				if ("active" == 1) { 
+					transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+					set "SpinCirc::rect" "246 78 152 224" ;
+					set	"cmd"	"play guisounds_click1" ;
+					transition "SpinCirc::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+					transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					runScript	"gui::gui_parm12" ;
+					set "active" 	"0" ;
+					set "StatusText::idle" "0" ;
+					resetTime "StatusText" "0" ;
+					set "StatusText::text" "#str_00282" ;
+				} else {
+					transition "ArrowRight::matcolor" "1 1 1 0.6" "1 1 1 0.4" "200" ;
+					set	"cmd"	"play guisounds_beep1" ;
+					transition "SpinCirc::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					transition "SpinCircR::matcolor" "0 0 0 0" "0 0 0 0.3" "400" ;
+					runScript	"gui::gui_parm8" ; 
+					set "active" 	"1" ;
+					set "StatusText::idle" "1" ;
+					set "StatusText::text" "#str_00281" ;
+				}
+				if ("TriggerButtonLeft::active" == 1) { 
+					transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+					transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+					set "TriggerButtonLeft::active" "0" ;
+				}
+			} else {
+				set	"cmd"	"play guisounds_error1" ;
+				transition "ArrowRight::matcolor" "0.3 0 0 0.6" "0 0 0 0.2" "300" ;
+			}
+		}
+
+		onMouseEnter {
+			set "ArrowRightHighlight::visible" "1" ;
+		}
+
+		onMouseExit {
+			set "ArrowRightHighlight::visible" "0" ;
+		}
+
+	}
+	windowDef TriggerButtonDown
+	{
+		rect	551,299,63,71
+		cursor	1
+		visible	1
+
+		onAction {
+			runScript	"gui::gui_parm12" ;
+			set	"cmd"	"activate ; play guisounds_error1" ;
+			transition "ArrowDown::matcolor" "0.3 0 0 0.6" "0 0 0 0.7" "300" ;
+			set "StatusText::text" "#str_00283" ;
+			set "StatusText::idle" "0" ;
+			resetTime "StatusText" "0" ;
+			if ("TriggerButtonRight::active" == 1) { 
+				transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonRight::active" "0" ;
+			}
+			if ("TriggerButtonLeft::active" == 1) { 
+				transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonLeft::active" "0" ;
+			}
+		}
+
+		onMouseEnter {
+			transition "ArrowDown::matcolor" "0 0 0 0.4" "0 0 0 0.6" "300" ;
+		}
+
+		onMouseExit {
+			transition "ArrowDown::matcolor" "0 0 0 0.6" "0 0 0 0.4" "300" ;
+		}
+
+	}
+	windowDef TriggerButtonUp
+	{
+		rect	553,39,60,70
+		cursor	1
+		visible	1
+
+		onAction {
+			runScript	"gui::gui_parm12" ;
+			set	"cmd"	"activate ; play guisounds_error1" ;
+			transition "ArrowUp::matcolor" "0.3 0 0 0.8" "0 0 0 0.7" "300" ;
+			set "StatusText::text" "#str_00283" ;
+			set "StatusText::idle" "0" ;
+			resetTime "StatusText" "0" ;
+			if ("TriggerButtonRight::active" == 1) { 
+				transition "ArrowRight::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircR::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonRight::active" "0" ;
+			}
+			if ("TriggerButtonLeft::active" == 1) { 
+				transition "ArrowLeft::matcolor" "1 1 1 0.3" "0 0 0 0.2" "400" ;
+				transition "SpinCircL::matcolor" "0 0 0 0.3" "0 0 0 0" "400" ;
+				set "TriggerButtonLeft::active" "0" ;
+			}
+		}
+
+		onMouseEnter {
+			transition "ArrowUp::matcolor" "0 0 0 0.4" "0 0 0 0.7" "300" ;
+		}
+
+		onMouseExit {
+			transition "ArrowUp::matcolor" "0 0 0 0.7" "0 0 0 0.4" "300" ;
+		}
+
+	}
+}

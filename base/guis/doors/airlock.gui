@@ -1,0 +1,577 @@
+windowDef Desktop {
+	comment "fires a trigger onclick, and will reset when it senses the door's movestate as closed"
+	rect	0 ,0 ,640 ,480 
+	backcolor	0 ,0 ,0 ,1 
+	float closed	1
+
+	onEvent {
+		if ("gui::movestate" == 1) { 
+			if ("Desktop::closed" == 0 ) { 
+				resetTime "Closed" "0" ; 
+				set	"closed" "1" ; 
+			}
+		} 
+		if ("gui::movestate" == 2) { 
+			if ("Desktop::closed" == 1 ) { 
+				resetTime "Open" "0" ; 
+				set	"closed" "0" ; 
+			}
+		}
+	} 
+
+	windowDef Bg1 {
+		rect	35 ,50 ,285 ,200 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_bg"
+	}
+
+	windowDef Bg2 {
+		rect	320 ,50 ,-285 ,200 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_bg"
+	}
+
+	windowDef Bg3 {
+		rect	35 ,250 ,285 ,-200 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_bg"
+	}
+
+	windowDef Bg4 {
+		rect	320 ,250 ,-285 ,-200 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_bg"
+	}
+
+	windowDef Pulse5e {
+		rect	35 ,50 ,285 ,200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5f {
+		rect	320 ,50 ,-285 ,200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5g {
+		rect	35 ,250 ,285 ,-200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5h {
+		rect	320 ,250 ,-285 ,-200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5a {
+		rect	35 ,50 ,285 ,200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5b {
+		rect	320 ,50 ,-285 ,200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5c {
+		rect	35 ,250 ,285 ,-200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Pulse5d {
+		rect	320 ,250 ,-285 ,-200 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse5"
+	}
+
+	windowDef Air1 {
+		rect	146 ,131 ,175 ,120 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_btn"
+	}
+
+	windowDef Air2 {
+		rect	319 ,131 ,-175 ,120 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_btn"
+	}
+
+	windowDef Air3 {
+		rect	146 ,249 ,175 ,-120 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_btn"
+	}
+
+	windowDef Air4 {
+		rect	319 ,249 ,-175 ,-120 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/air_btn"
+	}
+
+	windowDef Lock1a {
+		rect	92 ,92 ,100 ,70 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock1b {
+		rect	126 ,115 ,65 ,45 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock2a {
+		rect	445 ,92 ,-100 ,70 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock2b {
+		rect	447 ,115 ,-65 ,45 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock3a {
+		rect	92 ,339 ,100 ,-70 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock3b {
+		rect	126 ,341 ,65 ,-45 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock4a {
+		rect	445 ,339 ,-100 ,-70 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Lock4b {
+		rect	447 ,341 ,-65 ,-45 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/lock"
+	}
+
+	windowDef Pulse1c {
+		rect	230 ,190 ,180 ,60 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse1"
+	}
+
+	windowDef Pulse1d {
+		rect	230 ,250 ,180 ,-60 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse1"
+	}
+
+	windowDef Pulse2c {
+		rect	210 ,175 ,220 ,76 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse2"
+	}
+
+	windowDef Pulse2d {
+		rect	210 ,250 ,220 ,-76 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse2"
+	}
+
+	windowDef Pulse3c {
+		rect	230 ,132 ,180 ,120 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse3"
+	}
+
+	windowDef Pulse3d {
+		rect	230 ,249 ,180 ,-120 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse3"
+	}
+
+	windowDef Pulse4c {
+		rect	170 ,118 ,300 ,96 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse4"
+	}
+
+	windowDef Pulse4d {
+		rect	170 ,286 ,300 ,-96 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse4"
+	}
+
+	windowDef Pulse1a {
+		rect	230 ,190 ,180 ,60 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse1"
+	}
+
+	windowDef Pulse1b {
+		rect	230 ,250 ,180 ,-60 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse1"
+	}
+
+	windowDef Pulse2a {
+		rect	210 ,175 ,220 ,76 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse2"
+	}
+
+	windowDef Pulse2b {
+		rect	210 ,250 ,220 ,-76 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse2"
+	}
+
+	windowDef Pulse3a {
+		rect	230 ,132 ,180 ,120 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse3"
+	}
+
+	windowDef Pulse3b {
+		rect	230 ,249 ,180 ,-120 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse3"
+	}
+
+	windowDef Pulse4a {
+		rect	170 ,118 ,300 ,96 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse4"
+	}
+
+	windowDef Pulse4b {
+		rect	170 ,286 ,300 ,-96 
+		matcolor	0 ,0.60 ,0.50 ,0 
+		visible	1
+		background	"guis/assets/airlock/pulse4"
+	}
+
+	windowDef ButtonImga {
+		rect	240 ,200 ,155 ,50 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/click"
+	}
+
+	windowDef ButtonImgb {
+		rect	240 ,249 ,155 ,-50 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"guis/assets/airlock/click"
+	}
+
+	windowDef Status1 {
+		rect	38 ,225 ,150 ,50 
+		matcolor	0 ,1 ,0.20 ,1 
+		visible	0
+		background	"guis/assets/airlock/status"
+		onTime 0 {
+			transition	"matcolor" "0 1 0.2 1" "0 1 0.2 0" "1000" ; 
+		} 
+		onTime 1000 {
+			resetTime "0" ; 
+		} 
+	}
+
+	windowDef Status2 {
+		rect	452 ,225 ,150 ,50 
+		matcolor	0 ,1 ,0.20 ,1 
+		visible	0
+		background	"guis/assets/airlock/status"
+		onTime 0 {
+			transition	"matcolor" "0 1 0.2 1" "0 1 0.2 0" "1000" ; 
+		} 
+		onTime 1000 {
+			resetTime "0" ; 
+		} 
+	}
+
+	windowDef Glow {
+		rect	0 ,0 ,-640 ,480 
+		matcolor	0 ,0.30 ,0.40 ,1 
+		visible	1
+		background	"gui/glow"
+		noevents	1
+	}
+
+	windowDef Border1 {
+		rect	0 ,0 ,640 ,60 
+		matcolor	0 ,0 ,0 ,0.40 
+		visible	1
+		background	"gui/line/horizwarn"
+	}
+
+	windowDef Border1a {
+		rect	0 ,0 ,640 ,10 
+		matcolor	0 ,0.60 ,0.70 ,1 
+		visible	1
+		background	"gui/line/horiz"
+	}
+
+	windowDef Border1b {
+		rect	0 ,50 ,640 ,10 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"gui/line/horiz"
+	}
+
+	windowDef Border2 {
+		rect	0 ,0 ,30 ,480 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"gui/line/vertwarn"
+	}
+
+	windowDef Border3 {
+		rect	610 ,0 ,30 ,480 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"gui/line/vertwarn"
+	}
+
+	windowDef Border4 {
+		rect	0 ,450 ,640 ,30 
+		matcolor	0 ,0.80 ,0.90 ,1 
+		visible	1
+		background	"gui/line/horizwarn2"
+	}
+
+	windowDef TitleText {
+		rect	280 ,5 ,576 ,50 
+		text	"#str_01202"
+		textscale	0.75
+		textalign	0
+		forecolor	0.50 ,0.80 ,0.90 ,1 
+		visible	1
+	}
+
+	windowDef StatusText {
+		rect	270 ,170 ,100 ,50 
+		text	"#str_01203"
+		textscale	1.50
+		textalign	1
+		forecolor	1 ,0.85 ,0.45 ,1 
+		visible	0
+	}
+
+	windowDef fadeglass {
+		rect	0 ,0 ,640 ,-480 
+		visible	1
+		background	"gui/fadeglass"
+		matcolor	1 ,1 ,1 ,0.60 
+		noevents	1
+		nozorder	1
+	}
+
+	windowDef Outerglow {
+		rect	0 ,0 ,640 ,480 
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 2.8 //0.25
+		visible	1
+	}
+	windowDef Outershadow {
+		rect	0 ,0 ,640 ,480 
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+	}
+	windowDef Addhighlight {
+		rect	0 ,0 ,640 ,480 
+		background	"gui/addhighlight"
+		matcolor	0.3 ,0.8 ,0.8 ,1 
+		visible	1
+	}
+	windowDef Scanlines {
+		rect	0,0,640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+	}
+	windowDef Dirt {
+		rect	0 ,0 ,640 ,480 
+		matcolor	1, 1, 1 ,1
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Dirt2 {
+		rect	0 ,0 ,640 ,480 
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt3"
+		noevents	1
+	}
+
+	windowDef Button {
+		rect	0 ,0 ,640 ,480 
+		matcolor	0 ,0 ,0 ,1 
+		visible	1
+		background	""
+		onAction {
+			set	"cmd" "activate ; play guisounds_action" ; 
+			resetTime "Opening" "0" ; 
+		} 
+	}
+
+	windowDef Pulse {
+		rect	1 ,1 ,1 ,1 
+		onTime 0 {
+			transition	"Pulse1c::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse1d::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+		} 
+		onTime 100 {
+			transition	"Pulse2c::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse2d::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+		} 
+		onTime 200 {
+			transition	"Pulse3c::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse3d::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+		} 
+		onTime 300 {
+			transition	"Pulse4c::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse4d::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+		} 
+		onTime 400 {
+			transition	"Pulse5e::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse5f::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse5g::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+			transition	"Pulse5h::matcolor" "0 0.8 0.9 0.2" "0 0.6 0.5 0" "400" ; 
+		} 
+		onTime 4000 {
+			resetTime "0" ; 
+		} 
+	}
+
+	windowDef Opening {
+		rect	1 ,1 ,1 ,1 
+		notime	1
+		onTime 0 {
+			set	"Button::noevents" "1" ; 
+			transition	"statustext::forecolor" "1 0.85 0.45 1" "0 0 0 0" "300" ; 
+
+			transition	"ButtonImga::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "200" ; 
+			transition	"ButtonImgb::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "200" ; 
+
+			transition	"Pulse1a::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse1b::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+		} 
+		onTime 50 {
+			transition	"Pulse2a::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse2b::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+		} 
+		onTime 100 {
+			transition	"Pulse3a::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse3b::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+		} 
+		onTime 150 {
+			transition	"Pulse4a::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse4b::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+		} 
+		onTime 200 {
+			transition	"Pulse5a::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse5b::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse5c::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Pulse5d::matcolor" "0 0.8 0.9 1" "0 0.6 0.5 0" "300" ; 
+			transition	"Lock1a::rect" "92 92 100 70" "82 82 100 70" "50" ; 
+			transition	"Lock2a::rect" "445 92 -100 70" "455 82 -100 70" "50" ; 
+			transition	"Lock3a::rect" "92 339 100 -70" "82 349 100 -70" "50" ; 
+			transition	"Lock4a::rect" "445 339 -100 -70" "455 349 -100 -70" "50" ; 
+		} 
+		onTime 400 {
+			set	"statustext::forecolor" "1 1 1 0" ; 
+			resetTime "Status1" "0" ; 
+			resetTime "Status2" "0" ; 
+			set	"Status1::visible" "1" ; 
+			set	"Status2::visible" "1" ; 
+		} 
+	}
+
+	windowDef Closing {
+		rect	1 ,1 ,1 ,1 
+		notime	1
+		onTime 0 {
+			transition	"statustext::forecolor" "1 1 1 0" "1 1 1 1" "400" ; 
+		} 
+	}
+
+	windowDef Open {
+		rect	1 ,1 ,1 ,1 
+		notime	1
+		onTime 0 {
+			set	"statustext::forecolor" "1 1 1 0" ; 
+			set	"Status1::visible" "1" ; 
+			set	"Status2::visible" "1" ; 
+		} 
+	}
+
+	windowDef Closed {
+		rect	1 ,1 ,1 ,1 
+		notime	1
+		onTime 0 {
+			set	"Button::noevents" "0" ; 
+			set	"statustext::forecolor" "1 0.85 0.45 1" ; 
+			transition	"Lock1a::rect" "82 82 100 70" "92 92 100 70" "50" ; 
+			transition	"Lock2a::rect" "455 82 -100 70" "445 92 -100 70" "50" ; 
+			transition	"Lock3a::rect" "82 349 100 -70" "92 339 100 -70" "50" ; 
+			transition	"Lock4a::rect" "455 349 -100 -70" "445 339 -100 -70" "50" ; 
+			transition	"ButtonImga::matcolor" "0 0.6 0.5 0" "0 0.8 0.9 1" "100" ; 
+			transition	"ButtonImgb::matcolor" "0 0.6 0.5 0" "0 0.8 0.9 1" "100" ; 
+			set	"Status1::visible" "0" ; 
+			set	"Status2::visible" "0" ; 
+		} 
+	}
+
+}

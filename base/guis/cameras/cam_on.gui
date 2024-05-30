@@ -1,0 +1,148 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	windowDef CamView
+	{
+		rect	10, 10, 620, 460
+		matcolor	1, 1, 1, 1
+		forecolor	1, 1, 1, 1
+		backcolor	0, 0, 0, 1
+		visible	1
+		background	"textures/cameraView1"
+	}
+	windowDef Black
+	{
+		rect	10, 10, 620, 460
+		backcolor	0 ,0 ,0 ,1
+		visible	0
+	}
+	windowDef Static
+	{
+		rect	10, 10, 620, 460
+		matcolor	1 ,1 ,1 ,1
+		background	"gui/pdcameraswitch"
+		visible	0
+	}
+	windowDef StaticRoll
+	{
+		rect	10, 10, 620, 460
+		matcolor	1 ,1 ,1 ,0.7
+		background	"gui/static/roll"
+		visible	0
+	}
+	windowDef Static1
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 5
+	}
+	windowDef TopLeft
+	{
+		rect	0 ,0 ,16 ,60
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellow/corner"
+		visible	1
+	}
+	windowDef TopCenter
+	{
+		rect	15,0,610,60
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellow/horiz"
+		visible	1
+	}
+	windowDef TopRight
+	{
+		rect	624 ,0 ,-16 ,60
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellow/corner"
+		visible	1
+	}
+	windowDef VertLeft
+	{
+		rect	0,59,17,352
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellow/vert"
+		visible	1
+	}
+	windowDef VertRight
+	{
+		rect	623,59,-17,352
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellow/vert"
+		visible	1
+	}
+	windowDef SecondLeft
+	{
+		rect	0,408,16,-72
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellowa/corner"
+		visible	1
+	}
+	windowDef SecondCenter
+	{
+		rect	15,408,610,-72
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellowa/horiz"
+		visible	1
+	}
+	windowDef SecondRight
+	{
+		rect	624,408,-16,-72
+		matcolor	1 ,0.6 ,0.2 ,1
+		background	"gui/yellowa/corner"
+		visible	1
+	}
+	windowDef LocationText
+	{
+		rect	10,408,619,79
+		text	"gui::gui_parm1"
+		textscale	0.95
+		textalign	1
+		forecolor	0.73 ,0.67 ,0.54 ,1
+		visible	1
+		font	"fonts/micro"
+	}
+	windowDef StatusText
+	{
+		rect	45,17,227,50
+		text	"#str_00012"
+		textscale	0.65
+		forecolor	0.73 ,0.67 ,0.54 ,1
+		visible	1
+		font	"fonts/micro"
+		shadow	1
+	}
+	windowDef Statusbox
+	{
+		rect	20 ,33 ,20 ,16
+		matcolor	0.73 ,0.67 ,0.54 ,1
+		background	"guis/assets/camera/square_glow.tga"
+		visible	1
+
+		onTime 0 {
+			transition	"matcolor" "0.73 0.67 0.54 1" "0.73 0.67 0.54 0" "1000" ; 
+			transition	"StatusText::forecolor" "0.73 0.67 0.54 1" "0.73 0.67 0.54 0" "1000" ; 
+		}
+
+		onTime 1001 {
+			resetTime "0" ; 
+		}
+
+	}
+	windowDef Reflect
+	{
+		rect	0 ,-20 ,-640 ,470
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef OuterGlowBar
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"gui/outerglowbar"
+		matcolor	1 ,0.7,0.5 ,1
+		visible	1
+	}
+}

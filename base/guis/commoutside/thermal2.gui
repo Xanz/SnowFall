@@ -1,0 +1,514 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	background	"guis/assets/cpuserver/bg.tga"
+	matcolor	1, 1, 1, 1
+	visible	1
+	windowDef Text
+	"{"
+		rect	27,113,-130,284
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"gui/textscroll"
+		matscalex	1
+		matscaley	1.5
+	}
+	windowDef BGFrame
+	{
+		rect	6,5,630,470
+		visible	1
+		windowDef TLCorner
+		{
+			rect	0,0,114,163
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TLCornerCap
+		{
+			rect	114,0,56,163
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerCap"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TRCorner
+		{
+			rect	515,0,114,163
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerAngle"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TRCornerCap
+		{
+			rect	459,0,-56,163
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerCap"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top
+		{
+			rect	170,0,289,82
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BLCorner
+		{
+			rect	0,356,-114,-114
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerAngle"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BLCornerCap
+		{
+			rect	114,356,56,-114
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerCap"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom
+		{
+			rect	170,413,345,-57
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BRCorner
+		{
+			rect	515,413,114,57
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right
+		{
+			rect	572,163,57,250
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Left1
+		{
+			rect	0,163,-57,193
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+	}
+	windowDef BGFill
+	{
+		rect	6,5,630,470
+		visible	1
+		windowDef FillLeft1
+		{
+			rect	15,14,26,82
+			visible	1
+			background	"guis/assets/common/scibox/fillLeft"
+			matcolor	0.27,0.66,1,0.3
+		}
+		windowDef FillCenter1
+		{
+			rect	41,14,500,82
+			visible	1
+			background	"guis/assets/common/scibox/fillCenter"
+			matcolor	0.27,0.66,1,0.3
+		}
+		windowDef FillRight1
+		{
+			rect	541,14,26,82
+			visible	1
+			background	"guis/assets/common/scibox/fillRight"
+			matcolor	0.27,0.66,1,0.3
+		}
+		windowDef FillLeft2
+		{
+			rect	63,406,26,57
+			visible	1
+			background	"guis/assets/common/scibox/fillLeft"
+			matcolor	0.6,0.8,1,0.3
+		}
+		windowDef FillCenter2
+		{
+			rect	89,406,88,57
+			visible	1
+			background	"guis/assets/common/scibox/fillCenter"
+			matcolor	0.6,0.8,1,0.3
+		}
+		windowDef FillRight2
+		{
+			rect	177,406,26,57
+			visible	1
+			background	"guis/assets/common/scibox/fillRight"
+			matcolor	0.6,0.8,1,0.3
+		}
+	}
+	windowDef BGFillBox
+	{
+		rect	6,5,630,470
+		visible	1
+		windowDef FillBoxTop1
+		{
+			rect	-27,96,228,25
+			visible	1
+			background	"guis/assets/common/scibox/fillboxCap"
+			matcolor	0.27,0.66,1,0.3
+		}
+		windowDef FillBoxCenter1
+		{
+			rect	-27,121,228,257
+			visible	1
+			background	"guis/assets/common/scibox/fillboxCenter"
+			matcolor	0.27,0.66,1,0.3
+		}
+		windowDef FillBoxBottom1
+		{
+			rect	-27,378,228,-25
+			visible	1
+			background	"guis/assets/common/scibox/fillboxCap"
+			matcolor	0.27,0.66,1,0.3
+		}
+	}
+	windowDef BGBar
+	{
+		rect	6,5,630,470
+		visible	1
+		windowDef BgBarLeft1
+		{
+			rect	190,410,-12,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerAngle"
+			matcolor	0.6,1,0.8,0.1
+		}
+		windowDef BgBarCenter1
+		{
+			rect	202,410,396,25
+			visible	1
+			background	"guis/assets/common/scibox/barcenter"
+			matcolor	0.6,1,0.8,0.1
+		}
+		windowDef BgBarRight1
+		{
+			rect	598,410,12,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerFlat"
+			matcolor	0.6,1,0.8,0.1
+		}
+		windowDef BgBarLeft2
+		{
+			rect	190,429,-12,-25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerAngle"
+			matcolor	1,0.8,0.4,0.1
+		}
+		windowDef BgBarCenter2
+		{
+			rect	202,429,355,25
+			visible	1
+			background	"guis/assets/common/scibox/barcenter"
+			matcolor	1,0.8,0.4,0.1
+		}
+		windowDef BgBarRight2
+		{
+			rect	557,429,12,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerAngle"
+			matcolor	1,0.8,0.4,0.1
+		}
+		windowDef BgBarTopAnim
+		{
+			rect	528,411,54,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerFill"
+			matcolor	0.6,1,0.8,0.1
+
+			onTime 0 {
+				transition "rect" "528 411 54 25" "420 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 2000 {
+				transition "rect" "420 411 54 25" "280 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 4000 {
+				transition "rect" "280 411 54 25" "360 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 6000 {
+				transition "rect" "360 411 54 25" "560 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 8000 {
+				transition "rect" "560 411 54 25" "400 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 10000 {
+				transition "rect" "400 411 54 25" "556 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 12000 {
+				transition "rect" "556 411 54 25" "350 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 14000 {
+				transition "rect" "350 411 54 25" "528 411 54 25" "2000" "0" "0.8" ;
+				transition "TextBarTop::forecolor" "0.6 0.9 0.85 0.4" "0.6 0.9 0.85 0" "500" ;
+			}
+
+			onTime 16000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef BgBarBottomAnim
+		{
+			rect	480,429,54,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerFill"
+			matcolor	1,0.8,0.4,0.1
+
+			onTime 0 {
+				transition "rect" "320 429 54 25" "280 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 800 {
+				transition "rect" "280 429 54 25" "390 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 1600 {
+				transition "rect" "390 429 54 25" "504 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 2400 {
+				transition "rect" "504 429 54 25" "360 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+				
+			}
+
+			onTime 3200 {
+				transition "rect" "360 429 54 25" "500 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 4000 {
+				transition "rect" "500 429 54 25" "250 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 4800 {
+				transition "rect" "250 429 54 25" "440 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 5600 {
+				transition "rect" "440 429 54 25" "320 429 54 25" "800" "0" "0.5" ;
+				transition "TextBarBottom::forecolor" "1 0.8 0.4 0.4" "1 0.8 0.4 0" "500" ;
+			}
+
+			onTime 6400 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef TextBarTop
+		{
+			rect	203,411,81,25
+			text	"#str_00603"
+			textscale	0.25
+			forecolor	0.6,0.9,0.85,0.4
+			visible	1
+		}
+		windowDef TextBarBottom
+		{
+			rect	203,431,81,25
+			text	"#str_00603"
+			textscale	0.25
+			forecolor	1,0.8,0.4,0.4
+			visible	1
+		}
+		windowDef BgBarTopAnim1
+		{
+			rect	528,411,54,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerFill"
+			matcolor	0.6,1,0.8,0.02
+
+			onTime 0 {
+				transition "rect" "270 411 54 25" "560 411 54 25" "300" "0.5" "0.5" ;
+			}
+
+			onTime 300 {
+				transition "rect" "560 411 54 25" "270 411 54 25" "300" "0.5" "0.5" ;
+			}
+
+			onTime 600 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef BgBarBottomAnim1
+		{
+			rect	203,431,81,25
+			visible	1
+			background	"guis/assets/common/scibox/barcornerFill"
+			matcolor	1,0.8,0.4,0.02
+
+			onTime 0 {
+				transition "rect" "270 429 54 25" "504 429 54 25" "300" "0.5" "0.5" ;
+			}
+
+			onTime 200 {
+				transition "rect" "504 429 54 25" "270 429 54 25" "300" "0.5" "0.5" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+	windowDef TextTitle
+	{
+		rect	24,34,546,46
+		visible	1
+		text	"#str_00632"
+		forecolor	1,1,1,0.3
+		textscale	0.64
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef TextTitle1
+	{
+		rect	81,418,111,37
+		visible	1
+		text	"#str_00506"
+		forecolor	1,1,1,0.3
+		textscale	0.5
+		font	"fonts/micro"
+		textalign	1
+
+		onTime 0 {
+			transition "forecolor" "1 1 1 0.3" "1 1 1 0.1" "500" ;
+		}
+
+		onTime 500 {
+			transition "forecolor" "1 1 1 0.1" "1 1 1 0.3" "500" ;
+		}
+
+		onTime 1000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Over
+	{
+		rect	0 ,0 ,640 ,480
+		matcolor	1 ,1 ,1 ,1
+		visible	0
+		background	"guis/assets/epd/test1.tga"
+	}
+	windowDef Bglow
+	{
+		rect	0, 0, 640, 480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+	}
+	windowDef Reflect
+	{
+		rect	3,-7,633,470
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Static1
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef GlowLine
+	{
+		rect	0 ,0 ,640 ,480
+		matcolor	1 ,1 ,1 ,1
+		visible	0
+		background	"gui/blueborder"
+	}
+	windowDef Text3Clamp
+	{
+		rect	180,110,424,271
+		visible	1
+
+		onTime 0 {
+			transition "Text30::forecolor" "0.6 0.8 1 0.7" "0.6 0.8 1 0.3" "800" ;
+			transition "Text31::rect" "10 540 400 530" "10 0 400 530" "800" "0" "0.5" ;
+		}
+
+		onTime 800 {
+			transition "Text31::rect" "10 0 400 530" "10 -530 250 530" "800" "0.5" "0" ;
+			transition "Text32::rect" "10 540 200 530" "10 0 400 530" "800" "0.5" "0" ;
+		}
+
+		onTime 1600 {
+			transition "Text32::rect" "10 0 400 530" "10 -530 250 530" "800" "0" "0.5" ;
+			resetTime "0" ;
+		}
+
+		windowDef Text31
+		{
+			rect	0,279,400,550
+			text	"#str_00605"
+			textscale	0.8
+			forecolor	1,1,1,0.498
+			visible	1
+			notime	1
+			font	"fonts/bank"
+		}
+		windowDef Text32
+		{
+			rect	0,300,411,235
+			text	"#str_00606"
+			textscale	0.8
+			forecolor	1,1,1,0.498
+			visible	1
+			notime	1
+			font	"fonts/bank"
+		}
+	}
+	windowDef Text30
+	{
+		rect	178,373,428,47
+		text	"#str_00633"
+		font	"fonts/micro"
+		textscale	0.8
+		forecolor	0.6,0.8,1,0.5
+		visible	1
+		notime	1
+	}
+}

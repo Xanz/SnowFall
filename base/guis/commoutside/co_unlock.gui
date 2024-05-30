@@ -1,0 +1,617 @@
+windowDef Desktop
+{
+	comment	"gui_parm1 is the title. gui_parm2 is the name of the door area to be unlocked. gui_parm3 is the map area. set gui_parm4 value to 1 if you want the user to be able to trigger the gui only once, rather than being able to toggle the the door locked/unlocked."
+	rect	0 ,0 ,640 ,480
+	backcolor	0, 0, 0, 0.9
+	windowDef CircleCrop
+	{
+		rect	7, 7, 626, 466
+		visible	1
+		windowDef Circle0
+		{
+			rect	-94,-170,820,820
+			visible	1
+			background	"gui/spin1"
+			matcolor	0.5, 0, 0, 0.5
+		}
+		windowDef Circle1
+		{
+			rect	-54,-130,-740,740
+			visible	1
+			background	"gui/spin2"
+			matcolor	0.5, 0, 0, 0.5
+		}
+		windowDef Circle2
+		{
+			rect	-6,-90,640,640
+			visible	1
+			background	"gui/spin3"
+			matcolor	0.5, 0, 0, 0.5
+		}
+		windowDef Circle3
+		{
+			rect	23,-55,-580,580
+			visible	1
+			background	"gui/spin4"
+			matcolor	0.5, 0, 0, 0.5
+		}
+		windowDef Circle4
+		{
+			rect	58,-15,510,510
+			visible	1
+			background	"gui/spin5"
+			matcolor	0.5, 0.1, 0.1, 0.5
+		}
+		windowDef Circle5
+		{
+			rect	93,19,-440,440
+			visible	1
+			background	"gui/spin6"
+			matcolor	0.5, 0.1, 0.1, 0.5
+		}
+		windowDef Circle6
+		{
+			rect	123,49,380,380
+			visible	1
+			background	"gui/spin7"
+			matcolor	0.5, 0.1, 0.1, 0.5
+		}
+		windowDef Circle7
+		{
+			rect	143,69,-340,340
+			visible	1
+			background	"gui/spin8"
+			matcolor	0.5, 0.1, 0.1, 0.5
+		}
+		windowDef CircleG0
+		{
+			rect	-95,-171,820,820
+			visible	0
+			background	"gui/spin1"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG1
+		{
+			rect	-55,-131,740,740
+			visible	0
+			background	"gui/spin2"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG2
+		{
+			rect	-6,-91,640,640
+			visible	0
+			background	"gui/spin3"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG3
+		{
+			rect	23,-56,580,580
+			visible	0
+			background	"gui/spin4"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG4
+		{
+			rect	58,-16,510,510
+			visible	0
+			background	"gui/spin5"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG5
+		{
+			rect	93,18,440,440
+			visible	0
+			background	"gui/spin6"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG6
+		{
+			rect	123,48,380,380
+			visible	0
+			background	"gui/spin7"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+		windowDef CircleG7
+		{
+			rect	143,68,340,340
+			visible	0
+			background	"gui/spin8"
+			matcolor	0.2, 0.8, 0.6, 0.2
+		}
+	}
+	windowDef BackgroundParent
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef Temp
+		{
+			rect	5 ,5 ,630 ,470
+			visible	1
+			background	"guis/assets/test/monosec2a"
+			matcolor	1, 0.35, 0.3, 1
+		}
+		windowDef TextDoors
+		{
+			rect	34,67,584,54
+			text	"#str_00889"
+			font	"fonts/micro"
+			textscale	0.68
+			forecolor	1, 1, 1, 0.5
+			visible	1
+		}
+		windowDef TextParm1
+		{
+			rect	0,11,640,56
+			text	"#str_03175"
+			font	"fonts/micro"
+			textscale	0.8
+			textalign	1
+			forecolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef TextParm2
+		{
+			rect	29,409,584,61
+			text	"#str_03176"
+			font	"fonts/micro"
+			textscale	0.85
+			forecolor	1,1,1,0.498
+			visible	1
+			textalign	1
+		}
+		windowDef TextParm3
+		{
+			rect	35,103,405,51
+			text	"#str_03177"
+			textscale	0.7
+			forecolor	1,1,1,0.294
+			visible	1
+			font	"fonts/micro"
+		}
+		windowDef Text1a
+		{
+			rect	0,68,638,100
+			text	"#str_00890"
+			textscale	0.78
+			textalign	1
+			forecolor	1, 1, 1, 0.5
+			visible	0
+		}
+		windowDef Text2
+		{
+			rect	0,162,640,88
+			text	"#str_00514"
+			font	"fonts/micro"
+			textscale	1.2
+			textalign	1
+			forecolor	1, 0.1, 0.1, 0.9
+			visible	1
+
+			onTime 0 {
+				transition "forecolor" "1 0.1 0.1 0.9" "1 0.1 0.1 0.4" "500" ;
+			}
+
+			onTime 500 {
+				transition "forecolor" "1 0.1 0.1 0.4" "1 0.1 0.1 0.9" "500" ;
+			}
+
+			onTime 1200 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Text2a
+		{
+			rect	0,169,640,78
+			text	"#str_00005"
+			font	"fonts/micro"
+			textscale	1
+			textalign	1
+			forecolor	0.4, 1, 0.8, 0.9
+			visible	0
+		}
+	}
+	windowDef AccessGranted
+	{
+		noTime	1
+
+		onTime 0 {
+			set "Circle7::visible" "0" ;
+			set "CircleG7::visible" "1" ;
+			
+			transition "TextButton1::forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0" "300" ;
+			transition "btn2_top::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner1::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner2::matcolor"  "1 0.8 0.4 1""1 0.8 0.4 0" "300" ;
+			transition "btn2_bottom::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner3::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner4::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_right::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_left::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_fill::backcolor" "1 0.8 0.4 0.465" "1 0.8 0.4 0" "300" ;
+		}
+
+		onTime 50 {
+			set "Circle6::visible" "0" ;
+			set "CircleG6::visible" "1" ;
+		}
+
+		onTime 100 {
+			set "Circle5::visible" "0" ;
+			set "CircleG5::visible" "1" ;
+		}
+
+		onTime 150 {
+			set "Circle4::visible" "0" ;
+			set "CircleG4::visible" "1" ;
+		}
+
+		onTime 200 {
+			set "Circle3::visible" "0" ;
+			set "CircleG3::visible" "1" ;
+		}
+
+		onTime 250 {
+			set "Circle2::visible" "0" ;
+			set "CircleG2::visible" "1" ;
+		}
+
+		onTime 300 {
+			set "Circle1::visible" "0" ;
+			set "CircleG1::visible" "1" ;
+		}
+
+		onTime 350 {
+			set "Circle0::visible" "0" ;
+			set "CircleG0::visible" "1" ;
+			set "text2::visible" "0" ;
+			set "text2a::visible" "1" ;
+			transition "temp::matcolor" "1 0.2 0.2 1" "0.4 1 0.9 1" "500" ;
+		}
+
+		onTime 900 {
+			set "TextButton1::rect" "0 0 0 0" ;
+			set "TextButton2::rect" "37 290 566 86" ;
+			transition "TextButton2::forecolor" "1 1 1 0" "1 1 1 0.6" "300" ;
+		}
+
+	}
+	windowDef AccessLocked
+	{
+		noTime	1
+
+		onTime 0 {
+			set "Circle7::visible" "1" ;
+			set "CircleG7::visible" "0" ;
+			
+			transition "TextButton2::forecolor" "1 1 1 1" "1 1 1 0" "300" ;
+			transition "btn2_top::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner1::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner2::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_bottom::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner3::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner4::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_right::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_left::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_fill::backcolor" "1 1 1 0.32" "1 1 1 0" "300" ;
+		}
+
+		onTime 50 {
+			set "Circle6::visible" "1" ;
+			set "CircleG6::visible" "0" ;
+		}
+
+		onTime 100 {
+			set "Circle5::visible" "1" ;
+			set "CircleG5::visible" "0" ;
+		}
+
+		onTime 150 {
+			set "Circle4::visible" "1" ;
+			set "CircleG4::visible" "0" ;
+		}
+
+		onTime 200 {
+			set "Circle3::visible" "1" ;
+			set "CircleG3::visible" "0" ;
+		}
+
+		onTime 250 {
+			set "Circle2::visible" "1" ;
+			set "CircleG2::visible" "0" ;
+		}
+
+		onTime 300 {
+			set "Circle1::visible" "1" ;
+			set "CircleG1::visible" "0" ;
+		}
+
+		onTime 350 {
+			set "Circle0::visible" "1" ;
+			set "CircleG0::visible" "0" ;
+			set "text2::visible" "1" ;
+			set "text2a::visible" "0" ;
+			transition "temp::matcolor" "0.4 1 0.9 1" "1 0.2 0.2 1" "500" ;
+		}
+
+		onTime 900 {
+			set "TextButton2::rect" "0 0 0 0" ;
+			set "TextButton1::rect" "37 290 566 86" ;
+			transition "TextButton1::forecolor" "1 0.7 0.4 0" "1 0.7 0.4 0.6" "200" ;
+			transition "btn2_top::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner1::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner2::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_bottom::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner3::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner4::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_right::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_left::matcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_fill::backcolor" "1 0.8 0.4 0" "1 0.8 0.4 0.232" "300" ;
+		}
+
+		onTime 1000 {
+			set "TextButton1::noevents" "0" ;
+		}
+
+	}
+	windowDef AccessDenied
+	{
+		noTime	1
+
+		onTime 0 {
+			transition "TextButton2::forecolor" "1 1 1 1" "1 1 1 0" "300" ;
+			transition "btn2_top::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner1::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner2::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_bottom::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner3::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_corner4::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_right::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_left::matcolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+			transition "btn2_fill::backcolor" "1 1 1 0.32" "1 1 1 0" "300" ;
+		}
+
+		onTime 1500 {
+			transition "TextButton3::forecolor" "1 1 1 0" "1 1 1 0.7" "300" ;
+		}
+
+	}
+	windowDef ButtonBG1
+	{
+		rect	21,277,598,32
+		visible	0
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,0.4,0.3,0.7
+	}
+	windowDef ButtonBG2
+	{
+		rect	21,309,598,-48
+		visible	0
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,0.4,0.3,0.7
+	}
+	windowDef ButtonBG3
+	{
+		rect	21,357,598,-32
+		visible	0
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,0.4,0.3,0.7
+	}
+	windowDef Btn2
+	{
+		rect	13,260,615,124
+		visible	1
+		windowDef btn2_Top
+		{
+			rect	93,20,430,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner1
+		{
+			rect	11,22,82,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner2
+		{
+			rect	523,22,-82,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Bottom
+		{
+			rect	93,95,430,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner3
+		{
+			rect	11,93,82,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner4
+		{
+			rect	523,93,-82,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Fill
+		{
+			rect	93,50,430,45
+			visible	1
+			backcolor	1,0.8,0.4,0.232
+		}
+		windowDef btn2_Right
+		{
+			rect	523,52,-82,-41
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Left
+		{
+			rect	11,52,82,-41
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.8,0.4,0.5
+		}
+	}
+	windowDef TextButton3
+	{
+		rect	9,277,620,129
+		text	"#str_00891"
+		textscale	0.61
+		forecolor	1,1,1,0
+		visible	1
+		textalign	1
+		font	"fonts/micro"
+	}
+	windowDef TextButton1
+	{
+		rect	37,290,566,86
+		text	"#str_00892"
+		textscale	1.2
+		forecolor	1,0.690,0.4,0.6
+		visible	1
+		textalign	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition "forecolor" "1 1 1 1" "1 0.7 0.4 1" "300" ;
+			
+			transition "btn2_top::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner1::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner2::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_bottom::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner3::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner4::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_right::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_left::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_fill::backcolor" "1 1 1 0.32" "1 0.8 0.4 0.465" "300" ;
+		}
+
+		onMouseExit {
+			transition "forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ;
+			
+			transition "btn2_top::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner1::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner2::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_bottom::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner3::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner4::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_right::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_left::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_fill::backcolor" "1 0.8 0.4 0.465" "1 0.8 0.4 0.232" "300" ;
+		}
+
+		onAction {	
+			set	"cmd" "activate ; play guisounds_click" ; 
+			resetTime "AccessGranted" "0" ;
+			set "noevents" "1" ;
+		}
+
+	}
+	windowDef TextButton2
+	{
+		rect	0,0,0,0
+		text	"#str_03178"
+		textscale	1.05
+		forecolor	1,1,1,0
+		visible	1
+		textalign	1
+		font	"fonts/micro"
+		noevents	1
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,-660 ,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 6
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.5 ,0.4 ,0.15 ,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Dirt
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.8
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Reflect
+	{
+		rect	0 ,-10 ,-640 ,480
+		matcolor	1 ,1 ,1 ,0.12
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef Blackfade
+	{
+		rect	0 ,0 ,640 ,480
+		visible	0
+		backcolor	0, 0, 0, 0.5
+
+		onTime 0 {
+			transition "backcolor" "0 0 0 0.4" "0 0 0 0.1" "200" ;
+		}
+
+		onTime 200 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.4" "200" ;
+		}
+
+		onTime 400 {
+			transition "backcolor" "0 0 0 0.4" "0 0 0 0.2" "300" ;
+		}
+
+		onTime 700 {
+			transition "backcolor" "0 0 0 0.4" "0 0 0 0.5" "200" ;
+		}
+
+		onTime 900 {
+			transition "backcolor" "0 0 0 0.5" "0 0 0 0.4" "200" ;
+		}
+
+		onTime 1100 {
+			resetTime "0" ;
+		}
+
+	}
+}

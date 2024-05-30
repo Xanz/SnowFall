@@ -1,0 +1,1137 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+	float	"info"	0
+	float	"active"	0
+
+	onActivate {
+		set "active" "1" ;
+		resetTime "ActivateAnim" "0" ;
+		
+	}
+
+	onDeactivate {
+		set "active" "0" ;
+		resetTime "DectivateAnim" "0" ;			
+	}
+
+	windowDef ActivateAnim {
+		rect 0,0,0,0
+		visible 0
+		notime 1
+		
+		onTime 0 {
+		transition "Btn2_top::matcolor" "1 0.6 0.2 0.5" "0.65 0.7 0.7 0.7" "400" ;
+		transition "Btn2_corner1::matcolor" "1 0.6 0.2 0.5" "0.65 0.7 0.7 0.7" "400" ;
+		transition "Btn2_corner2::matcolor" "1 0.6 0.2 0.5" "0.65 0.7 0.7 0.7" "400" ;
+		transition "Btn2_Right::matcolor" "1 0.6 0.2 0.5" "0.65 0.7 0.7 0.7" "400" ;
+		transition "Btn2_Left::matcolor" "1 0.6 0.2 0.5" "0.65 0.7 0.7 0.7" "400" ;
+		transition "Btn2_Fill::backcolor" "1 0.6 0.2 0.232" "0.65 0.7 0.7 0.32" "400" ;
+		
+		transition "TextStation1::forecolor" "0 0 0 0.4" "1 1 1 0.5" "400" ;
+		transition "TextStation2::forecolor" "0 0 0 0.4" "1 1 1 0.5" "400" ;
+		transition "TextStation3::forecolor" "0 0 0 0.4" "1 1 1 0.5" "400" ;
+		
+		transition "Outerglowbar::matcolor" "0 0 0 1" "0.8 1 1 1" "400" ;
+		transition "Outerglowbar2::matcolor" "0 0 0 1" "0.8 1 1 1" "400" ;
+		transition "Glow::matcolor" "0.1 0.05 0 1" "0.05 0.12 0.2 1" "400" ;
+		transition "Glow2::matcolor" "0.1 0.05 0 1" "0 0.12 0.2 1" "400" ;
+		transition "Right::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "Left::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "Top::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "Bottom::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "BLCorner::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "BRCorner::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "TRCorner::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "TLCorner::matcolor" "1 0.8 0.4 1" "0.8 0.8 1 1" "400" ;
+		transition "Bglow::matcolor" "0 0 0 0.1" "0.1 0.3 0.5 0.1" "400" ;
+		transition "Overlay::matcolor" "0.3 0.6 0.6 0" "0.3 0.6 0.6 0.5" "400" ;
+		transition "Background::matcolor" "0.7 0.5 0.5 0.6" "1 0.5 0.6 0.5" "400" ;
+		transition "Overlay2::matcolor" "0.3 0.6 0.6 0" "0.3 0.6 0.6 0.5" "400" ;
+		transition "Background2::matcolor" "0.7 0.5 0.5 0.6" "1 0.5 0.6 0.5" "400" ;
+		
+		transition "bgTopClampedGray::matcolor" "1 1 1 0" "0.7 1 1 1" "400" ;
+		transition "bgTopClamped3Gray::matcolor" "1 1 1 0" "0.7 1 1 1" "400" ;
+		transition "bgBtmClampedGray::matcolor" "1 1 1 0" "0.7 1 1 1" "400" ;
+		transition "bgBtmClamped3Gray::matcolor" "1 1 1 0" "0.7 1 1 1" "400" ;	
+		
+		transition "bar1Left::matcolor" "0.9 0.5 0 0.3" "0.7 0.9 1 0.25" "400" ;
+		transition "bar1Mid::matcolor" "0.9 0.5 0 0.3" "0.7 0.9 1 0.25" "400" ;
+		transition "bar1Right::matcolor" "0.9 0.5 0 0.3" "0.7 0.9 1 0.25" "400" ;
+		
+		//transition "Logo::matcolor" "0.18 0.07 0.02 1" "0.15 0.1 0.08 1" "400" ;
+		
+		transition "btnArrowLeft::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowTopL::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowTopR::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowBottomL::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowBottomR::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowRight::matcolor" "1 0.6 0.1 0.5" "1 1 1 0.4" "200" ;
+		transition "btnArrowFrameTL::matcolor" "1 0.65 0.2 0.1" "0.8 1 1 0.09" "200" ;
+		transition "btnArrowFrameTR::matcolor" "1 0.65 0.2 0.1" "0.8 1 1 0.09" "200" ;
+		transition "btnArrowFrameBL::matcolor" "1 0.65 0.2 0.1" "0.8 1 1 0.09" "200" ;
+		transition "btnArrowFrameBR::matcolor" "1 0.65 0.2 0.1" "0.8 1 1 0.09" "200" ;
+		
+		//	transition "IDCheckText::forecolor" "1 1 1 0.7" "0.8 0.95 1 0.5" "400" ;
+		//	transition "IDCheckText1::forecolor" "1 1 1 0.7" "0.8 0.95 1 0.5" "400" ;
+		
+		transition "TriggerButton51::matcolor" "1 0.6 0.1 0.4" "1 1 1 0.4" "400" ;
+		transition "TriggerButton61::matcolor" "1 0.6 0.1 0.4" "1 1 1 0.4" "400" ;
+		}
+		
+	}
+	
+	windowDef DectivateAnim {
+		rect 0,0,0,0
+		visible 0
+		notime 1
+		
+		onTime 0 {
+		transition "Btn2_top::matcolor" "0.6 0.65 0.7 0.7"  "1 0.6 0.2 0.5" "400" ;
+		transition "Btn2_corner1::matcolor" "0.6 0.65 0.7 0.7" "1 0.6 0.2 0.5" "400" ;
+		transition "Btn2_corner2::matcolor" "0.6 0.65 0.7 0.7" "1 0.6 0.2 0.5" "400" ;
+		transition "Btn2_Right::matcolor" "0.6 0.65 0.7 0.7" "1 0.6 0.2 0.5" "400" ;
+		transition "Btn2_Left::matcolor" "0.6 0.65 0.7 0.7" "1 0.6 0.2 0.5" "400" ;
+		transition "Btn2_Fill::backcolor" "0.6 0.65 0.7 0.32" "1 0.6 0.2 0.232" "400" ;
+		
+		transition "TextStation1::forecolor" "1 1 1 0.5" "0 0 0 0.4" "400" ;
+		transition "TextStation2::forecolor" "1 1 1 0.5" "0 0 0 0.4" "400" ;
+		transition "TextStation3::forecolor" "1 1 1 0.5" "0 0 0 0.4" "400" ;
+		
+		transition "Outerglowbar::matcolor" "0.8 1 1 1" "0 0 0 1" "400" ;
+		transition "Outerglowbar2::matcolor" "0.8 1 1 1" "0 0 0 1" "400" ;	
+		transition "Glow::matcolor" "0.05 0.12 0.2" "0.1 0.05 0 1" "400" ;
+		transition "Glow2::matcolor" "0 0.12 0.2" "0.1 0.05 0 1" "400" ;
+		transition "Right::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "Left::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "Top::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "Bottom::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "BLCorner::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "BRCorner::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "TRCorner::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "TLCorner::matcolor" "0.6 0.8 1 1" "1 0.8 0.4 1" "400" ;
+		transition "Bglow::matcolor" "0.1 0.3 0.5 0.1" "0 0 0 0.1" "400" ;
+		transition "Overlay::matcolor" "0.3 0.6 0.6 0.5" "0.3 0.6 0.6 0" "400" ;
+		transition "Background::matcolor" "1 0.5 0.6 0.5" "0.7 0.5 0.5 0.6" "400" ;
+		transition "Overlay2::matcolor" "0.3 0.6 0.6 0.5" "0.3 0.6 0.6 0" "400" ;
+		transition "Background2::matcolor" "1 0.5 0.6 0.5" "0.7 0.5 0.5 0.6" "400" ;
+		
+		transition "bgTopClampedGray::matcolor" "1 1 1 0.5" "1 1 1 0" "400" ;
+		transition "bgTopClamped3Gray::matcolor" "1 1 1 0.5" "1 1 1 0" "400" ;
+		transition "bgBtmClampedGray::matcolor" "1 1 1 0.5" "1 1 1 0" "400" ;
+		transition "bgBtmClamped3Gray::matcolor" "1 1 1 0.5" "1 1 1 0" "400" ;
+		
+		transition "bar1Left::matcolor" "0.5 0.9 1 0.35" "0.9 0.5 0 0.3" "400" ;
+		transition "bar1Mid::matcolor" "0.5 0.9 1 0.35" "0.9 0.5 0 0.3" "400" ;
+		transition "bar1Right::matcolor" "0.5 0.9 1 0.35" "0.9 0.5 0 0.3" "400" ;
+		
+		//transition "Logo::matcolor" "0.15 0.1 0.08 1" "0.18 0.07 0.02 1" "400" ;
+		
+		transition "btnArrowLeft::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowTopL::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowTopR::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowBottomL::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowBottomR::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowRight::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.5" "400" ;
+		transition "btnArrowFrameTL::matcolor" "0.8 1 1 0.09" "1 0.65 0.2 0.1" "400" ;
+		transition "btnArrowFrameTR::matcolor" "0.8 1 1 0.09" "1 0.65 0.2 0.1" "400" ;
+		transition "btnArrowFrameBL::matcolor" "0.8 1 1 0.09" "1 0.65 0.2 0.1" "400" ;
+		transition "btnArrowFrameBR::matcolor" "0.8 1 1 0.09" "1 0.65 0.2 0.1" "400" ;
+		
+		//	transition "IDCheckText::forecolor" "0.8 0.95 1 0.5" "1 0.7 0.3 0.5"" 500" ;
+		//	transition "IDCheckText1::forecolor" "0.8 0.95 1 0.5" "1 0.7 0.3 0.5" "500" ;
+		
+		transition "TriggerButton51::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.4" "400" ;
+		transition "TriggerButton61::matcolor" "1 1 1 0.4" "1 0.6 0.1 0.4" "400" ;
+		
+		transition	"ScriptStation1::matcolor" "1 1 1 0" "1 1 1 0" "200" ; 
+		transition	"ScriptStation2::matcolor" "1 1 1 0" "1 1 1 0" "200" ; 
+		transition	"ScriptStation3::matcolor" "1 1 1 0" "1 1 1 0" "200" ; 
+		}
+		
+	}	
+
+	windowDef bgTop
+	{
+		rect	7,0,626,240
+		visible	1
+		windowDef bgTopClamped
+		{
+			rect	-167,0,601,240
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgTopClamped3
+		{
+			rect	191,0,-600,240
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgTopClampedGray
+		{
+			rect	-166,0,601,240
+			background	"guis/assets/elevator/callfloorbg_g"
+			matcolor	1 ,1 ,1 ,0
+			visible	1
+		}
+		windowDef bgTopClamped3Gray
+		{
+			rect	191,0,-600,240
+			background	"guis/assets/elevator/callfloorbg_g"
+			matcolor	1 ,1 ,1 ,0
+			visible	1
+		}
+	}
+	windowDef bgBtm
+	{
+		rect	7,240,627,235
+		visible	1
+		windowDef bgBtmClamped
+		{
+			rect	-167,0,601,-241
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgBtmClamped3
+		{
+			rect	191,0,-600,-241
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef bgBtmClampedGray
+		{
+			rect	-166,1,601,-241
+			background	"guis/assets/elevator/callfloorbg_g"
+			matcolor	1 ,1 ,1 ,0
+			visible	1
+		}
+		windowDef bgBtmClamped3Gray
+		{
+			rect	191,1,-600,-241
+			background	"guis/assets/elevator/callfloorbg_g"
+			matcolor	1 ,1 ,1 ,0
+			visible	1
+		}
+	}
+	windowDef Glow2Parent
+	{
+		rect	320,0,320,480
+		visible	0
+		windowDef Glow2
+		{
+			rect	-61,8,375,464
+			matcolor	0.2 ,0.12 ,0 ,1
+			visible	1
+			background	"gui/glow"
+			noevents	1
+		}
+	}
+	windowDef Glow1Parent
+	{
+		rect	0,0,320,480
+		visible	0
+		windowDef Glow
+		{
+			rect	8,8,375,464
+			matcolor	0.2 ,0.12 ,0 ,1
+			visible	1
+			background	"gui/glow"
+			noevents	1
+		}
+	}
+	windowDef BackgroundParent1
+	{
+		rect	0 ,0 ,320 ,480
+		visible	1
+		windowDef Background
+		{
+			rect	0,-42,640,523
+			visible	1
+			background	"guis/assets/keypad/under_bridge_gray2"
+			matcolor	0.7, 0.5, 0.5, 0.6
+		}
+	}
+	windowDef BackgroundParent2
+	{
+		rect	320 ,0 ,320 ,480
+		visible	1
+		windowDef Background2
+		{
+			rect	-319,-42,-640,523
+			visible	1
+			background	"guis/assets/keypad/under_bridge_gray2"
+			matcolor	0.7, 0.5, 0.5, 0.6
+		}
+	}
+	windowDef OverlayParent1
+	{
+		rect	0 ,0 ,320 ,480
+		visible	1
+		windowDef Overlay
+		{
+			rect	0,-42,640,523
+			visible	1
+			background	"guis/assets/keypad/over_bridge2"
+			matcolor	0.3, 0.6, 0.6, 0
+		}
+	}
+	windowDef OverlayParent2
+	{
+		rect	320 ,0 ,320 ,480
+		visible	1
+		windowDef Overlay2
+		{
+			rect	-319,-42,-640,523
+			visible	1
+			background	"guis/assets/keypad/over_bridge2"
+			matcolor	0.3, 0.6, 0.6, 0
+		}
+	}
+	windowDef ArrowSet
+	{
+		rect	28,72,469,250
+		visible	1
+		windowDef btnArrowLeft
+		{
+			rect	-31,55,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowlr"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowTopL
+		{
+			rect	94,-5,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowt"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowBottomL
+		{
+			rect	94,118,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowb"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowFillTopL
+		{
+			rect	95,55,74,61
+			visible	1
+			background	"guis/assets/commoutside/arrowfillt"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowFillBottomL
+		{
+			rect	95,118,74,61
+			visible	1
+			background	"guis/assets/commoutside/arrowfillb"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowLeftH
+		{
+			rect	-31,55,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowlrh"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowTopLH
+		{
+			rect	94,-5,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowth"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowBottomLH
+		{
+			rect	94,118,150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowbh"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowRight
+		{
+			rect	369,55,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowlr"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowTopR
+		{
+			rect	244,-5,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowt"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowBottomR
+		{
+			rect	244,118,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowb"
+			matcolor	1,0.6,0.1,0.5
+		}
+		windowDef btnArrowFillTopR
+		{
+			rect	319,55,-74,61
+			visible	1
+			background	"guis/assets/commoutside/arrowfillt"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowFillBottomR
+		{
+			rect	319,118,-74,61
+			visible	1
+			background	"guis/assets/commoutside/arrowfillb"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowRightH
+		{
+			rect	369,55,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowlrh"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowTopRH
+		{
+			rect	244,-5,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowth"
+			matcolor	1,0.7,0.2,0
+		}
+		windowDef btnArrowBottomRH
+		{
+			rect	244,118,-150,124
+			visible	1
+			background	"guis/assets/commoutside/arrowbh"
+			matcolor	1,0.7,0.2,0
+		}
+	}
+	windowDef StatusArea
+	{
+		rect	109,6,421,40
+		visible	1
+		windowDef bar1Left
+		{
+			rect	12,5,26,26
+			visible	1
+			background	"guis/assets/common/titlebar_edge"
+			matcolor	0.9, 0.5, 0, 0.3
+		}
+		windowDef bar1Mid
+		{
+			rect	38,5,345,26
+			visible	1
+			background	"guis/assets/common/titlebar_mid"
+			matcolor	0.9, 0.5, 0, 0.3
+		}
+		windowDef bar1Right
+		{
+			rect	383,5,-29,26
+			visible	1
+			background	"guis/assets/common/titlebar_edge"
+			matcolor	0.9, 0.5, 0, 0.3
+		}
+	}
+	windowDef TopBox
+	{
+		rect	4,9,140,77
+		visible	1
+		windowDef Keypadbg
+		{
+			rect	5,6,124,65
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite"
+			matcolor	0.05,0.02,0,0.5
+		}
+		windowDef TBcorner1
+		{
+			rect	6,3,61,-28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner2
+		{
+			rect	67,3,-61,-28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner3
+		{
+			rect	6,46,61,28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner4
+		{
+			rect	67,46,-61,28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBRight
+		{
+			rect	67,31,-61,-15
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef TBLeft
+		{
+			rect	6,31,61,-15
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef IDTypeText
+		{
+			rect	5,-1,122,81
+			text	"#str_00548"
+			font	"fonts/micro"
+			textscale	0.8
+			forecolor	1,1,1,0.5
+			visible	1
+			textalign	1
+		}
+		windowDef IDCheckText
+		{
+			rect	14,42,130,33
+			text	"#str_00815"
+			font	"fonts/micro"
+			textscale	0.32
+			forecolor	1,0.698,0.298,0.5
+			visible	1
+		}
+	}
+	windowDef TopBox1
+	{
+		rect	502,9,140,77
+		visible	1
+		windowDef Keypadbg1
+		{
+			rect	5,6,124,65
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite"
+			matcolor	0.05,0.02,0,0.5
+		}
+		windowDef TBcorner11
+		{
+			rect	6,3,61,-28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner21
+		{
+			rect	67,3,-61,-28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner31
+		{
+			rect	6,46,61,28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBcorner41
+		{
+			rect	67,46,-61,28
+			visible	1
+			background	"guis/assets/common/1pxborder_cornersm"
+			matcolor	1,1,1,0.4
+		}
+		windowDef TBRight1
+		{
+			rect	67,31,-61,-15
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef TBLeft1
+		{
+			rect	6,31,61,-15
+			visible	1
+			background	"guis/assets/common/1pxborder_vert"
+			matcolor	1,1,1,0.4
+			matscaley	0.5
+		}
+		windowDef IDTypeText1
+		{
+			rect	5,0,122,81
+			text	"#str_00548"
+			font	"fonts/micro"
+			textscale	0.8
+			forecolor	1,1,1,0.5
+			visible	1
+			textalign	1
+		}
+		windowDef IDCheckText1
+		{
+			rect	14,42,130,33
+			text	"#str_00815"
+			font	"fonts/micro"
+			textscale	0.32
+			forecolor	1,0.698,0.298,0.5
+			visible	1
+		}
+	}
+	windowDef MapBg11
+	{
+		rect	49,338,538,27
+		visible	0
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.3
+	}
+	windowDef MapBG12
+	{
+		rect	49,365,538,-82
+		visible	0
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,1,1,0.3
+	}
+	windowDef MapBG13
+	{
+		rect	49,447,538,-20
+		visible	0
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.3
+	}
+	windowDef BtnParent
+	{
+		rect	8,321,627,159
+		visible	1
+		windowDef btn2_Top
+		{
+			rect	106,4,408,-43
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,0.6,0.2,0.5
+		}
+		windowDef btn2_corner1
+		{
+			rect	36,7,70,-41
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.6,0.2,0.5
+		}
+		windowDef btn2_corner2
+		{
+			rect	514,7,-70,-41
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.6,0.2,0.5
+		}
+		windowDef btn2_Fill
+		{
+			rect	106,47,408,97
+			visible	1
+			backcolor	1,0.6,0.2,0.232
+		}
+		windowDef btn2_Right
+		{
+			rect	514,48,-70,-96
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.6,0.2,0.5
+		}
+		windowDef btn2_Left
+		{
+			rect	36,48,70,-96
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.6,0.2,0.5
+		}
+	}
+	windowDef BackgroundBorder
+	{
+		rect	5,5,630,470
+		visible	1
+		windowDef Right
+		{
+			rect	587,59,-42,354
+			visible	1
+			background	"guis/assets/common/glowborder_vert"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef Left
+		{
+			rect	0,59,42,354
+			visible	1
+			background	"guis/assets/common/glowborder_vert"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef Bottom
+		{
+			rect	42,413,545,59
+			visible	1
+			background	"guis/assets/common/glowborder_horiz"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef Top
+		{
+			rect	42,0,545,-59
+			visible	1
+			background	"guis/assets/common/glowborder_horiz"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef BLcorner
+		{
+			rect	0,413,-42,59
+			visible	1
+			background	"guis/assets/common/glowborder_corner4"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef BRcorner
+		{
+			rect	587,413,42,59
+			visible	1
+			background	"guis/assets/common/glowborder_corner4"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef Trcorner
+		{
+			rect	587,0,-42,-59
+			visible	1
+			background	"guis/assets/common/glowborder_corner3"
+			matcolor	1, 0.8, 0.4, 1
+		}
+		windowDef TLcorner
+		{
+			rect	0,0,42,-59
+			visible	1
+			background	"guis/assets/common/glowborder_corner3"
+			matcolor	1, 0.8, 0.4, 1
+		}
+	}
+	windowDef OuterGlowBar11
+	{
+		rect	320,0,320,480
+		visible	1
+		windowDef OuterGlowBar2
+		{
+			rect	-30,0,348,480
+			background	"gui/outerglowbar"
+			matcolor	0, 0, 0 ,1
+			visible	1
+		}
+	}
+	windowDef OuterGlowBar1
+	{
+		rect	0,0,320,480
+		visible	1
+		windowDef OuterGlowBar
+		{
+			rect	3,0,-348,480
+			background	"gui/outerglowbar"
+			matcolor	0, 0, 0 ,1
+			visible	1
+		}
+	}
+	windowDef btnArrowFrameTL
+	{
+		rect	35,82,315,112
+		visible	1
+		background	"guis/assets/caverns/arrowudframe"
+		matcolor	1,0.65,0.2,0.1
+	}
+	windowDef btnArrowFrameTR
+	{
+		rect	195,82,-315,112
+		visible	1
+		background	"guis/assets/caverns/arrowudframe"
+		matcolor	1,0.65,0.2,0.1
+	}
+	windowDef btnArrowFrameBL
+	{
+		rect	35,169,315,-151
+		visible	1
+		background	"guis/assets/caverns/arrowudframe"
+		matcolor	1,0.65,0.2,0.1
+	}
+	windowDef btnArrowFrameBR
+	{
+		rect	194,169,-315,-151
+		visible	1
+		background	"guis/assets/caverns/arrowudframe"
+		matcolor	1,0.65,0.2,0.1
+	}
+	windowDef TriggerButton11
+	{
+		rect	153,88,242,87
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"btnArrowTopL::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			transition	"btnArrowTopR::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			set "TextRollover::text" "#str_00816" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"btnArrowTopL::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ;
+			transition	"btnArrowTopR::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm6" ;
+			transition	"btnArrowTopLH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ; 
+			transition	"btnArrowTopRH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ; 
+			
+			transition "btnArrowFillTopL::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+			transition "btnArrowFillTopR::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+		}
+
+	}
+	windowDef TriggerButton21
+	{
+		rect	37,136,94,105
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"btnArrowLeft::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ;
+			set "TextRollover::text" "#str_00818" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"btnArrowLeft::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ;
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm7" ;
+			transition	"btnArrowLeftH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ; 
+			
+			transition "btnArrowFillTopL::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+			transition "btnArrowFillBottomL::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+		}
+
+	}
+	windowDef TriggerButton31
+	{
+		rect	414,137,86,105
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"btnArrowRight::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			set "TextRollover::text" "#str_00819" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"btnArrowRight::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ;
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm8" ;
+			transition	"btnArrowRightH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ; 
+			
+			transition "btnArrowFillTopR::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+			transition "btnArrowFillBottomR::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+		}
+
+	}
+	windowDef TriggerButton41
+	{
+		rect	144,195,254,110
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"btnArrowBottomL::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			transition	"btnArrowBottomR::matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			set "TextRollover::text" "#str_00820" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"btnArrowBottomL::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ;
+			transition	"btnArrowBottomR::matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm9" ;
+			transition	"btnArrowBottomLH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ; 
+			transition	"btnArrowBottomRH::matcolor" "1 0.6 0.2 0.6" "1 1 1 0" "500" ;
+			
+			transition "btnArrowFillBottomL::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+			transition "btnArrowFillBottomR::matcolor" "1 0.7 0.2 0.5" "1 1 1 0" "500" ;
+		}
+
+	}
+	windowDef TriggerButton51
+	{
+		rect	512,91,89,114
+		matcolor	1, 0.6, 0.1, 0.4
+		background	"guis/assets/crane/up"
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			set "TextRollover::text" "#str_00821" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm10" ;
+			transition	"matcolor" "1 0.6 0.2 0.6" "1 1 1 0.6" "300" ; 
+		}
+
+	}
+	windowDef TriggerButton61
+	{
+		rect	510,200,89,114
+		matcolor	1, 0.6, 0.1, 0.4
+		background	"guis/assets/crane/down"
+		cursor	1
+		visible	1
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0.4" "1 1 1 0.6" "250" ; 
+			set "TextRollover::text" "#str_00822" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.6" "1 1 1 0.4" "250" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction { 
+			set	"cmd"	"play guisounds_click1" ;
+			runScript	"gui::gui_parm11" ;
+			transition	"matcolor" "1 0.6 0.2 0.6" "1 1 1 0.6" "300" ; 
+		}
+
+	}
+	windowDef TextRollover
+	{
+		rect	123,38,387,39
+		visible	1
+		forecolor	1,0.65,0.1,0.4
+		text	"#str_00817"
+		textscale	0.5
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef TextStation1
+	{
+		rect	63,344,512,39
+		visible	1
+		forecolor	0,0,0,0.4
+		text	"#str_00823"
+		textscale	0.5
+		font	"fonts/micro"
+	}
+	windowDef TextStation2
+	{
+		rect	63,382,512,39
+		visible	1
+		forecolor	0,0,0,0.4
+		text	"#str_00824"
+		textscale	0.5
+		font	"fonts/micro"
+	}
+	windowDef TextStation3
+	{
+		rect	63,420,512,39
+		visible	1
+		forecolor	0,0,0,0.4
+		text	"#str_00825"
+		textscale	0.5
+		font	"fonts/micro"
+	}
+	windowDef ScriptStation1
+	{
+		rect	49,345,537,38
+		background	"guis/assets/teleporter/button1"
+		matcolor	1, 1, 1, 0
+		visible	1
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0" "1 1 1 0.3" "200" ; 
+			set "TextRollover::text" "#str_00826" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.3" "1 1 1 0" "200" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm1" ;
+			transition	"matcolor" "1 0.6 0.2 0.6" "1 1 1 0.3" "200" ;
+		}
+
+	}
+	windowDef ScriptStation2
+	{
+		rect	49,383,537,38
+		background	"guis/assets/teleporter/button1"
+		matcolor	1, 1, 1, 0
+		visible	1
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0" "1 1 1 0.3" "200" ; 
+			set "TextRollover::text" "#str_00827" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.3" "1 1 1 0" "200" ;
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm5" ;
+			transition	"matcolor" "1 0.6 0.2 0.6" "1 1 1 0.3" "200" ;
+		}
+
+	}
+	windowDef ScriptStation3
+	{
+		rect	49,421,537,42
+		background	"guis/assets/teleporter/button1"
+		matcolor	1, 1, 1, 0
+		visible	1
+
+		onMouseEnter {
+			transition	"matcolor" "1 1 1 0" "1 1 1 0.3" "200" ; 
+			set "TextRollover::text" "#str_00828" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.7" ;
+		}
+
+		onMouseExit {
+			transition	"matcolor" "1 1 1 0.3" "1 1 1 0" "200" ; 
+			set "TextRollover::text" "#str_00817" ;
+			set "TextRollover::forecolor" "1 0.65 0.1 0.4" ;
+		}
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm3" ;
+			transition	"matcolor" "1 0.6 0.2 0.6" "1 1 1 0.3" "200" ;
+		}
+
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.5, 0.3, 0.1, 0.1
+	}
+	windowDef Outerglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , 0
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	-3,0,-646,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	-3,0,-646,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.4
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.4,0.6,0.6,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Reflect
+	{
+		rect	0,20,-640,-480
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,-480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt"
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef GlassScratch1
+	{
+		rect	-41,-29,-734,-561
+		background	"guis/assets/common/scratch1d"
+		visible	1
+		matcolor	0,0,0,0.7
+	}
+	windowDef GlassScratch
+	{
+		rect	-41,-33,-734,-561
+		background	"gui/common/scratch1d"
+		visible	1
+		matcolor	0.7,0.7,0.7,1
+	}
+}

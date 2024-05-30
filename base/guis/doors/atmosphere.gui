@@ -1,0 +1,167 @@
+windowDef Desktop {
+	rect	0 ,0 ,640 ,480 
+	backcolor	0 ,0 ,0 ,0.90 
+
+	onTrigger {
+		set	"NitrText::text" "#str_01211" ; 
+		set	"CO2Text::text" "#str_01212" ; 
+		set	"O2Text::text" "#str_01213" ; 
+		set	"StatusText::visible" "0" ; 
+		set	"LabEntry::visible" "1" ; 
+		set	"LockStatus::matcolor" "0 1 0.2 1" ; 
+		set	"LockStatus::text" "   " ; 
+		set	"Spikes1::rect" "280 337 240 10" ; 
+		set	"Spikes2::rect" "280 384 240 7" ; 
+		set	"Spikes3::rect" "280 421 240 9" ; 
+		set	"gui::noninteractive" "0" ; 
+		set	"ButtonError::noevents" "1" ; 
+	} 
+
+	windowDef Box1 {
+		rect	17 ,132 ,590 ,162 
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+		background	"guis/assets/env/box"
+	}
+
+	windowDef Box2 {
+		rect	17 ,305 ,-590 ,-160 
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+		background	"guis/assets/env/box"
+	}
+
+	windowDef Spikes1 {
+		rect	280 ,338 ,240 ,10 
+		visible	1
+		background	"gui/spikes"
+		matcolor	1 ,1 ,1 ,0.60 
+	}
+
+	windowDef Spikes2 {
+		rect	280 ,374 ,240 ,15 
+		visible	1
+		background	"gui/spikes"
+		matcolor	1 ,1 ,1 ,1 
+	}
+
+	windowDef Spikes3 {
+		rect	280 ,425 ,240 ,5 
+		visible	1
+		background	"gui/spikes"
+		matcolor	1 ,1 ,1 ,0.40 
+	}
+
+	windowDef Graph {
+		rect	275 ,310 ,250 ,150 
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+		background	"guis/assets/env/graph"
+	}
+
+	windowDef Bg {
+		rect	0 ,0 ,640 ,480 
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+		background	"guis/assets/env/envbg"
+	}
+
+	windowDef Glow {
+		rect	0 ,0 ,640 ,480 
+		matcolor	1 ,1 ,1 ,0.50 
+		visible	1
+		background	"gui/envglow"
+	}
+
+	windowDef LockStatus {
+		rect	110 ,78 ,510 ,60 
+		matcolor	1 ,0 ,0 ,1 
+		background	"guis/assets/keycard/lockstatus"
+		text	"#str_01214"
+		
+		textscale	0.9
+		textalign	1
+		textaligny	6
+		forecolor	1 ,1 ,1 ,0.50 
+		visible	1
+	}
+
+	windowDef TitleText {
+		rect	193 ,34 ,400 ,10 
+		text	"#str_01215"
+		
+		textscale	0.65
+		textalign	0
+		forecolor	1 ,1 ,1 ,0.80 
+		visible	1
+	}
+
+	windowDef StatusText {
+		rect	55 ,160 ,500 ,10 
+		text	"#str_01216"
+		textscale	0.80
+		textalign	1
+		forecolor	1 ,1 ,1 ,1 
+		visible	1
+	}
+
+	windowDef LabEntry {
+		rect	25 ,138 ,574 ,152 
+		matcolor	1 ,1 ,1 ,1 
+		background	"guis/assets/env/labentry"
+		visible	0
+		onAction {
+			set	"cmd" "activate ; play guisounds_action" ; 
+		} 
+	}
+
+	windowDef ButtonError {
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		noevents	0
+		onAction {
+			set	"cmd" "activate ; play guisounds_error" ; 
+			resetTime "Anim" "0" ; 
+		} 
+	}
+
+	windowDef NitrText {
+		rect	55 ,322 ,500 ,10 
+		text	"#str_01217"
+		
+		textscale	0.70
+		textalign	0
+		forecolor	0.60 ,0 ,0 ,1 
+		visible	1
+	}
+
+	windowDef CO2Text {
+		rect	55 ,362 ,500 ,10 
+		text	"#str_01218"
+		
+		textscale	0.70
+		textalign	0
+		forecolor	0.60 ,0 ,0 ,1 
+		visible	1
+	}
+
+	windowDef O2Text {
+		rect	55 ,402 ,500 ,10 
+		text	"#str_01219"
+		
+		textscale	0.70
+		textalign	0
+		forecolor	0.60 ,0 ,0 ,1 
+		visible	1
+	}
+
+	windowDef fadeglass {
+		rect	0 ,0 ,640 ,-480 
+		visible	1
+		background	"gui/fadeglass"
+		matcolor	1 ,1 ,1 ,0.60 
+		noevents	1
+		nozorder	1
+	}
+
+}

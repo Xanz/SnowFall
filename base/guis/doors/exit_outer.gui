@@ -1,0 +1,308 @@
+windowDef Desktop {
+	rect	0 ,0 ,640 ,480 
+	comment "outer door gui for exit frame"
+	backcolor	0 ,0 ,0 ,1 
+
+	onTrigger {
+		resetTime "Anim" "0" ; 
+	}
+
+windowDef TestSpin {
+	rect	0, 0, 640, 480 
+	//	rotate time * 0.05
+
+
+	windowDef BgCirc1 {
+		rect	61 ,61 ,260 ,180 
+		matcolor	1 ,0.60 ,0 ,0.4
+		visible	1
+		background	"guis/assets/airlock/circle_white2"
+	}
+
+	windowDef BgCirc2 {
+		rect	318 ,61 ,-260 ,180 
+		matcolor	1 ,0.60 ,0 ,0.4
+		visible	1
+		background	"guis/assets/airlock/circle_white2"
+	}
+
+	windowDef BgCirc3 {
+		rect	61 ,238 ,260 ,-180 
+		matcolor	1 ,0.60 ,0 ,0.4
+		visible	1
+		background	"guis/assets/airlock/circle_white2"
+	}
+
+	windowDef BgCirc4 {
+		rect	318 ,238 ,-260 ,-180 
+		matcolor	1 ,0.60 ,0 ,0.4
+		visible	1
+		background	"guis/assets/airlock/circle_white2"
+	}
+
+
+	windowDef Bg1 {
+		rect	5 ,5 ,318 ,238 
+		matcolor	1 ,0.60 ,0 ,0.6 
+		visible	1
+		background	"guis/assets/airlock/bg_white"
+	}
+
+	windowDef Bg2 {
+		rect	318 ,5 ,-317 ,238 
+		matcolor	1 ,0.60 ,0 ,0.6 
+		visible	1
+		background	"guis/assets/airlock/bg_white"
+	}
+
+	windowDef Bg3 {
+		rect	5 ,238 ,318 ,-237
+		matcolor	1 ,0.60 ,0 ,0.6
+		visible	1
+		background	"guis/assets/airlock/bg_white"
+	}
+
+	windowDef Bg4 {
+		rect	320 ,238 ,-317 ,-237 
+		matcolor	1 ,0.60 ,0 ,0.6
+		visible	1
+		background	"guis/assets/airlock/bg_white"
+	}
+
+	windowDef Arrow1 {
+		rect	280 ,70 ,80 ,-170 
+		matcolor	1 ,0.60 ,0 ,1 
+		visible	1
+		background	"gui/airlock/varrow"
+	}
+
+	windowDef Arrow2 {
+		rect	70 ,210 ,250 ,60 
+		matcolor	1 ,0.60 ,0 ,1 
+		visible	1
+		background	"gui/airlock/harrow"
+	}
+
+	windowDef Arrow3 {
+		rect	320 ,210 ,-250 ,60 
+		matcolor	1 ,0.60 ,0 ,1 
+		visible	1
+		background	"gui/airlock/harrow"
+	}
+
+	windowDef Arrow4 {
+		rect	280 ,240 ,80 ,170 
+		matcolor	1 ,0.60 ,0 ,1 
+		visible	1
+		background	"gui/airlock/varrow"
+	}
+
+	windowDef BgCirc5 {
+		rect	61 ,61 ,260 ,180 
+		matcolor	1 ,0.4 ,0 ,1 
+		visible	1
+		background	"gui/airlock/circle_white3"
+	}
+
+	windowDef BgCirc6 {
+		rect	318 ,61 ,-260 ,180 
+		matcolor	1 ,0.4 ,0 ,1 
+		visible	1
+		background	"gui/airlock/circle_white3"
+	}
+
+	windowDef BgCirc7 {
+		rect	61 ,238 ,260 ,-180 
+		matcolor	1 ,0.4 ,0 ,1 
+		visible	1
+		background	"gui/airlock/circle_white3"
+	}
+
+	windowDef BgCirc8 {
+		rect	318 ,238 ,-260 ,-180 
+		matcolor	1 ,0.4 ,0 ,1  
+		visible	1
+		background	"gui/airlock/circle_white3"
+	}
+
+}
+
+	windowDef spin1a {
+		rect	-170, -110, 980, 700 
+		background	"gui/spintest"
+		matcolor	1, 1, 1, 0.1
+		visible	1
+	}
+	windowDef spin1b {
+		rect	-170, -110, -980, -700 
+		background	"gui/spintest"
+		matcolor	1, 1, 1, 0.05
+		visible	1
+	}
+
+	windowDef ButtonBG1 {
+		rect	75 ,120 ,490 ,120 
+		matcolor	1 ,1 ,1 ,0.05
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef ButtonBG2 {
+		rect	70 ,140 ,500 ,120 
+		matcolor	1 ,1 ,1 ,0.1
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef ButtonBG3 {
+		rect	65 ,160 ,510 ,120 
+		matcolor	1 ,1 ,1 ,0.2
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef ButtonBG4 {
+		rect	65 ,200 ,510 ,120 
+		matcolor	1 ,1 ,1 ,0.2
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef ButtonBG5 {
+		rect	70 ,220 ,500 ,120 
+		matcolor	1 ,1 ,1 ,0.1
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef ButtonBG6 {
+		rect	75 ,240 ,490 ,120 
+		matcolor	1 ,1 ,1 ,0.05
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+	windowDef Button {
+		rect	60 ,180 ,520 ,120 
+		matcolor	1 ,1 ,1 ,0.3
+		background	"guis/assets/airlock/button"
+		visible	1
+	}
+
+	windowDef Glow {
+		rect	5,5 ,-630 ,470 
+		matcolor	0.40 ,0.20 ,0 ,1 
+		visible	1
+		background	"gui/glow"
+		noevents	1
+	}
+
+	windowDef Border1 {
+		rect	5 ,5 ,630 ,60 
+		matcolor	0 ,0 ,0 ,0.40 
+		visible	1
+		background	"gui/line/horizwarn"
+	}
+
+	windowDef Border2 {
+		rect	5 ,5 ,30 ,470 
+		matcolor	0 ,0 ,0 ,0.40  
+		visible	1
+		background	"gui/line/vertwarn"
+	}
+
+	windowDef Border3 {
+		rect	600 ,5 ,30 ,470 
+		matcolor	0 ,0 ,0 ,0.40 
+		visible	1
+		background	"gui/line/vertwarn"
+	}
+
+	windowDef Border4 {
+		rect	5 ,410 ,630 ,60 
+		matcolor	0 ,0 ,0 ,0.40 
+		visible	1
+		background	"gui/line/horizwarn2"
+	}
+
+	windowDef TitleText {
+		rect	0 ,145 ,640 ,400 
+		text	"#str_01248"
+		font	"fonts/bank"
+		textscale	2.5
+		textalign	1
+		forecolor	0 ,0 ,0 ,0.8
+		visible	1
+	}
+
+	windowDef TitleTextO {
+		rect	0 ,145 ,640 ,400 
+		text	"#str_01248"
+		font	"fonts/bank"
+		textscale	2.5
+		textalign	1
+		forecolor	1 ,0.9 ,0.7 ,0.8
+		visible	0
+
+		onTime 0 {
+			transition "forecolor" "1 0.9 0.7 0.8" "0 0 0 0.5" "500" "0.4" "0.6" ;
+		}
+		onTime 500 {
+			transition "forecolor" "0 0 0 0.5" "1 0.9 0.7 0.8" "500" "0.4" "0.6" ;
+		}
+		onTime 1000 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef Outerglow {
+		rect	0 ,0 ,640 ,480 
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 2.8 //0.25
+		visible	1
+	}
+	windowDef Outershadow {
+		rect	0 ,0 ,640 ,480 
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+	}
+	windowDef Addhighlight {
+		rect	0 ,0 ,640 ,480 
+		background	"gui/addhighlight"
+		matcolor	0.3 ,0.8 ,0.8 ,1 
+		visible	1
+	}
+	windowDef Scanlines {
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	1.5
+		visible	1
+	}
+	windowDef Dirt {
+		rect	0 ,0 ,640 ,480 
+		matcolor	1, 1, 1 ,0.7
+		visible	1
+		background	"guis/assets/common/dirt1"
+		noevents	1
+	}
+	windowDef fadeglass {
+	//reflection
+		rect	0 ,0 ,-640 ,480 
+		visible	1
+		background	"gui/fadeglass2"
+		matcolor	0.1 ,0.1 ,0.1 ,0.1
+	}
+	windowDef ButtonActivate {
+		rect	50 ,50 ,540 ,380 
+		visible	1
+
+		onMouseEnter {
+			set "TitleTextO::visible" "1" ;
+			set "TitleText::visible" "0" ;
+		}
+		onMouseExit {
+			set "TitleTextO::visible" "0" ;
+			set "TitleText::visible" "1" ;
+		}
+		onAction {
+			set	"cmd" "activate" ; 
+			resetTime "Anim" "0" ; 
+		} 
+	}
+}

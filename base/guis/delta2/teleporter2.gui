@@ -1,0 +1,419 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	visible	1
+	background	"guis/assets/common/bg_rc.tga"
+	matcolor	0,0,0,1
+	notime 1
+
+	onTrigger {
+		resetTime "0" ;
+	}
+	
+	onTime 0 {
+		transition "TextInitiateScan::forecolor" "1 0.5 0 0.7" "1 0.5 0 0" "500" ;
+		transition "TextDestination::forecolor" "1 0 0 0.8" "1 0 0 0" "500" ;
+		transition "SourceText::forecolor" "1 1 1 1" "1 1 1 0" "500" ;
+	}
+	onTime 500 {
+		set "TextInitiateScan::text" "#str_03329" ;
+		set "TextDestination::text" "#str_03330" ;
+		set "SourceText::text" "#str_03331" ;
+	}
+	onTime 800 {
+		transition "TextInitiateScan::forecolor" "1 0.5 0 0" "1 0.6 0 0.7" "500" ;
+	}
+	onTime 1200 {		
+		transition "SourceText::forecolor" "1 1 1 0" "1 1 1 1" "500" ;
+	}
+	onTime 1000 {
+	transition "TextDestination::forecolor" "1 1 1 1" "1 1 1 0.5" "500" ;
+		set "Target1::visible" "1" ;
+	}
+	
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,1,1,0.5
+	}
+	windowDef BGHexGrid
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.07
+		matscalex	15
+		matscaley	9
+	}
+	windowDef Bg2Clamp
+	{
+		rect	9,11,193,459
+		visible	1
+		windowDef BG2
+		{
+			rect	-11,-10,630,470
+			visible	1
+			background	"guis/assets/common/scibox/bg2"
+			matcolor	1,1,1,0.8
+			backcolor	0,0,0,1
+		}
+	}
+	windowDef MapClamp
+	{
+		rect	10,12,190,455
+		visible	1
+		windowDef MapGrid
+		{
+			rect	-27,-5,624,576
+			visible	1
+			background	"gui/grid2"
+			matcolor	1,1,1,0.2
+			matscalex	10
+			matscaley	10
+		}
+		windowDef Map
+		{
+			rect	-19,3,291,349
+			visible	1
+			background	"guis/assets/delta2/telemap"
+			matcolor	1,1,1,subtleflick[ time * 0.002 ] / 1
+		}
+		windowDef Map1
+		{
+			rect	-50,361,-291,349
+			visible	1
+			background	"guis/assets/delta2/telemap"
+			matcolor	1,1,1,subtleflick[ time * 0.002 ] / 1
+		}
+	}
+	windowDef Target1
+	{
+		rect	60,152,56,56
+		visible	0
+		background	"gui/teleporter/target"
+		matcolor	1,0.2,0.2,1
+		noevents	0
+	}
+	windowDef BGFrame
+	{
+		rect	3,5,632,471
+		visible	1
+		windowDef TMCorner
+		{
+			rect	188,-1,-47,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornersmall2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TRCorner
+		{
+			rect	589,-1,45,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top2
+		{
+			rect	235,-1,354,30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BMCorner
+		{
+			rect	188,445,-47,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom2
+		{
+			rect	235,445,354,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BRCorner
+		{
+			rect	589,445,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Left1
+		{
+			rect	0,29,-23,416
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right1
+		{
+			rect	611,29,23,31
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef RightSpacer
+		{
+			rect	589,60,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right2
+		{
+			rect	611,90,23,106
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid1
+		{
+			rect	197,29,-23,31
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef MidSpacer
+		{
+			rect	197,60,-45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid2
+		{
+			rect	197,90,-23,106
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef TLCorner
+		{
+			rect	0,-1,23,30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef BLCorner
+		{
+			rect	0,445,24,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Bottom1
+		{
+			rect	24,445,164,-30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Top1
+		{
+			rect	23,-1,165,30
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef MidSpacer1
+		{
+			rect	197,196,-45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef RightSpacer1
+		{
+			rect	589,196,45,30
+			visible	1
+			background	"guis/assets/common/scibox/g_spacerSmall"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Mid3
+		{
+			rect	197,226,-23,219
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+		windowDef Right3
+		{
+			rect	611,226,23,219
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.5,0.8,1,0.4
+		}
+	}
+	windowDef ButtonArea
+	{
+		rect	204,74,433,184
+		visible	1
+		windowDef ButtonBG3
+		{
+			rect	8,111,414,-22
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBG2
+		{
+			rect	8,35,414,-76
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBG1
+		{
+			rect	8,13,414,22
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef ButtonBarRight
+		{
+			rect	392,16,22,41
+			visible	1
+			background	"guis/assets/common/scibox/fillRight"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef ButtonBarCenter
+		{
+			rect	37,16,355,41
+			visible	1
+			background	"guis/assets/common/scibox/fillCenter"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef ButtonBarLeft
+		{
+			rect	15,16,22,41
+			visible	1
+			background	"guis/assets/common/scibox/fillLeft"
+			matcolor	0.27,0.66,1,0.2
+		}
+		windowDef TextArea
+		{
+			rect	30,19,377,30
+			visible	1
+			text	"#str_03332"
+			forecolor	1,1,1,0.9
+			textscale	0.375
+			font	"fonts/micro"
+		}
+	}
+	windowDef TextTitle1
+	{
+		rect	218,12,427,33
+		visible	1
+		text	"#str_01098"
+		forecolor	1,1,1,0.7
+		textscale	0.61
+		font	"fonts/micro"
+	}
+	windowDef TextTitle2
+	{
+		rect	217,38,426,33
+		visible	1
+		text	"#str_03333"
+		forecolor	1,1,1,0.35
+		textscale	0.56
+		font	"fonts/micro"
+	}
+	windowDef TextDestinationClip
+	{
+		rect	211,225,410,33
+		visible	1
+		windowDef TextDestination
+		{
+			rect	7,2,399,33
+			visible	1
+			text	"#str_03334"
+			forecolor	1,0,0,0.8
+			textscale	0.45
+			font	"fonts/micro"
+		}
+	}
+	windowDef SourceTextClamp
+	{
+		rect	230,254,380,213
+		visible	1
+		windowDef SourceText
+		{
+			rect	10,8,382,205
+			visible	1
+			forecolor	1,1,1,1
+			text	"#str_03335"
+			textscale	0.45
+			font	"fonts/an"
+		}
+	}
+	windowDef TextInitiateScan
+	{
+		rect	222,123,393,78
+		visible	1
+		text	"#str_03336"
+		forecolor	1,0.5,0,0.7
+		textscale	0.56
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+	windowDef Static1
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+	windowDef Reflect
+	{
+		rect	-1,-9,-646,470
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Addhighlight
+	{
+		rect	0,7,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.4 ,0.6 ,0.6 ,1
+		visible	1
+	}
+	windowDef scanpulse1
+	{
+		rect	8,12,194,458
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-252,2000
+			matcolor	1,1,1,0.05
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+}

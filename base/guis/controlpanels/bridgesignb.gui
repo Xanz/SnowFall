@@ -1,0 +1,97 @@
+windowDef Desktop
+{
+	comment	"gui_parm1 is the text to display. If the text is to wide set gui_parm2 to value 1 to make it smaller. If it still doesn't fit set gui_parm2 to value 2. set gui_parm3 value 0 to make the red locked version visible. set gui_parm3 to 0 for the red state, set it to 1 for the unlocked green. Triggering the gui will toggle between red and green."
+	rect	0 ,0 ,640 ,480
+	notime	1
+	nocursor	1
+	windowDef bg1
+	{
+		rect	0 ,0 ,320 ,480
+		background	"guis/assets/common/marquee"
+		matcolor	0.6,0.85,1,0.6
+		visible	1
+	}
+	windowDef bg2
+	{
+		rect	320 ,0 ,-320 ,480
+		background	"guis/assets/common/marquee"
+		matcolor	0.6,0.85,1,0.6
+		visible	1
+	}
+	windowDef Text1
+	{
+		rect	0 ,-1,640 ,480
+		visible	1
+		windowDef Text1g
+		{
+			rect	0,28,640,450
+			text	"#str_03181"
+			textscale	1.6
+			textalign	1
+			forecolor	0.6, 0.85, 1, pdflick[ time * 0.002 ] / 1.2
+			visible	1
+			Forceaspectheight	150
+			windowDef Text2gBlank
+			{
+				rect	0, 0, 0, 0
+			}
+		}
+	}
+	windowDef Static
+	{
+		rect	-5 ,-5 ,-660 ,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 6
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,5 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .002 ] / 4
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.6
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0 ,7 ,-640 ,-480
+		background	"gui/addhighlight"
+		matcolor	0.15 ,0.4 ,0.5 ,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	0.3,0.3,0.3,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	0.8
+
+		onAction {
+
+		}
+
+	}
+	windowDef Dirt11
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Dirt
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt3"
+		noevents	1
+	}
+}

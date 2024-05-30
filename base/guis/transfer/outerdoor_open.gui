@@ -1,0 +1,663 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0, 0, 0, 0.7
+	comment	"gui_parm5 for the broken version."
+	float	"parm"	0
+	float	"color"	0
+	float	"colorset"	0
+
+	onEvent {
+		if ("gui::gui_parm5" == 1) {
+			if ("parm" == 0) {
+				set "parm" "1" ;
+				resetTime "Shizzle" "0" ;
+			}
+		}
+	}
+
+	windowDef BgBlack
+	{
+		rect	-2,0,646,481
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0,0,0.9
+	}
+	windowDef DesktopClip
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		windowDef CircleCrop
+		{
+			rect	5,58,630,379
+			visible	1
+			windowDef CircleG0
+			{
+				rect	-88,-50,820,481
+				visible	1
+				background	"gui/spin1alt"
+				matcolor	0.2, 0.8, 0.6, 0.2
+			}
+			windowDef CircleG1
+			{
+				rect	-48,-27,-740,434
+				visible	1
+				background	"gui/spin2alt"
+				matcolor	0.2, 0.8, 0.6, 0.2
+			}
+			windowDef CircleG2
+			{
+				rect	1,2,640,375
+				visible	1
+				background	"gui/spin3alt"
+				matcolor	0.2, 0.8, 0.6, 0.2
+			}
+			windowDef CircleG3
+			{
+				rect	53,31,-536,316
+				visible	1
+				background	"gui/spin4alt"
+				matcolor	0.2, 0.8, 0.6, 0.2
+			}
+		}
+		windowDef BgClip
+		{
+			rect	14,38,612,368
+			visible	1
+			windowDef Bg1
+			{
+				rect	0,-73,626,252
+				visible	1
+				background	"guis/assets/doors/adminbg"
+				matcolor	0.6, 0.85, 0.8, 1
+			}
+			windowDef Bg3
+			{
+				rect	0,179,626,-252
+				visible	1
+				background	"guis/assets/doors/adminbg"
+				matcolor	0.6, 0.85, 0.8, 1
+			}
+			windowDef Bg11
+			{
+				rect	-10,-73,-626,252
+				visible	1
+				background	"guis/assets/doors/adminbg"
+				matcolor	0.6, 0.85, 0.8, 1
+			}
+			windowDef Bg31
+			{
+				rect	-10,179,-626,-252
+				visible	1
+				background	"guis/assets/doors/adminbg"
+				matcolor	0.6, 0.85, 0.8, 1
+			}
+		}
+		windowDef Logo1
+		{
+			rect	91,115,470,247
+			visible	1
+			background	"guis/assets/common/mlogo"
+			matcolor	0.1,0.5,0.4,0.3
+		}
+		windowDef CircCropBlack1
+		{
+			rect	39,5,549,73
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite4"
+			matcolor	0,0,0,0.9
+		}
+		windowDef CircCropBlack2
+		{
+			rect	-6,404,660,71
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite4"
+			matcolor	0,0,0,0.9
+		}
+		windowDef CircCropBlack11
+		{
+			rect	-18,5,680,39
+			visible	1
+			background	"guis/assets/cpuserver/bgWhite4"
+			matcolor	0,0,0,0.9
+		}
+		windowDef StatusArea
+		{
+			rect	1,3,636,87
+			visible	1
+			windowDef SourceText
+			{
+				rect	7,28,625,53
+				visible	1
+				forecolor	1,1,1,0.4
+				text	"#str_03965"
+				textscale	0.68
+				font	"fonts/micro"
+				textalign	1
+			}
+			windowDef bar1Left
+			{
+				rect	7,5,-32,37
+				visible	1
+				background	"guis/assets/common/titlebar_corner"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+			windowDef bar1Mid
+			{
+				rect	39,5,556,37
+				visible	1
+				background	"guis/assets/common/titlebar_mid"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+			windowDef bar1Right
+			{
+				rect	595,5,37,37
+				visible	1
+				background	"guis/assets/common/titlebar_corner"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+		}
+		windowDef TopBox
+		{
+			rect	-41,-1,274,96
+			visible	0
+			windowDef Keypadbg
+			{
+				rect	47,8,223,86
+				visible	1
+				background	"guis/assets/cpuserver/bgWhite"
+				matcolor	0,0,0,0.9
+			}
+			windowDef TBTop
+			{
+				rect	132,3,53,-30
+				visible	1
+				background	"guis/assets/common/1pxborder_horiz"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBcorner1
+			{
+				rect	50,5,82,-30
+				visible	1
+				background	"guis/assets/common/1pxborder_cornersm"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBcorner2
+			{
+				rect	185,5,-82,-30
+				visible	1
+				background	"guis/assets/common/1pxborder_cornersm"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBcorner3
+			{
+				rect	50,61,82,30
+				visible	1
+				background	"guis/assets/common/1pxborder_cornersm"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBcorner4
+			{
+				rect	185,61,-82,30
+				visible	1
+				background	"guis/assets/common/1pxborder_cornersm"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBBottom
+			{
+				rect	132,63,53,30
+				visible	1
+				background	"guis/assets/common/1pxborder_horiz"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBRight
+			{
+				rect	185,35,-82,-26
+				visible	1
+				background	"guis/assets/common/1pxborder_vert"
+				matcolor	1,1,1,0.8
+			}
+			windowDef TBLeft
+			{
+				rect	50,35,82,-26
+				visible	1
+				background	"guis/assets/common/1pxborder_vert"
+				matcolor	1,1,1,0.8
+			}
+			windowDef IDTypeText
+			{
+				rect	61,19,192,67
+				text	"#str_00015"
+				font	"fonts/micro"
+				textscale	1.1
+				forecolor	1,1,1,0.6
+				visible	1
+				textalign	1
+			}
+			windowDef IDCheckText
+			{
+				rect	61,10,210,26
+				text	"#str_03271"
+				font	"fonts/micro"
+				textscale	0.41
+				forecolor	1,0.698,0.298,0.6
+				visible	1
+			}
+		}
+		windowDef StatusBar
+		{
+			rect	0,374,640,120
+			visible	1
+			windowDef Statusbar2Mid
+			{
+				rect	58,66,522,40
+				visible	1
+				background	"guis/assets/common/titlebar_mid"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+			windowDef Statusbar2Right
+			{
+				rect	580,66,57,-40
+				visible	1
+				background	"guis/assets/common/titlebar_corner"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+			windowDef Statusbar2Left
+			{
+				rect	1,66,-57,-40
+				visible	1
+				background	"guis/assets/common/titlebar_corner"
+				matcolor	0.6,0.8,0.85,0.3
+			}
+			windowDef StatusText
+			{
+				rect	1,16,638,100
+				text	"#str_00023"
+				textscale	1
+				textalign	1
+				forecolor	0.6,1,0.8,0.6
+				visible	1
+				font	"fonts/micro"
+			}
+			windowDef Statusbar3Right
+			{
+				rect	587,27,-48,52
+				visible	1
+				background	"guis/assets/common/titlebar_edge"
+				matcolor	0.6,0.9,0.7,0.3
+			}
+			windowDef Statusbar3Mid2
+			{
+				rect	499,27,88,52
+				visible	1
+				background	"guis/assets/common/titlebar_mid"
+				matcolor	0.6,0.9,0.7,0.3
+			}
+			windowDef Statusbar3Left
+			{
+				rect	5,27,48,52
+				visible	1
+				background	"guis/assets/common/titlebar_edge"
+				matcolor	0.6,0.9,0.7,0.3
+			}
+			windowDef Statusbar3Mid1
+			{
+				rect	53,27,87,52
+				visible	1
+				background	"guis/assets/common/titlebar_mid"
+				matcolor	0.6,0.9,0.7,0.3
+			}
+		}
+		windowDef Btn
+		{
+			rect	55,88,574,325
+			visible	1
+			windowDef btn2_Top
+			{
+				rect	108,15,322,-30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_horiz"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_corner1
+			{
+				rect	26,17,82,-30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_cornersm"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_corner2
+			{
+				rect	430,17,-82,-30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_cornersm"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_Bottom
+			{
+				rect	108,257,322,30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_horiz"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_corner3
+			{
+				rect	26,255,82,30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_cornersm"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_corner4
+			{
+				rect	430,255,-82,30
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_cornersm"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_Fill
+			{
+				rect	108,45,322,212
+				visible	1
+				backcolor	0.6, 0.8, 0.85, 0.232
+			}
+			windowDef btn2_Right
+			{
+				rect	430,47,-82,-208
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_vert"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef btn2_Left
+			{
+				rect	26,47,82,-208
+				visible	1
+				background	"guis/assets/common/btn_2pxborder_vert"
+				matcolor	0.6, 0.8, 0.85, 0.5
+			}
+			windowDef TextTitle2
+			{
+				rect	34,16,469,259
+				visible	1
+				text	"#str_03966"
+				forecolor	1,1,1,0.6
+				textscale	1.5
+				font	"fonts/micro"
+				textalign	1
+				notime	1
+
+				onMouseEnter {
+					transition "btn2_top::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_corner1::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_corner2::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_bottom::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_corner3::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_corner4::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_fill::backcolor" "0.6 0.8 0.85 0.232" "0.6 0.8 0.85 0.32" "300" ;
+					transition "btn2_right::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "btn2_left::matcolor" "0.6 0.8 0.85 0.5" "0.6 0.8 0.85 0.7" "300" ;
+					transition "TextTitle2::forecolor" "1 1 1 0.5" "1 1 1 0.7" "300" ;
+				}
+
+				onMouseExit {
+					transition "btn2_top::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_corner1::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_corner2::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_bottom::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_corner3::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_corner4::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_fill::backcolor" "0.6 0.8 0.85 0.32" "0.6 0.8 0.85 0.232" "300" ;
+					transition "btn2_right::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "btn2_left::matcolor" "0.6 0.8 0.85 0.7" "0.6 0.8 0.85 0.5" "300" ;
+					transition "TextTitle2::forecolor" "1 1 1 0.7" "1 1 1 0.5" "300" ;
+				}
+
+				onAction {
+					set "cmd" "activate ; play guisounds_click" ;
+					resetTime "TextTitle2" "0" ;
+					set "TextTitle2::noevents" "1" ;
+					resetTime "0" ;
+					transition "btn2_top::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_corner1::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_corner2::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_bottom::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_corner3::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_corner4::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_fill::backcolor" "0.6 0.8 0.85 0.32" "1 0.2 0 0" "300" ;
+					transition "btn2_right::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "btn2_left::matcolor" "0.6 0.8 0.85 0.7" "1 0.2 0 0" "300" ;
+					transition "TextTitle2::forecolor" "1 1 1 0.7" "1 1 1 0" "300" ;
+				}
+			
+			}
+		}
+		windowDef Black
+		{
+			rect	65 ,250 ,512 ,168
+			visible	1
+			backcolor	0 ,0 ,0 ,0
+		}
+		windowDef Bglow
+		{
+			rect	0,0,640,480
+			background	"guis/assets/cpuserver/bglow.tga"
+			visible	1
+			matcolor	0.4, 0.8, 1, 0.1
+		}
+		windowDef Shizzle
+		{
+			notime	1
+
+			onTime 0 {
+				set	"Static::matcolor" "1 1 1 0.15" ;
+				set	"Black::visible" "1" ;
+				set	"Blackfade::visible" "1" ;
+				set	"Access::rect" "-10 -10 640 480" ; 
+				set	"Circle3::rect" "30 -132 -580 580" ;
+				set	"CircleG3::rect" "30 -132 -580 580" ;
+				set	"Circle2::rect" "0 -167 640 640" ;
+				set	"CircleG2::rect" "0 -167 640 640" ;
+				set	"BackgroundParent::rect" "-10 -10 640 480" ; 
+				
+				set "Logo1::rect" "20 20 600 440" ;
+				
+				set "StatusArea::rect" "1 3 636 87" ;
+				set "TopBox::rect" "-39 6 274 96" ;
+				set "StatusBar::rect" "0 370 640 120" ;
+				
+				resetTime "Twitch" "0" ;
+			}
+
+			onTime 50 {
+				set	"Access::rect" "0 0 640 480" ; 
+				set	"Circle3::rect" "40 -142 -580 580" ;
+				set	"CircleG3::rect" "40 -142 -580 580" ;
+				set	"Circle2::rect" "-10 -165 640 640" ;
+				set	"CircleG2::rect" "-10 -165 640 640" ;		
+				set	"BackgroundParent::rect" "0 0 640 480" ; 
+				
+				set "Logo1::rect" "22 22 600 440" ;
+				
+				set "StatusArea::rect" "0 1 636 87" ;
+				set "TopBox::rect" "-41 -1 274 96" ;
+				set "StatusBar::rect" "0 374 640 120" ;			
+			}
+
+			onTime 250 {
+				set "Logo1::rect" "20 20 600 440" ;
+				set	"Circle3::rect" "30 -132 -580 580" ;
+				set	"CircleG3::rect" "30 -132 -580 580" ;
+				set	"Circle2::rect" "0 -167 640 640" ;
+				set	"CircleG2::rect" "0 -167 640 640" ;
+			}
+
+			onTime 350 {
+				set	"Circle3::rect" "40 -142 -580 580" ;
+				set	"CircleG3::rect" "40 -142 -580 580" ;
+				set	"Circle2::rect" "-10 -165 640 640" ;
+				set	"CircleG2::rect" "-10 -165 640 640" ;
+				set	"BackgroundParent::rect" "8 7 640 480" ; 
+			}
+
+			onTime 500 {
+				set	"Circle3::rect" "30 -132 -580 580" ;
+				set	"CircleG3::rect" "30 -132 -580 580" ;
+				set	"Circle2::rect" "0 -167 640 640" ;
+				set	"CircleG2::rect" "0 -167 640 640" ;
+				set	"BackgroundParent::rect" "0 0 640 480" ;
+			}
+
+			onTime 550 {
+				set	"Circle3::rect" "40 -142 -580 580" ;
+				set	"CircleG3::rect" "40 -142 -580 580" ;
+				set	"Circle2::rect" "-10 -165 640 640" ;
+				set	"CircleG2::rect" "-10 -165 640 640" ;
+				set "Logo1::rect" "10 18 600 440" ;			
+			}
+
+			onTime 650 {
+				
+				set "StatusArea::rect" "0 7 636 87" ;
+				set "TopBox::rect" "-50 -3 274 96" ;
+				set "StatusBar::rect" "0 360 640 120" ;	
+				
+				set "Logo1::rect" "20 20 600 440" ;
+			}
+
+			onTime 700 {
+				set	"Circle3::rect" "30 -132 -580 580" ;
+				set	"CircleG3::rect" "30 -132 -580 580" ;
+				set	"Circle2::rect" "0 -167 640 640" ;
+				set	"CircleG2::rect" "0 -167 640 640" ;
+				set "StatusArea::rect" "1 3 636 87" ;
+			}
+
+			onTime 750 {
+				set	"BackgroundParent::rect" "-10 -10 640 480" ; 
+				set "TopBox::rect" "-41 -1 274 96" ;
+				set "Logo1::rect" "10 18 600 440" ;
+			}
+
+			onTime 800 {
+				set	"Circle3::rect" "40 -142 -580 580" ;
+				set	"CircleG3::rect" "40 -142 -580 580" ;
+				set	"Circle2::rect" "-10 -165 640 640" ;
+				set	"CircleG2::rect" "-10 -165 640 640" ;
+				set	"BackgroundParent::rect" "0 0 640 480" ; 
+				set "StatusBar::rect" "0 374 640 120" ;	
+			}
+
+			onTime 1000 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Static
+		{
+			rect	-10 ,-10 ,-660 ,500
+			visible	1
+			background	"gui/static"
+			matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 10
+		}
+		windowDef Outerglow
+		{
+			rect	0 ,0 ,-640 ,480
+			background	"guis/assets/common/outerglow"
+			matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 6
+			visible	1
+		}
+		windowDef Outershadow
+		{
+			rect	0 ,0 ,-640 ,480
+			background	"guis/assets/common/outershadow"
+			matcolor	1 ,1 ,1 ,1
+			visible	1
+		}
+		windowDef Addhighlight
+		{
+			rect	0 ,0 ,-640 ,480
+			background	"gui/addhighlight"
+			matcolor	0.5 ,0.4 ,0.15 ,1
+			visible	1
+		}
+		windowDef Scanlines
+		{
+			rect	0,0,-640,480
+			matcolor	1,1,1,1
+			background	"gui/test/gui_scanlines"
+			visible	1
+			matscaley	1.5
+		}
+		windowDef OuterGlowBar
+		{
+			rect	0 ,0 ,-640 ,480
+			background	"gui/outerglowbar"
+			matcolor	1 ,0.5 ,0.5,1
+			visible	0
+		}
+		windowDef Dirt
+		{
+			rect	0 ,0 ,-640 ,480
+			matcolor	1, 1, 1 ,0.2
+			visible	1
+			background	"guis/assets/common/dirt3"
+			noevents	1
+		}
+		windowDef Reflect
+		{
+			rect	0 ,-10 ,-640 ,480
+			matcolor	1 ,1 ,1 ,0.05
+			visible	1
+			background	"gui/reflect1"
+			noevents	1
+		}
+		windowDef Twitch
+		{
+			rect	0,0,0,0
+			notime	1
+
+			onTime 0 {
+				set "desktopClip::rect" "2 0 638 480" ;	
+			}
+
+			onTime 50 {
+				set "desktopClip::rect" "0 0 640 480" ;
+			}
+
+			onTime 100 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Blackfade
+		{
+			rect	0 ,0 ,640 ,480
+			visible	0
+			backcolor	0, 0, 0, 0.5
+
+			onTime 0 {
+				transition "backcolor" "0 0 0 0.4" "0 0 0 0.1" "200" ;
+			}
+
+			onTime 200 {
+				transition "backcolor" "0 0 0 0.1" "0 0 0 0.4" "200" ;
+			}
+
+			onTime 400 {
+				transition "backcolor" "0 0 0 0.4" "0 0 0 0.2" "300" ;
+			}
+
+			onTime 700 {
+				transition "backcolor" "0 0 0 0.4" "0 0 0 0.5" "200" ;
+			}
+
+			onTime 900 {
+				transition "backcolor" "0 0 0 0.5" "0 0 0 0.4" "200" ;
+			}
+
+			onTime 1100 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+}

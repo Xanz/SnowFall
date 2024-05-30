@@ -1,0 +1,941 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+	float	"bridge"	2
+	float "trigger" 0
+
+	onEvent {
+		if ("gui::*gui_parm7" == 1) {
+			if ("trigger" == 0) { 
+				set	"trigger" "1" ;
+				set "Text5A::visible" "0" ;
+				set "Text5B::visible" "1" ;				
+			}
+		}
+	}
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	1,1,1,0.5
+	}
+	windowDef BGHexGrid
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"gui/common/hexgrid"
+		matcolor	1,1,1,0.07
+		matscalex	15
+		matscaley	9
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+	}
+	windowDef MapBg11
+	{
+		rect	18,61,603,20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.7
+	}
+	windowDef MapBG12
+	{
+		rect	18,81,603,-363
+		visible	1
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,1,1,0.7
+	}
+	windowDef MapBG13
+	{
+		rect	18,444,603,-20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.7
+	}
+	windowDef PDABG
+	{
+		rect	25,126,324,-323
+		matcolor	0.6,1,1,0.4
+		background	"guis/assets/pda/glowup60_256"
+		visible	1
+	}
+	windowDef Bb2
+	{
+		rect	344,282,273,83
+		visible	1
+		background	"guis/assets/doors/pdabg2"
+		matcolor	0.7, 0.9, 1, 0.7
+	}
+	windowDef MapBg111
+	{
+		rect	22,122,330,20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.4
+	}
+	windowDef MapBG121
+	{
+		rect	22,142,330,-289
+		visible	1
+		background	"guis/assets/teleporter/grid2"
+		matcolor	1,1,1,0.4
+	}
+	windowDef MapBG131
+	{
+		rect	22,431,330,-20
+		visible	1
+		background	"guis/assets/teleporter/grid1"
+		matcolor	1,1,1,0.4
+	}
+	windowDef MapGrid
+	{
+		rect	26,125,319,322
+		visible	1
+		background	"gui/grid2"
+		matcolor	1,1,1,0.1
+		matscalex	4
+		matscaley	5
+	}
+	windowDef BGFrame
+	{
+		rect	3,4,634,474
+		visible	1
+		windowDef TRCorner
+		{
+			rect	567,0,-67,80
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef Top2
+		{
+			rect	67,0,500,40
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef Bottom2
+		{
+			rect	34,444,565,-31
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef BRCorner
+		{
+			rect	599,443,-35,-32
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef Left1
+		{
+			rect	0,80,-34,363
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef Right1
+		{
+			rect	600,80,34,363
+			visible	1
+			background	"guis/assets/common/scibox/g_vert"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef TLCorner
+		{
+			rect	0,0,67,80
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef BLCorner
+		{
+			rect	0,443,34,-32
+			visible	1
+			background	"guis/assets/common/scibox/g_cornerRound2"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+		windowDef Top21
+		{
+			rect	67,38,500,38
+			visible	1
+			background	"guis/assets/common/scibox/g_horiz"
+			matcolor	0.7, 0.8, 0.85, 0.7
+		}
+	}
+	windowDef TextTitle1
+	{
+		rect	20,7,600,46
+		visible	1
+		text	"#str_03186"
+		forecolor	0.8,1,1,0.898
+		textscale	0.6
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef TextTitle21
+	{
+		rect	31,76,574,69
+		visible	1
+		text	"#str_00543"
+		forecolor	1,1,1,0
+		textscale	0.95
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef TextTitle21a
+	{
+		rect	19,118,607,46
+		visible	1
+		text	"#str_00544"
+		forecolor	1,1,1,0
+		textscale	0.55
+		font	"fonts/micro"
+		textalign	1
+	}
+	windowDef Bridgecon
+	{
+		rect	97,175,180,180
+		visible	1
+		background	"guis/assets/bridge/bridgecon"
+		matcolor	0.6, 1, 1, 0.1
+	}
+	windowDef Bridge
+	{
+		rect	50,134,274,274
+		visible	1
+		background	"guis/assets/bridge/bridgering"
+		matcolor	1,1,1,0.3
+	}
+	windowDef BottomRing
+	{
+		rect	36,116,303,303
+		visible	1
+		background	"guis/assets/bridge/capring"
+		matcolor	1,1,1,0.3
+	}
+	windowDef Ring1Stop
+	{
+		rect	50,175,274,274
+		visible	1
+		background	"guis/assets/bridge/1ring"
+		matcolor	1,1,1,0.15
+	}
+	windowDef Ring1StopO
+	{
+		rect	50,168,274,274
+		visible	1
+		background	"guis/assets/bridge/1ring"
+		matcolor	1,1,1,0.5
+	}
+	windowDef Ring3Stop
+	{
+		rect	50,139,274,274
+		visible	1
+		background	"guis/assets/bridge/3ring"
+		matcolor	1,1,1,0.3
+	}
+	windowDef Ring3StopO
+	{
+		rect	50,131,274,274
+		visible	1
+		background	"guis/assets/bridge/3ring"
+		matcolor	1,1,1,1
+	}
+	windowDef BridgeO
+	{
+		rect	50,127,274,274
+		visible	1
+		background	"guis/assets/bridge/bridgering"
+		matcolor	1,1,1,1
+	}
+	windowDef Text5A1
+	{
+		rect	250,73,395,40
+		text	"#str_03187"
+		textscale	0.61
+		forecolor	0.8,1,1,0.6
+		visible	1
+		font	"fonts/micro"
+	}
+	windowDef BGImageClip
+	{
+		rect	26,65,587,400
+		visible	1
+		windowDef BgImage
+		{
+			rect	-248,-2,535,-398
+			visible	1
+			background	"guis/assets/common/infobg1"
+			matcolor	0.8, 0.9, 1, 0.5
+		}
+		windowDef BGImageClip1
+		{
+			rect	287,-2,301,431
+			visible	1
+			windowDef BgImage1
+			{
+				rect	-1,0,-2500,-398
+				visible	1
+				background	"guis/assets/common/infobg1"
+				matcolor	0.8, 0.9, 1, 0.5
+			}
+		}
+	}
+	windowDef HighlightBtm
+	{
+		rect	348,244,18,16
+		visible	1
+		background	"guis/assets/cpuserver/bgwhitesmall"
+		matcolor	0.6,0.85,1,0.6
+	}
+	windowDef HighlightBtm1
+	{
+		rect	348,318,18,16
+		visible	1
+		background	"guis/assets/cpuserver/bgwhitesmall"
+		matcolor	1,0.9,0.7,0.6
+	}
+	windowDef HighlightBtm2
+	{
+		rect	348,393,18,16
+		visible	1
+		background	"guis/assets/cpuserver/bgwhitesmall"
+		matcolor	0.4,1,0.7,0.6
+	}
+	windowDef HighlightBtm3
+	{
+		rect	348,153,18,16
+		visible	1
+		background	"guis/assets/cpuserver/bgwhitesmall"
+		matcolor	1,0.4,0.1,0.6
+	}
+	windowDef Text5A
+	{
+		rect	369,140,243,65
+		text	"#str_03184"
+		textscale	0.5
+		forecolor	1,0.69803923,0.40000004,0.60000002
+		visible	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ; 
+		}
+
+		onAction {
+			set	"cmd" "activate trigger_objective_1 ; play guisounds_click" ; 		
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 0.6" "300" ; 
+
+			resetTime "text4" "0" ;	
+		}
+
+	}
+	windowDef Text5B
+	{
+		rect	369,140,243,65
+		text	"#str_03184"
+		textscale	0.5
+		forecolor	1, 0.7, 0.4, 0.6
+		visible	0
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ; 
+		}
+
+		onAction {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 0.6" "300" ;
+			set "Text5a::noevents" "1" ;
+			set "Text5b::noevents" "1" ;
+			set "Text6::noevents" "1" ;
+			set "Text7::noevents" "1" ;
+			set "Text8::noevents" "1" ;			
+			if ("desktop::bridge" == 1) { 
+				set	"cmd" "play guisounds_error" ;
+			} 			
+			if ("desktop::bridge" == 2) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_north ; play guisounds_click" ;  
+				set "Desktop::bridge" "1" ;
+				resetTime "Anim2to1" "0" ;
+				transition "Bb2::rect"	"480 133 0 83" "344 133 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 3) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_north ; play guisounds_click" ;  
+				set "Desktop::bridge" "1" ;
+				resetTime "Anim3to1" "0" ;
+				transition "Bb2::rect"	"480 133 0 83" "344 133 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 4) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_north ; play guisounds_click" ;  
+				set "Desktop::bridge" "1" ;
+				resetTime "Anim4to1" "0" ;
+				transition "Bb2::rect"	"480 133 0 83" "344 133 273 83" "100" ;
+			} 			
+		}
+
+	}
+	windowDef Text6
+	{
+		rect	369,371,241,50
+		text	"#str_03183"
+		textscale	0.5
+		forecolor	1,0.69803923,0.40000004,0.60000002
+		textaligny	10
+		visible	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ; 
+		}
+
+		onAction {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 0.6" "300" ; 
+			set "Text5a::noevents" "1" ;
+			set "Text5b::noevents" "1" ;
+			set "Text6::noevents" "1" ;
+			set "Text7::noevents" "1" ;
+			set "Text8::noevents" "1" ;			
+			if ("desktop::bridge" == 4) { 
+				set	"cmd" "play guisounds_error" ;
+			} 			
+			if ("desktop::bridge" == 1) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_west ; play guisounds_click" ;  
+				set "Desktop::bridge" "4" ;
+				resetTime "Anim1to4" "0" ;
+				transition "Bb2::rect"	"480 358 0 83" "344 358 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 2) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_west ; play guisounds_click" ;  
+				set "Desktop::bridge" "4" ;
+				resetTime "Anim2to4" "0" ;
+				transition "Bb2::rect"	"480 358 0 83" "344 358 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 3) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_west ; play guisounds_click" ;  
+				set "Desktop::bridge" "4" ;
+				resetTime "Anim3to4" "0" ;
+				transition "Bb2::rect"	"480 358 0 83" "344 358 273 83" "100" ;
+			} 			
+		}
+
+	}
+	windowDef Text7
+	{
+		rect	369,221,248,50
+		text	"#str_03181"
+		textscale	0.5
+		forecolor	1,0.69803923,0.40000004,0.60000002
+		textaligny	10
+		visible	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ; 
+		}
+
+		onAction {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 0.6" "300" ; 
+			set "Text5a::noevents" "1" ;
+			set "Text5b::noevents" "1" ;
+			set "Text6::noevents" "1" ;
+			set "Text7::noevents" "1" ;
+			set "Text8::noevents" "1" ;			
+			if ("desktop::bridge" == 3) { 
+				set	"cmd" "play guisounds_error" ;
+			} 			
+			if ("desktop::bridge" == 1) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_east ; play guisounds_click" ;
+				set "Desktop::bridge" "3" ;
+				resetTime "Anim1to3" "0" ;
+				transition "Bb2::rect"	"480 210 0 83" "344 210 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 2) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_east ; play guisounds_click" ;
+				set "Desktop::bridge" "3" ;
+				resetTime "Anim2to3" "0" ;
+				transition "Bb2::rect"	"480 210 0 83" "344 210 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 4) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_east ; play guisounds_click" ;
+				set "Desktop::bridge" "3" ;
+				resetTime "Anim4to3" "0" ;
+				transition "Bb2::rect"	"480 210 0 83" "344 210 273 83" "100" ;
+			} 			
+		}
+
+	}
+	windowDef Text8
+	{
+		rect	369,296,233,50
+		text	"#str_03185"
+		textscale	0.5
+		forecolor	1,0.69803923,0.40000004,0.60000002
+		textaligny	10
+		visible	1
+		font	"fonts/micro"
+		noevents 1
+
+		onMouseEnter {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"forecolor" "1 0.7 0.4 1" "1 0.7 0.4 0.6" "200" ; 
+		}
+
+		onAction {
+			transition	"forecolor" "1 1 1 1" "1 0.7 0.4 0.6" "300" ;
+			set "Text5a::noevents" "1" ;
+			set "Text5b::noevents" "1" ;
+			set "Text6::noevents" "1" ;
+			set "Text7::noevents" "1" ;
+			set "Text8::noevents" "1" ;			
+			if ("desktop::bridge" == 2) { 
+				set	"cmd" "play guisounds_error" ;
+			} 			
+			if ("desktop::bridge" == 1) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_south ; play guisounds_click" ;
+				set "Desktop::bridge" "2" ;
+				resetTime "Anim1to2" "0" ;
+				transition "Bb2::rect"	"480 285 0 83" "344 282 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 3) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_south ; play guisounds_click" ;
+				set "Desktop::bridge" "2" ;
+				resetTime "Anim3to2" "0" ;
+				transition "Bb2::rect"	"480 285 0 83" "344 282 273 83" "100" ;
+			}
+			if ("desktop::bridge" == 4) { 
+				set	"cmd" "runScript map_cpuboss::bridge_rotate_south ; play guisounds_click" ;
+				set "Desktop::bridge" "2" ;
+				resetTime "Anim4to2" "0" ;
+				transition "Bb2::rect"	"480 285 0 83" "344 282 273 83" "100" ;
+			} 			
+		}
+
+	}
+	windowDef Text4
+	{
+		rect	40,196,0,95
+		text	"#str_00711"
+		textscale	0.74000001
+		textalign	1
+		forecolor	1,0.09803922,0.09803922,0
+		notime	1
+		backcolor	0, 0, 0, 0
+		visible	1
+		font	"fonts/micro"
+
+		onTime 0 {
+			set "rect" "5 210 630 100" ;
+			transition "forecolor" "1 0.1 0.1 0" "1 0.1 0 0.85" "200" ;
+			transition "backcolor" "0 0 0 0" "0 0 0 0.5" "200" ;
+		}
+
+		onTime 3000 {
+			transition "forecolor" "1 0.1 0 0.85" "1 0.1 0.1 0" "500" ;
+			transition "backcolor" "0 0 0 0.5" "0 0 0 0" "200" ;
+		}
+
+		onTime 3500 {
+			set "rect" "5 210 0 95" ;
+		}
+
+	}
+	windowDef Anim1to2
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "-180 0 0 0" "0 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "-180 0 0 0" "0 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "-180 0 0 0" "0 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "-180 0 0 0" "0 0 0 0" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "-180 0 0 0" "0 0 0 0" "10000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "10000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "10000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "10000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "10000" ;
+			
+			transition "Bridge::rect" "50 171 274 274" "50 134 274 274" "10000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 164 274 274" "50 127 274 274" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 153 303 303" "36 116 303 303" "10000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 212 180 180" "97 175 180 180" "9000" "0.3" "0.7" ;	
+		}
+		onTime 10000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+		//	set "Text8::noevents" "0" ;			
+		}
+		
+
+	}
+	windowDef Anim1to3
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "-180 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "-180 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "-180 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "-180 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "-180 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "6000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "6000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "6000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "6000" ;
+			
+			transition "Bridge::rect" "50 171 274 274" "50 134 274 274" "6000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 164 274 274" "50 127 274 274" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 153 303 303" "36 116 303 303" "6000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 212 180 180" "97 175 180 180" "4000" "0.3" "0.7" ;	
+		}
+		
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+		//	set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}		
+
+	}
+	windowDef Anim1to4
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "180 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "180 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "180 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "180 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "180 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "6000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "6000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "6000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "6000" ;
+			
+			transition "Bridge::rect" "50 171 274 274" "50 134 274 274" "6000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 164 274 274" "50 127 274 274" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 153 303 303" "36 116 303 303" "6000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 212 180 180" "97 175 180 180" "4000" "0.3" "0.7" ;	
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+		//	set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+		
+	}
+	windowDef Anim3to1
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "-90 0 0 0" "-180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "-90 0 0 0" "-180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "-90 0 0 0" "-180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "-90 0 0 0" "-180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "-90 0 0 0" "-180 0 0 0" "6000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "6000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "6000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "6000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "6000" ;
+			
+			transition "Bridge::rect" "50 134 274 274" "50 171 274 274" "6000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 127 274 274" "50 164 274 274" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 116 303 303" "36 153 303 303" "6000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 175 180 180" "97 212 180 180" "4000" "0.3" "0.7" ;	
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+		//	set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim3to2
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "-90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "-90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "-90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "-90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "-90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+		//	set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim3to4
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "-90 0 0 0" "90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "-90 0 0 0" "90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "-90 0 0 0" "90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "-90 0 0 0" "90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "-90 0 0 0" "90 0 0 0" "10000" "0.3" "0.4" ;
+		}
+
+		onTime 10000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+		//	set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim2to1
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "0 0 0 0" "-180 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "0 0 0 0" "-180 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "0 0 0 0" "-180 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "0 0 0 0" "-180 0 0 0" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "0 0 0 0" "-180 0 0 0" "10000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "10000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "10000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "10000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "10000" ;
+			
+			transition "Bridge::rect" "50 134 274 274" "50 171 274 274" "10000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 127 274 274" "50 164 274 274" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 116 303 303" "36 153 303 303" "10000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 175 180 180" "97 212 180 180" "9000" "0.3" "0.7" ;	
+		}
+
+		onTime 10000 {
+			set "Text5a::noevents" "0" ;				
+		//	set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;			
+		}
+	}
+	windowDef Anim2to3
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "0 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "0 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "0 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "0 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "0 0 0 0" "-90 0 0 0" "6000" "0.3" "0.4" ;
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+		//	set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim2to4
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "0 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "0 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "0 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "0 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "0 0 0 0" "90 0 0 0" "6000" "0.3" "0.4" ;
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+		//	set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim4to1
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "90 0 0 0" "180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "90 0 0 0" "180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "90 0 0 0" "180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "90 0 0 0" "180 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "90 0 0 0" "180 0 0 0" "6000" "0.3" "0.4" ;
+			
+			transition "Ring3StopO::matcolor" "1 1 1 1" "1 1 1 0.5" "6000" ;
+			transition "Ring3Stop::matcolor" "1 1 1 0.3" "1 1 1 0.15" "6000" ;
+			transition "Ring1StopO::matcolor" "1 1 1 0.5" "1 1 1 1" "6000" ;
+			transition "Ring1Stop::matcolor" "1 1 1 0.15" "1 1 1 0.3" "6000" ;
+			
+			transition "Bridge::rect" "50 134 274 274" "50 171 274 274" "6000" "0.3" "0.4" ;			
+			transition "BridgeO::rect" "50 127 274 274" "50 164 274 274" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rect" "36 116 303 303" "36 153 303 303" "6000" "0.3" "0.4" ;
+			transition "BridgeCon::rect" "97 175 180 180" "97 212 180 180" "4000" "0.3" "0.7" ;	
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+		//	set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim4to2
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "90 0 0 0" "0 0 0 0" "6000" "0.3" "0.4" ;			
+		}
+
+		onTime 6000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+			set "Text7::noevents" "0" ;
+		//	set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Anim4to3
+	{
+		rect	0,0,0,0
+		visible	0
+		notime	1
+
+		onTime 0 {
+			transition "Ring3StopO::rotate" "90 0 0 0" "-90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring3Stop::rotate" "90 0 0 0" "-90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1StopO::rotate" "90 0 0 0" "-90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "Ring1Stop::rotate" "90 0 0 0" "-90 0 0 0" "10000" "0.3" "0.4" ;
+			transition "BottomRing::rotate" "90 0 0 0" "-90 0 0 0" "10000" "0.3" "0.4" ;
+		}
+
+		onTime 10000 {
+			set "Text5a::noevents" "0" ;				
+			set "Text5b::noevents" "0" ;
+			set "Text6::noevents" "0" ;
+		//	set "Text7::noevents" "0" ;
+			set "Text8::noevents" "0" ;				
+		}
+	}
+	windowDef Reflect
+	{
+		rect	0,-8,-646,494
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Addhighlight2
+	{
+		rect	0,200,640,-280
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Addhighlight1
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Static1
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+}

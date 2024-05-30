@@ -1,0 +1,445 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	backcolor	0.4 ,0.7 ,0.8 ,0.2
+	comment	"gui_parm10 is the script run by the activate button. gui_parm11 is run by the open button. gui_parm12 is run by the cancel button. Triggering the gui will reset it to it's starting state. gui_parm9 set to 1 allows cancel to be clicked, 0 locks the button.\n\ngui_parm8 set to 1 gives the completed message for chamber activation, set to 2 gives the message for chamber doors opened, and 3 gives the message that activation has been canceled and doors are open."
+
+	onEvent {
+		if ("gui::gui_parm8" == 1) {
+			resetTime "Chamberseq4" "0" ;
+		}
+		if ("gui::gui_parm8" == 2) {
+			resetTime "Chamberseq3" "0" ;
+		}
+		if ("gui::gui_parm8" == 3) {
+			resetTime "Chamberseq5" "0" ;
+		}
+	}
+
+	windowDef BG
+	{
+		rect	0,0,640,480
+		background	"guis/assets/alphalabs/fragbg"
+		matcolor	0.4 ,0.7 ,0.8 ,0.25
+		visible	1
+	}
+	windowDef BG1
+	{
+		rect	0,0,640,480
+		background	"gui/alphalabs/fragbgmask"
+		matcolor	0.9 ,0.8 ,0.5 ,0.5
+		visible	1
+	}
+	windowDef BG2
+	{
+		rect	0,0,640,480
+		background	"gui/alphalabs/fragbg"
+		matcolor	0.3 ,0.25 ,0.1 ,0.3
+		visible	1
+	}
+	windowDef BG11
+	{
+		rect	0,0,640,480
+		background	"gui/alphalabs/fragbgmask2"
+		matcolor	1,1,1,0.15
+		visible	1
+
+		onTime 0 {
+			transition "matcolor" "1 1 1 0" "1 1 1 0.1" "1000" ;
+		}
+
+		onTime 6000 {
+			transition "matcolor" "1 1 1 0.1" "1 1 1 0" "1000" ;	
+		}
+
+		onTime 7000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Bar_TOP
+	{
+		rect	178 ,90 ,284 ,87
+		background	"guis/assets/fragchamber/bar_top"
+		matcolor	1 ,0 ,0 ,0.8
+		visible	0
+	}
+	windowDef Bar_TOP_Text
+	{
+		rect	178,83,284,87
+		forecolor	1 ,0.5 ,0.5 ,1
+		textscale	0.60000002
+		textalign	1
+		textaligny	10
+		text	"#str_00122"
+		visible	0
+		font	"fonts/micro"
+	}
+	windowDef Bar_MIDDLE
+	{
+		rect	178 ,193 ,284 ,94
+		background	"guis/assets/fragchamber/bar_middle"
+		matcolor	0.4 ,0.7 ,0.8 ,0.8
+		visible	0
+	}
+	windowDef Bar_MIDDLE_Text
+	{
+		rect	178 ,193 ,284 ,94
+		forecolor	0.4 ,0.7 ,0.8 ,1
+		textscale	0.65
+		textalign	1
+		textaligny	20
+		text	"#str_00123"
+		visible	0
+		font	"fonts/micro"
+	}
+	windowDef Bar_BOTTOM
+	{
+		rect	178 ,302 ,284 ,87
+		background	"guis/assets/fragchamber/bar_bottom"
+		matcolor	1 ,0.8 ,0 ,0.3
+		visible	0
+	}
+	windowDef Bar_BOTTOM_Text
+	{
+		rect	178 ,308 ,284 ,87
+		forecolor	1 ,0.8 ,0 ,0.8
+		textscale	0.80000001
+		textalign	1
+		textaligny	10
+		text	"#str_00124"
+		visible	0
+		font	"fonts/micro"
+
+		onAction {
+			if ("gui::gui_parm9" == 1) { 
+				runScript 	"gui::gui_parm12" ;
+				set "visible" "0" ;
+			}
+		}
+
+	}
+	windowDef Bar_BOTTOM_Text1
+	{
+		rect	178,197,284,87
+		forecolor	1 ,0.8 ,0 ,0.8
+		textscale	0.7
+		textalign	1
+		textaligny	-2
+		text	"#str_00125"
+		visible	0
+		font	"fonts/micro"
+	}
+	windowDef Bar_BOTTOM_Text2
+	{
+		rect	178,185,284,200
+		forecolor	1 ,0.8 ,0 ,0.8
+		textscale	0.7
+		textalign	1
+		textaligny	10
+		text	"#str_00126"
+		visible	0
+		font	"fonts/micro"
+	}
+	windowDef Bar_BOTTOM_Text3
+	{
+		rect	178,185,284,200
+		forecolor	1 ,0.8 ,0 ,0.8
+		textscale	0.7
+		textalign	1
+		textaligny	10
+		text	"#str_00127"
+		visible	0
+		font	"fonts/micro"
+	}
+	windowDef ButtonPadTop
+	{
+		rect	612,215,24,16
+		visible	1
+		background	"guis/assets/teleporter/button1"
+		matcolor	1,0.6,0,0.2
+
+		onTime 0 {
+			transition "ButtonPadTop::matcolor" "1 0.6 0 0.35" "1 0.6 0 0" "500" ;
+			transition "ButtonPadBtm::matcolor" "1 0.6 0 0" "1 0.6 0 0.35" "500" ;
+		}
+
+		onTime 500 {
+			transition "ButtonPadTop::matcolor" "1 0.6 0 0" "1 0.6 0 0.35" "500" ;
+			transition "ButtonPadBtm::matcolor" "1 0.6 0 0.35" "1 0.6 0 0" "500" ;
+		}
+
+		onTime 1000 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef ButtonPadBtm
+	{
+		rect	612,237,24,16
+		visible	1
+		background	"guis/assets/teleporter/button1"
+		matcolor	1,0.6,0,0.2
+	}
+	windowDef Bracket
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef Bracket_TL
+		{
+			rect	132,46,132,-132
+			background	"guis/assets/alphalabs/bracket_corner"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_TH
+		{
+			rect	258,45,124,33
+			background	"guis/assets/alphalabs/bracket_top"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_TR
+		{
+			rect	376,46,-132,-132
+			background	"guis/assets/alphalabs/bracket_corner"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_V1
+		{
+			rect	132,170,32,139
+			background	"guis/assets/alphalabs/bracket_side"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_V2
+		{
+			rect	476,170,32,139
+			background	"guis/assets/alphalabs/bracket_side"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_BL
+		{
+			rect	132,302,132,132
+			background	"guis/assets/alphalabs/bracket_corner"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_BH
+		{
+			rect	258,402,124,33
+			background	"guis/assets/alphalabs/bracket_top"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+		windowDef Bracket_BR
+		{
+			rect	376,302,-132,132
+			background	"guis/assets/alphalabs/bracket_corner"
+			matcolor	0.4 ,0.7 ,0.8 ,0.6
+			visible	1
+		}
+	}
+	windowDef Activate
+	{
+		rect	180,88,281,207
+		background	"guis/assets/fragchamber/activate"
+		matcolor	0.5 ,0.8 ,0.8 ,0.3
+		textscale	0.8
+		textalign	1
+		textaligny	50
+		forecolor	1,1,1,1
+		text	"#str_00128"
+		visible	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"matcolor" "0.5 0.8 0.8 0.3" "0.2 0.8 0.5 0.3" "200" ;
+			transition	 "forecolor" "1 1 1 1" "0.6 1 0.6 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"matcolor" "0.2 0.8 0.5 0.3" "0.5 0.8 0.8 0.3" "200" ; 
+			transition 	"forecolor" "0.6 1 0.6 1" "1 1 1 1" "200" ; 
+		}
+
+		onAction {
+			runScript 	"gui::gui_parm10" ;
+			resetTime "Chamberseq2" "0" ;
+			set "visible" "0" ;
+			set "Activate2::visible" "0" ;
+		}
+
+	}
+	windowDef Activate2
+	{
+		rect	193,301,257,101
+		background	"guis/assets/fragchamber/activate"
+		matcolor	0.5 ,0.8 ,0.8 ,0.3
+		textscale	0.7
+		textalign	1
+		textaligny	6
+		forecolor	1,1,1,1
+		text	"#str_00129"
+		visible	1
+		font	"fonts/micro"
+
+		onMouseEnter {
+			transition	"matcolor" "0.5 0.8 0.8 0.3" "0.2 0.8 0.5 0.3" "200" ;
+			transition	 "forecolor" "1 1 1 1" "0.6 1 0.6 1" "200" ; 
+		}
+
+		onMouseExit {
+			transition	"matcolor" "0.2 0.8 0.5 0.3" "0.5 0.8 0.8 0.3" "200" ; 
+			transition 	"forecolor" "0.6 1 0.6 1" "1 1 1 1" "200" ; 
+		}
+
+		onAction {
+			runScript 	"gui::gui_parm11" ;
+			set "visible" "0" ;
+			set "Activate::visible" "0" ;
+			//	resetTime "Chamberseq3" "0" ;
+		}
+
+	}
+	windowDef Chamberseq1
+	{
+		rect 0,0,0,0
+		notime	1
+
+		onTime 0 {
+			set		"Activate::matcolor" "0.5 0.8 0.8 0.3" ;
+			set		"Activate::visible" "1" ;				
+		}
+
+	}
+	windowDef Chamberseq2
+	{
+		rect 0,0,0,0
+		notime	1
+
+		onTime 0 {
+			set		"Bar_TOP::matcolor" "1 0 0 0.8" ;
+			set		"Bar_TOP::visible" "1" ;
+			set		"Bar_TOP_Text::text" "#str_00122" ;
+			set		"Bar_TOP_Text::forecolor" "1 0.5 0.5 1" ;				
+			set		"Bar_TOP_Text::visible" "1" ;
+			set		"Bar_MIDDLE::matcolor" "0.4 0.7 0.8 0.8" ;
+			set		"Bar_MIDDLE::visible" "1" ;
+			set		"Bar_MIDDLE_Text::forecolor" "0.4 0.7 0.8 1" ;
+			set		"Bar_MIDDLE_Text::visible" "1" ;
+			set		"Bar_BOTTOM::matcolor" "1 0.8 0 0.3" ;
+			set		"Bar_BOTTOM::visible" "1" ;
+			set		"Bar_BOTTOM_Text::visible" "1" ;
+		}
+
+	}
+	windowDef Chamberseq3
+	{
+		rect 0,0,0,0
+		notime	1
+
+		onTime 0 {
+			set		"Bar_BOTTOM_Text1::visible" "1" ;
+			transition	"Bar_BOTTOM::matcolor" "1 0.8 0 0.3" "1 0.8 0 0.8" "200" ;
+			transition	"Bracket_TL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V1::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V2::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			set		"Bar_TOP::visible" "0" ;
+			set		"Bar_TOP_Text::visible" "0" ;
+			set		"Bar_MIDDLE::visible" "0" ;
+			set		"Bar_MIDDLE_Text::visible" "0" ;
+			set		"Bar_BOTTOM::visible" "0" ;
+			set		"Bar_BOTTOM_Text::visible" "0" ;
+		}
+
+	}
+	windowDef Chamberseq4
+	{
+		rect 0,0,0,0
+		notime	1
+
+		onTime 0 {
+			set		"Bar_BOTTOM_Text2::visible" "1" ;
+			transition	"Bar_BOTTOM::matcolor" "1 0.8 0 0.3" "1 0.8 0 0.8" "200" ;
+			transition	"Bracket_TL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V1::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V2::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;	
+			set		"Bar_TOP::visible" "0" ;
+			set		"Bar_TOP_Text::visible" "0" ;
+			set		"Bar_MIDDLE::visible" "0" ;
+			set		"Bar_MIDDLE_Text::visible" "0" ;
+			set		"Bar_BOTTOM::visible" "0" ;
+			set		"Bar_BOTTOM_Text::visible" "0" ;
+		}
+
+	}
+	windowDef Chamberseq5
+	{
+		rect 0,0,0,0
+		notime	1
+
+		onTime 0 {
+			set		"Bar_BOTTOM_Text3::visible" "1" ;
+			transition	"Bar_BOTTOM::matcolor" "1 0.8 0 0.3" "1 0.8 0 0.8" "200" ;
+			transition	"Bracket_TL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_TR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V1::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_V2::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BL::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BH::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;
+			transition	"Bracket_BR::matcolor" "0.4 0.7 0.8 0.9" "0.4 0.7 0.8 0.6" "500" ;	
+			set		"Bar_TOP::visible" "0" ;
+			set		"Bar_TOP_Text::visible" "0" ;
+			set		"Bar_MIDDLE::visible" "0" ;
+			set		"Bar_MIDDLE_Text::visible" "0" ;
+			set		"Bar_BOTTOM::visible" "0" ;
+			set		"Bar_BOTTOM_Text::visible" "0" ;
+		}
+
+	}
+
+	windowDef OuterGlowBar
+	{
+		rect	-6,-6,-649,489
+		background	"gui/outerglowbar2"
+		matcolor	pdfade[ time * 0.001 ]/1.2 ,pdfade[ time * 0.001 ] ,pdfade[ time * 0.001 ] ,1
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Reflect
+	{
+		rect	34,1,-576,452
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/reflect1"
+		noevents	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.6,1,1,0.1
+	}
+}

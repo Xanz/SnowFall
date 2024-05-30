@@ -1,0 +1,72 @@
+windowDef Desktop {
+	rect		0 ,0 ,640 ,480 
+	backcolor	0 ,0 ,0 ,0 
+	visible		1
+
+	windowDef Background {
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		background	"guis/assets/crane/small3"
+		matcolor	1, 1, 1, 1
+	}
+
+	windowDef Text3 {
+		rect		20, -2, 500, 40
+		text		"#str_00971"
+		
+		textscale	0.75
+		textalign	0
+		forecolor	1, 1, 1, 0.2
+	}
+
+	windowDef Outerglow {
+	//	rect	14 ,14 ,-630 ,470 
+		rect	0 ,0 ,-640 ,480 
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 5 //0.25
+		visible	0
+	}
+	windowDef Outershadow {
+		rect	0 ,0 ,-640 ,480 
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+	}
+	windowDef Addhighlight {
+		rect	17 ,20 ,-610 ,440 
+		background	"gui/addhighlight"
+		matcolor	0.1 ,0.5 ,0.5 ,1 
+		visible	1
+	}
+	windowDef Scanlines {
+		rect	0,0,-640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+		matscaley 0.5
+	}
+	windowDef OuterGlowBar {
+		rect	0 ,0 ,-640 ,480 
+		background	"gui/outerglowbar"
+		matcolor	0.7 ,0.9 ,1 ,1 
+		visible	0
+	}
+	windowDef Dirt {
+		rect	0 ,0 ,-640 ,480 
+		matcolor	1, 1, 1 ,0.6
+		visible	1
+		background	"guis/assets/common/dirt1"
+	}
+	windowDef fadeglass {
+		rect	0 ,0 ,640 ,-480 
+		visible	1
+		background	"gui/fadeglass2"
+		matcolor	0.15 ,0.15 ,0.15 ,1
+	}
+	windowDef Reflect {
+		rect		10 ,0 ,620 ,470 
+		matcolor	1 ,1 ,1 ,0.2 
+		visible		1
+		background	"gui/reflect1"
+	}
+}

@@ -1,0 +1,75 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	windowDef Under1
+	{
+		rect	37 ,205 ,330 ,250
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"gui/sm3/SpinFade"
+	}
+	windowDef Under2
+	{
+		rect	360 ,230 ,250 ,230
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"gui/sm3/scroll"
+	}
+	windowDef Over
+	{
+		rect	0 ,0 ,640 ,480
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"gui/sm3/bg"
+	}
+	windowDef Num1
+	{
+		rect	0 ,50 ,315 ,120
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"guis/assets/small/sm3num"
+	}
+	windowDef Num2
+	{
+		rect	314 ,50 ,315 ,120
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+		background	"gui/sm3/NumSwitch"
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.8, 0.7, 0.4, 0.2
+	}
+	windowDef Static
+	{
+		rect	-8,-8,660,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 8
+	}
+	windowDef Reflect1
+	{
+		rect	5,-12,630,498
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Mask
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.6
+	}
+}

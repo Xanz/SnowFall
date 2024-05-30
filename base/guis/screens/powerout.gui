@@ -1,0 +1,339 @@
+windowDef Desktop {
+	rect		0 ,0 ,640 ,480
+	nocursor 0
+
+
+	windowDef Big1 {
+		rect		0, 0, -640, -480
+		visible		1
+		background	"guis/assets/common/powerout"
+		matcolor	1, 1, 1, 1
+	}
+
+
+	windowDef Big2 {
+		rect		0, 120, 640, 240
+		visible		1
+		background	"guis/assets/common/powerbox"
+		matcolor	0.8, 1, 1, 1
+	}
+
+	windowDef Big3 {
+		rect		200, 400, 240, 40
+		visible		1
+		background	"guis/assets/common/powerbox"
+		matcolor	0.8, 1, 1, 1
+	}
+
+	windowDef Blackfade3 {
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		backcolor	0, 0, 0, 0
+	}
+
+	windowDef Big4 {
+		rect		400, 400, 240, 40
+		visible		1
+		background	"guis/assets/common/powerbox"
+		matcolor	0.8, 1, 1, 1
+	}
+
+	windowDef TextWarn1 {
+		text	"#str_01782"
+		rect	10 ,155 ,620 ,300 
+		forecolor	1 ,1 ,1 ,0.8
+		visible	1
+		textscale	0.9
+		textalign	1
+	}
+
+	windowDef TextWarn2 {
+		text	"#str_01783"
+		rect	10 ,200 ,620 ,300 
+		forecolor	1 ,1 ,1 ,0.8
+		visible	1
+		textscale	0.9
+		textalign	1
+
+		onTime 0 {
+			transition "forecolor" "1 1 1 0.8" "1 1 1 0.2" "600" ;
+		}
+		onTime 600 {
+			transition "forecolor" "1 1 1 0.2" "1 1 1 0.8" "200" ;
+		}
+		onTime 1000 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef TextWarn3 {
+		text	"#str_01784"
+		rect	10 ,155 ,620 ,300 
+		forecolor	1 ,1 ,1 ,0.8
+		visible	0
+		textscale	1.1
+		textalign	1
+
+		onTime 0 {
+			transition "forecolor" "1 1 1 0.8" "1 1 1 0.2" "600" ;
+		}
+		onTime 600 {
+			transition "forecolor" "1 1 1 0.2" "1 1 1 0.8" "200" ;
+		}
+		onTime 1000 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef TextWarn4 {
+		text	"#str_01785"
+		rect	10 ,155 ,620 ,300 
+		forecolor	1 ,1 ,1 ,0.8
+		visible	0
+		textscale	1
+		textalign	1
+	}
+
+	windowDef TextWarn5 {
+		text	"#str_01786"
+		rect	10 ,200 ,620 ,300 
+		forecolor	1 ,1 ,1 ,0.8
+		visible	0
+		textscale	1.1
+		textalign	1
+	}
+
+	windowDef BackupBox {
+		rect	70 ,250 ,0 ,30 
+		backcolor	0.8 ,1 ,1 ,0.8
+		visible	1
+	}
+
+	windowDef scanpulse {
+		rect	0,0,640,480
+		visible 1
+
+		windowDef scanpulseClamped
+		{
+			rect	0,0,640,3000
+			matcolor	1,1,1,0.03
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}	
+
+
+	windowDef Static2 {
+	//static overlay
+		rect	-10 ,-10 ,660 ,500 
+		visible	1
+		background "gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 4
+	}
+
+	windowDef Mask {
+	//large black edge fade
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		background "guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+	}
+
+
+
+	windowDef Outerglow {
+	//pulsing outer edge glow
+		rect	0 ,0 ,-640 ,480 
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 2.8 //0.25
+		visible	1
+	}
+	windowDef Outershadow {
+	//small black edge fade
+		rect	0 ,0 ,-640 ,480 
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1 
+		visible	1
+	}
+	windowDef Addhighlight {
+	//light to trans overlay
+		rect	0 ,0 ,-640 ,480 
+		background	"gui/addhighlight"
+		matcolor	0.15 ,0.4 ,0.4 ,1 
+		visible	1
+	}
+	windowDef Scanlines {
+	//scrolling raster lines
+		rect	0,0,-640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+		matscaley	1.5
+
+	}
+	windowDef OuterGlowBar {
+		rect	0 ,0 ,-640 ,480 
+		background	"gui/outerglowbar"
+		matcolor	0.1 ,0.2 ,0.2 ,1 
+		visible	1
+	}
+
+	windowDef Blackfade {
+	//static overlay
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		backcolor	0, 0, 0, 0.5
+
+		onTime 0 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.1" "100" ;
+		}
+		onTime 100 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.2" "100" ;
+		}
+
+		onTime 200 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.1" "100" ;
+		}
+		onTime 300 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.2" "100" ;
+		}
+		onTime 400 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.1" "100" ;
+		}
+		onTime 500 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.2" "100" ;
+		}
+		onTime 600 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.1" "100" ;
+		}
+		onTime 700 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.2" "100" ;
+		}
+		onTime 800 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.4" "100" ;
+		}
+		onTime 900 {
+			transition "backcolor" "0 0 0 0.4" "0 0 0 0.2" "100" ;
+		}
+		onTime 1000 {
+			transition "backcolor" "0 0 0 0.2" "0 0 0 0.1" "100" ;
+		}
+		onTime 1100 {
+			transition "backcolor" "0 0 0 0.1" "0 0 0 0.2" "100" ;
+		}
+		onTime 1200 {
+			resetTime "0" ;
+		}
+	}
+
+	windowDef Static {
+	//static overlay
+		rect	-10 ,-10 ,660 ,500 
+		visible	1
+		background "gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 10
+	}
+
+	windowDef Blackfade2 {
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		backcolor	0, 0, 0, 0
+	}
+
+	windowDef Dirt {
+	//edge dirt, surface smears
+		rect	0 ,0 ,-640 ,480 
+		matcolor	1, 1, 1 ,0.6
+		visible	1
+		background	"guis/assets/common/dirt1"
+		noevents	1
+	}
+
+	windowDef fadeglass {
+	//reflection
+		rect	0 ,0 ,-640 ,480 
+		visible	0
+		background	"gui/fadeglass"
+		matcolor	1 ,1 ,1 ,0.40 
+	}
+
+	windowDef Blackfade4 {
+		rect	0 ,0 ,640 ,480 
+		visible	1
+		backcolor	0, 0, 0, 0
+	}
+
+	windowDef Button {
+		rect	0, 120, 640, 240 
+		visible	1
+
+		onAction {
+			set	"cmd"	"activate ; play guisounds_beepdown4" ;
+			resetTime "animation" "0" ;
+			set "noevents" "1" ;
+			showcursor "0" ;
+		}
+	}
+
+	windowDef Animation {
+		notime	1
+
+		onTime 0 {
+			transition "Big2::rect" "0 120 640 240" "0 400 240 40" "200" "0.4" "0.4" ; 
+		}
+		onTime 0 {
+			set "textWarn1::visible" "0" ;
+			set "textWarn2::visible" "0" ;
+		}
+		onTime 150 {
+			transition "Big3::rect" "200 400 240 40" "0 120 640 240" "300" "0.4" "0.4" ; 
+		}
+		onTime 450 {
+			set "textWarn3::visible" "1" ;
+		//	set	"cmd"	"play guisounds_beep2" ;
+		}
+		onTime 550 {
+			transition "BackupBox::rect" "70 250 0 30" "70 250 500 30" "1000" "0.6" "0.4" ;
+		}
+		onTime 1600 {
+		//	set	"cmd"	"play guisounds_chirpconnect" ;
+			set	"cmd"	"play guisounds_beep2" ;
+			set "textWarn3::visible" "0" ;
+			set "textWarn4::visible" "1" ;
+		}
+		onTime 3400 {
+		//	set	"cmd"	"play guisounds_beepdown4" ;
+			transition "Big3::rect" "0 120 640 240" "200 400 240 40" "200" "0.4" "0.4" ; 
+		}
+		onTime 3400 {
+			set "textWarn4::visible" "0" ;
+			set "BackupBox::rect" "70 250 0 30" ;
+		}
+		onTime 3550 {
+			transition "Big4::rect" "400 400 240 40" "0 150 640 180" "300" "0.4" "0.4" ; 
+		}
+		onTime 3750 {
+		//	set	"cmd"	"play guisounds_beep2" ;
+		}
+		onTime 3850 {
+			set "textWarn5::visible" "1" ;
+		}
+		onTime 4600 {
+			transition "BlackFade3::backcolor" "0.1 0.1 0.1 0" "0 0 0 1" "300" "0.4" "0.4" ; 
+		}
+		onTime 4800 {
+			set	"cmd"	"play guisounds_disconnect1" ;
+		//	set	"cmd"	"play guisounds_beepdown4" ;
+			transition "Big4::rect" "0 150 640 180" "200 200 240 40" "300" "0.4" "0.4" ; 
+			transition "BlackFade2::backcolor" "0.1 0.1 0.1 0" "0 0 0 1" "300" "0.4" "0.4" ; 
+			transition "BlackFade4::backcolor" "0.1 0.1 0.1 0" "0.1 0.1 0.1 0.4" "300" "0.4" "0.4" ; 
+			set "textWarn5::visible" "0" ;
+			set "desktop::nocursor" "1" ;
+		}
+		onTime 5100 {
+		//	set "desktop::visible" "0" ;
+		}
+	}
+
+
+}

@@ -1,0 +1,380 @@
+windowDef Desktop
+{
+	comment "click runs the script defined in gui_parm6"
+	rect	0 ,0 ,640 ,480
+	windowDef Background
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		windowDef BgFill
+		{
+			rect	32, 32, 576, 416
+			backcolor	0.59, 0.67, 0.59, 1
+			visible	1
+		}
+		windowDef Top
+		{
+			rect	32, 0, 576, -32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Bottom
+		{
+			rect	32, 448, 576, 32
+			background	"gui/caves/horiz"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Left
+		{
+			rect	0, 32, -32, 416
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Right
+		{
+			rect	608, 32, 32, 416
+			background	"gui/caves/verts"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Corner1
+		{
+			rect	0, 0 ,-32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Corner2
+		{
+			rect	608, 0 ,32 ,-32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Corner3
+		{
+			rect	0, 448 ,-32 ,32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Corner4
+		{
+			rect	608, 448 ,32 ,32
+			background	"gui/caves/corner"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef InsetLineLeft
+		{
+			rect	0,70,-32,306
+			background	"gui/caves/vertl"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef InsetLineRight
+		{
+			rect	608,70,32,306
+			background	"gui/caves/vertl"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Inset1
+		{
+			rect	0, 70 ,-32 ,-32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+		}
+		windowDef Inset2
+		{
+			rect	0,376,-32,32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Inset3
+		{
+			rect	608, 70 ,32 ,-32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Inset4
+		{
+			rect	608,376,32,32
+			background	"gui/caves/verta"
+			matcolor	1, 1, 1, 1
+			visible	1
+		}
+		windowDef Title1
+		{
+			rect	15, 20 ,40 ,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Title2
+		{
+			rect	55,20,530,80
+			background	"gui/caves/title2"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Title3
+		{
+			rect	585,20,-40,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Title11
+		{
+			rect	15,380,40,-80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Title21
+		{
+			rect	55,380,530,-80
+			background	"gui/caves/title2"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+		windowDef Title31
+		{
+			rect	585,380,-40,-80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.6
+			visible	1
+		}
+	}
+	windowDef UACLogo1
+	{
+		rect	20,154,600,171
+		background	"guis/assets/cpuserver/logo.tga"
+		visible	1
+		matcolor	0.33, 0.4, 0.35, pdinout[ time * 0.001 ]/1.5
+	}
+	windowDef UACLogo2
+	{
+		rect	20,154,600,171
+		background	"guis/assets/cpuserver/logo2.tga"
+		visible	1
+		matcolor	0.33, 0.4, 0.35, 1
+	}
+	windowDef GreenBoxUp
+	{
+		rect	29,94,582,308
+		visible	1
+		windowDef GBCornerTL
+		{
+			rect	0, 0, -16, -16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+		}
+		windowDef GBCornerTR
+		{
+			rect	566, 0, 16, -16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+		}
+		windowDef GBCornerBL
+		{
+			rect	0,277,-16,16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBCornerBR
+		{
+			rect	566,277,16,16
+			background	"guis/assets/caverns/boxc"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideT
+		{
+			rect	16, 0, 550, -16
+			background	"guis/assets/caverns/boxh"
+			matcolor	1, 1, 1, 0.7
+		}
+		windowDef GBSideB
+		{
+			rect	16,277,550,16
+			background	"guis/assets/caverns/boxh"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideL
+		{
+			rect	0,16,-16,261
+			background	"guis/assets/caverns/boxv"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBSideR
+		{
+			rect	566,16,16,261
+			background	"guis/assets/caverns/boxv"
+			matcolor	1, 1, 1, 0.7
+			visible	1
+		}
+		windowDef GBBgFill
+		{
+			rect	16,16,550,261
+			backcolor	0.68, 0.75, 0.53, 0.7
+			visible	1
+		}
+	}
+	windowDef TriggerButton
+	{
+		rect	37,60,568,360
+		background	"guis/assets/elevator/highlight"
+		matcolor	1, 1, 1, 0.1
+		text	"#str_00365"
+		textscale	2.2
+		textalign	1
+		forecolor	1, 1, 1, 0.4
+		cursor	1
+		textaligny	60
+		visible	1
+		notime	1
+		float	"open"	0
+
+		onAction {
+			set	"cmd"	"play guisounds_click" ; 
+			runScript	"gui::gui_parm6" ;
+			resetTime "0" ;
+			transition "forecolor" "1 1 1 0.4" "1 1 1 0" "400" ;
+			set "noevents" "1" ;
+		}
+
+		onTime 500 {
+			if ("open" == 0) {
+				set "text" "#str_00366" ;
+				set "open" "1" ;
+				transition "Addhighlight::matcolor" "0 0 0 0" "0.6 0.6 0.3 1" "200" ;
+			} else {
+				set "text" "#str_00365" ;
+				set "open" "0" ;
+				transition "Addhighlight::matcolor" "0.6 0.6 0.3 1" "0 0 0 0" "300" ;
+			}
+		}
+
+		onTime 1200 {
+			transition "forecolor" "1 1 1 0" "1 1 1 0.4" "400" ;
+			set "noevents" "0" ;
+		}
+
+	}
+	windowDef Flicker1
+	{
+		rect	0 ,0 ,640 ,-480
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0.6, 0.9, 1, 0.1
+		visible	1
+
+		onTime 0 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "400" ;
+		}
+
+		onTime 800 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 1500 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "300" ;
+		}
+
+		onTime 2000 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 3500 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef Flicker2
+	{
+		rect	0, 0 ,-640 ,480
+		visible	1
+		background	"gui/testmat"
+		matcolor	1, 1, 1, 0.1
+	}
+	windowDef Static
+	{
+		rect	-10 ,-10 ,660 ,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 6
+		noevents	1
+	}
+	windowDef Mask
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+		noevents	1
+	}
+	windowDef Outerglow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 2.8
+		visible	0
+	}
+	windowDef Outershadow
+	{
+		rect	0 ,0 ,-640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	-140,10,-571,345
+		background	"gui/addhighlight"
+		matcolor	0, 0, 0, 0
+		visible	1
+		shear	0, -0.15
+	}
+	windowDef scanlinesAlt
+	{
+		rect	0,0,640,480
+		matcolor	0.2,0.2,0.2,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	1.2
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Dirt2
+	{
+		rect	0 ,0 ,-640 ,480
+		matcolor	1, 1, 1 ,0.5
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Dirt3
+	{
+		rect	-4,-4,-650,-490
+		matcolor	0.25, 0.13, 0.05 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt7"
+		noevents	1
+	}
+}

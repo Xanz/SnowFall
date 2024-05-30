@@ -1,0 +1,448 @@
+windowDef Desktop
+{
+	comment	"This GUI reacts to being triggered, then shows a button that fires a trigger each time it is clicked.\n\nColor Settings - KEY Gui_Parm4\nVALUE 1 = Red   2 = Blue\n3 = Green   4 = Doom Green\n5 = Yellow   6 = Orange"
+	rect	0 ,0 ,640 ,480
+	backcolor	0 ,0 ,0 ,0
+	visible	1
+
+	onTrigger {
+		set "Btn2::visible" "1" ;
+		set "TextWarning::visible" "0" ;
+	}
+
+	windowDef BG1
+	{
+		rect	5,5,630,470
+		visible	1
+		background	"guis/assets/common/scibox/bg2"
+		matcolor	0,0,0,0.9
+	}
+	windowDef BGClip
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef TitleBarBG1
+		{
+			rect	-3,-27,31,124
+			visible	1
+			background	"guis/assets/archives/titlecap"
+			matcolor	1,1,1,1
+		}
+		windowDef TitleBarBG2
+		{
+			rect	28,-27,15,124
+			visible	1
+			background	"guis/assets/archives/titleBar"
+			matcolor	1,1,1,1
+			matscalex	0.5
+		}
+		windowDef TitleBarBG3
+		{
+			rect	43,-27,31,124
+			visible	1
+			background	"guis/assets/archives/titleBox"
+			matcolor	1,1,1,1
+		}
+		windowDef TitleBarBG4
+		{
+			rect	74,-27,536,124
+			visible	1
+			background	"guis/assets/archives/titleBar"
+			matcolor	1,1,1,1
+			matscalex	5
+		}
+		windowDef TitleBarBG5
+		{
+			rect	610,-27,-31,124
+			visible	1
+			background	"guis/assets/archives/titlecap"
+			matcolor	1,1,1,1
+		}
+		windowDef TextTitle
+		{
+			rect	79,21,552,40
+			visible	1
+			text	"#str_03261"
+			forecolor	1,1,1,1
+			textscale	0.6
+			font	"fonts/micro"
+		}
+		windowDef Logo
+		{
+			rect	7,22,44,39
+			background	"gui/addlogo"
+			matcolor	0.5 ,0.5 ,0.5 ,1
+			visible	1
+		}
+		windowDef TickBoxTop2
+		{
+			rect	599,70,31,45
+			visible	1
+			background	"guis/assets/archives/tickbox"
+			matcolor	0.6,1,1,0.6
+		}
+		windowDef TickBoxBtm2
+		{
+			rect	599,439,31,45
+			visible	1
+			background	"guis/assets/archives/tickbox"
+			matcolor	0.6,1,1,0.6
+		}
+		windowDef TickBoxTop1
+		{
+			rect	13,70,-31,45
+			visible	1
+			background	"guis/assets/archives/tickbox"
+			matcolor	0.6,1,1,0.6
+		}
+		windowDef TickBoxBtm1
+		{
+			rect	13,439,-31,45
+			visible	1
+			background	"guis/assets/archives/tickbox"
+			matcolor	0.6,1,1,0.6
+		}
+		windowDef TickLines1
+		{
+			rect	8,108,24,341
+			visible	1
+			background	"gui/tickline"
+			matcolor	1,1,1,0.5
+		}
+		windowDef TickLines2
+		{
+			rect	18,108,24,-341
+			visible	1
+			background	"gui/tickline"
+			matcolor	1,1,1,0.5
+		}
+		windowDef TickLinesMask1
+		{
+			rect	10,108,41,-171
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLinesMask2
+		{
+			rect	10,279,41,171
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLines3
+		{
+			rect	601,108,24,-341
+			visible	1
+			background	"gui/tickline"
+			matcolor	1,1,1,0.5
+		}
+		windowDef TickLines4
+		{
+			rect	611,108,24,341
+			visible	1
+			background	"gui/tickline"
+			matcolor	1,1,1,0.5
+		}
+		windowDef TickLinesMask3
+		{
+			rect	594,108,41,-171
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+		windowDef TickLinesMask4
+		{
+			rect	594,279,41,171
+			visible	1
+			background	"guis/assets/archives/tickmask"
+			matcolor	0,0,0,1
+		}
+	}
+	windowDef BgBox
+	{
+		rect	12,74,613,309
+		visible	1
+		windowDef MapBg11
+		{
+			rect	69,13,489,20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG12
+		{
+			rect	69,33,489,-226
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.7
+		}
+		windowDef MapBG13
+		{
+			rect	69,259,489,-20
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.7
+		}
+		windowDef PDABG
+		{
+			rect	97,26,429,-210
+			matcolor	1, 1, 1, 0.8
+			backcolor	0,0,0,1
+			background	"guis/assets/pda/glowup60_256"
+			visible	1
+		}
+		windowDef MapGrid
+		{
+			rect	100,26,424,210
+			visible	1
+			background	"gui/grid2"
+			matcolor	1,1,1,0.25
+			matscalex	5
+			matscaley	3
+		}
+		windowDef MapBg111
+		{
+			rect	93,22,438,29
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.4
+		}
+		windowDef MapBG121
+		{
+			rect	93,51,438,-164
+			visible	1
+			background	"guis/assets/teleporter/grid2"
+			matcolor	1,1,1,0.4
+		}
+		windowDef MapBG131
+		{
+			rect	93,215,438,-29
+			visible	1
+			background	"guis/assets/teleporter/grid1"
+			matcolor	1,1,1,0.4
+		}
+		windowDef BFG
+		{
+			rect	87,42,459,178
+			visible	1
+			background	"guis/assets/hud/icons/bfgw"
+			matcolor	0.8,1,1,1
+		}
+	}
+	windowDef Bglow1
+	{
+		rect	4,27,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0, 0.4, 0.4, 0.15
+	}
+	windowDef Btn2
+	{
+		rect	0,329,640,151
+		visible	1
+		windowDef btn2_Top
+		{
+			rect	146,32,356,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner1
+		{
+			rect	64,34,82,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner2
+		{
+			rect	502,34,-82,-30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Bottom
+		{
+			rect	146,114,356,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_horiz"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner3
+		{
+			rect	64,112,82,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_corner4
+		{
+			rect	502,112,-82,30
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_cornersm"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Fill
+		{
+			rect	146,62,356,52
+			visible	1
+			backcolor	1,0.8,0.4,0.232
+		}
+		windowDef btn2_Right
+		{
+			rect	502,64,-82,48
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef btn2_Left
+		{
+			rect	64,64,82,48
+			visible	1
+			background	"guis/assets/common/btn_2pxborder_vert"
+			matcolor	1,0.8,0.4,0.5
+		}
+		windowDef TextTitle2
+		{
+			rect	38,24,571,114
+			visible	1
+			text	"#str_03262"
+			forecolor	1,1,1,0.4
+			textscale	0.9
+			font	"fonts/micro"
+			textalign	1
+			notime	1
+			textaligny	31
+		}
+	}
+	windowDef TextTitle22
+	{
+		rect	38,327,571,146
+		visible	1
+		text	"#str_03263"
+		forecolor	1,1,1,0
+		textscale	0.9
+		font	"fonts/micro"
+		textalign	1
+		notime	1
+		textaligny	31
+	}
+	windowDef Text0
+	{
+		rect	90,304,474,50
+		visible	1
+		forecolor	0.8,1,1,1
+		text	"#str_03264"
+		textscale	0.7
+		font	"fonts/bank"
+		textalign	1
+	}
+	windowDef Bglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.07
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,0,-640,479
+		background	"gui/addhighlight"
+		matcolor	0.6,0.8,0.8,0.8
+		visible	1
+	}
+	windowDef scanlinesAlt1
+	{
+		rect	0,0,-640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		matscaley	2
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,0.6
+		visible	1
+	}
+	windowDef Static1
+	{
+		rect	0,0,-640,480
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, pdhalffade[ time * 0.001 ] / 15
+	}
+	windowDef Reflect
+	{
+		rect	4,0,-630,496
+		matcolor	1 ,1 ,1 ,0.15
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Dirt
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.7
+		visible	1
+		background	"guis/assets/common/dirt4"
+	}
+	windowDef TextTitle21
+	{
+		rect	38,352,571,114
+		visible	1
+		notime	1
+
+		onMouseEnter {
+			transition "TextTitle2::forecolor" "1 1 1 1" "1 1 1 0.7" "300" ;
+			transition "btn2_top::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner1::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner2::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_bottom::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner3::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_corner4::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_right::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_left::matcolor" "1 1 1 0.7" "1 0.8 0.4 1" "300" ;
+			transition "btn2_fill::backcolor" "1 1 1 0.32" "1 0.8 0.4 0.465" "300" ;
+		}
+
+		onMouseExit {
+			transition "TextTitle2::forecolor" "1 1 1 0.7" "1 1 1 0.4" "200" ;
+			transition "btn2_top::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner1::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner2::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_bottom::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner3::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_corner4::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_right::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_left::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0.5" "300" ;
+			transition "btn2_fill::backcolor" "1 0.8 0.4 0.465" "1 0.8 0.4 0.232" "300" ;
+		}
+
+		onAction {
+			set "cmd" "activate ; play guisounds_click" ;
+			set "noevents" "1" ;
+			
+			transition "TextTitle22::forecolor" "1 1 1 0" "1 1 1 0.4" "500" ;	
+			transition "TextTitle2::forecolor" "1 1 1 0.7" "1 0.7 0.4 0" "300" ;
+			transition "btn2_top::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner1::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner2::matcolor"  "1 0.8 0.4 1""1 0.8 0.4 0" "300" ;
+			transition "btn2_bottom::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner3::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_corner4::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_right::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_left::matcolor" "1 0.8 0.4 1" "1 0.8 0.4 0" "300" ;
+			transition "btn2_fill::backcolor" "1 0.8 0.4 0.465" "1 0.8 0.4 0" "300" ;
+		}
+
+	}
+}

@@ -1,0 +1,255 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	comment	"gui_parm1 = location of call gui. value 2= top floor, 1= middle floor, 0= bottom floor\ngui_parm2 = top floor name\ngui_parm3 = middle floor name\ngui_parm4 = bottom floor name."
+
+	onEvent {
+		if ("gui::gui_parm1" == 1) {
+			set "TextBigNumber::text" "1" ;
+		//	set "arrowuph::visible" "1" ;
+		//	set "arrowdownh::visible" "0" ;
+		}
+		if ("gui::gui_parm1" == 2) {
+			set "TextBigNumber::text" "2" ;
+		//	set "arrowuph::visible" "1" ;
+		//	set "arrowdownh::visible" "1" ;
+		}
+		if ("gui::gui_parm1" == 3) {
+			set "TextBigNumber::text" "3" ;
+		//	set "arrowuph::visible" "0" ;
+		//	set "arrowdownh::visible" "1" ;
+		}
+	}
+
+	windowDef bgTop
+	{
+		rect	5 ,5 ,630 ,235
+		background	"guis/assets/elevator/callfloorbg"
+		matcolor	1 ,1 ,1 ,0.9
+		visible	1
+	}
+	windowDef bgBtm
+	{
+		rect	5 ,240 ,630 ,230
+		windowDef bgBtmClamped
+		{
+			rect	0 ,0 ,630 ,-270
+			background	"guis/assets/elevator/callfloorbg"
+			matcolor	1 ,1 ,1 ,0.9
+			visible	1
+		}
+	}
+	windowDef arrowup
+	{
+		rect	26 ,120 ,150 ,110
+		background	"guis/assets/elevator/callarrow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+	windowDef arrowuph
+	{
+		rect	26 ,120 ,150 ,-110
+		background	"guis/assets/elevator/callarrowh"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef arrowdown
+	{
+		rect	26 ,260 ,150 ,-110
+		background	"guis/assets/elevator/callarrow"
+		matcolor	1 ,1 ,1 ,0.8
+		visible	1
+	}
+	windowDef arrowdownh
+	{
+		rect	26 ,260 ,150 ,110
+		background	"guis/assets/elevator/callarrowh"
+		matcolor	1 ,1 ,1 ,0
+		visible	1
+	}
+	windowDef TextCall
+	{
+		rect	32, 212, 200, 50
+		text	"#str_01239"
+		textscale	1
+		forecolor	0, 0, 0, 0.5
+	}
+	windowDef TextBigNumber
+	{
+		rect	160, 45, 400, 480
+		text	"3"
+		textscale	7.8
+		textalign	2
+		forecolor	1, 1, 1, 0.5
+		forceaspectheight	700
+		visible	1
+		windowDef TextComplex1
+		{
+			rect	0, 0, 0, 0
+			visible	1
+		}
+	}
+	windowDef Logo
+	{
+		rect	227 ,20 ,390 ,265
+		background	"gui/addlogo"
+		matcolor	0.18 ,0.07 ,0.02 ,1
+		visible	1
+		forceaspectheight	480
+		windowDef TextComplex2
+		{
+			rect	0, 0, 0, 0
+			visible	1
+		}
+	}
+	windowDef Level
+	{
+		rect	225 ,16 ,390 ,125
+		background	"guis/assets/elevator/level"
+		matcolor	0.92, 0.86, 0.63 ,0.7
+		visible	1
+	}
+	windowDef bglevelsbg
+	{
+		rect	206 ,294 ,425 ,170
+		visible	1
+		backcolor	0.1, 0.07, 0.04, 0.7
+	}
+	windowDef bglevels
+	{
+		rect	202 ,290 ,430 ,180
+		background	"guis/assets/common/outerglow"
+		matcolor	0.4 ,0.25 ,0.02 ,0.8
+		visible	1
+	}
+	windowDef TextLevel3
+	{
+		rect	222,291,43,54
+		text	"3"
+		textscale	0.9
+		forecolor	0.8, 0.65, 0.3, 0.8
+		visible	1
+	}
+	windowDef TextLevel3Loc
+	{
+		rect	263,293,400,55
+		text	"gui::gui_parm2"
+		textscale	0.85
+		forecolor	1, 1, 1, 0.6
+		visible	1
+	}
+	windowDef TextLevel2
+	{
+		rect	222,352,34,52
+		text	"2"
+		textscale	0.9
+		forecolor	0.8, 0.65, 0.3, 0.8
+		visible	1
+	}
+	windowDef TextLevel2Loc
+	{
+		rect	263,354,400,69
+		text	"gui::gui_parm3"
+		textscale	0.85
+		forecolor	1, 1, 1, 0.6
+		visible	1
+	}
+	windowDef TextLevel1
+	{
+		rect	228,413,34,52
+		text	"1"
+		textscale	0.9
+		forecolor	0.8, 0.65, 0.3, 0.8
+		visible	1
+	}
+	windowDef TextLevel1Loc
+	{
+		rect	263,415,400,69
+		text	"gui::gui_parm4"
+		textscale	0.85
+		forecolor	1, 1, 1, 0.6
+		visible	1
+	}
+	windowDef bgcallh
+	{
+		rect	0 ,0 ,640 ,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 8
+		visible	1
+	}
+	windowDef bgcalld
+	{
+		rect	0 ,0 ,640 ,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef bgcallo
+	{
+		rect	0 ,0 ,640 ,480
+		background	"gui/addhighlight"
+		matcolor	0.3 ,0.8 ,0.8 ,1
+		visible	1
+	}
+	windowDef Button1
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+		notime	1
+
+		onAction {
+			resetTime "0" ; 
+			set	"cmd"	"play guisounds_click ; activate; changefloor" "gui::gui_parm1" ;
+		//	set	"cmd"	"play guisounds_click ; changefloor" "gui::gui_parm1" ;
+		}
+
+		onTime 0 {
+			set "arrowdownh::matcolor" "1 1 1 1" ;
+			set "arrowuph::matcolor" "1 1 1 1" ;
+			set "Textcall::forecolor" "0.8 0.6 0.2 0.8" ;
+		}
+
+		onTime 5000 {
+			transition "arrowdownh::matcolor" "1 1 1 1" "1 1 1 0" "500" ;
+			transition "arrowuph::matcolor" "1 1 1 1" "1 1 1 0" "500" ;
+			transition "Textcall::forecolor" "0.8 0.6 0.2 0.8" "0 0 0 0.5" "700" ;
+		}
+
+	}
+	windowDef Button2
+	{
+		rect	0 ,0 ,640 ,480
+		visible	0
+
+		onAction {
+			set	"cmd"	"play guisounds_error1" ;
+		}
+
+	}
+	windowDef scanlines
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+	}
+	windowDef scanpulse
+	{
+		rect	0,0,640,480
+		visible	1
+		windowDef scanpulseClamped
+		{
+			rect	0,0,-640,3000
+			matcolor	1,1,1,0.02
+			background	"gui/test/gui_scanpulse2"
+			visible	1
+		}
+	}
+	windowDef dirt
+	{
+		rect	0,0,-640,480
+		matcolor	1,1,1,0.5
+		background	"guis/assets/test/darkedge_noise"
+		visible	1
+	}
+}

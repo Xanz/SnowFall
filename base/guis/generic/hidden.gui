@@ -1,0 +1,22 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	comment	""
+	float	"hell"	0
+
+	onActivate {
+		showcursor "0" ;
+	}
+
+	windowDef Button
+	{
+		rect	0 ,0 ,640 ,480
+		visible	1
+
+		onAction {
+			set "cmd" "activate" ;// ; play guisounds_click" ;
+			set "noevents" "1" ;
+		}
+	}
+
+}

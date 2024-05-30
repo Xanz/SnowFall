@@ -1,0 +1,432 @@
+windowDef Desktop
+{
+	rect	0 ,0 ,640 ,480
+	nocursor	1
+	background	"guis/assets/cpuserver/bg.tga"
+	matcolor	0.6, 0.9, 1, 0.8
+	windowDef Twitcher
+	{
+		rect	0,0,640,480
+		visible	1
+
+		onTime 0 {
+			set "rect" "1 1 640 480" ;
+			transition "Static::matcolor" "1 1 1 0.05" "1 1 1 0.1" "200" ;
+		}
+
+		onTime 50 {
+			set "rect" "0 0 640 480" ;
+		}
+
+		onTime 150 {
+			set "rect" "-1 0 640 480" ;
+		}
+
+		onTime 200 {
+			set "rect" "0 0 640 480" ;
+			transition "Static::matcolor" "1 1 1 0.1" "1 1 1 0.05" "200" ;
+		}
+
+		onTime 2000 {
+			resetTime "0" ;
+		}
+
+		windowDef Background
+		{
+			rect	0,0,640,480
+			visible	1
+			windowDef BgFill
+			{
+				rect	32,32,576,416
+				backcolor	0.59, 0.67, 0.59, 1
+				visible	1
+			}
+			windowDef Top
+			{
+				rect	32,0,576,-32
+				visible	1
+				background	"gui/caves/horiz"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Bottom
+			{
+				rect	32,448,576,32
+				visible	1
+				background	"gui/caves/horiz"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Left
+			{
+				rect	0,32,-32,416
+				visible	1
+				background	"gui/caves/verts"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Right
+			{
+				rect	608,32,32,416
+				visible	1
+				background	"gui/caves/verts"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Corner1
+			{
+				rect	0,0,-32,-32
+				visible	1
+				background	"gui/caves/corner"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Corner2
+			{
+				rect	608,0,32,-32
+				visible	1
+				background	"gui/caves/corner"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Corner3
+			{
+				rect	0,448,-64,32
+				visible	1
+				background	"gui/caves/corner2"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Corner4
+			{
+				rect	576,448,64,32
+				visible	1
+				background	"gui/caves/corner2"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef InsetLineLeft
+			{
+				rect	0,93,-32,355
+				visible	1
+				background	"gui/caves/vertl"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef InsetLineRight
+			{
+				rect	608,93,32,355
+				visible	1
+				background	"gui/caves/vertl"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Inset1
+			{
+				rect	0,73,-32,-32
+				visible	1
+				background	"gui/caves/verta"
+				matcolor	1, 1, 1, 1
+			}
+			windowDef Inset3
+			{
+				rect	608,73,32,-32
+				visible	1
+				background	"gui/caves/verta"
+				matcolor	1, 1, 1, 1
+			}
+		}
+		windowDef GreenBox
+		{
+			rect	29,134,582,316
+			visible	1
+			windowDef GBCornerTL
+			{
+				rect	0,0,-16,-16
+				background	"guis/assets/caverns/boxc"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBCornerTR
+			{
+				rect	566,0,16,-16
+				background	"guis/assets/caverns/boxc"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBCornerBL
+			{
+				rect	0,297,-16,16
+				background	"guis/assets/caverns/boxc"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBCornerBR
+			{
+				rect	566,297,16,16
+				background	"guis/assets/caverns/boxc"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBSideT
+			{
+				rect	16,0,550,-16
+				background	"guis/assets/caverns/boxh"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBSideB
+			{
+				rect	16,297,550,16
+				background	"guis/assets/caverns/boxh"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBSideL
+			{
+				rect	0,16,-16,281
+				background	"guis/assets/caverns/boxv"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBSideR
+			{
+				rect	566,16,16,281
+				background	"guis/assets/caverns/boxv"
+				matcolor	0, 0, 0, 0.7
+				visible	1
+			}
+			windowDef GBBgFill
+			{
+				rect	16,16,550,281
+				backcolor	0, 0, 0, 0.7
+				visible	1
+			}
+		}
+		windowDef Bglow
+		{
+			rect	0,0,640,480
+			background	"guis/assets/cpuserver/bglow.tga"
+			visible	1
+			matcolor	0.4, 0.8, 1, 0.1
+		}
+		windowDef Reflect
+		{
+			rect	10,5,620,470
+			matcolor	1 ,1 ,1 ,0.2
+			visible	1
+			background	"gui/reflect1"
+		}
+		windowDef Title1
+		{
+			rect	15,22,40,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.8
+			visible	1
+		}
+		windowDef Title2
+		{
+			rect	55,22,530,80
+			background	"gui/caves/title2"
+			matcolor	1, 1, 1, 0.8
+			visible	1
+		}
+		windowDef Title3
+		{
+			rect	585,22,-40,80
+			background	"gui/caves/title1"
+			matcolor	1, 1, 1, 0.8
+			visible	1
+		}
+		windowDef TitleText
+		{
+			rect	25,34,592,55
+			visible	1
+			forecolor	1,1,1,0.6
+			text	"#str_03142"
+			textscale	0.93
+			textalign	1
+			textaligny	-2
+		}
+		windowDef TitleText111
+		{
+			rect	38,95,546,42
+			visible	1
+			forecolor	0.329,0.4,0.349,1
+			text	"#str_03143"
+			textscale	0.6
+		}
+		windowDef TitleText11
+		{
+			rect	39,143,546,42
+			visible	1
+			forecolor	0.839,1,0.890,0.8
+			text	"#str_03144"
+			textscale	0.65
+		}
+		windowDef TitleText1
+		{
+			rect	41,184,560,75
+			visible	1
+			forecolor	0.80000007,1,0.80000007,0.60000002
+			text	"#str_03145"
+			textscale	0.60000002
+		}
+		windowDef TitleText13
+		{
+			rect	41,259,547,173
+			visible	1
+			forecolor	0.8,1,0.8,0.6
+			text	"#str_03146"
+			textscale	0.6
+		}
+		windowDef TitleText12
+		{
+			rect	239,380,49,56
+			visible	1
+			forecolor	0.85,1,0.9,0.7
+			text	"|"
+			textscale	1
+
+			onTime 0 {
+				transition "forecolor" "0.85 1 0.9 0" "0.85 1 0.9 0.7" "100" ;
+			}
+
+			onTime 200 {
+				transition "forecolor" "0.85 1 0.9 0.7" "0.85 1 0.9 0" "100" ;
+			}
+
+			onTime 400 {
+				resetTime "0" ;
+			}
+
+		}
+	}
+	windowDef AngledReflect
+	{
+		rect	20,15,600,-450
+		matcolor	1 ,0.85 ,0.4 ,0.2
+		visible	1
+		background	"gui/reflect4"
+	}
+	windowDef Static
+	{
+		rect	-9,-9,660,500
+		visible	1
+		background	"gui/static"
+		matcolor	1, 1, 1, 0.05
+	}
+	windowDef Mask
+	{
+		rect	0,0,640,480
+		visible	1
+		background	"guis/assets/test/mask"
+		matcolor	1, 1, 1, 0.4
+	}
+	windowDef bloodSmear1
+	{
+		rect	316,268,-487,-310
+		visible	1
+		background	"guis/assets/common/blood2"
+		matcolor	0.6 ,0.6 ,0.3 ,0.4
+	}
+	windowDef Outerglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outerglow"
+		matcolor	1 ,1 ,1 , pdflick [ time * .0025 ] / 5
+		visible	1
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Addhighlight
+	{
+		rect	0,0,-640,480
+		background	"gui/addhighlight"
+		matcolor	0.6 ,0.6 ,0.3 ,1
+		visible	1
+	}
+	windowDef Scanlines
+	{
+		rect	0,0,-640,480
+		matcolor	1,1,1,1
+		background	"gui/test/gui_scanlines"
+		visible	1
+		matscaley	1.5
+	}
+	windowDef scanlinesAlt
+	{
+		rect	0,0,640,480
+		matcolor	0.1,0.1,0.1,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.4
+		visible	1
+		background	"guis/assets/common/dirt2"
+		noevents	1
+	}
+	windowDef Dirt3
+	{
+		rect	-4,-4,650,-490
+		matcolor	0.25, 0.13, 0.05 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt7"
+		noevents	1
+	}
+	windowDef Flicker1
+	{
+		rect	0,0,640,-480
+		background	"guis/assets/cpuserver/bg.tga"
+		matcolor	0.6, 0.9, 1, 0.1
+		visible	1
+
+		onTime 0 {
+			transition "matcolor" "0.6 0.9 1 0.1" "0.6 0.9 1 0" "400" ;
+		}
+
+		onTime 800 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.15" "700" ;
+		}
+
+		onTime 1500 {
+			transition "matcolor" "0.6 0.9 1 0.15" "0.6 0.9 1 0" "300" ;
+		}
+
+		onTime 2000 {
+			transition "matcolor" "0.6 0.9 1 0" "0.6 0.9 1 0.1" "300" ;
+		}
+
+		onTime 3500 {
+			resetTime "0" ;
+		}
+
+	}
+	windowDef bloodSmear2
+	{
+		rect	243,207,449,325
+		visible	1
+		background	"guis/assets/common/blood2"
+		matcolor	0 ,0 ,0 ,0.3
+	}
+	windowDef bloodSmear
+	{
+		rect	245,204,449,325
+		visible	1
+		background	"guis/assets/common/blood2"
+		matcolor	0.5 ,0.6 ,0.4 ,0.85
+	}
+	windowDef bloodSmear21
+	{
+		rect	480,73,449,325
+		visible	1
+		background	"guis/assets/common/blood2"
+		matcolor	0 ,0 ,0 ,0.3
+	}
+	windowDef bloodSmear3
+	{
+		rect	482,70,449,325
+		visible	1
+		background	"guis/assets/common/blood2"
+		matcolor	0.5 ,0.6 ,0.4 ,0.85
+	}
+}

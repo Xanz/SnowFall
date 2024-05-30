@@ -1,0 +1,325 @@
+windowDef Desktop
+{
+	rect	0,0,640,480
+	windowDef BgBlack
+	{
+		rect	-15,-8,668,496
+		visible	1
+		background	"guis/assets/cpuserver/bgWhite4"
+		matcolor	0,0.12,0.18,0.5
+	}
+	windowDef Bg1
+	{
+		rect	470,0,158,480
+		visible	1
+		background	"guis/assets/generic/stripe"
+		matcolor	0.15,0.25,0.3,0.5
+	}
+	windowDef BarsClip
+	{
+		rect	0,0,640,480
+		visible	1
+
+		onTime 0 {
+			set "Arrow1::visible" "1" ;
+			resetTime "Arrow1" "0" ;
+			transition "Line1::rect" "63 14 0 99" "63 14 231 99" "1500" "0" "0.8" ;
+			set "Line1::matcolor" "1 0.4 0 0.4" ;
+			set "TextCharge1::forecolor" "1 1 1 1 0.8" ;
+		}
+
+		onTime 2000 {
+			set "Arrow1::visible" "0" ;
+			set "Arrow2::visible" "1" ;
+			resetTime "Arrow2" "0" ;
+			transition "Line2::rect" "63 131 0 99" "63 131 231 99" "1500" "0" "0.8" ;
+			set "Line2::matcolor" "1 0.4 0 0.4" ;
+			set "TextCharge2::forecolor" "1 1 1 1 0.8" ;
+			set "TextCharge1::forecolor" "1 1 1 1 0.4" ;
+		}
+
+		onTime 4000 {
+			transition "Line1::matcolor" "1 0.4 0 0.4" "1 0.4 0 0" "1000" ;
+			set "Arrow2::visible" "0" ;
+			set "Arrow3::visible" "1" ;
+			resetTime "Arrow3" "0" ;
+			transition "Line3::rect" "63 249 0 99" "63 249 231 99" "1500" "0" "0.8" ;
+			set "Line3::matcolor" "1 0.4 0 0.4" ;
+			set "TextCharge3::forecolor" "1 1 1 1 0.8" ;
+			set "TextCharge2::forecolor" "1 1 1 1 0.4" ;
+		}
+
+		onTime 6000 {
+			transition "Line2::matcolor" "1 0.4 0 0.4" "1 0.4 0 0" "1000" ;
+			set "Arrow3::visible" "0" ;
+			set "Arrow4::visible" "1" ;
+			resetTime "Arrow4" "0" ;
+			transition "Line4::rect" "63 367 0 99" "63 367 231 99" "1500" "0" "0.8" ;
+			set "Line4::matcolor" "1 0.4 0 0.4" ;
+			set "TextCharge4::forecolor" "1 1 1 1 0.8" ;
+			set "TextCharge3::forecolor" "1 1 1 1 0.4" ;
+		}
+
+		onTime 8000 {
+			set "Arrow4::visible" "0" ;
+			transition "Line3::matcolor" "1 0.4 0 0.4" "1 0.4 0 0" "1000" ;
+			set "TextCharge4::forecolor" "1 1 1 1 0.4" ;
+		}
+
+		onTime 9000 {
+			transition "Line4::matcolor" "1 0.4 0 0.4" "1 0.4 0 0" "1000" ;
+		}
+
+		onTime 10000 {
+			set "Line1::rect" "63 14 0 99" ;
+			set "Line2::rect" "63 131 0 99" ;
+			set "Line3::rect" "63 249 0 99" ;
+			set "Line4::rect" "63 367 0 99" ;
+			resetTime "0" ;
+		}
+
+		windowDef Bar1
+		{
+			rect	7,0,313,125
+			visible	1
+			background	"guis/assets/generic/meterbar"
+			matcolor	0.7,0.95,1,0.3
+		}
+		windowDef Box1
+		{
+			rect	305,0,152,125
+			visible	1
+			background	"guis/assets/generic/anglebox"
+			matcolor	0.7,0.95,1,0.15
+		}
+		windowDef Arrow1
+		{
+			rect	340,28,75,70
+			visible	0
+			background	"guis/assets/generic/arrow"
+			matcolor	0,0.09,0.1,0.6
+
+			onTime 0 {
+				transition "matcolor" "0 0.09 0.1 1" "0 0.09 0.1 0" "500" ;
+			}
+
+			onTime 500 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar2
+		{
+			rect	7,117,313,125
+			visible	1
+			background	"guis/assets/generic/meterbar"
+			matcolor	0.7,0.95,1,0.3
+		}
+		windowDef Box2
+		{
+			rect	305,118,152,125
+			visible	1
+			background	"guis/assets/generic/anglebox"
+			matcolor	0.7,0.95,1,0.15
+		}
+		windowDef Arrow2
+		{
+			rect	340,146,75,69
+			visible	0
+			background	"guis/assets/generic/arrow"
+			matcolor	0,0.09,0.1,0.6
+
+			onTime 0 {
+				transition "matcolor" "0 0.09 0.1 1" "0 0.09 0.1 0" "500" ;
+			}
+
+			onTime 500 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar3
+		{
+			rect	7,235,313,125
+			visible	1
+			background	"guis/assets/generic/meterbar"
+			matcolor	0.7,0.95,1,0.3
+		}
+		windowDef Box3
+		{
+			rect	305,236,152,125
+			visible	1
+			background	"guis/assets/generic/anglebox"
+			matcolor	0.7,0.95,1,0.15
+		}
+		windowDef Arrow3
+		{
+			rect	340,265,75,69
+			visible	0
+			background	"guis/assets/generic/arrow"
+			matcolor	0,0.09,0.1,0.6
+
+			onTime 0 {
+				transition "matcolor" "0 0.09 0.1 1" "0 0.09 0.1 0" "500" ;
+			}
+
+			onTime 500 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef Bar4
+		{
+			rect	7,353,313,125
+			visible	1
+			background	"guis/assets/generic/meterbar"
+			matcolor	0.7,0.95,1,0.3
+		}
+		windowDef Box4
+		{
+			rect	305,354,152,125
+			visible	1
+			background	"guis/assets/generic/anglebox"
+			matcolor	0.7,0.95,1,0.15
+		}
+		windowDef Arrow4
+		{
+			rect	340,383,75,69
+			visible	0
+			background	"guis/assets/generic/arrow"
+			matcolor	0,0.09,0.1,0.6
+
+			onTime 0 {
+				transition "matcolor" "0 0.09 0.1 1" "0 0.09 0.1 0" "500" ;
+			}
+
+			onTime 500 {
+				resetTime "0" ;
+			}
+
+		}
+		windowDef TextCharge1
+		{
+			rect	32,23,259,46
+			visible	1
+			text	"#str_03461"
+			forecolor	1,1,1,0.4
+			textscale	0.7
+			textalign	2
+		}
+		windowDef TextCharge2
+		{
+			rect	32,140,259,46
+			visible	1
+			text	"#str_03462"
+			forecolor	1,1,1,0.4
+			textscale	0.7
+			textalign	2
+		}
+		windowDef TextCharge3
+		{
+			rect	32,258,259,46
+			visible	1
+			text	"#str_03463"
+			forecolor	1,1,1,0.4
+			textscale	0.7
+			textalign	2
+		}
+		windowDef TextCharge4
+		{
+			rect	32,377,259,46
+			visible	1
+			text	"#str_03464"
+			forecolor	1,1,1,0.4
+			textscale	0.7
+			textalign	2
+		}
+		windowDef Line1
+		{
+			rect	63,14,0,99
+			visible	1
+			background	"guis/assets/common/2pxborder_horiz"
+			matcolor	1,0.4,0,0.4
+		}
+		windowDef Line2
+		{
+			rect	63,131,0,99
+			visible	1
+			background	"guis/assets/common/2pxborder_horiz"
+			matcolor	1,0.4,0,0.4
+		}
+		windowDef Line3
+		{
+			rect	63,249,0,99
+			visible	1
+			background	"guis/assets/common/2pxborder_horiz"
+			matcolor	1,0.4,0,0.4
+		}
+		windowDef Line4
+		{
+			rect	63,367,0,99
+			visible	1
+			background	"guis/assets/common/2pxborder_horiz"
+			matcolor	1,0.4,0,0.4
+		}
+	}
+	windowDef Bglow
+	{
+		rect	0,0,640,480
+		background	"guis/assets/cpuserver/bglow.tga"
+		visible	1
+		matcolor	0.4, 0.8, 1, 0.1
+	}
+	windowDef Reflect1
+	{
+		rect	10,0,620,470
+		matcolor	1 ,1 ,1 ,0.2
+		visible	1
+		background	"gui/reflect1"
+	}
+	windowDef Dirt2
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,0.3
+		visible	1
+		background	"guis/assets/common/dirt3"
+		noevents	1
+	}
+	windowDef Dirt1
+	{
+		rect	0,0,-640,480
+		matcolor	1, 1, 1 ,1
+		visible	1
+		background	"guis/assets/common/dirt4"
+		noevents	1
+	}
+	windowDef Scanlines1
+	{
+		rect	0,0,-640,480
+		matcolor	0.15,0.15,0.15,1
+		background	"gui/test/gui_scanlines5"
+		visible	1
+		matscaley	2
+	}
+	windowDef Outershadow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+	windowDef Outerglow
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outerglow"
+		matcolor	0.4,1 ,1 , pdflick [ time * .0025 ] / 5
+		visible	1
+	}
+	windowDef Outershadow1
+	{
+		rect	0,0,-640,480
+		background	"guis/assets/common/outershadow"
+		matcolor	1 ,1 ,1 ,1
+		visible	1
+	}
+}
