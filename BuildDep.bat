@@ -17,4 +17,3 @@ popd
 
 echo "Copy openal dll"
 xcopy .\external\openal\build\Release\OpenAL32.dll .\ /Y
-
