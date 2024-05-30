@@ -484,8 +484,8 @@ Sys_ShutdownInput
 */
 void Sys_ShutdownInput(void)
 {
-	mouse_polls.Clear();
-	keyboard_polls.Clear();
+	m_MousePolls.clear();
+	m_KeyboardPolls.clear();
 	IN_DeactivateMouse();
 	IN_DeactivateKeyboard();
 }
@@ -497,8 +497,6 @@ Sys_InitInput
 */
 void Sys_InitInput(void)
 {
-	keyboard_polls.SetGranularity(64);
-	mouse_polls.SetGranularity(64);
 	common->Printf("\n------- Input Initialization -------\n");
 	common->Printf("------------------------------------\n");
 }
@@ -612,12 +610,12 @@ void CheckKeyboardEvent(int key)
 {
 	if (glfwGetKey(window, key) == GLFW_PRESS)
 	{
-		keyboard_polls.Append(keyboard_poll_t(key, true));
+		m_KeyboardPolls.push_back(keyboard_poll_t(key, true));
 		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), true, 0, NULL);
 	}
 	else
 	{
-		keyboard_polls.Append(keyboard_poll_t(key, false));
+		m_KeyboardPolls.push_back(keyboard_poll_t(key, false));
 		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), false, 0, NULL);
 	}
 }
@@ -630,7 +628,7 @@ Sys_PollKeyboardInputEvents
 int Sys_PollKeyboardInputEvents(void)
 {
 	// return the keyboard events.
-	return keyboard_polls.Num();
+	return m_KeyboardPolls.size();
 }
 
 /*
@@ -640,38 +638,38 @@ Sys_PollKeyboardInputEvents
 */
 int Sys_ReturnKeyboardInputEvent(const int n, int &ch, bool &state)
 {
-	ch = GLFWDoom_MapKey(keyboard_polls[n].key);
-	state = keyboard_polls[n].state;
+	ch = GLFWDoom_MapKey(m_KeyboardPolls[n].key);
+	state = m_KeyboardPolls[n].state;
 	return ch;
 }
 
 void Sys_EndKeyboardInputEvents(void)
 {
-	keyboard_polls.SetNum(0, false);
+	m_KeyboardPolls.clear();
 }
 
 //=====================================================================================
 
 int Sys_PollMouseInputEvents(void)
 {
-	return mouse_polls.Num();
+	return m_MousePolls.size();
 }
 
 int Sys_ReturnMouseInputEvent(const int n, int &action, int &value)
 {
-	if (n >= mouse_polls.Num())
+	if (n >= m_MousePolls.size())
 	{
 		return 0;
 	}
 
-	action = mouse_polls[n].action;
-	value = mouse_polls[n].value;
+	action = m_MousePolls[n].action;
+	value = m_MousePolls[n].value;
 	return 1;
 }
 
 void Sys_EndMouseInputEvents(void)
 {
-	mouse_polls.SetNum(0, false);
+	m_MousePolls.clear();
 }
 
 unsigned char Sys_MapCharForKey(int key)

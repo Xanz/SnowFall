@@ -32,6 +32,7 @@ If you have questions concerning this license or the applicable additional terms
 #include <windows.h>
 #include "../../renderer/wglext.h" // windows OpenGL extensions
 #include <glfw/glfw3.h>
+#include <vector>
 
 struct mouse_poll_t
 {
@@ -129,14 +130,6 @@ void Conbuf_AppendText(const char *msg);
 
 typedef struct
 {
-	// HWND			hWnd;
-	// HINSTANCE		hInstance;
-
-	// bool			activeApp;			// changed with WM_ACTIVATE messages
-	// bool			mouseReleased;		// when the game has the console down or is doing a long operation
-	// bool			movingWindow;		// inhibit mouse grab when dragging the window
-	// bool			mouseGrabbed;		// current state of grab and hide
-
 	OSVERSIONINFOEX osversion;
 
 	cpuid_t cpuid;
@@ -185,10 +178,6 @@ typedef struct
 
 	HINSTANCE hInstDI; // direct input
 
-	// LPDIRECTINPUT8			g_pdi;
-	// LPDIRECTINPUTDEVICE8	g_pMouse;
-	// LPDIRECTINPUTDEVICE8	g_pKeyboard;
-
 	HANDLE renderCommandsEvent;
 	HANDLE renderCompletedEvent;
 	HANDLE renderActiveEvent;
@@ -205,9 +194,9 @@ extern Win32Vars_t win32;
 
 extern GLFWwindow *window;
 
-extern idList<mouse_poll_t> mouse_polls;
+extern std::vector<mouse_poll_t> m_MousePolls;
 
-extern idList<keyboard_poll_t> keyboard_polls;
+extern std::vector<keyboard_poll_t> m_KeyboardPolls;
 
 extern bool UIActive;
 

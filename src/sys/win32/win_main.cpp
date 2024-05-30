@@ -67,9 +67,9 @@ Win32Vars_t win32;
 
 GLFWwindow *window;
 
-idList<mouse_poll_t> mouse_polls;
+std::vector<mouse_poll_t> m_MousePolls;
 
-idList<keyboard_poll_t> keyboard_polls;
+std::vector<keyboard_poll_t> m_KeyboardPolls;
 
 bool UIActive;
 
@@ -912,8 +912,8 @@ Sys_ClearEvents
 */
 void Sys_ClearEvents(void)
 {
-	mouse_polls.SetNum(0, false);
-	keyboard_polls.SetNum(0, false);
+	m_MousePolls.clear();
+	m_KeyboardPolls.clear();
 	eventHead = eventTail = 0;
 }
 

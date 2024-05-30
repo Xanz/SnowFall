@@ -48,6 +48,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "rc/doom_resource.h"
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
+#include <vector>
 
 static void GLW_InitExtensions(void);
 
@@ -258,7 +259,7 @@ static void MouseKey_Callback(GLFWwindow *window, int button, int action, int mo
 			}
 		}
 
-		mouse_polls.Append(mouse_poll_t(key, state));
+		m_MousePolls.push_back(mouse_poll_t(key, state));
 		Sys_QueEvent(GetTickCount(), SE_KEY, key, state, 0, NULL);
 	}
 }
@@ -275,7 +276,7 @@ static void Key_Callback(GLFWwindow *window, int key, int scancode, int action, 
 	if (action == GLFW_PRESS || action == GLFW_RELEASE)
 	{
 		bool state = (action == GLFW_PRESS) ? 1 : 0;
-		keyboard_polls.Append(keyboard_poll_t(key, state));
+		m_KeyboardPolls.push_back(keyboard_poll_t(key, state));
 
 		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), state, 0, NULL);
 	}
@@ -290,8 +291,8 @@ static void Cursor_Callback(GLFWwindow *window, double xpos, double ypos)
 	}
 	else
 	{
-		mouse_polls.Append(mouse_poll_t(M_DELTAX, xpos));
-		mouse_polls.Append(mouse_poll_t(M_DELTAY, ypos));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAX, xpos));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAY, ypos));
 		Sys_QueEvent(GetTickCount(), SE_MOUSE, xpos, ypos, 0, NULL);
 
 		glfwSetCursorPos(window, 0, 0);
@@ -303,13 +304,13 @@ static void Scroll_Callback(GLFWwindow *window, double xoffset, double yoffset)
 	// Has to be done this way otherwise we get funky skipping.
 	if (yoffset >= 1)
 	{
-		mouse_polls.Append(mouse_poll_t(M_DELTAZ, 1));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAZ, 1));
 		Sys_QueEvent(GetTickCount(), SE_MOUSE, 1, 0, 0, NULL);
 		Sys_QueEvent(GetTickCount(), SE_KEY, K_MWHEELUP, 1, 0, NULL);
 	}
 	else if (yoffset <= -1)
 	{
-		mouse_polls.Append(mouse_poll_t(M_DELTAZ, -1));
+		m_MousePolls.push_back(mouse_poll_t(M_DELTAZ, -1));
 		Sys_QueEvent(GetTickCount(), SE_MOUSE, -1, 0, 0, NULL);
 		Sys_QueEvent(GetTickCount(), SE_KEY, K_MWHEELDOWN, 1, 0, NULL);
 	}
@@ -406,7 +407,7 @@ bool GLimp_Init(glimpParms_t parms)
 	}
 
 	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(window, 0, 0);
+	glfwSetCursorPos(window, parms.width / 2, parms.height / 2);
 
 	// Toggle V-Sync
 	if (r_swapInterval.GetInteger() == 1)
