@@ -916,7 +916,7 @@ bool idInventory::Give(idPlayer *owner, const idDict &spawnArgs, const char *sta
 			{
 				if ((weapons & (1 << i)) == 0 || gameLocal.isMultiplayer)
 				{
-					if (owner->GetUserInfo()->GetBool("ui_autoSwitch") && idealWeapon)
+					if (owner->GetUserInfo()->GetBool("cl_autowepswitch") && idealWeapon)
 					{
 						assert(!gameLocal.isClient);
 						*idealWeapon = i;
@@ -1345,7 +1345,7 @@ void idPlayer::Init(void)
 	weapon_soulcube = SlotForWeapon("weapon_soulcube");
 	weapon_pda = SlotForWeapon("weapon_pda");
 	weapon_fists = SlotForWeapon("weapon_fists");
-	showWeaponViewModel = GetUserInfo()->GetBool("ui_showGun");
+	showWeaponViewModel = GetUserInfo()->GetBool("cl_viewmodel");
 
 	lastDmgTime = 0;
 	lastArmorPulse = -10000;
@@ -2667,7 +2667,7 @@ bool idPlayer::UserInfoChanged(bool canModify)
 	bool newready;
 
 	userInfo = GetUserInfo();
-	showWeaponViewModel = userInfo->GetBool("ui_showGun");
+	showWeaponViewModel = userInfo->GetBool("cl_viewmodel");
 
 	if (!gameLocal.isMultiplayer)
 	{

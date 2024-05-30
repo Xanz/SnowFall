@@ -2847,7 +2847,7 @@ void idWeapon::Event_AutoReload(void)
 		idThread::ReturnFloat(0.0f);
 		return;
 	}
-	idThread::ReturnFloat(gameLocal.userInfo[owner->entityNumber].GetBool("ui_autoReload"));
+	idThread::ReturnFloat(gameLocal.userInfo[owner->entityNumber].GetBool("cl_autoreload"));
 }
 
 /*
