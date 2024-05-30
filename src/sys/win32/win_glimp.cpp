@@ -268,7 +268,7 @@ static void Key_Callback(GLFWwindow *window, int key, int scancode, int action, 
 	// Backspace needs to be handled here.
 	if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
 	{
-		Sys_QueEvent(GetTickCount(), SE_CHAR, K_BACKSPACE, 1, 0, NULL);
+		Sys_QueEvent(GetTickCount(), SE_CHAR, K_BACKSPACE, 0, 0, NULL);
 		return;
 	}
 
