@@ -131,7 +131,7 @@ PFNWGLSETPBUFFERATTRIBARBPROC wglSetPbufferAttribARB;
 #define WGL_SAMPLES_ARB 0x2042
 
 // Adds raw mouse input.
-idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1");
+idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1", 0, 1);
 
 //
 // function declaration
