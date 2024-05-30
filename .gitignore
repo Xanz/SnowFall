@@ -41,3 +41,5 @@ src/.vs/
 base/
 
 tools/
+
+.vscode/

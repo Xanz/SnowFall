@@ -20,7 +20,8 @@ SnowFall Engine or SFEngine is a fork of Id Tech 4. The overall goal is to move 
 
 **How do I get started with using the engine?**
 
-> As part of the repo I have provided a series of documentation that should help navigate around the engine and start building projects. Here is a link to the getting started page. (TODO: add documentation)
+> As part of the repo I have provided a series of documentation that should help navigate around the engine and start building projects. [Here is a link to the getting started page.](docs/GettingStarted.md)
+You can also view the build instructions [here](docs/BuildGuide.md)
 > 
 
 **What are the major goals of the engine?**
