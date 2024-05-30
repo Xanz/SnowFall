@@ -9,8 +9,7 @@ This defines some variables needed by the game script.
 #ifndef __DOOM_DEFS__
 #define __DOOM_DEFS__
 
-#define GAME_FPS		240			// number of game frames per second.  rendering framerate is independent of game frames.
-#define GAME_FRAMETIME	((1000 / GAME_FPS) / 1000) 		// 16 milliseconds
+#define GAME_FRAMETIME	(1.0f / GAME_FPS)
 
 #define NULL			0
 

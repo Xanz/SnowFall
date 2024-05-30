@@ -6,6 +6,8 @@ This is the main script that is loaded before any level scripts load.
 
 ***********************************************************************/
 
+float GAME_FPS = 60.0f; // This value is editted at runtime to adjust to com_enginehz
+
 // base defines and util functions
 #include "script/doom_defs.script"
 #include "script/doom_events.script"
