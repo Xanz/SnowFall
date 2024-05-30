@@ -48,7 +48,7 @@ add_compile_definitions(USE_OPENAL)
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/glfw/include external/glew/include)
 link_directories(external/openal/build/Release external/glfw/build/src/Release external/glew/lib/Release/Win32)
 
-set(LIBS dbghelp dinput8 dsound dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32)
+set(LIBS dbghelp dinput8 dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
