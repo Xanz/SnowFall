@@ -2127,7 +2127,6 @@ void R_VidRestart_f(const idCmdArgs &args)
 	if (full)
 	{
 		// free all of our texture numbers
-		soundSystem->Shutdown();
 		Sys_ShutdownInput();
 		globalImages->PurgeAllImages();
 		// free the context and close the window
@@ -2171,9 +2170,6 @@ void R_VidRestart_f(const idCmdArgs &args)
 	{
 		common->Printf("glGetError() = 0x%x\n", err);
 	}
-
-	// start sound playing again
-	soundSystem->SetMute(false);
 }
 
 /*
