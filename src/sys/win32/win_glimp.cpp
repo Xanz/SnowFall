@@ -375,13 +375,13 @@ bool GLimp_Init(glimpParms_t parms)
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-		window = glfwCreateWindow(mode->width, mode->height, "Doom 3", NULL, NULL);
+		window = glfwCreateWindow(mode->width, mode->height, "SnowFall Engine", NULL, NULL);
 		glConfig.vidWidth = mode->width;
 		glConfig.vidHeight = mode->height;
 	}
 	else
 	{
-		window = glfwCreateWindow(parms.width, parms.height, "Doom 3", NULL, NULL);
+		window = glfwCreateWindow(parms.width, parms.height, "SnowFall Engine", NULL, NULL);
 	}
 
 	if (!window)
