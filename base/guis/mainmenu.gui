@@ -5083,7 +5083,7 @@ windowDef OptionsMenuParent {
 				rect		93, 1, 75, 14
 				choices		"#str_07226" // Stereo;Surround
 				values		"2;6"
-				cvar		"s_numberOfSpeakers"
+				cvar		""
 				choiceType	1
 				font		"fonts/bank"
 				textscale	0.25
@@ -5130,7 +5130,7 @@ windowDef OptionsMenuParent {
 				rect		0, 1, 135, 14
 				choices		"#str_07228" // On;Off
 				values		"1;0"
-				cvar		"s_useEAXReverb"
+				cvar		""
 				choiceType	1
 				font		"fonts/bank"
 				textscale	0.25				
@@ -5178,7 +5178,7 @@ windowDef OptionsMenuParent {
 			choiceDef OS7Primary {
 				rect		210, 1, 90, 14
 				choices		"#str_04221"
-				cvar		"s_reverse"
+				cvar		""
 				choiceType	0
 				font		"fonts/bank"
 				textscale	0.25
@@ -5223,7 +5223,7 @@ windowDef OptionsMenuParent {
 			choiceDef SNDBPrimary {
 				rect		210, 1, 90, 14
 				choices		"best;oss;alsa"
-				cvar		"s_driver"
+				cvar		""
 				choiceType	1
 				font		"fonts/bank"
 				textscale	0.25
@@ -5275,9 +5275,9 @@ windowDef OptionsMenuParent {
 				rect		220, 5, 71, 8
 				forecolor	0.8, 1, 1, 1
 				matcolor	1, 1, 1, 1
-				low			-40 
-				high		0
-				step		1
+				low			0 
+				high		1
+				step		0.1
 				thumbShader	"guis/assets/mainmenu/slider_bar"
 				cvar		"volume"
 			}
