@@ -105,17 +105,16 @@ bool idSysLocal::UnlockMemory(void *ptr, int bytes)
 
 void idSysLocal::GetCallStack(address_t *callStack, const int callStackSize)
 {
-	Sys_GetCallStack(callStack, callStackSize);
 }
 
 const char *idSysLocal::GetCallStackStr(const address_t *callStack, const int callStackSize)
 {
-	return Sys_GetCallStackStr(callStack, callStackSize);
+	return "";
 }
 
 const char *idSysLocal::GetCallStackCurStr(int depth)
 {
-	return Sys_GetCallStackCurStr(depth);
+	return "";
 }
 
 void idSysLocal::ShutdownSymbols(void)

@@ -62,7 +62,8 @@ private:
 
 	void PopParms(int numParms);
 	void PushString(const char *string);
-	void Push(int value);
+	void Push(intptr_t value);
+	void PushVector(const idVec3 &vector);
 	const char *FloatToString(float value);
 	void AppendString(idVarDef *def, const char *from);
 	void SetString(idVarDef *def, const char *from);
@@ -138,14 +139,29 @@ ID_INLINE void idInterpreter::PopParms(int numParms)
 idInterpreter::Push
 ====================
 */
-ID_INLINE void idInterpreter::Push(int value)
+ID_INLINE void idInterpreter::Push(intptr_t value)
 {
-	if (localstackUsed + sizeof(int) > LOCALSTACK_SIZE)
+	if (localstackUsed + sizeof(intptr_t) > LOCALSTACK_SIZE)
 	{
 		Error("Push: locals stack overflow\n");
 	}
-	*(int *)&localstack[localstackUsed] = value;
-	localstackUsed += sizeof(int);
+	*(intptr_t *)&localstack[localstackUsed] = value;
+	localstackUsed += sizeof(intptr_t);
+}
+
+/*
+====================
+idInterpreter::PushVector
+====================
+*/
+ID_INLINE void idInterpreter::PushVector(const idVec3 &vector)
+{
+	if (localstackUsed + E_EVENT_SIZEOF_VEC > LOCALSTACK_SIZE)
+	{
+		Error("Push: locals stack overflow\n");
+	}
+	*(idVec3 *)&localstack[localstackUsed] = vector;
+	localstackUsed += E_EVENT_SIZEOF_VEC;
 }
 
 /*
