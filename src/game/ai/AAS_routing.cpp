@@ -189,7 +189,7 @@ void idAASLocal::CalculateAreaTravelTimes(void)
 		}
 	}
 
-	assert(((unsigned int)bytePtr - (unsigned int)areaTravelTimes) <= numAreaTravelTimes * sizeof(unsigned short));
+	assert(((ptrdiff_t)bytePtr - (ptrdiff_t)areaTravelTimes) <= (ptrdiff_t)numAreaTravelTimes * (ptrdiff_t)sizeof(unsigned short));
 }
 
 /*

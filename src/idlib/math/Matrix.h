@@ -2255,7 +2255,7 @@ ID_INLINE float *idMat6::ToFloatPtr(void)
 		mat[s++] = 0.0f;          \
 	}
 #define MATX_ALLOCA(n) ((float *)_alloca16(MATX_QUAD(n)))
-#define MATX_SIMD
+// #define MATX_SIMD
 
 class idMatX
 {
@@ -2803,7 +2803,7 @@ ID_INLINE void idMatX::SetData(int rows, int columns, float *data)
 	{
 		Mem_Free16(mat);
 	}
-	assert((((int)data) & 15) == 0); // data must be 16 byte aligned
+	assert((((uintptr_t)data) & 15) == 0); // data must be 16 byte aligned
 	mat = data;
 	alloced = -1;
 	numRows = rows;

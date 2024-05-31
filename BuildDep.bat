@@ -5,13 +5,13 @@ git submodule update
 
 echo "GLFW build"
 pushd "external/glfw"
-cmake -DBUILD_SHARED_LIBS=OFF -A Win32 -B build -S .
+cmake -DBUILD_SHARED_LIBS=OFF -B build -S .
 cmake --build ./build --config Release
 popd
 
 echo "OpenAL build"
 pushd "external/openal"
-cmake -A Win32 -B build -S .
+cmake -B build -S .
 cmake --build ./build --config Release
 popd
 

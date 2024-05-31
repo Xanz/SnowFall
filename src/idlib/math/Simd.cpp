@@ -30,12 +30,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Simd_Generic.h"
-#include "Simd_MMX.h"
-#include "Simd_3DNow.h"
-#include "Simd_SSE.h"
-#include "Simd_SSE2.h"
-#include "Simd_SSE3.h"
-#include "Simd_AltiVec.h"
 
 idSIMDProcessor *processor = NULL; // pointer to SIMD processor
 idSIMDProcessor *generic = NULL;   // pointer to generic SIMD implementation
@@ -66,49 +60,7 @@ void idSIMD::InitProcessor(const char *module, bool forceGeneric)
 
 	cpuid = idLib::sys->GetProcessorId();
 
-	if (forceGeneric)
-	{
-
-		newProcessor = generic;
-	}
-	else
-	{
-
-		if (!processor)
-		{
-			if ((cpuid & CPUID_ALTIVEC))
-			{
-				processor = new idSIMD_AltiVec;
-			}
-			else if ((cpuid & CPUID_MMX) && (cpuid & CPUID_SSE) && (cpuid & CPUID_SSE2) && (cpuid & CPUID_SSE3))
-			{
-				processor = new idSIMD_SSE3;
-			}
-			else if ((cpuid & CPUID_MMX) && (cpuid & CPUID_SSE) && (cpuid & CPUID_SSE2))
-			{
-				processor = new idSIMD_SSE2;
-			}
-			else if ((cpuid & CPUID_MMX) && (cpuid & CPUID_SSE))
-			{
-				processor = new idSIMD_SSE;
-			}
-			else if ((cpuid & CPUID_MMX) && (cpuid & CPUID_3DNOW))
-			{
-				processor = new idSIMD_3DNow;
-			}
-			else if ((cpuid & CPUID_MMX))
-			{
-				processor = new idSIMD_MMX;
-			}
-			else
-			{
-				processor = generic;
-			}
-			processor->cpuid = cpuid;
-		}
-
-		newProcessor = processor;
-	}
+	newProcessor = generic;
 
 	if (newProcessor != SIMDProcessor)
 	{
@@ -169,135 +121,21 @@ long baseClocks = 0;
 
 long saved_ebx = 0;
 
-#define StartRecordTime(start) \
-	__asm mov saved_ebx, ebx __asm xor eax, eax __asm cpuid __asm rdtsc __asm mov start, eax __asm xor eax, eax __asm cpuid
+#define StartRecordTime(start)                                         \
+	{                                                                  \
+		LARGE_INTEGER li;                                              \
+		QueryPerformanceCounter(&li);                                  \
+		start = (double)li.LowPart + (double)0xFFFFFFFF * li.HighPart; \
+		start *= 64; /* 50 MHz */                                      \
+	}
 
-#define StopRecordTime(end) \
-	__asm xor eax, eax __asm cpuid __asm rdtsc __asm mov end, eax __asm mov ebx, saved_ebx __asm xor eax, eax __asm cpuid
-
-#elif MACOS_X
-
-#include <stdlib.h>
-#include <unistd.h> // this is for sleep()
-#include <sys/time.h>
-#include <sys/resource.h>
-#include <mach/mach_time.h>
-
-double ticksPerNanosecond;
-
-#define TIME_TYPE uint64_t
-
-#ifdef __MWERKS__ // time_in_millisec is missing
-/*
-
-	.text
-	.align 2
-	.globl _GetTB
-_GetTB:
-
-loop:
-			mftbu   r4	;  load from TBU
-			mftb    r5	;  load from TBL
-			mftbu   r6	;  load from TBU
-			cmpw    r6, r4	;  see if old == new
-			bne     loop	;  if not, carry occured, therefore loop
-
-			stw     r4, 0(r3)
-			stw     r5, 4(r3)
-
-done:
-			blr		;  return
-
-*/
-typedef struct
-{
-	unsigned int hi;
-	unsigned int lo;
-} U64;
-
-asm void GetTB(U64 *in)
-{
-	nofralloc		// suppress prolog
-		machine 603 // allows the use of mftb & mftbu functions
-
-		loop : mftbu r5			// grab the upper time base register (TBU)
-				   mftb r4		// grab the lower time base register (TBL)
-					   mftbu r6 // grab the upper time base register (TBU) again
-
-						   cmpw r6,
-			   r5 // see if old TBU == new TBU
-					   bne -
-				   loop // loop if carry occurred (predict branch not taken)
-
-					   stw r4,
-			   4(r3) // store TBL in the low 32 bits of the return value
-			   stw r5,
-			   0(r3) // store TBU in the high 32 bits of the return value
-
-			   blr
-}
-
-double TBToDoubleNano(U64 startTime, U64 stopTime, double ticksPerNanosecond);
-
-#if __MWERKS__
-asm void GetTB(U64 *);
-#else
-void GetTB(U64 *);
-#endif
-
-double TBToDoubleNano(U64 startTime, U64 stopTime, double ticksPerNanosecond)
-{
-#define K_2POWER32 4294967296.0
-#define TICKS_PER_NANOSECOND 0.025
-	double nanoTime;
-	U64 diffTime;
-
-	// calc the difference in TB ticks
-	diffTime.hi = stopTime.hi - startTime.hi;
-	diffTime.lo = stopTime.lo - startTime.lo;
-
-	// convert TB ticks into time
-	nanoTime = (double)(diffTime.hi) * ((double)K_2POWER32) + (double)(diffTime.lo);
-	nanoTime = nanoTime / ticksPerNanosecond;
-	return (nanoTime);
-}
-
-TIME_TYPE time_in_millisec(void)
-{
-#define K_2POWER32 4294967296.0
-#define TICKS_PER_NANOSECOND 0.025
-
-	U64 the_time;
-	double nanoTime, milliTime;
-
-	GetTB(&the_time);
-
-	// convert TB ticks into time
-	nanoTime = (double)(the_time.hi) * ((double)K_2POWER32) + (double)(the_time.lo);
-	nanoTime = nanoTime / ticksPerNanosecond;
-
-	// nanoseconds are 1 billionth of a second. I want milliseconds
-	milliTime = nanoTime * 1000000.0;
-
-	printf("ticks per nanosec -- %lf\n", ticksPerNanosecond);
-	printf("nanoTime is %lf -- milliTime is %lf -- as int is %i\n", nanoTime, milliTime, (int)milliTime);
-
-	return (int)milliTime;
-}
-
-#define StartRecordTime(start) \
-	start = time_in_millisec();
-
-#define StopRecordTime(end) \
-	end = time_in_millisec();
-
-#else
-#define StartRecordTime(start) \
-	start = mach_absolute_time();
-
-#define StopRecordTime(end) \
-	end = mach_absolute_time();
-#endif
+#define StopRecordTime(end)                                          \
+	{                                                                \
+		LARGE_INTEGER li;                                            \
+		QueryPerformanceCounter(&li);                                \
+		end = (double)li.LowPart + (double)0xFFFFFFFF * li.HighPart; \
+		end *= 64; /* 50 MHz */                                      \
+	}
 #else
 
 #define TIME_TYPE int
@@ -4569,66 +4407,6 @@ void idSIMD::Test_f(const idCmdArgs &args)
 		idStr argString = args.Args();
 
 		argString.Replace(" ", "");
-
-		if (idStr::Icmp(argString, "MMX") == 0)
-		{
-			if (!(cpuid & CPUID_MMX))
-			{
-				common->Printf("CPU does not support MMX\n");
-				return;
-			}
-			p_simd = new idSIMD_MMX;
-		}
-		else if (idStr::Icmp(argString, "3DNow") == 0)
-		{
-			if (!(cpuid & CPUID_MMX) || !(cpuid & CPUID_3DNOW))
-			{
-				common->Printf("CPU does not support MMX & 3DNow\n");
-				return;
-			}
-			p_simd = new idSIMD_3DNow;
-		}
-		else if (idStr::Icmp(argString, "SSE") == 0)
-		{
-			if (!(cpuid & CPUID_MMX) || !(cpuid & CPUID_SSE))
-			{
-				common->Printf("CPU does not support MMX & SSE\n");
-				return;
-			}
-			p_simd = new idSIMD_SSE;
-		}
-		else if (idStr::Icmp(argString, "SSE2") == 0)
-		{
-			if (!(cpuid & CPUID_MMX) || !(cpuid & CPUID_SSE) || !(cpuid & CPUID_SSE2))
-			{
-				common->Printf("CPU does not support MMX & SSE & SSE2\n");
-				return;
-			}
-			p_simd = new idSIMD_SSE2;
-		}
-		else if (idStr::Icmp(argString, "SSE3") == 0)
-		{
-			if (!(cpuid & CPUID_MMX) || !(cpuid & CPUID_SSE) || !(cpuid & CPUID_SSE2) || !(cpuid & CPUID_SSE3))
-			{
-				common->Printf("CPU does not support MMX & SSE & SSE2 & SSE3\n");
-				return;
-			}
-			p_simd = new idSIMD_SSE3();
-		}
-		else if (idStr::Icmp(argString, "AltiVec") == 0)
-		{
-			if (!(cpuid & CPUID_ALTIVEC))
-			{
-				common->Printf("CPU does not support AltiVec\n");
-				return;
-			}
-			p_simd = new idSIMD_AltiVec();
-		}
-		else
-		{
-			common->Printf("invalid argument, use: MMX, 3DNow, SSE, SSE2, SSE3, AltiVec\n");
-			return;
-		}
 	}
 
 	idLib::common->SetRefreshOnPrint(true);
