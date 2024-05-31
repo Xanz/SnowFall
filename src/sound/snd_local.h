@@ -478,6 +478,7 @@ public:
 	// Since otherwise there will be problems with different subsystems muting and unmuting at different times
 	virtual void SetMute(bool mute)
 	{
+		common->Printf("Sound system muted \n");
 		muted = mute;
 	}
 	virtual bool IsMuted()

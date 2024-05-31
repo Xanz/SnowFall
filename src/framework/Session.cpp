@@ -2828,7 +2828,6 @@ idSessionLocal::Frame
 */
 void idSessionLocal::Frame()
 {
-	soundSystem->Render();
 
 	// Editors that completely take over the game
 	if (com_editorActive && (com_editors & (EDITOR_RADIANT | EDITOR_GUI)))

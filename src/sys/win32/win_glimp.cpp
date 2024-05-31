@@ -50,16 +50,8 @@ If you have questions concerning this license or the applicable additional terms
 #include <GLFW/glfw3.h>
 #include <vector>
 
-static void GLW_InitExtensions(void);
-
 // Adds raw mouse input.
 idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1", 0, 1);
-
-//
-// function declaration
-//
-bool QGL_Init(const char *dllname);
-void QGL_Shutdown(void);
 
 /*
 ========================
@@ -87,15 +79,6 @@ The renderer calls this when the user adjusts r_gamma or r_brightness
 ========================
 */
 void GLimp_SetGamma(unsigned short red[256], unsigned short green[256], unsigned short blue[256])
-{
-}
-
-/*
-==================
-GLW_GetWGLExtensionsWithFakeWindow
-==================
-*/
-void GLW_CheckWGLExtensions(HDC hDC)
 {
 }
 
@@ -282,7 +265,7 @@ bool GLimp_Init(glimpParms_t parms)
 	}
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_COMPAT_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	// Disable resizing.
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
@@ -353,9 +336,6 @@ void GLimp_Shutdown(void)
 
 	// restore gamma
 	GLimp_RestoreGamma();
-
-	// shutdown QGL subsystem
-	// QGL_Shutdown();
 }
 
 /*
@@ -366,36 +346,20 @@ GLimp_SwapBuffers
 void GLimp_SwapBuffers(void)
 {
 	glfwSwapBuffers(window);
-	//
 }
-
-/*
-===========================================================
-
-SMP acceleration
-
-===========================================================
-*/
-
-// #define	REALLOC_DC
 
 /*
 ===================
 GLimp_ActivateContext
-
 ===================
 */
 void GLimp_ActivateContext(void)
 {
-	// if ( !qwglMakeCurrent( win32.hDC, win32.hGLRC ) ) {
-	// 	win32.wglErrors++;
-	// }
 }
 
 /*
 ===================
 GLimp_DeactivateContext
-
 ===================
 */
 void GLimp_DeactivateContext(void)
@@ -406,15 +370,11 @@ void GLimp_DeactivateContext(void)
 /*
 ===================
 GLimp_RenderThreadWrapper
-
 ===================
 */
 static void GLimp_RenderThreadWrapper(void)
 {
 	win32.glimpRenderThread();
-
-	// unbind the context before we die
-	// qwglMakeCurrent( win32.hDC, NULL );
 }
 
 /*

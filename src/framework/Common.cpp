@@ -2910,6 +2910,8 @@ void idCommonLocal::Frame(void)
 			session->UpdateScreen(false);
 		}
 
+		soundSystem->Render();
+
 		// report timing information
 		if (com_speeds.GetBool())
 		{
