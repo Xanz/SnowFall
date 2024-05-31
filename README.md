@@ -10,6 +10,7 @@ SnowFall Engine or SFEngine is a fork of Id Tech 4. The overall goal is to move 
 - OpenGL renderer
 - Variable frame rate support
 - BFG OpenAL sound engine
+- 64 bit support
 
 ## Supported Platforms
 
