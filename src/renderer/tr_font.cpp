@@ -31,6 +31,8 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "tr_local.h"
 
+#define FONT_INFO_SIZE (20548)
+
 #ifdef BUILD_FREETYPE
 #include "../ft2/fterrors.h"
 #include "../ft2/ftsystem.h"
@@ -380,7 +382,7 @@ bool idRenderSystemLocal::RegisterFont(const char *fontName, fontInfoEx_t &font)
 		idStr::Copynz(outFont->name, name, sizeof(outFont->name));
 
 		len = fileSystem->ReadFile(name, NULL, &ftime);
-		if (len != sizeof(fontInfo_t))
+		if (len != FONT_INFO_SIZE)
 		{
 			common->Warning("RegisterFont: couldn't find font: '%s'", name);
 			return false;

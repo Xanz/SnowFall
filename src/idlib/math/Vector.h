@@ -1668,7 +1668,7 @@ ID_INLINE float *idVec6::ToFloatPtr(void)
 		p[s++] = 0.0f;         \
 	}
 #define VECX_ALLOCA(n) ((float *)_alloca16(VECX_QUAD(n)))
-#define VECX_SIMD
+// #define VECX_SIMD
 
 class idVecX
 {
