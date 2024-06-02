@@ -1994,7 +1994,6 @@ void R_VidRestart_f(const idCmdArgs &args)
 		parms.displayHz = r_displayRefresh.GetInteger();
 		parms.multiSamples = r_multiSamples.GetInteger();
 		parms.stereo = false;
-		GLimp_SetScreenParms(parms);
 	}
 
 	// make sure the regeneration doesn't use anything no longer valid
