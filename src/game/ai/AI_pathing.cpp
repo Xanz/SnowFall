@@ -1295,9 +1295,10 @@ idAI::PredictPath
   Can also be used when there is no AAS file available however ledges are not detected.
 ============
 */
-bool idAI::PredictPath(const idEntity *ent, const idAAS *aas, const idVec3 &start, const idVec3 &velocity, int totalTime, int frameTime, int stopEvent, predictedPath_t &path)
+bool idAI::PredictPath(const idEntity *ent, const idAAS *aas, const idVec3 &start, const idVec3 &velocity, float totalTime, float frameTime, int stopEvent, predictedPath_t &path)
 {
-	int i, j, step, numFrames, curFrameTime;
+	int i, j, step, numFrames;
+	float curFrameTime;
 	idVec3 delta, curStart, curEnd, curVelocity, lastEnd, stepUp, tmpStart;
 	idVec3 gravity, gravityDir, invGravityDir;
 	float maxStepHeight, minFloorCos;

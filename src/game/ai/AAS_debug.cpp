@@ -219,7 +219,7 @@ void idAASLocal::ShowArea(const idVec3 &origin) const
 
 	if (aas_goalArea.GetInteger())
 	{
-		int travelTime;
+		float travelTime;
 		idReachability *reach;
 
 		RouteToGoalArea(areaNum, org, aas_goalArea.GetInteger(), TFL_WALK | TFL_AIR, travelTime, &reach);
@@ -276,7 +276,8 @@ idAASLocal::ShowWalkPath
 */
 void idAASLocal::ShowWalkPath(const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin) const
 {
-	int i, areaNum, curAreaNum, travelTime;
+	int i, areaNum, curAreaNum;
+	float travelTime;
 	idReachability *reach;
 	idVec3 org, areaCenter;
 	aasPath_t path;
@@ -329,7 +330,8 @@ idAASLocal::ShowFlyPath
 */
 void idAASLocal::ShowFlyPath(const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin) const
 {
-	int i, areaNum, curAreaNum, travelTime;
+	int i, areaNum, curAreaNum;
+	float travelTime;
 	idReachability *reach;
 	idVec3 org, areaCenter;
 	aasPath_t path;

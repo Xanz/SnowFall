@@ -176,22 +176,11 @@ unsigned long sys_timeBase = 0;
 	 0x7fffffff ms - ~24 days
 		 or is it 48 days? the specs say int, but maybe it's casted from unsigned int?
 */
-int Sys_Milliseconds(void)
+float Sys_Milliseconds(void)
 {
-	int curtime;
-	struct timeval tp;
-
-	gettimeofday(&tp, NULL);
-
-	if (!sys_timeBase)
-	{
-		sys_timeBase = tp.tv_sec;
-		return tp.tv_usec / 1000;
-	}
-
-	curtime = (tp.tv_sec - sys_timeBase) * 1000 + tp.tv_usec / 1000;
-
-	return curtime;
+	float curTimeSeconds = glfwGetTime();
+	float curTimeMsec = curTimeSeconds * 1000.0f;
+	return curTimeMsec;
 }
 
 /*

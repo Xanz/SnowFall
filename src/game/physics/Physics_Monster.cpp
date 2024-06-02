@@ -488,7 +488,7 @@ void idPhysics_Monster::DisableImpact(void)
 idPhysics_Monster::Evaluate
 ================
 */
-bool idPhysics_Monster::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_Monster::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	idVec3 masterOrigin, oldOrigin;
 	idMat3 masterAxis;
@@ -610,7 +610,7 @@ bool idPhysics_Monster::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_Monster::UpdateTime
 ================
 */
-void idPhysics_Monster::UpdateTime(int endTimeMSec)
+void idPhysics_Monster::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -619,7 +619,7 @@ void idPhysics_Monster::UpdateTime(int endTimeMSec)
 idPhysics_Monster::GetTime
 ================
 */
-int idPhysics_Monster::GetTime(void) const
+float idPhysics_Monster::GetTime(void) const
 {
 	return gameLocal.time;
 }

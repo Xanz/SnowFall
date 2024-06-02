@@ -771,9 +771,9 @@ void idMover::BeginMove(idThread *thread)
 	idVec3 org;
 	float dist;
 	float acceldist;
-	int totalacceltime;
-	int at;
-	int dt;
+	float totalacceltime;
+	float at;
+	float dt;
 
 	lastCommand = MOVER_MOVING;
 	move_thread = 0;
@@ -3724,7 +3724,7 @@ void idDoor::Spawn(void)
 		if (noTouch || health)
 		{
 			// non touch/shoot doors
-			PostEventMS(&EV_Mover_MatchTeam, 0, moverState, gameLocal.time);
+			PostEventMS(&EV_Mover_MatchTeam, 0, moverState, (int)gameLocal.time);
 
 			const char *sndtemp = spawnArgs.GetString("snd_locked");
 			if (spawnArgs.GetInt("locked") && sndtemp && *sndtemp)

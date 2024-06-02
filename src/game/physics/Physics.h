@@ -80,7 +80,7 @@ public:
 	ABSTRACT_PROTOTYPE(idPhysics);
 
 	virtual ~idPhysics(void);
-	static int SnapTimeToPhysicsFrame(int t);
+	static float SnapTimeToPhysicsFrame(float t);
 
 	// Must not be virtual
 	void Save(idSaveGame *savefile) const;
@@ -107,11 +107,11 @@ public: // common physics interface
 	virtual const idBounds &GetBounds(int id = -1) const = 0;
 	virtual const idBounds &GetAbsBounds(int id = -1) const = 0;
 	// evaluate the physics with the given time step, returns true if the object moved
-	virtual bool Evaluate(int timeStepMSec, int endTimeMSec) = 0;
+	virtual bool Evaluate(float timeStepMSec, float endTimeMSec) = 0;
 	// update the time without moving
-	virtual void UpdateTime(int endTimeMSec) = 0;
+	virtual void UpdateTime(float endTimeMSec) = 0;
 	// get the last physics update time
-	virtual int GetTime(void) const = 0;
+	virtual float GetTime(void) const = 0;
 	// collision interaction between different physics objects
 	virtual void GetImpactInfo(const int id, const idVec3 &point, impactInfo_t *info) const = 0;
 	virtual void ApplyImpulse(const int id, const idVec3 &point, const idVec3 &impulse) = 0;

@@ -137,7 +137,7 @@ typedef struct predictedPath_s
 	idVec3 endPos;					// final position
 	idVec3 endVelocity;				// velocity at end position
 	idVec3 endNormal;				// normal of blocking surface
-	int endTime;					// time predicted
+	float endTime;					// time predicted
 	int endEvent;					// event that stopped the prediction
 	const idEntity *blockingEntity; // entity that blocks the movement
 } predictedPath_t;
@@ -192,16 +192,16 @@ public:
 	idEntityPtr<idEntity> goalEntity;
 	idVec3 goalEntityOrigin; // move to entity uses this to avoid checking the floor position every frame
 	int toAreaNum;
-	int startTime;
-	int duration;
+	float startTime;
+	float duration;
 	float speed; // only used by flying creatures
 	float range;
 	float wanderYaw;
-	int nextWanderTime;
-	int blockTime;
+	float nextWanderTime;
+	float blockTime;
 	idEntityPtr<idEntity> obstacle;
 	idVec3 lastMoveOrigin;
-	int lastMoveTime;
+	float lastMoveTime;
 	int anim;
 };
 
@@ -278,7 +278,7 @@ public:
 	// Frees any nodes used for the dynamic obstacle avoidance.
 	static void FreeObstacleAvoidanceNodes(void);
 	// Predicts movement, returns true if a stop event was triggered.
-	static bool PredictPath(const idEntity *ent, const idAAS *aas, const idVec3 &start, const idVec3 &velocity, int totalTime, int frameTime, int stopEvent, predictedPath_t &path);
+	static bool PredictPath(const idEntity *ent, const idAAS *aas, const idVec3 &start, const idVec3 &velocity, float totalTime, float frameTime, int stopEvent, predictedPath_t &path);
 	// Return true if the trajectory of the clip model is collision free.
 	static bool TestTrajectory(const idVec3 &start, const idVec3 &end, float zVel, float gravity, float time, float max_height, const idClipModel *clip, int clipmask, const idEntity *ignore, const idEntity *targetEntity, int drawtime);
 	// Finds the best collision free trajectory for a clip model.

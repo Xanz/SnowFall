@@ -896,7 +896,7 @@ idPhysics_RigidBody::Evaluate
   the remaining time after the collision is ignored.
 ================
 */
-bool idPhysics_RigidBody::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_RigidBody::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	rigidBodyPState_t next;
 	idAngles angles;
@@ -1089,7 +1089,7 @@ bool idPhysics_RigidBody::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_RigidBody::UpdateTime
 ================
 */
-void idPhysics_RigidBody::UpdateTime(int endTimeMSec)
+void idPhysics_RigidBody::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -1098,7 +1098,7 @@ void idPhysics_RigidBody::UpdateTime(int endTimeMSec)
 idPhysics_RigidBody::GetTime
 ================
 */
-int idPhysics_RigidBody::GetTime(void) const
+float idPhysics_RigidBody::GetTime(void) const
 {
 	return gameLocal.time;
 }

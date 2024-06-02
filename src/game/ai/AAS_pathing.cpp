@@ -316,7 +316,8 @@ idAASLocal::WalkPathToGoal
 */
 bool idAASLocal::WalkPathToGoal(aasPath_t &path, int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags) const
 {
-	int i, travelTime, curAreaNum, lastAreas[4], lastAreaIndex, endAreaNum;
+	int i, curAreaNum, lastAreas[4], lastAreaIndex, endAreaNum;
+	float travelTime;
 	idReachability *reach;
 	idVec3 endPos;
 
@@ -514,7 +515,8 @@ idAASLocal::FlyPathToGoal
 */
 bool idAASLocal::FlyPathToGoal(aasPath_t &path, int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags) const
 {
-	int i, travelTime, curAreaNum, lastAreas[4], lastAreaIndex, endAreaNum;
+	int i, curAreaNum, lastAreas[4], lastAreaIndex, endAreaNum;
+	float travelTime;
 	idReachability *reach;
 	idVec3 endPos;
 

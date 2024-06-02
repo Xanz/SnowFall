@@ -299,9 +299,9 @@ public:
 
 	// are kept up to date with changes to serverInfo
 	int framenum;
-	int previousTime;  // time in msec of last frame
-	int time;		   // in msec
-	int vacuumAreaNum; // -1 if level doesn't have any outside areas
+	float previousTime; // time in msec of last frame
+	float time;			// in msec
+	int vacuumAreaNum;	// -1 if level doesn't have any outside areas
 
 	gameType_t gameType;
 	bool isMultiplayer;					   // set if the game is run in multiplayer mode
@@ -447,8 +447,8 @@ public:
 
 	// added the following to assist licensees with merge issues
 	int GetFrameNum() const { return framenum; };
-	int GetTime() const { return time; };
-	int GetMSec() const { return FPS_TO_MSEC(); };
+	float GetTime() const { return time; };
+	float GetMSec() const { return FPS_TO_MSEC(); };
 
 	int GetNextClientNum(int current) const;
 	idPlayer *GetClientByNum(int current) const;

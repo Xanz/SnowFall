@@ -88,20 +88,20 @@ idCVar com_videoRam("com_videoRam", "64", CVAR_INTEGER | CVAR_SYSTEM | CVAR_NOCH
 
 idCVar com_product_lang_ext("com_product_lang_ext", "1", CVAR_INTEGER | CVAR_SYSTEM | CVAR_ARCHIVE, "Extension to use when creating language files.");
 
-idCVar com_engineHz("com_engineHz", "90", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f);
+idCVar com_engineHz("com_engineHz", "240", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f);
 idCVar com_deltaTimeClamp("com_deltaTimeClamp", "50", CVAR_INTEGER, "don't process more than this time in a single frame");
 
 float com_engineHz_latched = 90.0f; // Latched version of cvar, updated between map loads
-int64_t com_engineHz_numerator = 100LL * 1000LL;
-int64_t com_engineHz_denominator = 100LL * 60LL;
+float com_engineHz_numerator = 100.0f * 1000.0f;
+float com_engineHz_denominator = 100.0f * 60.0f;
 
 // com_speeds times
-int time_gameFrame;
-int time_gameDraw;
-int time_frontend; // renderSystem frontend time
-int time_backend;  // renderSystem backend time
+float time_gameFrame;
+float time_gameDraw;
+float time_frontend; // renderSystem frontend time
+float time_backend;	 // renderSystem backend time
 
-int com_frameTime;			// time for the current frame in milliseconds
+float com_frameTime;		// time for the current frame in milliseconds
 int com_frameNumber;		// variable frame number
 volatile int com_ticNumber; // 60 hz tics
 int com_editors;			// currently opened editor(s)
@@ -366,12 +366,12 @@ void idCommonLocal::VPrintf(const char *fmt, va_list args)
 	// so we can see how long different init sections are taking
 	if (com_timestampPrints.GetInteger())
 	{
-		int t = Sys_Milliseconds();
+		float t = Sys_Milliseconds();
 		if (com_timestampPrints.GetInteger() == 1)
 		{
 			t /= 1000;
 		}
-		sprintf(msg, "[%i]", t);
+		sprintf(msg, "[%f]", t);
 		timeLength = strlen(msg);
 	}
 	else
@@ -2816,14 +2816,14 @@ void idCommonLocal::Frame(void)
 
 		for (;;)
 		{
-			const int thisFrameTime = Sys_Milliseconds();
-			static int lastFrameTime = thisFrameTime; // initialized only the first time
-			const int deltaMilliseconds = thisFrameTime - lastFrameTime;
+			const float thisFrameTime = Sys_Milliseconds();
+			static float lastFrameTime = thisFrameTime; // initialized only the first time
+			const float deltaMilliseconds = thisFrameTime - lastFrameTime;
 			lastFrameTime = thisFrameTime;
 
 			// if there was a large gap in time since the last frame, or the frame
 			// rate is very very low, limit the number of frames we will run
-			const int clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
+			const float clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
 
 			gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
 
@@ -2855,7 +2855,7 @@ void idCommonLocal::Frame(void)
 			{
 				// How much time to wait before running the next frame,
 				// based on com_engineHz
-				const int frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
+				const float frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
 				if (gameTimeResidual < frameDelay)
 				{
 					break;
@@ -3226,7 +3226,7 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		com_fullyInitialized = true;
 
 		// Needs to be set at init otherwise the fps will still be capped.
-		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+		com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
 	}
 

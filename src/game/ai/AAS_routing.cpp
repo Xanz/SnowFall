@@ -1138,10 +1138,10 @@ idRoutingCache *idAASLocal::GetPortalRoutingCache(int clusterNum, int areaNum, i
 idAASLocal::RouteToGoalArea
 ============
 */
-bool idAASLocal::RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, int &travelTime, idReachability **reach) const
+bool idAASLocal::RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, float &travelTime, idReachability **reach) const
 {
 	int clusterNum, goalClusterNum, portalNum, i, clusterAreaNum;
-	unsigned short int t, bestTime;
+	float t, bestTime;
 	const aasPortal_t *portal;
 	const aasCluster_t *cluster;
 	idRoutingCache *areaCache, *portalCache, *clusterCache;
@@ -1319,7 +1319,7 @@ idAASLocal::TravelTimeToGoalArea
 */
 int idAASLocal::TravelTimeToGoalArea(int areaNum, const idVec3 &origin, int goalAreaNum, int travelFlags) const
 {
-	int travelTime;
+	float travelTime;
 	idReachability *reach;
 
 	if (!file)

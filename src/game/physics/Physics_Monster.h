@@ -94,9 +94,9 @@ public:
 	void DisableImpact(void);
 
 public: // common physics interface
-	bool Evaluate(int timeStepMSec, int endTimeMSec);
-	void UpdateTime(int endTimeMSec);
-	int GetTime(void) const;
+	bool Evaluate(float timeStepMSec, float endTimeMSec);
+	void UpdateTime(float endTimeMSec);
+	float GetTime(void) const;
 
 	void GetImpactInfo(const int id, const idVec3 &point, impactInfo_t *info) const;
 	void ApplyImpulse(const int id, const idVec3 &point, const idVec3 &impulse);

@@ -103,9 +103,9 @@ public:
 	const idVec3 &PlayerGetOrigin(void) const; // != GetOrigin
 
 public: // common physics interface
-	bool Evaluate(int timeStepMSec, int endTimeMSec);
-	void UpdateTime(int endTimeMSec);
-	int GetTime(void) const;
+	bool Evaluate(float timeStepMSec, float endTimeMSec);
+	void UpdateTime(float endTimeMSec);
+	float GetTime(void) const;
 
 	void GetImpactInfo(const int id, const idVec3 &point, impactInfo_t *info) const;
 	void ApplyImpulse(const int id, const idVec3 &point, const idVec3 &impulse);
@@ -151,7 +151,7 @@ private:
 	idAngles viewAngles;
 
 	// run-time variables
-	int framemsec;
+	float framemsec;
 	float frametime;
 	float playerSpeed;
 	idVec3 viewForward;
@@ -193,7 +193,7 @@ private:
 	bool CheckWaterJump(void);
 	void SetWaterLevel(void);
 	void DropTimers(void);
-	void MovePlayer(int msec);
+	void MovePlayer(float msec);
 };
 
 #endif /* !__PHYSICS_PLAYER_H__ */

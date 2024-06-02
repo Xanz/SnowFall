@@ -110,7 +110,7 @@ public:
 	virtual void RemoveObstacle(const aasHandle_t handle);
 	virtual void RemoveAllObstacles(void);
 	virtual int TravelTimeToGoalArea(int areaNum, const idVec3 &origin, int goalAreaNum, int travelFlags) const;
-	virtual bool RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, int &travelTime, idReachability **reach) const;
+	virtual bool RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, float &travelTime, idReachability **reach) const;
 	virtual bool WalkPathToGoal(aasPath_t &path, int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags) const;
 	virtual bool WalkPathValid(int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags, idVec3 &endPos, int &endAreaNum) const;
 	virtual bool FlyPathToGoal(aasPath_t &path, int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags) const;

@@ -430,9 +430,9 @@ void idMD5Anim::GetFrameBlend(int framenum, frameBlend_t &frame) const
 idMD5Anim::ConvertTimeToFrame
 ====================
 */
-void idMD5Anim::ConvertTimeToFrame(int time, int cyclecount, frameBlend_t &frame) const
+void idMD5Anim::ConvertTimeToFrame(float time, int cyclecount, frameBlend_t &frame) const
 {
-	int frameTime;
+	float frameTime;
 	int frameNum;
 
 	if (numFrames <= 1)
@@ -476,7 +476,7 @@ void idMD5Anim::ConvertTimeToFrame(int time, int cyclecount, frameBlend_t &frame
 		frame.frame2 = 0;
 	}
 
-	frame.backlerp = (frameTime % 1000) * 0.001f;
+	frame.backlerp = ((int)frameTime % 1000) * 0.001f;
 	frame.frontlerp = 1.0f - frame.backlerp;
 }
 
@@ -485,7 +485,7 @@ void idMD5Anim::ConvertTimeToFrame(int time, int cyclecount, frameBlend_t &frame
 idMD5Anim::GetOrigin
 ====================
 */
-void idMD5Anim::GetOrigin(idVec3 &offset, int time, int cyclecount) const
+void idMD5Anim::GetOrigin(idVec3 &offset, float time, int cyclecount) const
 {
 	frameBlend_t frame;
 
@@ -531,7 +531,7 @@ void idMD5Anim::GetOrigin(idVec3 &offset, int time, int cyclecount) const
 idMD5Anim::GetOriginRotation
 ====================
 */
-void idMD5Anim::GetOriginRotation(idQuat &rotation, int time, int cyclecount) const
+void idMD5Anim::GetOriginRotation(idQuat &rotation, float time, int cyclecount) const
 {
 	frameBlend_t frame;
 	int animBits;
@@ -652,7 +652,7 @@ void idMD5Anim::GetOriginRotation(idQuat &rotation, int time, int cyclecount) co
 idMD5Anim::GetBounds
 ====================
 */
-void idMD5Anim::GetBounds(idBounds &bnds, int time, int cyclecount) const
+void idMD5Anim::GetBounds(idBounds &bnds, float time, int cyclecount) const
 {
 	frameBlend_t frame;
 	idVec3 offset;

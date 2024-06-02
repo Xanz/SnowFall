@@ -662,7 +662,6 @@ idWindow::RunTimeEvents
 */
 bool idWindow::RunTimeEvents(int time)
 {
-
 	if (time - lastTimeRun < FPS_TO_MSEC())
 	{
 		// common->Printf("Skipping gui time events at %i\n", time);

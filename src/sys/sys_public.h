@@ -273,7 +273,7 @@ void Sys_Sleep(int msec);
 
 // Sys_Milliseconds should only be used for profiling purposes,
 // any game related timing information should come from event timestamps
-int Sys_Milliseconds(void);
+float Sys_Milliseconds(void);
 
 // for accurate performance testing
 double Sys_GetClockTicks(void);

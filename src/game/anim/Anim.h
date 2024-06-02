@@ -268,11 +268,11 @@ public:
 	const char *Name(void) const;
 
 	void GetFrameBlend(int framenum, frameBlend_t &frame) const; // frame 1 is first frame
-	void ConvertTimeToFrame(int time, int cyclecount, frameBlend_t &frame) const;
+	void ConvertTimeToFrame(float time, int cyclecount, frameBlend_t &frame) const;
 
-	void GetOrigin(idVec3 &offset, int currentTime, int cyclecount) const;
-	void GetOriginRotation(idQuat &rotation, int time, int cyclecount) const;
-	void GetBounds(idBounds &bounds, int currentTime, int cyclecount) const;
+	void GetOrigin(idVec3 &offset, float currentTime, int cyclecount) const;
+	void GetOriginRotation(idQuat &rotation, float time, int cyclecount) const;
+	void GetBounds(idBounds &bounds, float currentTime, int cyclecount) const;
 };
 
 /*
@@ -393,13 +393,13 @@ class idAnimBlend
 {
 private:
 	const class idDeclModelDef *modelDef;
-	int starttime;
-	int endtime;
-	int timeOffset;
+	float starttime;
+	float endtime;
+	float timeOffset;
 	float rate;
 
-	int blendStartTime;
-	int blendDuration;
+	float blendStartTime;
+	float blendDuration;
 	float blendStartValue;
 	float blendEndValue;
 
@@ -413,15 +413,15 @@ private:
 	friend class idAnimator;
 
 	void Reset(const idDeclModelDef *_modelDef);
-	void CallFrameCommands(idEntity *ent, int fromtime, int totime) const;
-	void SetFrame(const idDeclModelDef *modelDef, int animnum, int frame, int currenttime, int blendtime);
-	void CycleAnim(const idDeclModelDef *modelDef, int animnum, int currenttime, int blendtime);
-	void PlayAnim(const idDeclModelDef *modelDef, int animnum, int currenttime, int blendtime);
-	bool BlendAnim(int currentTime, int channel, int numJoints, idJointQuat *blendFrame, float &blendWeight, bool removeOrigin, bool overrideBlend, bool printInfo) const;
-	void BlendOrigin(int currentTime, idVec3 &blendPos, float &blendWeight, bool removeOriginOffset) const;
-	void BlendDelta(int fromtime, int totime, idVec3 &blendDelta, float &blendWeight) const;
-	void BlendDeltaRotation(int fromtime, int totime, idQuat &blendDelta, float &blendWeight) const;
-	bool AddBounds(int currentTime, idBounds &bounds, bool removeOriginOffset) const;
+	void CallFrameCommands(idEntity *ent, float fromtime, float totime) const;
+	void SetFrame(const idDeclModelDef *modelDef, int animnum, int frame, float currenttime, float blendtime);
+	void CycleAnim(const idDeclModelDef *modelDef, int animnum, float currenttime, float blendtime);
+	void PlayAnim(const idDeclModelDef *modelDef, int animnum, float currenttime, float blendtime);
+	bool BlendAnim(float currentTime, int channel, int numJoints, idJointQuat *blendFrame, float &blendWeight, bool removeOrigin, bool overrideBlend, bool printInfo) const;
+	void BlendOrigin(float currentTime, idVec3 &blendPos, float &blendWeight, bool removeOriginOffset) const;
+	void BlendDelta(float fromtime, float totime, idVec3 &blendDelta, float &blendWeight) const;
+	void BlendDeltaRotation(float fromtime, float totime, idQuat &blendDelta, float &blendWeight) const;
+	bool AddBounds(float currentTime, idBounds &bounds, bool removeOriginOffset) const;
 
 public:
 	idAnimBlend();
@@ -429,23 +429,23 @@ public:
 	void Restore(idRestoreGame *savefile, const idDeclModelDef *modelDef);
 	const char *AnimName(void) const;
 	const char *AnimFullName(void) const;
-	float GetWeight(int currenttime) const;
+	float GetWeight(float currenttime) const;
 	float GetFinalWeight(void) const;
-	void SetWeight(float newweight, int currenttime, int blendtime);
+	void SetWeight(float newweight, float currenttime, float blendtime);
 	int NumSyncedAnims(void) const;
 	bool SetSyncedAnimWeight(int num, float weight);
-	void Clear(int currentTime, int clearTime);
-	bool IsDone(int currentTime) const;
-	bool FrameHasChanged(int currentTime) const;
+	void Clear(float currentTime, float clearTime);
+	bool IsDone(float currentTime) const;
+	bool FrameHasChanged(float currentTime) const;
 	int GetCycleCount(void) const;
 	void SetCycleCount(int count);
-	void SetPlaybackRate(int currentTime, float newRate);
+	void SetPlaybackRate(float currentTime, float newRate);
 	float GetPlaybackRate(void) const;
-	void SetStartTime(int startTime);
+	void SetStartTime(float startTime);
 	int GetStartTime(void) const;
 	int GetEndTime(void) const;
-	int GetFrameNumber(int currenttime) const;
-	int AnimTime(int currenttime) const;
+	int GetFrameNumber(float currenttime) const;
+	int AnimTime(float currenttime) const;
 	int NumFrames(void) const;
 	int Length(void) const;
 	int PlayLength(void) const;
@@ -519,8 +519,8 @@ public:
 	int GetAnim(const char *name) const;
 	bool HasAnim(const char *name) const;
 
-	void ServiceAnims(int fromtime, int totime);
-	bool IsAnimating(int currentTime) const;
+	void ServiceAnims(float fromtime, float totime);
+	bool IsAnimating(float currentTime) const;
 
 	void GetJoints(int *numJoints, idJointMat **jointsPtr);
 	int NumJoints(void) const;
@@ -533,22 +533,22 @@ public:
 
 	void ForceUpdate(void);
 	void ClearForceUpdate(void);
-	bool CreateFrame(int animtime, bool force);
-	bool FrameHasChanged(int animtime) const;
-	void GetDelta(int fromtime, int totime, idVec3 &delta) const;
-	bool GetDeltaRotation(int fromtime, int totime, idMat3 &delta) const;
-	void GetOrigin(int currentTime, idVec3 &pos) const;
-	bool GetBounds(int currentTime, idBounds &bounds);
+	bool CreateFrame(float animtime, bool force);
+	bool FrameHasChanged(float animtime) const;
+	void GetDelta(float fromtime, float totime, idVec3 &delta) const;
+	bool GetDeltaRotation(float fromtime, float totime, idMat3 &delta) const;
+	void GetOrigin(float currentTime, idVec3 &pos) const;
+	bool GetBounds(float currentTime, idBounds &bounds);
 
 	idAnimBlend *CurrentAnim(int channelNum);
-	void Clear(int channelNum, int currentTime, int cleartime);
-	void SetFrame(int channelNum, int animnum, int frame, int currenttime, int blendtime);
-	void CycleAnim(int channelNum, int animnum, int currenttime, int blendtime);
-	void PlayAnim(int channelNum, int animnum, int currenttime, int blendTime);
+	void Clear(int channelNum, float currentTime, float cleartime);
+	void SetFrame(int channelNum, int animnum, int frame, float currenttime, float blendtime);
+	void CycleAnim(int channelNum, int animnum, float currenttime, float blendtime);
+	void PlayAnim(int channelNum, int animnum, float currenttime, float blendTime);
 
 	// copies the current anim from fromChannelNum to channelNum.
 	// the copied anim will have frame commands disabled to avoid executing them twice.
-	void SyncAnimChannels(int channelNum, int fromChannelNum, int currenttime, int blendTime);
+	void SyncAnimChannels(int channelNum, int fromChannelNum, float currenttime, float blendTime);
 
 	void SetJointPos(jointHandle_t jointnum, jointModTransform_t transform_type, const idVec3 &pos);
 	void SetJointAxis(jointHandle_t jointnum, jointModTransform_t transform_type, const idMat3 &mat);
@@ -557,18 +557,18 @@ public:
 
 	void InitAFPose(void);
 	void SetAFPoseJointMod(const jointHandle_t jointNum, const AFJointModType_t mod, const idMat3 &axis, const idVec3 &origin);
-	void FinishAFPose(int animnum, const idBounds &bounds, const int time);
+	void FinishAFPose(int animnum, const idBounds &bounds, const float time);
 	void SetAFPoseBlendWeight(float blendWeight);
 	bool BlendAFPose(idJointQuat *blendFrame) const;
 	void ClearAFPose(void);
 
-	void ClearAllAnims(int currentTime, int cleartime);
+	void ClearAllAnims(float currentTime, float cleartime);
 
 	jointHandle_t GetJointHandle(const char *name) const;
 	const char *GetJointName(jointHandle_t handle) const;
 	int GetChannelForJoint(jointHandle_t joint) const;
-	bool GetJointTransform(jointHandle_t jointHandle, int currenttime, idVec3 &offset, idMat3 &axis);
-	bool GetJointLocalTransform(jointHandle_t jointHandle, int currentTime, idVec3 &offset, idMat3 &axis);
+	bool GetJointTransform(jointHandle_t jointHandle, float currenttime, idVec3 &offset, idMat3 &axis);
+	bool GetJointLocalTransform(jointHandle_t jointHandle, float currentTime, idVec3 &offset, idMat3 &axis);
 
 	const animFlags_t GetAnimFlags(int animnum) const;
 	int NumFrames(int animnum) const;
@@ -580,7 +580,7 @@ public:
 
 private:
 	void FreeData(void);
-	void PushAnims(int channel, int currentTime, int blendTime);
+	void PushAnims(int channel, float currentTime, float blendTime);
 
 private:
 	const idDeclModelDef *modelDef;
@@ -591,7 +591,7 @@ private:
 	int numJoints;
 	idJointMat *joints;
 
-	mutable int lastTransformTime; // mutable because the value is updated in CreateFrame
+	mutable float lastTransformTime; // mutable because the value is updated in CreateFrame
 	mutable bool stoppedAnimatingUpdate;
 	bool removeOriginOffset;
 	bool forceUpdate;
@@ -603,7 +603,7 @@ private:
 	idList<idAFPoseJointMod> AFPoseJointMods;
 	idList<idJointQuat> AFPoseJointFrame;
 	idBounds AFPoseBounds;
-	int AFPoseTime;
+	float AFPoseTime;
 };
 
 /*

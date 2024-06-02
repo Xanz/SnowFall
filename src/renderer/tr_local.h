@@ -730,7 +730,7 @@ public:
 	virtual void WriteDemoPics();
 	virtual void DrawDemoPics();
 	virtual void BeginFrame(int windowWidth, int windowHeight);
-	virtual void EndFrame(int *frontEndMsec, int *backEndMsec);
+	virtual void EndFrame(float *frontEndMsec, float *backEndMsec);
 	virtual void TakeScreenshot(int width, int height, const char *fileName, int downSample, renderView_t *ref);
 	virtual void CropRenderSize(int width, int height, bool makePowerOfTwo = false, bool forceDimensions = false);
 	virtual void CaptureRenderToImage(const char *imageName);
@@ -1297,17 +1297,6 @@ DRAW_*
 
 ============================================================
 */
-
-void RB_ARB_DrawInteractions(void);
-
-void R_R200_Init(void);
-void RB_R200_DrawInteractions(void);
-
-void R_NV10_Init(void);
-void RB_NV10_DrawInteractions(void);
-
-void R_NV20_Init(void);
-void RB_NV20_DrawInteractions(void);
 
 void R_ARB2_Init(void);
 void RB_ARB2_DrawInteractions(void);

@@ -618,7 +618,7 @@ const idBounds &idPhysics_Parametric::GetAbsBounds(int id) const
 idPhysics_Parametric::Evaluate
 ================
 */
-bool idPhysics_Parametric::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_Parametric::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	idVec3 oldLocalOrigin, oldOrigin, masterOrigin;
 	idAngles oldLocalAngles, oldAngles;
@@ -724,7 +724,7 @@ bool idPhysics_Parametric::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_Parametric::UpdateTime
 ================
 */
-void idPhysics_Parametric::UpdateTime(int endTimeMSec)
+void idPhysics_Parametric::UpdateTime(float endTimeMSec)
 {
 	int timeLeap = endTimeMSec - current.time;
 
@@ -746,7 +746,7 @@ void idPhysics_Parametric::UpdateTime(int endTimeMSec)
 idPhysics_Parametric::GetTime
 ================
 */
-int idPhysics_Parametric::GetTime(void) const
+float idPhysics_Parametric::GetTime(void) const
 {
 	return current.time;
 }

@@ -89,16 +89,16 @@ void idMoveState::Save(idSaveGame *savefile) const
 	goalEntity.Save(savefile);
 	savefile->WriteVec3(goalEntityOrigin);
 	savefile->WriteInt(toAreaNum);
-	savefile->WriteInt(startTime);
-	savefile->WriteInt(duration);
+	savefile->WriteFloat(startTime);
+	savefile->WriteFloat(duration);
 	savefile->WriteFloat(speed);
 	savefile->WriteFloat(range);
 	savefile->WriteFloat(wanderYaw);
-	savefile->WriteInt(nextWanderTime);
-	savefile->WriteInt(blockTime);
+	savefile->WriteFloat(nextWanderTime);
+	savefile->WriteFloat(blockTime);
 	obstacle.Save(savefile);
 	savefile->WriteVec3(lastMoveOrigin);
-	savefile->WriteInt(lastMoveTime);
+	savefile->WriteFloat(lastMoveTime);
 	savefile->WriteInt(anim);
 }
 
@@ -117,16 +117,16 @@ void idMoveState::Restore(idRestoreGame *savefile)
 	goalEntity.Restore(savefile);
 	savefile->ReadVec3(goalEntityOrigin);
 	savefile->ReadInt(toAreaNum);
-	savefile->ReadInt(startTime);
-	savefile->ReadInt(duration);
+	savefile->ReadFloat(startTime);
+	savefile->ReadFloat(duration);
 	savefile->ReadFloat(speed);
 	savefile->ReadFloat(range);
 	savefile->ReadFloat(wanderYaw);
-	savefile->ReadInt(nextWanderTime);
-	savefile->ReadInt(blockTime);
+	savefile->ReadFloat(nextWanderTime);
+	savefile->ReadFloat(blockTime);
 	obstacle.Restore(savefile);
 	savefile->ReadVec3(lastMoveOrigin);
-	savefile->ReadInt(lastMoveTime);
+	savefile->ReadFloat(lastMoveTime);
 	savefile->ReadInt(anim);
 }
 
@@ -1621,7 +1621,7 @@ float idAI::TravelDistance(const idVec3 &start, const idVec3 &end) const
 	}
 
 	idReachability *reach;
-	int travelTime;
+	float travelTime;
 	if (!aas->RouteToGoalArea(fromArea, start, toArea, travelFlags, travelTime, &reach))
 	{
 		return -1;
@@ -4441,7 +4441,8 @@ idAI::FirstVisiblePointOnPath
 */
 idVec3 idAI::FirstVisiblePointOnPath(const idVec3 origin, const idVec3 &target, int travelFlags) const
 {
-	int i, areaNum, targetAreaNum, curAreaNum, travelTime;
+	int i, areaNum, targetAreaNum, curAreaNum;
+	float travelTime;
 	idVec3 curOrigin;
 	idReachability *reach;
 
@@ -5004,7 +5005,7 @@ bool idAI::AttackMelee(const char *meleeDefName)
 
 		if (enemyEnt->health <= damage)
 		{
-			int t = gameLocal.time - player->lastSavingThrowTime;
+			float t = gameLocal.time - player->lastSavingThrowTime;
 			if (t > SAVING_THROW_TIME)
 			{
 				player->lastSavingThrowTime = gameLocal.time;

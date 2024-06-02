@@ -785,7 +785,7 @@ EndFrame
 Returns the number of msec spent in the back end
 =============
 */
-void idRenderSystemLocal::EndFrame(int *frontEndMsec, int *backEndMsec)
+void idRenderSystemLocal::EndFrame(float *frontEndMsec, float *backEndMsec)
 {
 	emptyCommand_t *cmd;
 

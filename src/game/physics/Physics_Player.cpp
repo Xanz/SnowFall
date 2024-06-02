@@ -1494,7 +1494,7 @@ void idPhysics_Player::DropTimers(void)
 idPhysics_Player::MovePlayer
 ================
 */
-void idPhysics_Player::MovePlayer(int msec)
+void idPhysics_Player::MovePlayer(float msec)
 {
 
 	// this counter lets us debug movement problems with a journal
@@ -1774,7 +1774,7 @@ void idPhysics_Player::Save(idSaveGame *savefile) const
 	savefile->WriteUsercmd(command);
 	savefile->WriteAngles(viewAngles);
 
-	savefile->WriteInt(framemsec);
+	savefile->WriteFloat(framemsec);
 	savefile->WriteFloat(frametime);
 	savefile->WriteFloat(playerSpeed);
 	savefile->WriteVec3(viewForward);
@@ -1812,7 +1812,7 @@ void idPhysics_Player::Restore(idRestoreGame *savefile)
 	savefile->ReadUsercmd(command);
 	savefile->ReadAngles(viewAngles);
 
-	savefile->ReadInt(framemsec);
+	savefile->ReadFloat(framemsec);
 	savefile->ReadFloat(frametime);
 	savefile->ReadFloat(playerSpeed);
 	savefile->ReadVec3(viewForward);
@@ -1922,7 +1922,7 @@ void idPhysics_Player::SetDebugLevel(bool set)
 idPhysics_Player::Evaluate
 ================
 */
-bool idPhysics_Player::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_Player::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	idVec3 masterOrigin, oldOrigin;
 	idMat3 masterAxis;
@@ -1965,7 +1965,7 @@ bool idPhysics_Player::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_Player::UpdateTime
 ================
 */
-void idPhysics_Player::UpdateTime(int endTimeMSec)
+void idPhysics_Player::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -1974,7 +1974,7 @@ void idPhysics_Player::UpdateTime(int endTimeMSec)
 idPhysics_Player::GetTime
 ================
 */
-int idPhysics_Player::GetTime(void) const
+float idPhysics_Player::GetTime(void) const
 {
 	return gameLocal.time;
 }

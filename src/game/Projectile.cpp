@@ -2098,12 +2098,12 @@ void idBFGProjectile::Think(void)
 
 		idAngles ang;
 
-		ang.pitch = (gameLocal.time & 4095) * 360.0f / -4096.0f;
+		ang.pitch = ((int)gameLocal.time & 4095) * 360.0f / -4096.0f;
 		ang.yaw = ang.pitch;
 		ang.roll = 0.0f;
 		SetAngles(ang);
 
-		ang.pitch = (gameLocal.time & 2047) * 360.0f / -2048.0f;
+		ang.pitch = ((int)gameLocal.time & 2047) * 360.0f / -2048.0f;
 		ang.yaw = ang.pitch;
 		ang.roll = 0.0f;
 		secondModel.axis = ang.ToMat3();
