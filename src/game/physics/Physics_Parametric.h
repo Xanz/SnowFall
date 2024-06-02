@@ -108,9 +108,9 @@ public: // common physics interface
 	const idBounds &GetBounds(int id = -1) const;
 	const idBounds &GetAbsBounds(int id = -1) const;
 
-	bool Evaluate(int timeStepMSec, int endTimeMSec);
-	void UpdateTime(int endTimeMSec);
-	int GetTime(void) const;
+	bool Evaluate(float timeStepMSec, float endTimeMSec);
+	void UpdateTime(float endTimeMSec);
+	float GetTime(void) const;
 
 	void Activate(void);
 	bool IsAtRest(void) const;

@@ -563,7 +563,7 @@ void idSessionLocal::ShowLoadingGui()
 	// introduced in D3XP code. don't think it actually fixes anything, but doesn't hurt either
 #if 1
 	// Try and prevent the while loop from being skipped over (long hitch on the main thread?)
-	int stop = Sys_Milliseconds() + 1000;
+	float stop = Sys_Milliseconds() + 1000;
 	int force = 10;
 	while (Sys_Milliseconds() < stop || force-- > 0)
 	{
@@ -1777,7 +1777,7 @@ void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
 	common->ClearWarnings(mapString);
 
 	// allow com_engineHz to be changed between map loads
-	com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
+	com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
 	com_engineHz_latched = com_engineHz.GetFloat();
 
 	// release the mouse cursor
@@ -2621,7 +2621,7 @@ void idSessionLocal::PacifierUpdate()
 		return;
 	}
 
-	int time = eventLoop->Milliseconds();
+	float time = eventLoop->Milliseconds();
 
 	if (time - lastPacifierTime < 100)
 	{
@@ -2703,9 +2703,9 @@ void idSessionLocal::Draw()
 		if (!com_skipGameDraw.GetBool() && GetLocalClientNum() >= 0)
 		{
 			// draw the game view
-			int start = Sys_Milliseconds();
+			float start = Sys_Milliseconds();
 			gameDraw = game->Draw(GetLocalClientNum());
-			int end = Sys_Milliseconds();
+			float end = Sys_Milliseconds();
 			time_gameDraw += (end - start); // note time used for com_speeds
 		}
 		if (!gameDraw)
@@ -3077,10 +3077,10 @@ void idSessionLocal::RunGameTic()
 	}
 
 	// run the game logic every player move
-	int start = Sys_Milliseconds();
+	float start = Sys_Milliseconds();
 	gameReturn_t ret = game->RunFrame(&cmd);
 
-	int end = Sys_Milliseconds();
+	float end = Sys_Milliseconds();
 	time_gameFrame += end - start; // note time used for com_speeds
 
 	// check for constency failure from a recorded command

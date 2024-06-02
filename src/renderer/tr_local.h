@@ -730,7 +730,7 @@ public:
 	virtual void WriteDemoPics();
 	virtual void DrawDemoPics();
 	virtual void BeginFrame(int windowWidth, int windowHeight);
-	virtual void EndFrame(int *frontEndMsec, int *backEndMsec);
+	virtual void EndFrame(float *frontEndMsec, float *backEndMsec);
 	virtual void TakeScreenshot(int width, int height, const char *fileName, int downSample, renderView_t *ref);
 	virtual void CropRenderSize(int width, int height, bool makePowerOfTwo = false, bool forceDimensions = false);
 	virtual void CaptureRenderToImage(const char *imageName);
@@ -756,7 +756,7 @@ public:
 
 	int frameCount; // incremented every frame
 	int viewCount;	// incremented every view (twice a scene if subviewed)
-					// and every R_MarkFragments call
+				   // and every R_MarkFragments call
 
 	int staticAllocCount; // running total of bytes allocated
 

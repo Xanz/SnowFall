@@ -1340,13 +1340,13 @@ void idAnimBlend::Save(idSaveGame *savefile) const
 {
 	int i;
 
-	savefile->WriteInt(starttime);
-	savefile->WriteInt(endtime);
-	savefile->WriteInt(timeOffset);
+	savefile->WriteFloat(starttime);
+	savefile->WriteFloat(endtime);
+	savefile->WriteFloat(timeOffset);
 	savefile->WriteFloat(rate);
 
-	savefile->WriteInt(blendStartTime);
-	savefile->WriteInt(blendDuration);
+	savefile->WriteFloat(blendStartTime);
+	savefile->WriteFloat(blendDuration);
 	savefile->WriteFloat(blendStartValue);
 	savefile->WriteFloat(blendEndValue);
 
@@ -1374,13 +1374,13 @@ void idAnimBlend::Restore(idRestoreGame *savefile, const idDeclModelDef *modelDe
 
 	this->modelDef = modelDef;
 
-	savefile->ReadInt(starttime);
-	savefile->ReadInt(endtime);
-	savefile->ReadInt(timeOffset);
+	savefile->ReadFloat(starttime);
+	savefile->ReadFloat(endtime);
+	savefile->ReadFloat(timeOffset);
 	savefile->ReadFloat(rate);
 
-	savefile->ReadInt(blendStartTime);
-	savefile->ReadInt(blendDuration);
+	savefile->ReadFloat(blendStartTime);
+	savefile->ReadFloat(blendDuration);
 	savefile->ReadFloat(blendStartValue);
 	savefile->ReadFloat(blendEndValue);
 
@@ -1499,9 +1499,9 @@ int idAnimBlend::Length(void) const
 idAnimBlend::GetWeight
 =====================
 */
-float idAnimBlend::GetWeight(int currentTime) const
+float idAnimBlend::GetWeight(float currentTime) const
 {
-	int timeDelta;
+	float timeDelta;
 	float frac;
 	float w;
 
@@ -1538,7 +1538,7 @@ float idAnimBlend::GetFinalWeight(void) const
 idAnimBlend::SetWeight
 =====================
 */
-void idAnimBlend::SetWeight(float newweight, int currentTime, int blendTime)
+void idAnimBlend::SetWeight(float newweight, float currentTime, float blendTime)
 {
 	blendStartValue = GetWeight(currentTime);
 	blendEndValue = newweight;
@@ -1594,7 +1594,7 @@ bool idAnimBlend::SetSyncedAnimWeight(int num, float weight)
 idAnimBlend::SetFrame
 =====================
 */
-void idAnimBlend::SetFrame(const idDeclModelDef *modelDef, int _animNum, int _frame, int currentTime, int blendTime)
+void idAnimBlend::SetFrame(const idDeclModelDef *modelDef, int _animNum, int _frame, float currentTime, float blendTime)
 {
 	Reset(modelDef);
 	if (!modelDef)
@@ -1644,7 +1644,7 @@ void idAnimBlend::SetFrame(const idDeclModelDef *modelDef, int _animNum, int _fr
 idAnimBlend::CycleAnim
 =====================
 */
-void idAnimBlend::CycleAnim(const idDeclModelDef *modelDef, int _animNum, int currentTime, int blendTime)
+void idAnimBlend::CycleAnim(const idDeclModelDef *modelDef, int _animNum, float currentTime, float blendTime)
 {
 	Reset(modelDef);
 	if (!modelDef)
@@ -1691,7 +1691,7 @@ void idAnimBlend::CycleAnim(const idDeclModelDef *modelDef, int _animNum, int cu
 idAnimBlend::PlayAnim
 =====================
 */
-void idAnimBlend::PlayAnim(const idDeclModelDef *modelDef, int _animNum, int currentTime, int blendTime)
+void idAnimBlend::PlayAnim(const idDeclModelDef *modelDef, int _animNum, float currentTime, float blendTime)
 {
 	Reset(modelDef);
 	if (!modelDef)
@@ -1730,7 +1730,7 @@ void idAnimBlend::PlayAnim(const idDeclModelDef *modelDef, int _animNum, int cur
 idAnimBlend::Clear
 =====================
 */
-void idAnimBlend::Clear(int currentTime, int clearTime)
+void idAnimBlend::Clear(float currentTime, float clearTime)
 {
 	if (!clearTime)
 	{
@@ -1747,7 +1747,7 @@ void idAnimBlend::Clear(int currentTime, int clearTime)
 idAnimBlend::IsDone
 =====================
 */
-bool idAnimBlend::IsDone(int currentTime) const
+bool idAnimBlend::IsDone(float currentTime) const
 {
 	if (!frame && (endtime > 0) && (currentTime >= endtime))
 	{
@@ -1767,7 +1767,7 @@ bool idAnimBlend::IsDone(int currentTime) const
 idAnimBlend::FrameHasChanged
 =====================
 */
-bool idAnimBlend::FrameHasChanged(int currentTime) const
+bool idAnimBlend::FrameHasChanged(float currentTime) const
 {
 	// if we don't have an anim, no change
 	if (!animNum)
@@ -1870,7 +1870,7 @@ void idAnimBlend::SetCycleCount(int count)
 idAnimBlend::SetPlaybackRate
 =====================
 */
-void idAnimBlend::SetPlaybackRate(int currentTime, float newRate)
+void idAnimBlend::SetPlaybackRate(float currentTime, float newRate)
 {
 	int animTime;
 
@@ -1910,7 +1910,7 @@ float idAnimBlend::GetPlaybackRate(void) const
 idAnimBlend::SetStartTime
 =====================
 */
-void idAnimBlend::SetStartTime(int _startTime)
+void idAnimBlend::SetStartTime(float _startTime)
 {
 	starttime = _startTime;
 
@@ -2019,9 +2019,9 @@ int idAnimBlend::AnimNum(void) const
 idAnimBlend::AnimTime
 =====================
 */
-int idAnimBlend::AnimTime(int currentTime) const
+int idAnimBlend::AnimTime(float currentTime) const
 {
-	int time;
+	float time;
 	int length;
 	const idAnim *anim = Anim();
 
@@ -2047,7 +2047,9 @@ int idAnimBlend::AnimTime(int currentTime) const
 		length = anim->Length();
 		if ((cycle < 0) && (length > 0))
 		{
-			time %= length;
+			int timeInt = (int)time;
+			timeInt %= length;
+			time = timeInt;
 
 			// time will wrap after 24 days (oh no!), resulting in negative results for the %.
 			// adding the length gives us the proper result.
@@ -2069,7 +2071,7 @@ int idAnimBlend::AnimTime(int currentTime) const
 idAnimBlend::GetFrameNumber
 =====================
 */
-int idAnimBlend::GetFrameNumber(int currentTime) const
+int idAnimBlend::GetFrameNumber(float currentTime) const
 {
 	const idMD5Anim *md5anim;
 	frameBlend_t frameinfo;
@@ -2098,7 +2100,7 @@ int idAnimBlend::GetFrameNumber(int currentTime) const
 idAnimBlend::CallFrameCommands
 =====================
 */
-void idAnimBlend::CallFrameCommands(idEntity *ent, int fromtime, int totime) const
+void idAnimBlend::CallFrameCommands(idEntity *ent, float fromtime, float totime) const
 {
 	const idMD5Anim *md5anim;
 	frameBlend_t frame1;
@@ -2151,7 +2153,7 @@ void idAnimBlend::CallFrameCommands(idEntity *ent, int fromtime, int totime) con
 idAnimBlend::BlendAnim
 =====================
 */
-bool idAnimBlend::BlendAnim(int currentTime, int channel, int numJoints, idJointQuat *blendFrame, float &blendWeight, bool removeOriginOffset, bool overrideBlend, bool printInfo) const
+bool idAnimBlend::BlendAnim(float currentTime, int channel, int numJoints, idJointQuat *blendFrame, float &blendWeight, bool removeOriginOffset, bool overrideBlend, bool printInfo) const
 {
 	int i;
 	float lerp;
@@ -2162,7 +2164,7 @@ bool idAnimBlend::BlendAnim(int currentTime, int channel, int numJoints, idJoint
 	idJointQuat *jointFrame;
 	idJointQuat *mixFrame;
 	int numAnims;
-	int time;
+	float time;
 
 	const idAnim *anim = Anim();
 	if (!anim)
@@ -2320,12 +2322,12 @@ bool idAnimBlend::BlendAnim(int currentTime, int channel, int numJoints, idJoint
 idAnimBlend::BlendOrigin
 =====================
 */
-void idAnimBlend::BlendOrigin(int currentTime, idVec3 &blendPos, float &blendWeight, bool removeOriginOffset) const
+void idAnimBlend::BlendOrigin(float currentTime, idVec3 &blendPos, float &blendWeight, bool removeOriginOffset) const
 {
 	float lerp;
 	idVec3 animpos;
 	idVec3 pos;
-	int time;
+	float time;
 	int num;
 	int i;
 
@@ -2379,14 +2381,14 @@ void idAnimBlend::BlendOrigin(int currentTime, idVec3 &blendPos, float &blendWei
 idAnimBlend::BlendDelta
 =====================
 */
-void idAnimBlend::BlendDelta(int fromtime, int totime, idVec3 &blendDelta, float &blendWeight) const
+void idAnimBlend::BlendDelta(float fromtime, float totime, idVec3 &blendDelta, float &blendWeight) const
 {
 	idVec3 pos1;
 	idVec3 pos2;
 	idVec3 animpos;
 	idVec3 delta;
-	int time1;
-	int time2;
+	float time1;
+	float time2;
 	float lerp;
 	int num;
 	int i;
@@ -2447,13 +2449,13 @@ void idAnimBlend::BlendDelta(int fromtime, int totime, idVec3 &blendDelta, float
 idAnimBlend::BlendDeltaRotation
 =====================
 */
-void idAnimBlend::BlendDeltaRotation(int fromtime, int totime, idQuat &blendDelta, float &blendWeight) const
+void idAnimBlend::BlendDeltaRotation(float fromtime, float totime, idQuat &blendDelta, float &blendWeight) const
 {
 	idQuat q1;
 	idQuat q2;
 	idQuat q3;
-	int time1;
-	int time2;
+	float time1;
+	float time2;
 	float lerp;
 	float mixWeight;
 	int num;
@@ -2529,12 +2531,12 @@ void idAnimBlend::BlendDeltaRotation(int fromtime, int totime, idQuat &blendDelt
 idAnimBlend::AddBounds
 =====================
 */
-bool idAnimBlend::AddBounds(int currentTime, idBounds &bounds, bool removeOriginOffset) const
+bool idAnimBlend::AddBounds(float currentTime, idBounds &bounds, bool removeOriginOffset) const
 {
 	int i;
 	int num;
 	idBounds b;
-	int time;
+	float time;
 	idVec3 pos;
 	bool addorigin;
 
@@ -3765,7 +3767,7 @@ void idAnimator::Save(idSaveGame *savefile) const
 		}
 	}
 
-	savefile->WriteInt(lastTransformTime);
+	savefile->WriteFloat(lastTransformTime);
 	savefile->WriteBool(stoppedAnimatingUpdate);
 	savefile->WriteBool(forceUpdate);
 	savefile->WriteBounds(frameBounds);
@@ -3797,7 +3799,7 @@ void idAnimator::Save(idSaveGame *savefile) const
 	}
 
 	savefile->WriteBounds(AFPoseBounds);
-	savefile->WriteInt(AFPoseTime);
+	savefile->WriteFloat(AFPoseTime);
 
 	savefile->WriteBool(removeOriginOffset);
 
@@ -3849,7 +3851,7 @@ void idAnimator::Restore(idRestoreGame *savefile)
 		}
 	}
 
-	savefile->ReadInt(lastTransformTime);
+	savefile->ReadFloat(lastTransformTime);
 	savefile->ReadBool(stoppedAnimatingUpdate);
 	savefile->ReadBool(forceUpdate);
 	savefile->ReadBounds(frameBounds);
@@ -3887,7 +3889,7 @@ void idAnimator::Restore(idRestoreGame *savefile)
 	}
 
 	savefile->ReadBounds(AFPoseBounds);
-	savefile->ReadInt(AFPoseTime);
+	savefile->ReadFloat(AFPoseTime);
 
 	savefile->ReadBool(removeOriginOffset);
 
@@ -3938,7 +3940,7 @@ void idAnimator::FreeData(void)
 idAnimator::PushAnims
 =====================
 */
-void idAnimator::PushAnims(int channelNum, int currentTime, int blendTime)
+void idAnimator::PushAnims(int channelNum, float currentTime, float blendTime)
 {
 	int i;
 	idAnimBlend *channel;
@@ -4185,7 +4187,7 @@ idAnimBlend *idAnimator::CurrentAnim(int channelNum)
 idAnimator::Clear
 =====================
 */
-void idAnimator::Clear(int channelNum, int currentTime, int cleartime)
+void idAnimator::Clear(int channelNum, float currentTime, float cleartime)
 {
 	int i;
 	idAnimBlend *blend;
@@ -4208,7 +4210,7 @@ void idAnimator::Clear(int channelNum, int currentTime, int cleartime)
 idAnimator::SetFrame
 =====================
 */
-void idAnimator::SetFrame(int channelNum, int animNum, int frame, int currentTime, int blendTime)
+void idAnimator::SetFrame(int channelNum, int animNum, int frame, float currentTime, float blendTime)
 {
 	if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels))
 	{
@@ -4233,7 +4235,7 @@ void idAnimator::SetFrame(int channelNum, int animNum, int frame, int currentTim
 idAnimator::CycleAnim
 =====================
 */
-void idAnimator::CycleAnim(int channelNum, int animNum, int currentTime, int blendTime)
+void idAnimator::CycleAnim(int channelNum, int animNum, float currentTime, float blendTime)
 {
 	if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels))
 	{
@@ -4258,7 +4260,7 @@ void idAnimator::CycleAnim(int channelNum, int animNum, int currentTime, int ble
 idAnimator::PlayAnim
 =====================
 */
-void idAnimator::PlayAnim(int channelNum, int animNum, int currentTime, int blendTime)
+void idAnimator::PlayAnim(int channelNum, int animNum, float currentTime, float blendTime)
 {
 	if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels))
 	{
@@ -4283,7 +4285,7 @@ void idAnimator::PlayAnim(int channelNum, int animNum, int currentTime, int blen
 idAnimator::SyncAnimChannels
 =====================
 */
-void idAnimator::SyncAnimChannels(int channelNum, int fromChannelNum, int currentTime, int blendTime)
+void idAnimator::SyncAnimChannels(int channelNum, int fromChannelNum, float currentTime, float blendTime)
 {
 	if ((channelNum < 0) || (channelNum >= ANIM_NumAnimChannels) || (fromChannelNum < 0) || (fromChannelNum >= ANIM_NumAnimChannels))
 	{
@@ -4457,7 +4459,7 @@ void idAnimator::ClearAllJoints(void)
 idAnimator::ClearAllAnims
 =====================
 */
-void idAnimator::ClearAllAnims(int currentTime, int cleartime)
+void idAnimator::ClearAllAnims(float currentTime, float cleartime)
 {
 	int i;
 
@@ -4475,7 +4477,7 @@ void idAnimator::ClearAllAnims(int currentTime, int cleartime)
 idAnimator::GetDelta
 ====================
 */
-void idAnimator::GetDelta(int fromtime, int totime, idVec3 &delta) const
+void idAnimator::GetDelta(float fromtime, float totime, idVec3 &delta) const
 {
 	int i;
 	const idAnimBlend *blend;
@@ -4511,7 +4513,7 @@ void idAnimator::GetDelta(int fromtime, int totime, idVec3 &delta) const
 idAnimator::GetDeltaRotation
 ====================
 */
-bool idAnimator::GetDeltaRotation(int fromtime, int totime, idMat3 &delta) const
+bool idAnimator::GetDeltaRotation(float fromtime, float totime, idMat3 &delta) const
 {
 	int i;
 	const idAnimBlend *blend;
@@ -4559,7 +4561,7 @@ bool idAnimator::GetDeltaRotation(int fromtime, int totime, idMat3 &delta) const
 idAnimator::GetOrigin
 ====================
 */
-void idAnimator::GetOrigin(int currentTime, idVec3 &pos) const
+void idAnimator::GetOrigin(float currentTime, idVec3 &pos) const
 {
 	int i;
 	const idAnimBlend *blend;
@@ -4597,7 +4599,7 @@ void idAnimator::GetOrigin(int currentTime, idVec3 &pos) const
 idAnimator::GetBounds
 ====================
 */
-bool idAnimator::GetBounds(int currentTime, idBounds &bounds)
+bool idAnimator::GetBounds(float currentTime, idBounds &bounds)
 {
 	int i, j;
 	const idAnimBlend *blend;
@@ -4709,7 +4711,7 @@ void idAnimator::SetAFPoseJointMod(const jointHandle_t jointNum, const AFJointMo
 idAnimator::FinishAFPose
 =====================
 */
-void idAnimator::FinishAFPose(int animNum, const idBounds &bounds, const int time)
+void idAnimator::FinishAFPose(int animNum, const idBounds &bounds, const float time)
 {
 	int i, j;
 	int numJoints;
@@ -4915,7 +4917,7 @@ void idAnimator::ClearAFPose(void)
 idAnimator::ServiceAnims
 =====================
 */
-void idAnimator::ServiceAnims(int fromtime, int totime)
+void idAnimator::ServiceAnims(float fromtime, float totime)
 {
 	int i, j;
 	idAnimBlend *blend;
@@ -4955,7 +4957,7 @@ void idAnimator::ServiceAnims(int fromtime, int totime)
 idAnimator::IsAnimating
 =====================
 */
-bool idAnimator::IsAnimating(int currentTime) const
+bool idAnimator::IsAnimating(float currentTime) const
 {
 	int i, j;
 	const idAnimBlend *blend;
@@ -4991,7 +4993,7 @@ bool idAnimator::IsAnimating(int currentTime) const
 idAnimator::FrameHasChanged
 =====================
 */
-bool idAnimator::FrameHasChanged(int currentTime) const
+bool idAnimator::FrameHasChanged(float currentTime) const
 {
 	int i, j;
 	const idAnimBlend *blend;
@@ -5032,7 +5034,7 @@ bool idAnimator::FrameHasChanged(int currentTime) const
 idAnimator::CreateFrame
 =====================
 */
-bool idAnimator::CreateFrame(int currentTime, bool force)
+bool idAnimator::CreateFrame(float currentTime, bool force)
 {
 	int i, j;
 	int numJoints;
@@ -5337,7 +5339,7 @@ idAnimator::GetJointTransform>	gamex86.dll!idAnimator::ForceUpdate()  Line 4268	
 
 =====================
 */
-bool idAnimator::GetJointTransform(jointHandle_t jointHandle, int currentTime, idVec3 &offset, idMat3 &axis)
+bool idAnimator::GetJointTransform(jointHandle_t jointHandle, float currentTime, idVec3 &offset, idMat3 &axis)
 {
 	if (!modelDef || (jointHandle < 0) || (jointHandle >= modelDef->NumJoints()))
 	{
@@ -5357,7 +5359,7 @@ bool idAnimator::GetJointTransform(jointHandle_t jointHandle, int currentTime, i
 idAnimator::GetJointLocalTransform
 =====================
 */
-bool idAnimator::GetJointLocalTransform(jointHandle_t jointHandle, int currentTime, idVec3 &offset, idMat3 &axis)
+bool idAnimator::GetJointLocalTransform(jointHandle_t jointHandle, float currentTime, idVec3 &offset, idMat3 &axis)
 {
 	if (!modelDef)
 	{
@@ -5866,7 +5868,7 @@ int idGameEdit::ANIM_GetNumFrames(const idMD5Anim *anim)
 idGameEdit::ANIM_CreateAnimFrame
 =====================
 */
-void idGameEdit::ANIM_CreateAnimFrame(const idRenderModel *model, const idMD5Anim *anim, int numJoints, idJointMat *joints, int time, const idVec3 &offset, bool remove_origin_offset)
+void idGameEdit::ANIM_CreateAnimFrame(const idRenderModel *model, const idMD5Anim *anim, int numJoints, idJointMat *joints, float time, const idVec3 &offset, bool remove_origin_offset)
 {
 	int i;
 	frameBlend_t frame;

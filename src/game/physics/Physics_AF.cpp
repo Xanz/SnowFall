@@ -6990,7 +6990,7 @@ const idBounds &idPhysics_AF::GetAbsBounds(int id) const
 idPhysics_AF::Evaluate
 ================
 */
-bool idPhysics_AF::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_AF::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	float timeStep;
 
@@ -7210,7 +7210,7 @@ bool idPhysics_AF::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_AF::UpdateTime
 ================
 */
-void idPhysics_AF::UpdateTime(int endTimeMSec)
+void idPhysics_AF::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -7219,7 +7219,7 @@ void idPhysics_AF::UpdateTime(int endTimeMSec)
 idPhysics_AF::GetTime
 ================
 */
-int idPhysics_AF::GetTime(void) const
+float idPhysics_AF::GetTime(void) const
 {
 	return gameLocal.time;
 }

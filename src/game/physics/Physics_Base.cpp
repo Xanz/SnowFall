@@ -241,7 +241,7 @@ const idBounds &idPhysics_Base::GetAbsBounds(int id) const
 idPhysics_Base::Evaluate
 ================
 */
-bool idPhysics_Base::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_Base::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	return false;
 }
@@ -251,7 +251,7 @@ bool idPhysics_Base::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_Base::UpdateTime
 ================
 */
-void idPhysics_Base::UpdateTime(int endTimeMSec)
+void idPhysics_Base::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -260,7 +260,7 @@ void idPhysics_Base::UpdateTime(int endTimeMSec)
 idPhysics_Base::GetTime
 ================
 */
-int idPhysics_Base::GetTime(void) const
+float idPhysics_Base::GetTime(void) const
 {
 	return 0;
 }

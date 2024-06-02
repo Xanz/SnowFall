@@ -95,12 +95,12 @@ private:
 
 	float displayFrac; // approaches finalFrac at scr_conspeed
 	float finalFrac;   // 0.0 to 1.0 lines of console to display
-	int fracTime;	   // time of last displayFrac update
+	float fracTime;	   // time of last displayFrac update
 
 	int vislines; // in scanlines
 
-	int times[NUM_CON_TIMES]; // cls.realtime time the line was generated
-							  // for transparent notify lines
+	float times[NUM_CON_TIMES]; // cls.realtime time the line was generated
+								// for transparent notify lines
 	idVec4 color;
 
 	idEditField historyEditLines[COMMAND_HISTORY];
@@ -175,17 +175,18 @@ void SCR_DrawTextRightAlign(float &y, const char *text, ...)
 SCR_DrawFPS
 ==================
 */
-#define FPS_FRAMES 4
+#define FPS_FRAMES 6
 float SCR_DrawFPS(float y)
 {
 	char *s;
 	int w;
-	static int previousTimes[FPS_FRAMES];
+	static float previousTimes[FPS_FRAMES];
 	static int index;
-	int i, total;
-	int fps;
-	static int previous;
-	int t, frameTime;
+	int i;
+	float total;
+	float fps;
+	static float previous;
+	float t, frameTime;
 
 	// don't use serverTime, because that will be drifting to
 	// correct for internet lag changes, timescales, timedemos, etc
@@ -207,10 +208,10 @@ float SCR_DrawFPS(float y)
 		{
 			total = 1;
 		}
-		fps = 10000 * FPS_FRAMES / total;
+		fps = 10000.0f * FPS_FRAMES / total;
 		fps = (fps + 5) / 10;
 
-		s = va("%ifps", fps);
+		s = va("%ifps", (int)fps);
 		w = strlen(s) * BIGCHAR_WIDTH;
 
 		renderSystem->DrawBigStringExt(635 - w, idMath::FtoiFast(y) + 2, s, colorWhite, true, localConsole.charSetShader);
@@ -1084,7 +1085,7 @@ void idConsoleLocal::DrawNotify()
 	int x, v;
 	short *text_p;
 	int i;
-	int time;
+	float time;
 	int currentColor;
 
 	if (con_noPrint.GetBool())

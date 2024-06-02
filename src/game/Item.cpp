@@ -247,7 +247,7 @@ void idItem::Think(void)
 			idVec3 org;
 
 			ang.pitch = ang.roll = 0.0f;
-			ang.yaw = (gameLocal.time & 4095) * 360.0f / -4096.0f;
+			ang.yaw = ((int)(gameLocal.time) & 4095) * 360.0f / -4096.0f;
 			SetAngles(ang);
 
 			float scale = 0.005f + entityNumber * 0.00001f;

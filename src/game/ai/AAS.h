@@ -125,7 +125,7 @@ public:
 	// Returns the travel time towards the goal area in 100th of a second.
 	virtual int TravelTimeToGoalArea(int areaNum, const idVec3 &origin, int goalAreaNum, int travelFlags) const = 0;
 	// Get the travel time and first reachability to be used towards the goal, returns true if there is a path.
-	virtual bool RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, int &travelTime, idReachability **reach) const = 0;
+	virtual bool RouteToGoalArea(int areaNum, const idVec3 origin, int goalAreaNum, int travelFlags, float &travelTime, idReachability **reach) const = 0;
 	// Creates a walk path towards the goal.
 	virtual bool WalkPathToGoal(aasPath_t &path, int areaNum, const idVec3 &origin, int goalAreaNum, const idVec3 &goalOrigin, int travelFlags) const = 0;
 	// Returns true if one can walk along a straight line from the origin to the goal origin.

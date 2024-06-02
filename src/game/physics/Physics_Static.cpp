@@ -263,7 +263,7 @@ const idBounds &idPhysics_Static::GetAbsBounds(int id) const
 idPhysics_Static::Evaluate
 ================
 */
-bool idPhysics_Static::Evaluate(int timeStepMSec, int endTimeMSec)
+bool idPhysics_Static::Evaluate(float timeStepMSec, float endTimeMSec)
 {
 	idVec3 masterOrigin, oldOrigin;
 	idMat3 masterAxis, oldAxis;
@@ -298,7 +298,7 @@ bool idPhysics_Static::Evaluate(int timeStepMSec, int endTimeMSec)
 idPhysics_Static::UpdateTime
 ================
 */
-void idPhysics_Static::UpdateTime(int endTimeMSec)
+void idPhysics_Static::UpdateTime(float endTimeMSec)
 {
 }
 
@@ -307,7 +307,7 @@ void idPhysics_Static::UpdateTime(int endTimeMSec)
 idPhysics_Static::GetTime
 ================
 */
-int idPhysics_Static::GetTime(void) const
+float idPhysics_Static::GetTime(void) const
 {
 	return 0;
 }

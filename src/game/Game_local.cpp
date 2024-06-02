@@ -534,8 +534,8 @@ void idGameLocal::SaveGame(idFile *f)
 	savegame.WriteInt(gameType);
 
 	savegame.WriteInt(framenum);
-	savegame.WriteInt(previousTime);
-	savegame.WriteInt(time);
+	savegame.WriteFloat(previousTime);
+	savegame.WriteFloat(time);
 
 	savegame.WriteInt(vacuumAreaNum);
 
@@ -1455,8 +1455,8 @@ bool idGameLocal::InitFromSaveGame(const char *mapName, idRenderWorld *renderWor
 	savegame.ReadInt((int &)gameType);
 
 	savegame.ReadInt(framenum);
-	savegame.ReadInt(previousTime);
-	savegame.ReadInt(time);
+	savegame.ReadFloat(previousTime);
+	savegame.ReadFloat(time);
 
 	savegame.ReadInt(vacuumAreaNum);
 

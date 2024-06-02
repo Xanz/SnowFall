@@ -216,7 +216,7 @@ void idAsyncClient::ConnectToServer(const netadr_t adr)
 	Clear();
 
 	// get a pseudo random client id, but don't use the id which is reserved for connectionless packets
-	clientId = Sys_Milliseconds() & CONNECTIONLESS_MESSAGE_ID_MASK;
+	clientId = (int)Sys_Milliseconds() & CONNECTIONLESS_MESSAGE_ID_MASK;
 
 	// calculate a checksum on some of the essential data used
 	clientDataChecksum = declManager->GetChecksum();

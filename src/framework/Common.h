@@ -74,12 +74,12 @@ extern idCVar com_makingBuild;
 extern idCVar com_updateLoadSize;
 extern idCVar com_videoRam;
 
-extern int time_gameFrame; // game logic time
-extern int time_gameDraw;  // game present time
-extern int time_frontend;  // renderer frontend time
-extern int time_backend;   // renderer backend time
+extern float time_gameFrame; // game logic time
+extern float time_gameDraw;	 // game present time
+extern float time_frontend;	 // renderer frontend time
+extern float time_backend;	 // renderer backend time
 
-extern int com_frameTime;		   // time for the current frame in milliseconds
+extern float com_frameTime;		   // time for the current frame in milliseconds
 extern volatile int com_ticNumber; // 60 hz tics, incremented by async function
 extern int com_editors;			   // current active editor(s)
 extern bool com_editorActive;	   // true if an editor has focus
@@ -211,31 +211,33 @@ public:
 extern idCommon *common;
 extern idCVar com_engineHz;
 extern float com_engineHz_latched;
-extern int64_t com_engineHz_numerator;
-extern int64_t com_engineHz_denominator;
+extern float com_engineHz_numerator;
+extern float com_engineHz_denominator;
+
+extern float deltaTime;
 
 // Returns the msec the frame starts on
-ID_INLINE int FRAME_TO_MSEC(int64_t frame)
+ID_INLINE float FRAME_TO_MSEC(float frame)
 {
-	return (int)((frame * com_engineHz_numerator) / com_engineHz_denominator);
+	return (float)((frame * com_engineHz_numerator) / com_engineHz_denominator);
 }
 // Rounds DOWN to the nearest frame
 ID_INLINE int MSEC_TO_FRAME_FLOOR(int msec)
 {
-	return (int)((((int64_t)msec * com_engineHz_denominator) + (com_engineHz_denominator - 1)) / com_engineHz_numerator);
+	return (int)((((float)msec * com_engineHz_denominator) + (com_engineHz_denominator - 1)) / com_engineHz_numerator);
 }
 // Rounds UP to the nearest frame
-ID_INLINE int MSEC_TO_FRAME_CEIL(int msec)
+ID_INLINE float MSEC_TO_FRAME_CEIL(float msec)
 {
-	return (int)((((int64_t)msec * com_engineHz_denominator) + (com_engineHz_numerator - 1)) / com_engineHz_numerator);
+	return (int)((((float)msec * com_engineHz_denominator) + (com_engineHz_numerator - 1)) / com_engineHz_numerator);
 }
 // Aligns msec so it starts on a frame bondary
-ID_INLINE int MSEC_ALIGN_TO_FRAME(int msec)
+ID_INLINE float MSEC_ALIGN_TO_FRAME(float msec)
 {
 	return FRAME_TO_MSEC(MSEC_TO_FRAME_CEIL(msec));
 }
 
-ID_INLINE int FPS_TO_MSEC()
+ID_INLINE float FPS_TO_MSEC()
 {
 	return 1000 / com_engineHz.GetFloat();
 }

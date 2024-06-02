@@ -1456,7 +1456,7 @@ void D_DrawDebugLines(void)
 	{
 		if (debugLines[i].used)
 		{
-			if (!debugLines[i].blink || (gameLocal.time & (1 << 9)))
+			if (!debugLines[i].blink || ((int)gameLocal.time & (1 << 9)))
 			{
 				color = idVec4(debugLines[i].color & 1, (debugLines[i].color >> 1) & 1, (debugLines[i].color >> 2) & 1, 1);
 				gameRenderWorld->DebugLine(color, debugLines[i].start, debugLines[i].end);

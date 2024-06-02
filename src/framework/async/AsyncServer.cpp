@@ -202,7 +202,7 @@ void idAsyncServer::Spawn(void)
 	serverDataChecksum = declManager->GetChecksum();
 
 	// get a pseudo random server id, but don't use the id which is reserved for connectionless packets
-	serverId = Sys_Milliseconds() & CONNECTIONLESS_MESSAGE_ID_MASK;
+	serverId = (int)Sys_Milliseconds() & CONNECTIONLESS_MESSAGE_ID_MASK;
 
 	active = true;
 
@@ -344,7 +344,7 @@ void idAsyncServer::ExecuteMapChange(void)
 	serverTime = 0;
 
 	// initialize game id and time
-	gameInitId ^= Sys_Milliseconds(); // NOTE: make sure the gameInitId is always a positive number because negative numbers have special meaning
+	gameInitId ^= (int)Sys_Milliseconds(); // NOTE: make sure the gameInitId is always a positive number because negative numbers have special meaning
 	gameFrame = 0;
 	gameTime = 0;
 	gameTimeResidual = 0;
