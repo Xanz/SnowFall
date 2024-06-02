@@ -144,10 +144,10 @@ typedef struct
 	char name[64];
 } fontInfoEx_t;
 
-const int SMALLCHAR_WIDTH = 8;
-const int SMALLCHAR_HEIGHT = 16;
-const int BIGCHAR_WIDTH = 16;
-const int BIGCHAR_HEIGHT = 16;
+const int SMALLCHAR_WIDTH = 4;
+const int SMALLCHAR_HEIGHT = 8;
+const int BIGCHAR_WIDTH = 8;
+const int BIGCHAR_HEIGHT = 8;
 
 // all drawing is done to a 640 x 480 virtual screen size
 // and will be automatically scaled to the real resolution

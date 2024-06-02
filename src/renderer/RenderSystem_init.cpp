@@ -574,9 +574,6 @@ void R_InitOpenGL(void)
 
 	// parse our vertex and fragment programs, possibly disably support for
 	// one of the paths if there was an error
-	R_NV10_Init();
-	R_NV20_Init();
-	R_R200_Init();
 	R_ARB2_Init();
 
 	cmdSystem->AddCommand("reloadARBprograms", R_ReloadARBPrograms_f, CMD_FL_RENDERER, "reloads ARB programs");
