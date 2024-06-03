@@ -1594,7 +1594,7 @@ void idGameLocal::MapShutdown(void)
 
 	gamestate = GAMESTATE_SHUTDOWN;
 
-	if (gameRenderWorld)
+	if (gameRenderWorld != NULL)
 	{
 		// clear any debug lines, text, and polygons
 		gameRenderWorld->DebugClearLines(0);

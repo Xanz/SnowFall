@@ -38,6 +38,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "CollisionModel_local.h"
+#include "../framework/Common.h"
 
 /*
 ===============================================================================
@@ -181,18 +182,18 @@ void idCollisionModelManagerLocal::DrawEdge(cm_model_t *model, int edgeNum, cons
 	{
 		if (cm_drawInternal.GetBool())
 		{
-			session->rw->DebugArrow(colorGreen, start, end, 1);
+			commonLocal.m_RenderWorld->DebugArrow(colorGreen, start, end, 1);
 		}
 	}
 	else
 	{
 		if (edge->numUsers > 2)
 		{
-			session->rw->DebugArrow(colorBlue, start, end, 1);
+			commonLocal.m_RenderWorld->DebugArrow(colorBlue, start, end, 1);
 		}
 		else
 		{
-			session->rw->DebugArrow(cm_color, start, end, 1);
+			commonLocal.m_RenderWorld->DebugArrow(cm_color, start, end, 1);
 		}
 	}
 
@@ -207,7 +208,7 @@ void idCollisionModelManagerLocal::DrawEdge(cm_model_t *model, int edgeNum, cons
 		{
 			end = mid + 5 * edge->normal;
 		}
-		session->rw->DebugArrow(colorCyan, mid, end, 1);
+		commonLocal.m_RenderWorld->DebugArrow(colorCyan, mid, end, 1);
 	}
 }
 
@@ -253,7 +254,7 @@ void idCollisionModelManagerLocal::DrawPolygon(cm_model_t *model, cm_polygon_t *
 			center += origin;
 			end = center + 5 * p->plane.Normal();
 		}
-		session->rw->DebugArrow(colorMagenta, center, end, 1);
+		commonLocal.m_RenderWorld->DebugArrow(colorMagenta, center, end, 1);
 	}
 
 	if (cm_drawFilled.GetBool())
@@ -265,7 +266,7 @@ void idCollisionModelManagerLocal::DrawPolygon(cm_model_t *model, cm_polygon_t *
 			edge = model->edges + abs(edgeNum);
 			winding += origin + model->vertices[edge->vertexNum[INTSIGNBITSET(edgeNum)]].p * axis;
 		}
-		session->rw->DebugPolygon(cm_color, winding);
+		commonLocal.m_RenderWorld->DebugPolygon(cm_color, winding);
 	}
 	else
 	{

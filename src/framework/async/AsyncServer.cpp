@@ -389,7 +389,7 @@ void idAsyncServer::ExecuteMapChange(void)
 	}
 
 	// load map
-	sessLocal.ExecuteMapChange();
+	commonLocal.ExecuteMapChange();
 
 	if (localClientNum >= 0)
 	{

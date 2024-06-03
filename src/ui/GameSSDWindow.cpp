@@ -2550,7 +2550,7 @@ SSDEntity *idGameSSDWindow::GetSpecificEntity(int type, int id)
 void idGameSSDWindow::PlaySound(const char *sound)
 {
 
-	session->sw->PlayShaderDirectly(sound, currentSound);
+	commonLocal.m_GameSoundWorld->PlayShaderDirectly(sound, currentSound);
 
 	currentSound++;
 	if (currentSound >= MAX_SOUND_CHANNEL)

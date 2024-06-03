@@ -915,7 +915,7 @@ void idGameBustOutWindow::UpdateScore()
 		gui->HandleNamedEvent("extraBall");
 
 		// Play sound
-		session->sw->PlayShaderDirectly("arcade_extraball", S_UNIQUE_CHANNEL);
+		commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_extraball", S_UNIQUE_CHANNEL);
 
 		nextBallScore = gameScore + 10000;
 	}
@@ -1222,7 +1222,7 @@ void idGameBustOutWindow::UpdatePowerups(void)
 			}
 
 			// Play the sound
-			session->sw->PlayShaderDirectly("arcade_powerup", S_UNIQUE_CHANNEL);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_powerup", S_UNIQUE_CHANNEL);
 
 			// Remove it
 			powerUps.RemoveIndex(i);
@@ -1411,11 +1411,11 @@ void idGameBustOutWindow::UpdateBall(void)
 
 		if (playSoundBounce)
 		{
-			session->sw->PlayShaderDirectly("arcade_ballbounce", bounceChannel);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_ballbounce", bounceChannel);
 		}
 		else if (playSoundBrick)
 		{
-			session->sw->PlayShaderDirectly("arcade_brickhit", bounceChannel);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_brickhit", bounceChannel);
 		}
 
 		if (playSoundBounce || playSoundBrick)
@@ -1446,14 +1446,14 @@ void idGameBustOutWindow::UpdateBall(void)
 			gameOver = true;
 
 			// Game Over sound
-			session->sw->PlayShaderDirectly("arcade_sadsound", S_UNIQUE_CHANNEL);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_sadsound", S_UNIQUE_CHANNEL);
 		}
 		else
 		{
 			ballsRemaining--;
 
 			// Ball was lost, but game is not over
-			session->sw->PlayShaderDirectly("arcade_missedball", S_UNIQUE_CHANNEL);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_missedball", S_UNIQUE_CHANNEL);
 		}
 
 		ClearPowerups();

@@ -763,18 +763,18 @@ void idRenderModelMD5::DrawJoints(const renderEntity_t *ent, const struct viewDe
 		if (md5Joint->parent)
 		{
 			parentNum = md5Joint->parent - joints.Ptr();
-			session->rw->DebugLine(colorWhite, ent->origin + ent->joints[parentNum].ToVec3() * ent->axis, pos);
+			commonLocal.m_RenderWorld->DebugLine(colorWhite, ent->origin + ent->joints[parentNum].ToVec3() * ent->axis, pos);
 		}
 
-		session->rw->DebugLine(colorRed, pos, pos + joint->ToMat3()[0] * 2.0f * ent->axis);
-		session->rw->DebugLine(colorGreen, pos, pos + joint->ToMat3()[1] * 2.0f * ent->axis);
-		session->rw->DebugLine(colorBlue, pos, pos + joint->ToMat3()[2] * 2.0f * ent->axis);
+		commonLocal.m_RenderWorld->DebugLine(colorRed, pos, pos + joint->ToMat3()[0] * 2.0f * ent->axis);
+		commonLocal.m_RenderWorld->DebugLine(colorGreen, pos, pos + joint->ToMat3()[1] * 2.0f * ent->axis);
+		commonLocal.m_RenderWorld->DebugLine(colorBlue, pos, pos + joint->ToMat3()[2] * 2.0f * ent->axis);
 	}
 
 	idBounds bounds;
 
 	bounds.FromTransformedBounds(ent->bounds, vec3_zero, ent->axis);
-	session->rw->DebugBounds(colorMagenta, bounds, ent->origin);
+	commonLocal.m_RenderWorld->DebugBounds(colorMagenta, bounds, ent->origin);
 
 	if ((r_jointNameScale.GetFloat() != 0.0f) && (bounds.Expand(128.0f).ContainsPoint(view->renderView.vieworg - ent->origin)))
 	{
@@ -787,7 +787,7 @@ void idRenderModelMD5::DrawJoints(const renderEntity_t *ent, const struct viewDe
 		for (i = 0; i < num; i++, joint++)
 		{
 			pos = ent->origin + joint->ToVec3() * ent->axis;
-			session->rw->DrawText(joints[i].name, pos + offset, scale, colorWhite, view->renderView.viewaxis, 1);
+			commonLocal.m_RenderWorld->DrawText(joints[i].name, pos + offset, scale, colorWhite, view->renderView.viewaxis, 1);
 		}
 	}
 }

@@ -1000,9 +1000,9 @@ void idCollisionModelManagerLocal::Translation(trace_t *results, const idVec3 &s
 		results->c.normal = vec3_origin;
 		results->c.material = NULL;
 		results->c.point = start;
-		if (session->rw)
+		if (commonLocal.m_RenderWorld)
 		{
-			session->rw->DebugArrow(colorRed, start, end, 1);
+			commonLocal.m_RenderWorld->DebugArrow(colorRed, start, end, 1);
 		}
 		common->Printf("idCollisionModelManagerLocal::Translation: huge translation\n");
 		return;

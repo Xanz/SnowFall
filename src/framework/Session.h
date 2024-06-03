@@ -116,7 +116,7 @@ public:
 	// monitor this download in a progress box to either abort or completion
 	virtual void DownloadProgressBox(backgroundDownload_t *bgl, const char *title, int progress_start = 0, int progress_end = 100) = 0;
 
-	virtual void SetPlayingSoundWorld() = 0;
+	// virtual void SetPlayingSoundWorld() = 0;
 
 	// this is used by the sound system when an OnDemand sound is loaded, so the game action
 	// doesn't advance and get things out of sync
@@ -151,10 +151,6 @@ public:
 	virtual const char *GetCurrentMapName(void) = 0;
 
 	virtual int GetSaveGameVersion(void) = 0;
-
-	// The render world and sound world used for this session.
-	idRenderWorld *rw;
-	idSoundWorld *sw;
 
 	// The renderer and sound system will write changes to writeDemo.
 	// Demos can be recorded and played at the same time when splicing.

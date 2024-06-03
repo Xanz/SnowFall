@@ -1408,15 +1408,10 @@ int main(int argc, char *argv[])
 	{
 		InitializeCriticalSection(&win32.criticalSections[i]);
 	}
+
 	Sys_Milliseconds();
 
-	Sys_FPU_SetPrecision(FPU_PRECISION_DOUBLE_EXTENDED);
-
 	common->Init(0, NULL, NULL);
-
-#if TEST_FPU_EXCEPTIONS != 0
-	common->Printf(Sys_FPU_GetState());
-#endif
 
 	// 	// hide or show the early console as necessary
 	if (win32.win_viewlog.GetInteger() || com_skipRenderer.GetBool() || idAsyncNetwork::serverDedicated.GetInteger())
@@ -1432,24 +1427,10 @@ int main(int argc, char *argv[])
 	SetThreadAffinityMask(GetCurrentThread(), 1);
 #endif
 
-	// ::SetCursor( hcurSave );
-
-	// Launch the script debugger
-	// if ( strstr( lpCmdLine, "+debugger" ) ) {
-	// 	// DebuggerClientInit( lpCmdLine );
-	// 	return 0;
-	// }
-
-	// ::SetFocus( win32.hWnd );
-
 	// main game loop
 	while (1)
 	{
-
 		Win_Frame();
-
-		// set exceptions, even if some crappy syscall changes them!
-		Sys_FPU_EnableExceptions(TEST_FPU_EXCEPTIONS);
 
 		// run the game
 		common->Frame();

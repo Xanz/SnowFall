@@ -114,7 +114,7 @@ public:
 	virtual const char *MessageBox(msgBoxType_t type, const char *message, const char *title = NULL, bool wait = false, const char *fire_yes = NULL, const char *fire_no = NULL, bool network = false);
 	virtual void StopBox(void);
 	virtual void DownloadProgressBox(backgroundDownload_t *bgl, const char *title, int progress_start = 0, int progress_end = 100);
-	virtual void SetPlayingSoundWorld();
+	// virtual void SetPlayingSoundWorld();
 
 	virtual void TimeHitch(int msec);
 
@@ -181,7 +181,6 @@ public:
 	int timeHitch;
 
 	bool menuActive;
-	idSoundWorld *menuSoundWorld; // so the game soundWorld can be muted
 
 	bool insideExecuteMapChange; // draw loading screen and update
 								 // screen on prints
@@ -302,7 +301,7 @@ public:
 	int GetBytesNeededForMapLoad(const char *mapName);
 	void SetBytesNeededForMapLoad(const char *mapName, int bytesNeeded);
 
-	void ExecuteMapChange(bool noFadeWipe = false);
+	// void ExecuteMapChange(bool noFadeWipe = false);
 	void UnloadMap();
 
 	// return true if we actually waiting on an auth reply
