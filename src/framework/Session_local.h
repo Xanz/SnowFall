@@ -181,10 +181,7 @@ public:
 	int timeHitch;
 
 	bool menuActive;
-
-	bool insideExecuteMapChange; // draw loading screen and update
-								 // screen on prints
-	int bytesNeededForMapLoad;	 //
+	int bytesNeededForMapLoad;
 
 	// we don't want to redraw the loading screen for every single
 	// console print that happens
@@ -239,7 +236,6 @@ public:
 	idUserInterface *guiMainMenu;
 	idListGUI *guiMainMenu_MapList; // easy map list handling
 	idUserInterface *guiRestartMenu;
-	// idUserInterface *guiLoading;
 	idUserInterface *guiIntro;
 	idUserInterface *guiGameOver;
 	idUserInterface *guiTest;

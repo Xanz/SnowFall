@@ -328,9 +328,7 @@ idSessionLocal::Clear
 */
 void idSessionLocal::Clear()
 {
-
 	insideUpdateScreen = false;
-	insideExecuteMapChange = false;
 
 	loadingSaveGame = false;
 	savegameFile = NULL;
@@ -418,7 +416,6 @@ void idSessionLocal::Stop()
 	idAsyncNetwork::server.Kill();
 
 	insideUpdateScreen = false;
-	insideExecuteMapChange = false;
 
 	// drop all guis
 	SetGUI(NULL, NULL);
@@ -999,9 +996,9 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 		return;
 	}
 
-	insideExecuteMapChange = true;
+	guiManager.SetState(LOADING);
 	UpdateScreen();
-	insideExecuteMapChange = false;
+	guiManager.SetState(HUD);
 	// guiLoading->SetStateString("demo", "");
 
 	// setup default render demo settings
@@ -1038,9 +1035,9 @@ void idSessionLocal::TimeRenderDemo(const char *demoName, bool twice)
 		// guiLoading->StateChanged(com_frameTime);
 		while (readDemo)
 		{
-			insideExecuteMapChange = true;
+			guiManager.SetState(LOADING);
 			UpdateScreen();
-			insideExecuteMapChange = false;
+			guiManager.SetState(HUD);
 			AdvanceRenderDemo(true);
 		}
 		// guiLoading->SetStateString("demo", "");

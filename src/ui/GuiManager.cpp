@@ -23,6 +23,8 @@ void sfGUIManager::SetState(sfGUIState_t state)
     m_State = state;
 }
 
+/// @brief Sets the loading screen map.
+/// @param mapName
 void sfGUIManager::SetLoadingScreen(const char *mapName)
 {
     idStr stripped = mapName;
