@@ -239,7 +239,7 @@ public:
 	idUserInterface *guiMainMenu;
 	idListGUI *guiMainMenu_MapList; // easy map list handling
 	idUserInterface *guiRestartMenu;
-	idUserInterface *guiLoading;
+	// idUserInterface *guiLoading;
 	idUserInterface *guiIntro;
 	idUserInterface *guiGameOver;
 	idUserInterface *guiTest;

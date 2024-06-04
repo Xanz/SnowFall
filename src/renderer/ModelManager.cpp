@@ -475,8 +475,11 @@ idRenderModelManagerLocal::RemoveModel
 void idRenderModelManagerLocal::RemoveModel(idRenderModel *model)
 {
 	int index = models.FindIndex(model);
-	hash.RemoveIndex(hash.GenerateKey(model->Name(), false), index);
-	models.RemoveIndex(index);
+	if (index != -1)
+	{
+		hash.RemoveIndex(hash.GenerateKey(model->Name(), false), index);
+		models.RemoveIndex(index);
+	}
 }
 
 /*

@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Session_local.h"
+#include "../ui/GuiManager.h"
 
 idCVar idSessionLocal::com_showAngles("com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "");
 idCVar idSessionLocal::com_minTics("com_minTics", "1", CVAR_SYSTEM, "");
@@ -382,7 +383,7 @@ idSessionLocal::idSessionLocal
 */
 idSessionLocal::idSessionLocal()
 {
-	guiInGame = guiMainMenu = guiIntro = guiRestartMenu = guiLoading = guiGameOver = guiActive = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = NULL;
+	guiInGame = guiMainMenu = guiIntro = guiRestartMenu = guiGameOver = guiActive = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = NULL;
 
 	Clear();
 }
@@ -809,27 +810,6 @@ static void Session_Disconnect_f(const idCmdArgs &args)
 	}
 }
 
-#ifdef ID_DEMO_BUILD
-/*
-================
-Session_EndOfDemo_f
-================
-*/
-static void Session_EndOfDemo_f(const idCmdArgs &args)
-{
-	sessLocal.Stop();
-	sessLocal.StartMenu();
-	if (soundSystem)
-	{
-		soundSystem->SetMute(false);
-	}
-	if (sessLocal.guiActive)
-	{
-		sessLocal.guiActive->HandleNamedEvent("endOfDemo");
-	}
-}
-#endif
-
 /*
 ================
 Session_ExitCmdDemo_f
@@ -1004,8 +984,8 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 
 	// bring up the loading screen manually, since demos won't
 	// call ExecuteMapChange()
-	guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
-	guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_02087"));
+	// guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
+	// guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_02087"));
 	readDemo = new idDemoFile;
 	demoName.DefaultFileExtension(".demo");
 	if (!readDemo->OpenForReading(demoName))
@@ -1022,7 +1002,7 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 	insideExecuteMapChange = true;
 	UpdateScreen();
 	insideExecuteMapChange = false;
-	guiLoading->SetStateString("demo", "");
+	// guiLoading->SetStateString("demo", "");
 
 	// setup default render demo settings
 	// that's default for <= Doom3 v1.1
@@ -1054,8 +1034,8 @@ void idSessionLocal::TimeRenderDemo(const char *demoName, bool twice)
 	if (twice && readDemo)
 	{
 		// cycle through once to precache everything
-		guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_04852"));
-		guiLoading->StateChanged(com_frameTime);
+		// guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_04852"));
+		// guiLoading->StateChanged(com_frameTime);
 		while (readDemo)
 		{
 			insideExecuteMapChange = true;
@@ -1063,7 +1043,7 @@ void idSessionLocal::TimeRenderDemo(const char *demoName, bool twice)
 			insideExecuteMapChange = false;
 			AdvanceRenderDemo(true);
 		}
-		guiLoading->SetStateString("demo", "");
+		// guiLoading->SetStateString("demo", "");
 		StartPlayingRenderDemo(demo);
 	}
 
@@ -1473,7 +1453,7 @@ void idSessionLocal::StartPlayingCmdDemo(const char *demoName)
 		return;
 	}
 
-	guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
+	// guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
 	// cmdDemoFile->Read(&loadGameTime, sizeof(loadGameTime));
 
 	LoadCmdDemoFromFile(cmdDemoFile);
@@ -1527,34 +1507,6 @@ void idSessionLocal::TimeCmdDemo(const char *demoName)
 	int endTime = Sys_Milliseconds();
 	sec = (endTime - startTime) / 1000.0;
 	common->Printf("%i seconds of game, replayed in %5.1f seconds\n", count / 60, sec);
-}
-
-/*
-===============
-idSessionLocal::LoadLoadingGui
-===============
-*/
-void idSessionLocal::LoadLoadingGui(const char *mapName)
-{
-	// load / program a gui to stay up on the screen while loading
-	idStr stripped = mapName;
-	stripped.StripFileExtension();
-	stripped.StripPath();
-
-	char guiMap[MAX_STRING_CHARS];
-	strncpy(guiMap, va("guis/map/%s.gui", stripped.c_str()), MAX_STRING_CHARS);
-	// give the gamecode a chance to override
-	game->GetMapLoadingGUI(guiMap);
-
-	if (uiManager->CheckGui(guiMap))
-	{
-		guiLoading = uiManager->FindGui(guiMap, true, false, true);
-	}
-	else
-	{
-		guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
-	}
-	guiLoading->SetStateFloat("map_loading", 0.0f);
 }
 
 /*
@@ -2305,7 +2257,7 @@ idSessionLocal::PacifierUpdate
 */
 void idSessionLocal::PacifierUpdate()
 {
-	if (!insideExecuteMapChange)
+	if (guiManager.GetCurrentState() != sfGUIState_t::LOADING)
 	{
 		return;
 	}
@@ -2325,13 +2277,7 @@ void idSessionLocal::PacifierUpdate()
 	}
 	lastPacifierTime = time;
 
-	if (guiLoading && bytesNeededForMapLoad)
-	{
-		float n = fileSystem->GetReadCount();
-		float pct = (n / bytesNeededForMapLoad);
-		guiLoading->SetStateFloat("map_loading", pct);
-		guiLoading->StateChanged(com_frameTime);
-	}
+	guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
 
 	Sys_GenerateEvents();
 
@@ -2350,12 +2296,9 @@ void idSessionLocal::Draw()
 {
 	bool fullConsole = false;
 
-	if (insideExecuteMapChange)
+	if (guiManager.GetCurrentState() == sfGUIState_t::LOADING)
 	{
-		if (guiLoading)
-		{
-			guiLoading->Redraw(com_frameTime);
-		}
+		guiManager.Update(com_frameTime);
 		if (guiActive == guiMsg)
 		{
 			guiMsg->Redraw(com_frameTime);

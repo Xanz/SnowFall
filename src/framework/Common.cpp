@@ -31,6 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../renderer/Image.h"
 #include "Session_local.h"
+#include "../ui/GuiManager.h"
 
 typedef enum
 {
@@ -2567,11 +2568,7 @@ void idCommonLocal::ExecuteMapChange(bool noFadeWipe)
 	uiManager->Reload(true);
 
 	// set the loading gui that we will wipe to
-	sessLocal.LoadLoadingGui(mapString);
-
-	// cause prints to force screen updates as a pacifier,
-	// and draw the loading gui instead of game draws
-	sessLocal.insideExecuteMapChange = true;
+	guiManager.SetLoadingScreen(mapString);
 
 	// if this works out we will probably want all the sizes in a def file although this solution will
 	// work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
@@ -2688,15 +2685,9 @@ void idCommonLocal::ExecuteMapChange(bool noFadeWipe)
 
 	common->PrintWarnings();
 
-	if (sessLocal.guiLoading && sessLocal.bytesNeededForMapLoad)
-	{
-		float n = fileSystem->GetReadCount();
-		float pct = (n / sessLocal.bytesNeededForMapLoad);
-		sessLocal.guiLoading->SetStateFloat("map_loading", pct);
-		sessLocal.guiLoading->StateChanged(com_frameTime);
-		Sys_GenerateEvents();
-		sessLocal.UpdateScreen();
-	}
+	guiManager.AdvanceLoading(com_frameTime, sessLocal.bytesNeededForMapLoad);
+	Sys_GenerateEvents();
+	sessLocal.UpdateScreen();
 
 	// capture the current screen and start a wipe
 	sessLocal.StartWipe("wipe2Material");
@@ -2714,8 +2705,8 @@ void idCommonLocal::ExecuteMapChange(bool noFadeWipe)
 	// remove any prints from the notify lines
 	console->ClearNotifyLines();
 
-	// stop drawing the laoding screen
-	sessLocal.insideExecuteMapChange = false;
+	// stop drawing the loading screen
+	guiManager.SetState(sfGUIState_t::HUD);
 
 	Sys_SetPhysicalWorkMemory(-1, -1);
 
@@ -2948,138 +2939,129 @@ idCommonLocal::Frame
 */
 void idCommonLocal::Frame(void)
 {
-	try
+	// pump all the events
+	Sys_GenerateEvents();
+
+	// write config file if anything changed
+	WriteConfiguration();
+
+	// change SIMD implementation if required
+	if (com_forceGenericSIMD.IsModified())
 	{
+		InitSIMD();
+	}
 
-		// pump all the events
-		Sys_GenerateEvents();
+	eventLoop->RunEventLoop();
 
-		// write config file if anything changed
-		WriteConfiguration();
+	//--------------------------------------------
+	// Determine how many game tics we are going to run,
+	// now that the previous frame is completely finished.
+	//
+	// It is important that any waiting on the GPU be done
+	// before this, or there will be a bad stuttering when
+	// dropping frames for performance management.
+	//--------------------------------------------
 
-		// change SIMD implementation if required
-		if (com_forceGenericSIMD.IsModified())
-		{
-			InitSIMD();
-		}
+	// input:
+	// thisFrameTime
+	// com_noSleep
+	// com_engineHz
+	// com_fixedTic
+	// com_deltaTimeClamp
+	// IsMultiplayer
+	//
+	// in/out state:
+	// gameFrame
+	// gameTimeResidual
+	// lastFrameTime
+	// syncNextFrame
+	//
+	// Output:
+	// numGameFrames
 
-		eventLoop->RunEventLoop();
+	// How many game frames to run
+	int numGameFrames = 0;
 
-		//--------------------------------------------
-		// Determine how many game tics we are going to run,
-		// now that the previous frame is completely finished.
-		//
-		// It is important that any waiting on the GPU be done
-		// before this, or there will be a bad stuttering when
-		// dropping frames for performance management.
-		//--------------------------------------------
+	for (;;)
+	{
+		const float thisFrameTime = Sys_Milliseconds();
+		static float lastFrameTime = thisFrameTime; // initialized only the first time
+		const float deltaMilliseconds = thisFrameTime - lastFrameTime;
+		lastFrameTime = thisFrameTime;
 
-		// input:
-		// thisFrameTime
-		// com_noSleep
-		// com_engineHz
-		// com_fixedTic
-		// com_deltaTimeClamp
-		// IsMultiplayer
-		//
-		// in/out state:
-		// gameFrame
-		// gameTimeResidual
-		// lastFrameTime
-		// syncNextFrame
-		//
-		// Output:
-		// numGameFrames
+		// if there was a large gap in time since the last frame, or the frame
+		// rate is very very low, limit the number of frames we will run
+		const float clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
 
-		// How many game frames to run
-		int numGameFrames = 0;
+		gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
 
 		for (;;)
 		{
-			const float thisFrameTime = Sys_Milliseconds();
-			static float lastFrameTime = thisFrameTime; // initialized only the first time
-			const float deltaMilliseconds = thisFrameTime - lastFrameTime;
-			lastFrameTime = thisFrameTime;
-
-			// if there was a large gap in time since the last frame, or the frame
-			// rate is very very low, limit the number of frames we will run
-			const float clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
-
-			gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
-
-			for (;;)
+			// How much time to wait before running the next frame,
+			// based on com_engineHz
+			const float frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
+			if (gameTimeResidual < frameDelay)
 			{
-				// How much time to wait before running the next frame,
-				// based on com_engineHz
-				const float frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
-				if (gameTimeResidual < frameDelay)
-				{
-					break;
-				}
-				gameTimeResidual -= frameDelay;
-				gameFrame++;
-				numGameFrames++;
-				com_ticNumber++;
-				// if there is enough residual left, we may run additional frames
-			}
-			sessLocal.latchedTicNumber = com_ticNumber;
-
-			if (numGameFrames > 0)
-			{
-				// ready to actually run them
 				break;
 			}
+			gameTimeResidual -= frameDelay;
+			gameFrame++;
+			numGameFrames++;
+			com_ticNumber++;
+			// if there is enough residual left, we may run additional frames
+		}
+		sessLocal.latchedTicNumber = com_ticNumber;
 
-			// not enough time has passed to run a frame, as might happen if
-			// we don't have vsync on, or the monitor is running at 120hz while
-			// com_engineHz is 60, so sleep a bit and check again
-			Sys_Sleep(0);
+		if (numGameFrames > 0)
+		{
+			// ready to actually run them
+			break;
 		}
 
-		com_frameTime = Sys_Milliseconds();
+		// not enough time has passed to run a frame, as might happen if
+		// we don't have vsync on, or the monitor is running at 120hz while
+		// com_engineHz is 60, so sleep a bit and check again
+		Sys_Sleep(0);
+	}
 
-		idAsyncNetwork::RunFrame();
+	com_frameTime = Sys_Milliseconds();
 
-		if (idAsyncNetwork::IsActive())
+	idAsyncNetwork::RunFrame();
+
+	if (idAsyncNetwork::IsActive())
+	{
+		if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
 		{
-			if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
-			{
-				session->GuiFrameEvents();
-				session->UpdateScreen(false);
-			}
-		}
-		else
-		{
-			session->Frame();
-
-			// normal, in-sequence screen update
+			session->GuiFrameEvents();
 			session->UpdateScreen(false);
 		}
-
-		soundSystem->Update();
-
-		// report timing information
-		if (com_speeds.GetBool())
-		{
-			static int lastTime;
-			int nowTime = Sys_Milliseconds();
-			int com_frameMsec = nowTime - lastTime;
-			lastTime = nowTime;
-			Printf("frame:%i all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
-			time_gameFrame = 0;
-			time_gameDraw = 0;
-		}
-
-		com_frameNumber++;
-
-		// set idLib frame number for frame based memory dumps
-		idLib::frameNumber = com_frameNumber;
 	}
-
-	catch (idException &)
+	else
 	{
-		return; // an ERP_DROP was thrown
+		session->Frame();
+
+		// normal, in-sequence screen update
+		session->UpdateScreen(false);
 	}
+
+	soundSystem->Update();
+
+	// report timing information
+	if (com_speeds.GetBool())
+	{
+		static int lastTime;
+		int nowTime = Sys_Milliseconds();
+		int com_frameMsec = nowTime - lastTime;
+		lastTime = nowTime;
+		Printf("frame:%i all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
+		time_gameFrame = 0;
+		time_gameDraw = 0;
+	}
+
+	com_frameNumber++;
+
+	// set idLib frame number for frame based memory dumps
+	idLib::frameNumber = com_frameNumber;
 }
 
 /*
@@ -3394,11 +3376,8 @@ void idCommonLocal::Shutdown(void)
 	idAsyncNetwork::server.Kill();
 	idAsyncNetwork::client.Shutdown();
 
-	if (m_RenderWorld)
-	{
-		delete m_RenderWorld;
-		m_RenderWorld = NULL;
-	}
+	// game specific shut down
+	ShutdownGame(false);
 
 	if (m_GameSoundWorld)
 	{
@@ -3411,9 +3390,6 @@ void idCommonLocal::Shutdown(void)
 		delete m_MenuSoundWorld;
 		m_MenuSoundWorld = NULL;
 	}
-
-	// game specific shut down
-	ShutdownGame(false);
 
 	// shut down non-portable system services
 	Sys_Shutdown();
