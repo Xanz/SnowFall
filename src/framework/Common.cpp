@@ -3234,15 +3234,6 @@ void idCommonLocal::SetMachineSpec(void)
 	com_videoRam.SetInteger(vidRam);
 }
 
-void idSoundThread()
-{
-	// while (!commonLocal.com_shuttingDown)
-	// {
-	// soundSystem->Render();
-	// Sleep(0);
-	// }
-}
-
 /*
 =================
 idCommonLocal::Init
@@ -3348,8 +3339,6 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		console->ClearNotifyLines();
 
 		ClearCommandLine();
-
-		static std::thread soundThread(idSoundThread);
 
 		com_fullyInitialized = true;
 

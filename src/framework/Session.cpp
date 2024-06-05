@@ -2254,7 +2254,7 @@ idSessionLocal::PacifierUpdate
 */
 void idSessionLocal::PacifierUpdate()
 {
-	if (guiManager.GetCurrentState() != sfGUIState_t::LOADING)
+	if (guiManager.GetState() != sfGUIState_t::LOADING)
 	{
 		return;
 	}
@@ -2274,7 +2274,7 @@ void idSessionLocal::PacifierUpdate()
 	}
 	lastPacifierTime = time;
 
-	guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
+	// guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
 
 	Sys_GenerateEvents();
 
@@ -2293,8 +2293,9 @@ void idSessionLocal::Draw()
 {
 	bool fullConsole = false;
 
-	if (guiManager.GetCurrentState() == sfGUIState_t::LOADING)
+	if (guiManager.GetState() == sfGUIState_t::LOADING)
 	{
+		// guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
 		guiManager.Update(com_frameTime);
 		if (guiActive == guiMsg)
 		{

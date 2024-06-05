@@ -18,7 +18,7 @@ enum sfGUIState
 class sfGUIManager
 {
 public:
-    sfGUIState_t GetCurrentState() { return m_State; };
+    sfGUIState_t GetState() { return m_State; };
 
     void SetState(sfGUIState_t state);
 
@@ -31,10 +31,11 @@ public:
     bool IsActive();
 
 private:
+    void Draw(idUserInterface *userInterface, float frameTime);
+
+private:
     sfGUIState_t m_State;
     idUserInterface *m_LoadScreen;
-
-    void Draw(idUserInterface *userInterface, float frameTime);
 };
 
 extern sfGUIManager guiManager;
