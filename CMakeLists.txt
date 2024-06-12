@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.13.0)
-project(Doom3 VERSION 1.4.3)
+project(SnowFall VERSION 1.4.3)
 
 file(GLOB D3GAME src/game/*.cpp src/game/*.h src/game/game.def)
 file(GLOB D3GAME_AI src/game/ai/*.cpp src/game/ai/*.h)

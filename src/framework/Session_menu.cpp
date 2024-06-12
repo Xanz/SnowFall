@@ -64,13 +64,13 @@ void idSessionLocal::StartMenu(bool playIntro)
 	}
 
 	// pause the game sound world
-	// if (sw != NULL && !sw->IsPaused())
-	// {
-	// sw->Pause();
-	// }
+	if (commonLocal.m_GameSoundWorld != NULL && !commonLocal.m_GameSoundWorld->IsPaused())
+	{
+		commonLocal.m_GameSoundWorld->Pause();
+	}
 
 	// start playing the menu sounds
-	// soundSystem->SetPlayingSoundWorld(menuSoundWorld);
+	soundSystem->SetPlayingSoundWorld(commonLocal.m_MenuSoundWorld);
 
 	SetGUI(guiMainMenu, NULL);
 	guiMainMenu->HandleNamedEvent(playIntro ? "playIntro" : "noIntro");
@@ -136,13 +136,13 @@ void idSessionLocal::ExitMenu(void)
 	guiActive = NULL;
 
 	// go back to the game sounds
-	// soundSystem->SetPlayingSoundWorld(sw);
+	soundSystem->SetPlayingSoundWorld(commonLocal.m_GameSoundWorld);
 
 	// unpause the game sound world
-	// if (sw != NULL && sw->IsPaused())
-	// {
-	// sw->UnPause();/
-	// }/
+	if (commonLocal.m_GameSoundWorld != NULL && commonLocal.m_GameSoundWorld->IsPaused())
+	{
+		commonLocal.m_GameSoundWorld->UnPause();
+	}
 }
 
 /*
@@ -597,7 +597,7 @@ void idSessionLocal::HandleIntroMenuCommands(const char *menuCommand)
 
 		if (!idStr::Icmp(cmd, "startGame"))
 		{
-			// menuSoundWorld->ClearAllSoundEmitters();
+			commonLocal.m_MenuSoundWorld->ClearAllSoundEmitters();
 			ExitMenu();
 			continue;
 		}
@@ -607,7 +607,7 @@ void idSessionLocal::HandleIntroMenuCommands(const char *menuCommand)
 			if (args.Argc() - i >= 1)
 			{
 				idStr snd = args.Argv(i++);
-				// menuSoundWorld->PlayShaderDirectly(snd);
+				commonLocal.m_MenuSoundWorld->PlayShaderDirectly(snd);
 			}
 			continue;
 		}
@@ -677,7 +677,7 @@ void idSessionLocal::HandleMainMenuCommands(const char *menuCommand)
 			SetGUI(guiIntro, NULL);
 			guiIntro->StateChanged(com_frameTime, true);
 			// stop playing the game sounds
-			// soundSystem->SetPlayingSoundWorld(menuSoundWorld);
+			soundSystem->SetPlayingSoundWorld(commonLocal.m_MenuSoundWorld);
 
 			continue;
 		}
@@ -989,7 +989,7 @@ void idSessionLocal::HandleMainMenuCommands(const char *menuCommand)
 					channel = atoi(snd);
 					snd = args.Argv(icmd++);
 				}
-				// menuSoundWorld->PlayShaderDirectly(snd, channel);
+				commonLocal.m_MenuSoundWorld->PlayShaderDirectly(snd, channel);
 			}
 			continue;
 		}
@@ -999,7 +999,7 @@ void idSessionLocal::HandleMainMenuCommands(const char *menuCommand)
 			if (args.Argc() - icmd >= 1)
 			{
 				idStr snd = args.Argv(icmd++);
-				// menuSoundWorld->PlayShaderDirectly(snd, 2);
+				commonLocal.m_MenuSoundWorld->PlayShaderDirectly(snd, 2);
 			}
 			continue;
 		}
