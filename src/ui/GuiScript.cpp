@@ -141,7 +141,7 @@ void Script_LocalSound(idWindow *window, idList<idGSWinVar> *src)
 	idWinStr *parm = dynamic_cast<idWinStr *>((*src)[0].var);
 	if (parm)
 	{
-		session->sw->PlayShaderDirectly(*parm);
+		commonLocal.m_GameSoundWorld->PlayShaderDirectly(*parm);
 	}
 }
 

@@ -29,6 +29,8 @@ If you have questions concerning this license or the applicable additional terms
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
+// #include "../renderer/RenderWorld.h"
+// #include "../sound/sound.h"
 /*
 ==============================================================
 
@@ -36,6 +38,12 @@ If you have questions concerning this license or the applicable additional terms
 
 ==============================================================
 */
+
+class idSoundWorld;
+class idRenderWorld;
+
+#define MAX_PRINT_MSG_SIZE 4096
+#define MAX_WARNING_LIST 256
 
 typedef enum
 {
@@ -208,13 +216,120 @@ public:
 	virtual int KeyState(int key) = 0;
 };
 
+class idCommonLocal : public idCommon
+{
+public:
+	idCommonLocal(void);
+
+	virtual void Init(int argc, const char **argv, const char *cmdline);
+	virtual void Shutdown(void);
+	virtual void Quit(void);
+	virtual bool IsInitialized(void) const;
+	virtual void Frame(void);
+	virtual void GUIFrame(bool execCmd, bool network);
+	virtual void StartupVariable(const char *match, bool once);
+	virtual void InitTool(const toolFlag_t tool, const idDict *dict);
+	virtual void ActivateTool(bool active);
+	virtual void WriteConfigToFile(const char *filename);
+	virtual void WriteFlaggedCVarsToFile(const char *filename, int flags, const char *setCmd);
+	virtual void BeginRedirect(char *buffer, int buffersize, void (*flush)(const char *));
+	virtual void EndRedirect(void);
+	virtual void SetRefreshOnPrint(bool set);
+	virtual void Printf(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual void VPrintf(const char *fmt, va_list arg);
+	virtual void DPrintf(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual void Warning(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual void DWarning(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual void PrintWarnings(void);
+	virtual void ClearWarnings(const char *reason);
+	virtual void Error(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual void FatalError(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
+	virtual const idLangDict *GetLanguageDict(void);
+
+	virtual const char *KeysFromBinding(const char *bind);
+	virtual const char *BindingFromKey(const char *key);
+
+	virtual int ButtonState(int key);
+	virtual int KeyState(int key);
+
+	void InitGame(void);
+	void ShutdownGame(bool reloading);
+
+	// localization
+	void InitLanguageDict(void);
+	void LocalizeGui(const char *fileName, idLangDict &langDict);
+	void LocalizeMapData(const char *fileName, idLangDict &langDict);
+	void LocalizeSpecificMapData(const char *fileName, idLangDict &langDict, const idLangDict &replaceArgs);
+
+	void SetMachineSpec(void);
+
+	bool com_shuttingDown;
+
+	void ExecuteMapChange(bool noFadeWipe = false);
+
+	void UnloadMap();
+
+	idRenderWorld *m_RenderWorld;
+	idSoundWorld *m_GameSoundWorld;
+	idSoundWorld *m_MenuSoundWorld; // so the game soundWorld can be muted
+
+private:
+	void InitCommands(void);
+	void InitRenderSystem(void);
+	void InitSIMD(void);
+	bool AddStartupCommands(void);
+	void ParseCommandLine(int argc, const char **argv);
+	void ClearCommandLine(void);
+	bool SafeMode(void);
+	void CheckToolMode(void);
+	void CloseLogFile(void);
+	void WriteConfiguration(void);
+	void DumpWarnings(void);
+	void SingleAsyncTic(void);
+	void LoadGameDLL(void);
+	void UnloadGameDLL(void);
+	void PrintLoadingMessage(const char *msg);
+	void FilterLangList(idStrList *list, idStr lang);
+
+	bool com_fullyInitialized;
+	bool com_refreshOnPrint; // update the screen every print for dmap
+	int com_errorEntered;	 // 0, ERP_DROP, etc
+
+	idFile *logFile;
+
+	char errorMessage[MAX_PRINT_MSG_SIZE];
+
+	char *rd_buffer;
+	int rd_buffersize;
+	void (*rd_flush)(const char *buffer);
+
+	idStr warningCaption;
+	idStrList warningList;
+	idStrList errorList;
+
+	int gameDLL;
+
+	idLangDict languageDict;
+
+#ifdef ID_WRITE_VERSION
+	idCompressor *config_compressor;
+#endif
+
+	int gameFrame;			 // Frame number of the local game
+	double gameTimeResidual; // left over msec from the last game frame
+};
+
 extern idCommon *common;
+extern idCommonLocal commonLocal;
 extern idCVar com_engineHz;
 extern float com_engineHz_latched;
 extern float com_engineHz_numerator;
 extern float com_engineHz_denominator;
 
 extern float deltaTime;
+
+// ID_INLINE idCommonLocal GetCommonLocal(){
+// 	return }
 
 // Returns the msec the frame starts on
 ID_INLINE float FRAME_TO_MSEC(float frame)

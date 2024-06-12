@@ -322,12 +322,13 @@ idSoundWorld *idSoundSystemLocal::GetPlayingSoundWorld()
 
 /*
 ========================
-idSoundSystemLocal::Render
+idSoundSystemLocal::Update
+
+This function should be run as fast as possible. In the main update thread.
 ========================
 */
-void idSoundSystemLocal::Render()
+void idSoundSystemLocal::Update()
 {
-
 	if (s_noSound.GetBool())
 	{
 		return;

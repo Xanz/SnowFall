@@ -894,7 +894,7 @@ void idAsyncClient::ProcessUnreliableServerMessage(const idBitMsg &msg)
 		{
 			// load map
 			session->SetGUI(NULL, NULL);
-			sessLocal.ExecuteMapChange();
+			commonLocal.ExecuteMapChange();
 		}
 
 		break;
@@ -1030,7 +1030,7 @@ void idAsyncClient::ProcessReliableMessagePure(const idBitMsg &msg)
 	}
 
 	// it is now ok to load the next map with updated pure checksums
-	sessLocal.ExecuteMapChange(true);
+	commonLocal.ExecuteMapChange(true);
 
 	// upon receiving our pure list, the server will send us SCS_INGAME and we'll start getting snapshots
 	fileSystem->GetPureServerChecksums(inChecksums, -1, &gamePakChecksum);
@@ -1301,7 +1301,7 @@ void idAsyncClient::ProcessConnectResponseMessage(const netadr_t from, const idB
 
 	// load map
 	session->SetGUI(NULL, NULL);
-	sessLocal.ExecuteMapChange();
+	commonLocal.ExecuteMapChange();
 
 	clientPredictTime = clientPrediction = idMath::ClampInt(0, idAsyncNetwork::clientMaxPrediction.GetInteger(), clientTime - lastConnectTime);
 }

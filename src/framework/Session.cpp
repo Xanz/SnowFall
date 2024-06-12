@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Session_local.h"
+#include "../ui/GuiManager.h"
 
 idCVar idSessionLocal::com_showAngles("com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "");
 idCVar idSessionLocal::com_minTics("com_minTics", "1", CVAR_SYSTEM, "");
@@ -327,9 +328,7 @@ idSessionLocal::Clear
 */
 void idSessionLocal::Clear()
 {
-
 	insideUpdateScreen = false;
-	insideExecuteMapChange = false;
 
 	loadingSaveGame = false;
 	savegameFile = NULL;
@@ -342,9 +341,6 @@ void idSessionLocal::Clear()
 
 	timeHitch = 0;
 
-	rw = NULL;
-	sw = NULL;
-	menuSoundWorld = NULL;
 	readDemo = NULL;
 	writeDemo = NULL;
 	renderdemoVersion = 0;
@@ -385,11 +381,7 @@ idSessionLocal::idSessionLocal
 */
 idSessionLocal::idSessionLocal()
 {
-	guiInGame = guiMainMenu = guiIntro = guiRestartMenu = guiLoading = guiGameOver = guiActive = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = NULL;
-
-	menuSoundWorld = NULL;
-
-	// lastTicMsec = 0;
+	guiInGame = guiMainMenu = guiIntro = guiRestartMenu = guiGameOver = guiActive = guiTest = guiMsg = guiMsgRestore = guiTakeNotes = NULL;
 
 	Clear();
 }
@@ -415,7 +407,7 @@ void idSessionLocal::Stop()
 	ClearWipe();
 
 	// clear mapSpawned and demo playing flags
-	UnloadMap();
+	commonLocal.UnloadMap();
 
 	// disconnect async client
 	idAsyncNetwork::client.DisconnectFromServer();
@@ -423,13 +415,7 @@ void idSessionLocal::Stop()
 	// kill async server
 	idAsyncNetwork::server.Kill();
 
-	if (sw)
-	{
-		sw->StopAllSounds();
-	}
-
 	insideUpdateScreen = false;
-	insideExecuteMapChange = false;
 
 	// drop all guis
 	SetGUI(NULL, NULL);
@@ -450,24 +436,6 @@ void idSessionLocal::Shutdown()
 	}
 
 	Stop();
-
-	if (rw)
-	{
-		delete rw;
-		rw = NULL;
-	}
-
-	if (sw)
-	{
-		delete sw;
-		sw = NULL;
-	}
-
-	if (menuSoundWorld)
-	{
-		delete menuSoundWorld;
-		menuSoundWorld = NULL;
-	}
 
 	mapSpawnData.serverInfo.Clear();
 	mapSpawnData.syncedCVars.Clear();
@@ -839,27 +807,6 @@ static void Session_Disconnect_f(const idCmdArgs &args)
 	}
 }
 
-#ifdef ID_DEMO_BUILD
-/*
-================
-Session_EndOfDemo_f
-================
-*/
-static void Session_EndOfDemo_f(const idCmdArgs &args)
-{
-	sessLocal.Stop();
-	sessLocal.StartMenu();
-	if (soundSystem)
-	{
-		soundSystem->SetMute(false);
-	}
-	if (sessLocal.guiActive)
-	{
-		sessLocal.guiActive->HandleNamedEvent("endOfDemo");
-	}
-}
-#endif
-
 /*
 ================
 Session_ExitCmdDemo_f
@@ -915,7 +862,7 @@ void idSessionLocal::StartRecordingRenderDemo(const char *demoName)
 
 	// if we are in a map already, dump the current state
 	// sw->StartWritingDemo(writeDemo);
-	rw->StartWritingDemo(writeDemo);
+	// rw->StartWritingDemo(writeDemo);
 }
 
 /*
@@ -931,7 +878,7 @@ void idSessionLocal::StopRecordingRenderDemo()
 		return;
 	}
 	// sw->StopWritingDemo();
-	rw->StopWritingDemo();
+	// rw->StopWritingDemo();
 
 	writeDemo->Close();
 	common->Printf("stopped recording %s.\n", writeDemo->GetName());
@@ -961,8 +908,8 @@ void idSessionLocal::StopPlayingRenderDemo()
 
 	readDemo->Close();
 
-	sw->StopAllSounds();
-	soundSystem->SetPlayingSoundWorld(menuSoundWorld);
+	// sw->StopAllSounds();
+	// soundSystem->SetPlayingSoundWorld(menuSoundWorld);
 
 	common->Printf("stopped playing %s.\n", readDemo->GetName());
 	delete readDemo;
@@ -1021,10 +968,10 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 	}
 
 	// make sure localSound / GUI intro music shuts up
-	sw->StopAllSounds();
-	sw->PlayShaderDirectly("", 0);
-	menuSoundWorld->StopAllSounds();
-	menuSoundWorld->PlayShaderDirectly("", 0);
+	// sw->StopAllSounds();
+	// sw->PlayShaderDirectly("", 0);
+	// menuSoundWorld->StopAllSounds();
+	// menuSoundWorld->PlayShaderDirectly("", 0);
 
 	// exit any current game
 	Stop();
@@ -1034,8 +981,8 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 
 	// bring up the loading screen manually, since demos won't
 	// call ExecuteMapChange()
-	guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
-	guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_02087"));
+	// guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
+	// guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_02087"));
 	readDemo = new idDemoFile;
 	demoName.DefaultFileExtension(".demo");
 	if (!readDemo->OpenForReading(demoName))
@@ -1049,10 +996,10 @@ void idSessionLocal::StartPlayingRenderDemo(idStr demoName)
 		return;
 	}
 
-	insideExecuteMapChange = true;
+	guiManager.SetState(LOADING);
 	UpdateScreen();
-	insideExecuteMapChange = false;
-	guiLoading->SetStateString("demo", "");
+	guiManager.SetState(HUD);
+	// guiLoading->SetStateString("demo", "");
 
 	// setup default render demo settings
 	// that's default for <= Doom3 v1.1
@@ -1084,16 +1031,16 @@ void idSessionLocal::TimeRenderDemo(const char *demoName, bool twice)
 	if (twice && readDemo)
 	{
 		// cycle through once to precache everything
-		guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_04852"));
-		guiLoading->StateChanged(com_frameTime);
+		// guiLoading->SetStateString("demo", common->GetLanguageDict()->GetString("#str_04852"));
+		// guiLoading->StateChanged(com_frameTime);
 		while (readDemo)
 		{
-			insideExecuteMapChange = true;
+			guiManager.SetState(LOADING);
 			UpdateScreen();
-			insideExecuteMapChange = false;
+			guiManager.SetState(HUD);
 			AdvanceRenderDemo(true);
 		}
-		guiLoading->SetStateString("demo", "");
+		// guiLoading->SetStateString("demo", "");
 		StartPlayingRenderDemo(demo);
 	}
 
@@ -1364,7 +1311,7 @@ void idSessionLocal::MoveToNewMap(const char *mapName)
 {
 	mapSpawnData.serverInfo.Set("si_map", mapName);
 
-	ExecuteMapChange();
+	commonLocal.ExecuteMapChange();
 
 	if (!mapSpawnData.serverInfo.GetBool("devmap"))
 	{
@@ -1503,13 +1450,13 @@ void idSessionLocal::StartPlayingCmdDemo(const char *demoName)
 		return;
 	}
 
-	guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
+	// guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
 	// cmdDemoFile->Read(&loadGameTime, sizeof(loadGameTime));
 
 	LoadCmdDemoFromFile(cmdDemoFile);
 
 	// start the map
-	ExecuteMapChange();
+	commonLocal.ExecuteMapChange();
 
 	cmdDemoFile = fileSystem->OpenFileRead(fullDemoName);
 
@@ -1557,67 +1504,6 @@ void idSessionLocal::TimeCmdDemo(const char *demoName)
 	int endTime = Sys_Milliseconds();
 	sec = (endTime - startTime) / 1000.0;
 	common->Printf("%i seconds of game, replayed in %5.1f seconds\n", count / 60, sec);
-}
-
-/*
-===============
-idSessionLocal::UnloadMap
-
-Performs cleanup that needs to happen between maps, or when a
-game is exited.
-Exits with mapSpawned = false
-===============
-*/
-void idSessionLocal::UnloadMap()
-{
-	StopPlayingRenderDemo();
-
-	// end the current map in the game
-	if (game)
-	{
-		game->MapShutdown();
-	}
-
-	if (cmdDemoFile)
-	{
-		fileSystem->CloseFile(cmdDemoFile);
-		cmdDemoFile = NULL;
-	}
-
-	if (writeDemo)
-	{
-		StopRecordingRenderDemo();
-	}
-
-	mapSpawned = false;
-}
-
-/*
-===============
-idSessionLocal::LoadLoadingGui
-===============
-*/
-void idSessionLocal::LoadLoadingGui(const char *mapName)
-{
-	// load / program a gui to stay up on the screen while loading
-	idStr stripped = mapName;
-	stripped.StripFileExtension();
-	stripped.StripPath();
-
-	char guiMap[MAX_STRING_CHARS];
-	strncpy(guiMap, va("guis/map/%s.gui", stripped.c_str()), MAX_STRING_CHARS);
-	// give the gamecode a chance to override
-	game->GetMapLoadingGUI(guiMap);
-
-	if (uiManager->CheckGui(guiMap))
-	{
-		guiLoading = uiManager->FindGui(guiMap, true, false, true);
-	}
-	else
-	{
-		guiLoading = uiManager->FindGui("guis/map/loading.gui", true, false, true);
-	}
-	guiLoading->SetStateFloat("map_loading", 0.0f);
 }
 
 /*
@@ -1677,247 +1563,6 @@ void idSessionLocal::SetBytesNeededForMapLoad(const char *mapName, int bytesNeed
 		mapDef->SetText(declText);
 		mapDef->ReplaceSourceFileText();
 	}
-}
-
-/*
-===============
-idSessionLocal::ExecuteMapChange
-
-Performs the initialization of a game based on mapSpawnData, used for both single
-player and multiplayer, but not for renderDemos, which don't
-create a game at all.
-Exits with mapSpawned = true
-===============
-*/
-void idSessionLocal::ExecuteMapChange(bool noFadeWipe)
-{
-	int i;
-	bool reloadingSameMap;
-
-	// close console and remove any prints from the notify lines
-	console->Close();
-
-	if (IsMultiplayer())
-	{
-		// make sure the mp GUI isn't up, or when players get back in the
-		// map, mpGame's menu and the gui will be out of sync.
-		SetGUI(NULL, NULL);
-	}
-
-	// mute sound
-	soundSystem->SetMute(true);
-
-	// clear all menu sounds
-	menuSoundWorld->ClearAllSoundEmitters();
-
-	// unpause the game sound world
-	// NOTE: we UnPause again later down. not sure this is needed
-	if (sw->IsPaused())
-	{
-		sw->UnPause();
-	}
-
-	// extract the map name from serverinfo
-	idStr mapString = mapSpawnData.serverInfo.GetString("si_map");
-
-	idStr fullMapName = "maps/";
-	fullMapName += mapString;
-	fullMapName.StripFileExtension();
-
-	// shut down the existing game if it is running
-	UnloadMap();
-
-	// don't do the deferred caching if we are reloading the same map
-	if (fullMapName == currentMapName)
-	{
-		reloadingSameMap = true;
-	}
-	else
-	{
-		reloadingSameMap = false;
-		currentMapName = fullMapName;
-	}
-
-	// note which media we are going to need to load
-	if (!reloadingSameMap)
-	{
-		declManager->BeginLevelLoad();
-		renderSystem->BeginLevelLoad();
-		soundSystem->BeginLevelLoad();
-	}
-
-	uiManager->BeginLevelLoad();
-	uiManager->Reload(true);
-
-	// set the loading gui that we will wipe to
-	LoadLoadingGui(mapString);
-
-	// cause prints to force screen updates as a pacifier,
-	// and draw the loading gui instead of game draws
-	insideExecuteMapChange = true;
-
-	// if this works out we will probably want all the sizes in a def file although this solution will
-	// work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
-	fileSystem->ResetReadCount();
-	if (!reloadingSameMap)
-	{
-		bytesNeededForMapLoad = GetBytesNeededForMapLoad(mapString.c_str());
-	}
-	else
-	{
-		bytesNeededForMapLoad = 30 * 1024 * 1024;
-	}
-
-	ClearWipe();
-
-	// let the loading gui spin for 1 second to animate out
-	ShowLoadingGui();
-
-	// note any warning prints that happen during the load process
-	common->ClearWarnings(mapString);
-
-	// allow com_engineHz to be changed between map loads
-	com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
-	com_engineHz_latched = com_engineHz.GetFloat();
-
-	// release the mouse cursor
-	// before we do this potentially long operation
-	Sys_GrabMouseCursor(false);
-
-	// if net play, we get the number of clients during mapSpawnInfo processing
-	if (!idAsyncNetwork::IsActive())
-	{
-		numClients = 1;
-	}
-
-	int start = Sys_Milliseconds();
-
-	common->Printf("--------- Map Initialization ---------\n");
-	common->Printf("Map: %s\n", mapString.c_str());
-
-	// let the renderSystem load all the geometry
-	if (!rw->InitFromMap(fullMapName))
-	{
-		common->Error("couldn't load %s", fullMapName.c_str());
-	}
-
-	// for the synchronous networking we needed to roll the angles over from
-	// level to level, but now we can just clear everything
-	usercmdGen->InitForNewMap();
-	memset(&mapSpawnData.mapSpawnUsercmd, 0, sizeof(mapSpawnData.mapSpawnUsercmd));
-
-	// set the user info
-	for (i = 0; i < numClients; i++)
-	{
-		game->SetUserInfo(i, mapSpawnData.userInfo[i], idAsyncNetwork::client.IsActive(), false);
-		game->SetPersistentPlayerInfo(i, mapSpawnData.persistentPlayerInfo[i]);
-	}
-
-	// load and spawn all other entities ( from a savegame possibly )
-	if (loadingSaveGame && savegameFile)
-	{
-		if (game->InitFromSaveGame(fullMapName + ".map", rw, sw, savegameFile) == false)
-		{
-			// If the loadgame failed, restart the map with the player persistent data
-			loadingSaveGame = false;
-			fileSystem->CloseFile(savegameFile);
-			savegameFile = NULL;
-
-			game->SetServerInfo(mapSpawnData.serverInfo);
-			game->InitFromNewMap(fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds());
-		}
-	}
-	else
-	{
-		game->SetServerInfo(mapSpawnData.serverInfo);
-		game->InitFromNewMap(fullMapName + ".map", rw, sw, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds());
-	}
-
-	if (!idAsyncNetwork::IsActive() && !loadingSaveGame)
-	{
-		// spawn players
-		for (i = 0; i < numClients; i++)
-		{
-			game->SpawnPlayer(i);
-		}
-	}
-
-	// actually purge/load the media
-	if (!reloadingSameMap)
-	{
-		renderSystem->EndLevelLoad();
-		soundSystem->EndLevelLoad();
-		declManager->EndLevelLoad();
-		SetBytesNeededForMapLoad(mapString.c_str(), fileSystem->GetReadCount());
-	}
-	uiManager->EndLevelLoad();
-
-	if (!idAsyncNetwork::IsActive() && !loadingSaveGame)
-	{
-		// run a few frames to allow everything to settle
-		for (i = 0; i < 10; i++)
-		{
-			game->RunFrame(mapSpawnData.mapSpawnUsercmd);
-		}
-	}
-
-	common->Printf("-----------------------------------\n");
-
-	int msec = Sys_Milliseconds() - start;
-	common->Printf("%6d msec to load %s\n", msec, mapString.c_str());
-
-	// let the renderSystem generate interactions now that everything is spawned
-	rw->GenerateAllInteractions();
-
-	common->PrintWarnings();
-
-	if (guiLoading && bytesNeededForMapLoad)
-	{
-		float n = fileSystem->GetReadCount();
-		float pct = (n / bytesNeededForMapLoad);
-		guiLoading->SetStateFloat("map_loading", pct);
-		guiLoading->StateChanged(com_frameTime);
-		Sys_GenerateEvents();
-		UpdateScreen();
-	}
-
-	// capture the current screen and start a wipe
-	StartWipe("wipe2Material");
-
-	usercmdGen->Clear();
-
-	// start saving commands for possible writeCmdDemo usage
-	logIndex = 0;
-	statIndex = 0;
-	lastSaveIndex = 0;
-
-	// don't bother spinning over all the tics we spent loading
-	lastGameTic = latchedTicNumber = com_ticNumber;
-
-	// remove any prints from the notify lines
-	console->ClearNotifyLines();
-
-	// stop drawing the laoding screen
-	insideExecuteMapChange = false;
-
-	Sys_SetPhysicalWorkMemory(-1, -1);
-
-	// set the game sound world for playback
-	soundSystem->SetPlayingSoundWorld(sw);
-
-	// when loading a save game the sound is paused
-	if (sw->IsPaused())
-	{
-		// unpause the game sound world
-		sw->UnPause();
-	}
-
-	// restart entity sound playback
-	soundSystem->SetMute(false);
-
-	// we are valid for game draws now
-	mapSpawned = true;
-	Sys_ClearEvents();
 }
 
 /*
@@ -2374,7 +2019,7 @@ bool idSessionLocal::LoadGame(const char *saveName)
 		// make sure no buttons are pressed
 		mapSpawnData.mapSpawnUsercmd[0].buttons = 0;
 
-		ExecuteMapChange();
+		commonLocal.ExecuteMapChange();
 
 		SetGUI(NULL, NULL);
 	}
@@ -2543,12 +2188,12 @@ void idSessionLocal::AdvanceRenderDemo(bool singleFrameOnly)
 		}
 		if (ds == DS_RENDER)
 		{
-			if (rw->ProcessDemoCommand(readDemo, &currentDemoRenderView, &demoTimeOffset))
-			{
-				// a view is ready to render
-				skipFrames--;
-				numDemoFrames++;
-			}
+			// if (rw->ProcessDemoCommand(readDemo, &currentDemoRenderView, &demoTimeOffset))
+			// {
+			// 	// a view is ready to render
+			// 	skipFrames--;
+			// 	numDemoFrames++;
+			// }
 			continue;
 		}
 		if (ds == DS_SOUND)
@@ -2609,7 +2254,7 @@ idSessionLocal::PacifierUpdate
 */
 void idSessionLocal::PacifierUpdate()
 {
-	if (!insideExecuteMapChange)
+	if (guiManager.GetState() != sfGUIState_t::LOADING)
 	{
 		return;
 	}
@@ -2629,13 +2274,7 @@ void idSessionLocal::PacifierUpdate()
 	}
 	lastPacifierTime = time;
 
-	if (guiLoading && bytesNeededForMapLoad)
-	{
-		float n = fileSystem->GetReadCount();
-		float pct = (n / bytesNeededForMapLoad);
-		guiLoading->SetStateFloat("map_loading", pct);
-		guiLoading->StateChanged(com_frameTime);
-	}
+	// guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
 
 	Sys_GenerateEvents();
 
@@ -2654,12 +2293,10 @@ void idSessionLocal::Draw()
 {
 	bool fullConsole = false;
 
-	if (insideExecuteMapChange)
+	if (guiManager.GetState() == sfGUIState_t::LOADING)
 	{
-		if (guiLoading)
-		{
-			guiLoading->Redraw(com_frameTime);
-		}
+		// guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
+		guiManager.Update(com_frameTime);
 		if (guiActive == guiMsg)
 		{
 			guiMsg->Redraw(com_frameTime);
@@ -2693,8 +2330,8 @@ void idSessionLocal::Draw()
 	}
 	else if (readDemo)
 	{
-		rw->RenderScene(&currentDemoRenderView);
-		renderSystem->DrawDemoPics();
+		// rw->RenderScene(&currentDemoRenderView);
+		// renderSystem->DrawDemoPics();
 	}
 	else if (mapSpawned)
 	{
@@ -3008,6 +2645,7 @@ void idSessionLocal::Frame()
 		common->Printf("%i ", latchedTicNumber - lastGameTic);
 	}
 
+	// Seriously wtf is this doing why.
 	int gameTicsToRun = latchedTicNumber - lastGameTic;
 	int i;
 	for (i = 0; i < gameTicsToRun; i++)
@@ -3141,7 +2779,7 @@ void idSessionLocal::RunGameTic()
 		else if (!idStr::Icmp(args.Argv(0), "died"))
 		{
 			// restart on the same map
-			UnloadMap();
+			commonLocal.UnloadMap();
 			SetGUI(guiRestartMenu, NULL);
 		}
 		else if (!idStr::Icmp(args.Argv(0), "disconnect"))
@@ -3214,14 +2852,6 @@ void idSessionLocal::Init()
 
 	cmdSystem->AddCommand("hitch", Session_Hitch_f, CMD_FL_SYSTEM | CMD_FL_CHEAT, "hitches the game");
 
-	// the same idRenderWorld will be used for all games
-	// and demos, insuring that level specific models
-	// will be freed
-	rw = renderSystem->AllocRenderWorld();
-	sw = soundSystem->AllocSoundWorld(rw);
-
-	menuSoundWorld = soundSystem->AllocSoundWorld(rw);
-
 	// we have a single instance of the main menu
 #ifndef ID_DEMO_BUILD
 	guiMainMenu = uiManager->FindGui("guis/mainmenu.gui", true, false, true);
@@ -3280,23 +2910,6 @@ int idSessionLocal::GetLocalClientNum()
 	else
 	{
 		return 0;
-	}
-}
-
-/*
-===============
-idSessionLocal::SetPlayingSoundWorld
-===============
-*/
-void idSessionLocal::SetPlayingSoundWorld()
-{
-	if (guiActive && (guiActive == guiMainMenu || guiActive == guiIntro || guiActive == guiLoading || (guiActive == guiMsg && !mapSpawned)))
-	{
-		soundSystem->SetPlayingSoundWorld(menuSoundWorld);
-	}
-	else
-	{
-		soundSystem->SetPlayingSoundWorld(sw);
 	}
 }
 

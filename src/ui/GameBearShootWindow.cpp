@@ -660,7 +660,7 @@ void idGameBearShootWindow::UpdateBear()
 			helicopter->SetMaterial("game/bearshoot/helicopter_broken");
 			helicopter->velocity.y = 230.f;
 			goal->velocity.y = 230.f;
-			session->sw->PlayShaderDirectly("arcade_balloonpop");
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_balloonpop");
 
 			bear->SetVisible(false);
 			if (bear->velocity.x > 0)
@@ -692,7 +692,7 @@ void idGameBearShootWindow::UpdateBear()
 
 			if (bearScale)
 			{
-				session->sw->PlayShaderDirectly("arcade_balloonpop");
+				commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_balloonpop");
 			}
 		}
 	}
@@ -780,7 +780,7 @@ void idGameBearShootWindow::UpdateHelicopter()
 
 			helicopter->SetVisible(false);
 			goal->SetMaterial("game/bearshoot/goal_dead");
-			session->sw->PlayShaderDirectly("arcade_beargroan", 1);
+			commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_beargroan", 1);
 
 			helicopter->fadeOut = true;
 			goal->fadeOut = true;
@@ -817,7 +817,7 @@ void idGameBearShootWindow::UpdateButtons()
 		idVec2 vec;
 
 		gui->HandleNamedEvent("DisableFireButton");
-		session->sw->PlayShaderDirectly("arcade_sargeshoot");
+		commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_sargeshoot");
 
 		bear->SetVisible(true);
 		bearScale = 1.f;
@@ -869,7 +869,7 @@ void idGameBearShootWindow::UpdateScore()
 	{
 		currentLevel++;
 		gui->SetStateString("current_level", va("%i", currentLevel));
-		session->sw->PlayShaderDirectly("arcade_levelcomplete1", 3);
+		commonLocal.m_GameSoundWorld->PlayShaderDirectly("arcade_levelcomplete1", 3);
 
 		timeRemaining += 30;
 	}

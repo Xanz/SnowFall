@@ -802,7 +802,7 @@ void R_TestVideo_f(const idCmdArgs &args)
 	idStr wavString = args.Argv((args.Argc() == 2) ? 1 : 2);
 	wavString.StripFileExtension();
 	wavString = wavString + ".wav";
-	session->sw->PlayShaderDirectly(wavString.c_str());
+	commonLocal.m_GameSoundWorld->PlayShaderDirectly(wavString.c_str());
 }
 
 static int R_QsortSurfaceAreas(const void *a, const void *b)

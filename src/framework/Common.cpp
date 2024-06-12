@@ -31,9 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../renderer/Image.h"
 #include "Session_local.h"
-
-#define MAX_PRINT_MSG_SIZE 4096
-#define MAX_WARNING_LIST 256
+#include "../ui/GuiManager.h"
 
 typedef enum
 {
@@ -121,101 +119,6 @@ idGameEdit *gameEdit = NULL;
 // writes si_version to the config file - in a kinda obfuscated way
 // #define ID_WRITE_VERSION
 
-class idCommonLocal : public idCommon
-{
-public:
-	idCommonLocal(void);
-
-	virtual void Init(int argc, const char **argv, const char *cmdline);
-	virtual void Shutdown(void);
-	virtual void Quit(void);
-	virtual bool IsInitialized(void) const;
-	virtual void Frame(void);
-	virtual void GUIFrame(bool execCmd, bool network);
-	virtual void StartupVariable(const char *match, bool once);
-	virtual void InitTool(const toolFlag_t tool, const idDict *dict);
-	virtual void ActivateTool(bool active);
-	virtual void WriteConfigToFile(const char *filename);
-	virtual void WriteFlaggedCVarsToFile(const char *filename, int flags, const char *setCmd);
-	virtual void BeginRedirect(char *buffer, int buffersize, void (*flush)(const char *));
-	virtual void EndRedirect(void);
-	virtual void SetRefreshOnPrint(bool set);
-	virtual void Printf(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual void VPrintf(const char *fmt, va_list arg);
-	virtual void DPrintf(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual void Warning(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual void DWarning(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual void PrintWarnings(void);
-	virtual void ClearWarnings(const char *reason);
-	virtual void Error(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual void FatalError(const char *fmt, ...) id_attribute((format(printf, 2, 3)));
-	virtual const idLangDict *GetLanguageDict(void);
-
-	virtual const char *KeysFromBinding(const char *bind);
-	virtual const char *BindingFromKey(const char *key);
-
-	virtual int ButtonState(int key);
-	virtual int KeyState(int key);
-
-	void InitGame(void);
-	void ShutdownGame(bool reloading);
-
-	// localization
-	void InitLanguageDict(void);
-	void LocalizeGui(const char *fileName, idLangDict &langDict);
-	void LocalizeMapData(const char *fileName, idLangDict &langDict);
-	void LocalizeSpecificMapData(const char *fileName, idLangDict &langDict, const idLangDict &replaceArgs);
-
-	void SetMachineSpec(void);
-
-	bool com_shuttingDown;
-
-private:
-	void InitCommands(void);
-	void InitRenderSystem(void);
-	void InitSIMD(void);
-	bool AddStartupCommands(void);
-	void ParseCommandLine(int argc, const char **argv);
-	void ClearCommandLine(void);
-	bool SafeMode(void);
-	void CheckToolMode(void);
-	void CloseLogFile(void);
-	void WriteConfiguration(void);
-	void DumpWarnings(void);
-	void SingleAsyncTic(void);
-	void LoadGameDLL(void);
-	void UnloadGameDLL(void);
-	void PrintLoadingMessage(const char *msg);
-	void FilterLangList(idStrList *list, idStr lang);
-
-	bool com_fullyInitialized;
-	bool com_refreshOnPrint; // update the screen every print for dmap
-	int com_errorEntered;	 // 0, ERP_DROP, etc
-
-	idFile *logFile;
-
-	char errorMessage[MAX_PRINT_MSG_SIZE];
-
-	char *rd_buffer;
-	int rd_buffersize;
-	void (*rd_flush)(const char *buffer);
-
-	idStr warningCaption;
-	idStrList warningList;
-	idStrList errorList;
-
-	int gameDLL;
-
-	idLangDict languageDict;
-
-#ifdef ID_WRITE_VERSION
-	idCompressor *config_compressor;
-#endif
-
-	int gameFrame;			 // Frame number of the local game
-	double gameTimeResidual; // left over msec from the last game frame
-};
-
 idCommonLocal commonLocal;
 idCommon *common = &commonLocal;
 
@@ -243,6 +146,10 @@ idCommonLocal::idCommonLocal(void)
 
 	gameFrame = 0;
 	gameTimeResidual = 0;
+
+	m_RenderWorld = NULL;
+	m_GameSoundWorld = NULL;
+	m_MenuSoundWorld = NULL;
 
 #ifdef ID_WRITE_VERSION
 	config_compressor = NULL;
@@ -2591,6 +2498,270 @@ void Com_LocalizeMapsTest_f(const idCmdArgs &args)
 }
 
 /*
+===============
+idCommonLocal::ExecuteMapChange
+
+Performs the initialization of a game based on mapSpawnData, used for both single
+player and multiplayer, but not for renderDemos, which don't
+create a game at all.
+Exits with mapSpawned = true
+===============
+*/
+void idCommonLocal::ExecuteMapChange(bool noFadeWipe)
+{
+	int i;
+	bool reloadingSameMap;
+
+	// close console and remove any prints from the notify lines
+	console->Close();
+
+	if (session->IsMultiplayer())
+	{
+		// make sure the mp GUI isn't up, or when players get back in the
+		// map, mpGame's menu and the gui will be out of sync.
+		session->SetGUI(NULL, NULL);
+	}
+
+	// mute sound
+	soundSystem->SetMute(true);
+
+	// clear all menu sounds
+	m_MenuSoundWorld->ClearAllSoundEmitters();
+
+	// unpause the game sound world
+	// NOTE: we UnPause again later down. not sure this is needed
+	if (m_GameSoundWorld->IsPaused())
+	{
+		m_GameSoundWorld->UnPause();
+	}
+
+	// extract the map name from serverinfo
+	idStr mapString = sessLocal.mapSpawnData.serverInfo.GetString("si_map");
+
+	idStr fullMapName = "maps/";
+	fullMapName += mapString;
+	fullMapName.StripFileExtension();
+
+	// shut down the existing game if it is running
+	UnloadMap();
+
+	// don't do the deferred caching if we are reloading the same map
+	if (fullMapName == sessLocal.currentMapName)
+	{
+		reloadingSameMap = true;
+	}
+	else
+	{
+		reloadingSameMap = false;
+		sessLocal.currentMapName = fullMapName;
+	}
+
+	// note which media we are going to need to load
+	if (!reloadingSameMap)
+	{
+		declManager->BeginLevelLoad();
+		renderSystem->BeginLevelLoad();
+		soundSystem->BeginLevelLoad();
+	}
+
+	uiManager->BeginLevelLoad();
+	uiManager->Reload(true);
+
+	// set the loading gui that we will wipe to
+	guiManager.SetLoadingScreen(mapString);
+
+	// if this works out we will probably want all the sizes in a def file although this solution will
+	// work for new maps etc. after the first load. we can also drop the sizes into the default.cfg
+	fileSystem->ResetReadCount();
+	if (!reloadingSameMap)
+	{
+		sessLocal.bytesNeededForMapLoad = sessLocal.GetBytesNeededForMapLoad(mapString.c_str());
+	}
+	else
+	{
+		sessLocal.bytesNeededForMapLoad = 30 * 1024 * 1024;
+	}
+
+	sessLocal.ClearWipe();
+
+	// let the loading gui spin for 1 second to animate out
+	sessLocal.ShowLoadingGui();
+
+	// note any warning prints that happen during the load process
+	common->ClearWarnings(mapString);
+
+	// allow com_engineHz to be changed between map loads
+	com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
+	com_engineHz_latched = com_engineHz.GetFloat();
+
+	// release the mouse cursor
+	// before we do this potentially long operation
+	Sys_GrabMouseCursor(false);
+
+	// if net play, we get the number of clients during mapSpawnInfo processing
+	if (!idAsyncNetwork::IsActive())
+	{
+		sessLocal.numClients = 1;
+	}
+
+	int start = Sys_Milliseconds();
+
+	common->Printf("--------- Map Initialization ---------\n");
+	common->Printf("Map: %s\n", mapString.c_str());
+
+	// let the renderSystem load all the geometry
+	if (!m_RenderWorld->InitFromMap(fullMapName))
+	{
+		common->Error("couldn't load %s", fullMapName.c_str());
+	}
+
+	// for the synchronous networking we needed to roll the angles over from
+	// level to level, but now we can just clear everything
+	usercmdGen->InitForNewMap();
+	memset(&sessLocal.mapSpawnData.mapSpawnUsercmd, 0, sizeof(sessLocal.mapSpawnData.mapSpawnUsercmd));
+
+	// set the user info
+	for (i = 0; i < sessLocal.numClients; i++)
+	{
+		game->SetUserInfo(i, sessLocal.mapSpawnData.userInfo[i], idAsyncNetwork::client.IsActive(), false);
+		game->SetPersistentPlayerInfo(i, sessLocal.mapSpawnData.persistentPlayerInfo[i]);
+	}
+
+	// load and spawn all other entities ( from a savegame possibly )
+	if (sessLocal.loadingSaveGame && sessLocal.savegameFile)
+	{
+		if (game->InitFromSaveGame(fullMapName + ".map", m_RenderWorld, m_GameSoundWorld, sessLocal.savegameFile) == false)
+		{
+			// If the loadgame failed, restart the map with the player persistent data
+			sessLocal.loadingSaveGame = false;
+			fileSystem->CloseFile(sessLocal.savegameFile);
+			sessLocal.savegameFile = NULL;
+
+			game->SetServerInfo(sessLocal.mapSpawnData.serverInfo);
+			game->InitFromNewMap(fullMapName + ".map", m_RenderWorld, m_GameSoundWorld, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds());
+		}
+	}
+	else
+	{
+		game->SetServerInfo(sessLocal.mapSpawnData.serverInfo);
+		game->InitFromNewMap(fullMapName + ".map", m_RenderWorld, m_GameSoundWorld, idAsyncNetwork::server.IsActive(), idAsyncNetwork::client.IsActive(), Sys_Milliseconds());
+	}
+
+	if (!idAsyncNetwork::IsActive() && !sessLocal.loadingSaveGame)
+	{
+		// spawn players
+		for (i = 0; i < sessLocal.numClients; i++)
+		{
+			game->SpawnPlayer(i);
+		}
+	}
+
+	// actually purge/load the media
+	if (!reloadingSameMap)
+	{
+		renderSystem->EndLevelLoad();
+		soundSystem->EndLevelLoad();
+		declManager->EndLevelLoad();
+		sessLocal.SetBytesNeededForMapLoad(mapString.c_str(), fileSystem->GetReadCount());
+	}
+	uiManager->EndLevelLoad();
+
+	if (!idAsyncNetwork::IsActive() && !sessLocal.loadingSaveGame)
+	{
+		// run a few frames to allow everything to settle
+		for (i = 0; i < 10; i++)
+		{
+			game->RunFrame(sessLocal.mapSpawnData.mapSpawnUsercmd);
+		}
+	}
+
+	common->Printf("-----------------------------------\n");
+
+	int msec = Sys_Milliseconds() - start;
+	common->Printf("%6d msec to load %s\n", msec, mapString.c_str());
+
+	// let the renderSystem generate interactions now that everything is spawned
+	m_RenderWorld->GenerateAllInteractions();
+
+	common->PrintWarnings();
+
+	guiManager.AdvanceLoading(com_frameTime, sessLocal.bytesNeededForMapLoad);
+	Sys_GenerateEvents();
+	sessLocal.UpdateScreen();
+
+	// capture the current screen and start a wipe
+	sessLocal.StartWipe("wipe2Material");
+
+	usercmdGen->Clear();
+
+	// start saving commands for possible writeCmdDemo usage
+	sessLocal.logIndex = 0;
+	sessLocal.statIndex = 0;
+	sessLocal.lastSaveIndex = 0;
+
+	// don't bother spinning over all the tics we spent loading
+	sessLocal.lastGameTic = sessLocal.latchedTicNumber = com_ticNumber;
+
+	// remove any prints from the notify lines
+	console->ClearNotifyLines();
+
+	// stop drawing the loading screen
+	guiManager.SetState(sfGUIState_t::HUD);
+
+	Sys_SetPhysicalWorkMemory(-1, -1);
+
+	// set the game sound world for playback
+	soundSystem->SetPlayingSoundWorld(m_GameSoundWorld);
+
+	// when loading a save game the sound is paused
+	if (m_GameSoundWorld->IsPaused())
+	{
+		// unpause the game sound world
+		m_GameSoundWorld->UnPause();
+	}
+
+	// restart entity sound playback
+	soundSystem->SetMute(false);
+
+	// we are valid for game draws now
+	sessLocal.mapSpawned = true;
+	Sys_ClearEvents();
+}
+
+/*
+===============
+idSessionLocal::UnloadMap
+
+Performs cleanup that needs to happen between maps, or when a
+game is exited.
+Exits with mapSpawned = false
+===============
+*/
+void idCommonLocal::UnloadMap()
+{
+	// StopPlayingRenderDemo();
+
+	// end the current map in the game
+	if (game)
+	{
+		game->MapShutdown();
+	}
+
+	// if (cmdDemoFile)
+	// {
+	// 	fileSystem->CloseFile(cmdDemoFile);
+	// 	cmdDemoFile = NULL;
+	// }
+
+	// if (writeDemo)
+	// {
+	// 	StopRecordingRenderDemo();
+	// }
+
+	sessLocal.mapSpawned = false;
+}
+
+/*
 =================
 Com_StartBuild_f
 =================
@@ -2768,172 +2939,129 @@ idCommonLocal::Frame
 */
 void idCommonLocal::Frame(void)
 {
-	try
+	// pump all the events
+	Sys_GenerateEvents();
+
+	// write config file if anything changed
+	WriteConfiguration();
+
+	// change SIMD implementation if required
+	if (com_forceGenericSIMD.IsModified())
 	{
+		InitSIMD();
+	}
 
-		// pump all the events
-		Sys_GenerateEvents();
+	eventLoop->RunEventLoop();
 
-		// write config file if anything changed
-		WriteConfiguration();
+	//--------------------------------------------
+	// Determine how many game tics we are going to run,
+	// now that the previous frame is completely finished.
+	//
+	// It is important that any waiting on the GPU be done
+	// before this, or there will be a bad stuttering when
+	// dropping frames for performance management.
+	//--------------------------------------------
 
-		// change SIMD implementation if required
-		if (com_forceGenericSIMD.IsModified())
-		{
-			InitSIMD();
-		}
+	// input:
+	// thisFrameTime
+	// com_noSleep
+	// com_engineHz
+	// com_fixedTic
+	// com_deltaTimeClamp
+	// IsMultiplayer
+	//
+	// in/out state:
+	// gameFrame
+	// gameTimeResidual
+	// lastFrameTime
+	// syncNextFrame
+	//
+	// Output:
+	// numGameFrames
 
-		eventLoop->RunEventLoop();
+	// How many game frames to run
+	int numGameFrames = 0;
 
-		//--------------------------------------------
-		// Determine how many game tics we are going to run,
-		// now that the previous frame is completely finished.
-		//
-		// It is important that any waiting on the GPU be done
-		// before this, or there will be a bad stuttering when
-		// dropping frames for performance management.
-		//--------------------------------------------
+	for (;;)
+	{
+		const float thisFrameTime = Sys_Milliseconds();
+		static float lastFrameTime = thisFrameTime; // initialized only the first time
+		const float deltaMilliseconds = thisFrameTime - lastFrameTime;
+		lastFrameTime = thisFrameTime;
 
-		// input:
-		// thisFrameTime
-		// com_noSleep
-		// com_engineHz
-		// com_fixedTic
-		// com_deltaTimeClamp
-		// IsMultiplayer
-		//
-		// in/out state:
-		// gameFrame
-		// gameTimeResidual
-		// lastFrameTime
-		// syncNextFrame
-		//
-		// Output:
-		// numGameFrames
+		// if there was a large gap in time since the last frame, or the frame
+		// rate is very very low, limit the number of frames we will run
+		const float clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
 
-		// How many game frames to run
-		int numGameFrames = 0;
+		gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
 
 		for (;;)
 		{
-			const float thisFrameTime = Sys_Milliseconds();
-			static float lastFrameTime = thisFrameTime; // initialized only the first time
-			const float deltaMilliseconds = thisFrameTime - lastFrameTime;
-			lastFrameTime = thisFrameTime;
-
-			// if there was a large gap in time since the last frame, or the frame
-			// rate is very very low, limit the number of frames we will run
-			const float clampedDeltaMilliseconds = min(deltaMilliseconds, com_deltaTimeClamp.GetInteger());
-
-			gameTimeResidual += clampedDeltaMilliseconds * com_timescale.GetFloat();
-
-			// don't run any frames when paused
-			// if (pauseGame) {
-			//	gameFrame++;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
-
-			// debug cvar to force multiple game tics
-			// if (com_fixedTic.GetInteger() > 0) {
-			//	numGameFrames = com_fixedTic.GetInteger();
-			//	gameFrame += numGameFrames;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
-
-			// if (syncNextGameFrame) {
-			//	// don't sleep at all
-			//	syncNextGameFrame = false;
-			//	gameFrame++;
-			//	numGameFrames++;
-			//	gameTimeResidual = 0;
-			//	break;
-			// }
-
-			for (;;)
+			// How much time to wait before running the next frame,
+			// based on com_engineHz
+			const float frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
+			if (gameTimeResidual < frameDelay)
 			{
-				// How much time to wait before running the next frame,
-				// based on com_engineHz
-				const float frameDelay = FRAME_TO_MSEC(gameFrame + 1) - FRAME_TO_MSEC(gameFrame);
-				if (gameTimeResidual < frameDelay)
-				{
-					break;
-				}
-				gameTimeResidual -= frameDelay;
-				gameFrame++;
-				numGameFrames++;
-				com_ticNumber++;
-				// if there is enough residual left, we may run additional frames
-			}
-			sessLocal.latchedTicNumber = com_ticNumber;
-
-			if (numGameFrames > 0)
-			{
-				// ready to actually run them
 				break;
 			}
+			gameTimeResidual -= frameDelay;
+			gameFrame++;
+			numGameFrames++;
+			com_ticNumber++;
+			// if there is enough residual left, we may run additional frames
+		}
+		sessLocal.latchedTicNumber = com_ticNumber;
 
-			// if we are vsyncing, we always want to run at least one game
-			// frame and never sleep, which might happen due to scheduling issues
-			// if we were just looking at real time.
-			// if (com_noSleep.GetBool()) {
-			//	numGameFrames = 1;
-			//	gameFrame += numGameFrames;
-			//	gameTimeResidual = 0;
-			//	break;
-			//}
-
-			// not enough time has passed to run a frame, as might happen if
-			// we don't have vsync on, or the monitor is running at 120hz while
-			// com_engineHz is 60, so sleep a bit and check again
-			Sys_Sleep(0);
+		if (numGameFrames > 0)
+		{
+			// ready to actually run them
+			break;
 		}
 
-		com_frameTime = Sys_Milliseconds();
+		// not enough time has passed to run a frame, as might happen if
+		// we don't have vsync on, or the monitor is running at 120hz while
+		// com_engineHz is 60, so sleep a bit and check again
+		Sys_Sleep(0);
+	}
 
-		idAsyncNetwork::RunFrame();
+	com_frameTime = Sys_Milliseconds();
 
-		if (idAsyncNetwork::IsActive())
+	idAsyncNetwork::RunFrame();
+
+	if (idAsyncNetwork::IsActive())
+	{
+		if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
 		{
-			if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
-			{
-				session->GuiFrameEvents();
-				session->UpdateScreen(false);
-			}
-		}
-		else
-		{
-			session->Frame();
-
-			// normal, in-sequence screen update
+			session->GuiFrameEvents();
 			session->UpdateScreen(false);
 		}
-
-		soundSystem->Render();
-
-		// report timing information
-		if (com_speeds.GetBool())
-		{
-			static int lastTime;
-			int nowTime = Sys_Milliseconds();
-			int com_frameMsec = nowTime - lastTime;
-			lastTime = nowTime;
-			Printf("frame:%i all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
-			time_gameFrame = 0;
-			time_gameDraw = 0;
-		}
-
-		com_frameNumber++;
-
-		// set idLib frame number for frame based memory dumps
-		idLib::frameNumber = com_frameNumber;
 	}
-
-	catch (idException &)
+	else
 	{
-		return; // an ERP_DROP was thrown
+		session->Frame();
+
+		// normal, in-sequence screen update
+		session->UpdateScreen(false);
 	}
+
+	soundSystem->Update();
+
+	// report timing information
+	if (com_speeds.GetBool())
+	{
+		static int lastTime;
+		int nowTime = Sys_Milliseconds();
+		int com_frameMsec = nowTime - lastTime;
+		lastTime = nowTime;
+		Printf("frame:%i all:%3i gfr:%3i rf:%3i bk:%3i\n", com_frameNumber, com_frameMsec, time_gameFrame, time_frontend, time_backend);
+		time_gameFrame = 0;
+		time_gameDraw = 0;
+	}
+
+	com_frameNumber++;
+
+	// set idLib frame number for frame based memory dumps
+	idLib::frameNumber = com_frameNumber;
 }
 
 /*
@@ -3106,15 +3234,6 @@ void idCommonLocal::SetMachineSpec(void)
 	com_videoRam.SetInteger(vidRam);
 }
 
-void idSoundThread()
-{
-	// while (!commonLocal.com_shuttingDown)
-	// {
-	// soundSystem->Render();
-	// Sleep(0);
-	// }
-}
-
 /*
 =================
 idCommonLocal::Init
@@ -3221,8 +3340,6 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 
 		ClearCommandLine();
 
-		static std::thread soundThread(idSoundThread);
-
 		com_fullyInitialized = true;
 
 		// Needs to be set at init otherwise the fps will still be capped.
@@ -3243,7 +3360,6 @@ idCommonLocal::Shutdown
 */
 void idCommonLocal::Shutdown(void)
 {
-
 	com_shuttingDown = true;
 
 	idAsyncNetwork::server.Kill();
@@ -3251,6 +3367,18 @@ void idCommonLocal::Shutdown(void)
 
 	// game specific shut down
 	ShutdownGame(false);
+
+	if (m_GameSoundWorld)
+	{
+		delete m_GameSoundWorld;
+		m_GameSoundWorld = NULL;
+	}
+
+	if (m_MenuSoundWorld)
+	{
+		delete m_MenuSoundWorld;
+		m_MenuSoundWorld = NULL;
+	}
 
 	// shut down non-portable system services
 	Sys_Shutdown();
@@ -3411,6 +3539,11 @@ void idCommonLocal::InitGame(void)
 
 	// init the session
 	session->Init();
+
+	// Sets up render world and sound worlds.
+	m_RenderWorld = renderSystem->AllocRenderWorld();
+	m_GameSoundWorld = soundSystem->AllocSoundWorld(m_RenderWorld);
+	m_MenuSoundWorld = soundSystem->AllocSoundWorld(m_RenderWorld);
 
 	// have to do this twice.. first one sets the correct r_mode for the renderer init
 	// this time around the backend is all setup correct.. a bit fugly but do not want

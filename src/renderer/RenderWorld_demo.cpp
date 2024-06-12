@@ -285,7 +285,7 @@ void idRenderWorldLocal::WriteLoadMap()
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -320,7 +320,7 @@ void idRenderWorldLocal::WriteVisibleDefs(const viewDef_t *viewDef)
 {
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -367,7 +367,7 @@ void idRenderWorldLocal::WriteRenderView(const renderView_t *renderView)
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -410,7 +410,7 @@ void idRenderWorldLocal::WriteFreeEntity(qhandle_t handle)
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -435,7 +435,7 @@ void idRenderWorldLocal::WriteFreeLight(qhandle_t handle)
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -460,7 +460,7 @@ void idRenderWorldLocal::WriteRenderLight(qhandle_t handle, const renderLight_t 
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -560,7 +560,7 @@ void idRenderWorldLocal::ReadRenderLight()
 	{
 		int index;
 		session->readDemo->ReadInt(index);
-		light.referenceSound = session->sw->EmitterForIndex(index);
+		light.referenceSound = commonLocal.m_GameSoundWorld->EmitterForIndex(index);
 	}
 
 	UpdateLightDef(index, &light);
@@ -581,7 +581,7 @@ void idRenderWorldLocal::WriteRenderEntity(qhandle_t handle, const renderEntity_
 
 	// only the main renderWorld writes stuff to demos, not the wipes or
 	// menu renders
-	if (this != session->rw)
+	if (this != commonLocal.m_RenderWorld)
 	{
 		return;
 	}
@@ -757,7 +757,7 @@ void idRenderWorldLocal::ReadRenderEntity()
 	{
 		int index;
 		session->readDemo->ReadInt(index);
-		ent.referenceSound = session->sw->EmitterForIndex(index);
+		ent.referenceSound = commonLocal.m_GameSoundWorld->EmitterForIndex(index);
 	}
 	if (ent.numJoints)
 	{
