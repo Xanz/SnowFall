@@ -18,6 +18,12 @@ file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE TOOLS src/tools/*.cpp src/tools/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
 
+# New Snowfall Renderer backend.
+file(GLOB_RECURSE SFRENDERER src/sfRenderer/*.cpp src/sfRenderer/*.h)
+
+# New Snowfall UI system. (Powered by RMLUI.)
+file(GLOB_RECURSE SFUI src/sfUI/*.cpp src/sfUI/*.h)
+
 set(D3Source
     ${D3GAME}
     ${D3GAME_AI}
@@ -29,6 +35,8 @@ set(D3Source
     ${IDLIB}
     ${CM}
     ${RENDERER}
+    ${SFRENDERER}
+    ${SFUI}
     ${SOUND}
     ${SYS}
     ${SYSWIN}
@@ -43,11 +51,17 @@ add_compile_definitions(WIN32)
 add_compile_definitions(_XKEYCHECK_H)
 add_compile_definitions(USE_OPENAL)
 
-# Needed so that VSCode can syntax check correctly.
+
+
+# Built as a sub directory should be moved to build as part of dependency scripts.
+add_subdirectory(external/RmlUi)
+
+add_definitions(-DRMLUI_STATIC_LIB)
+
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/glfw/include external/glew/include)
 link_directories(external/openal/build/Release external/glfw/build/src/Release external/glew/lib/Release/x64)
 
-set(LIBS dbghelp dinput8 dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32)
+set(LIBS dbghelp dinput8 dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32 RmlUi::RmlUi)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)

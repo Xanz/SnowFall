@@ -1398,9 +1398,6 @@ EXCEPTION_DISPOSITION __cdecl _except_handler(struct _EXCEPTION_RECORD *Exceptio
 
 int main(int argc, char *argv[])
 {
-	Sys_SetPhysicalWorkMemory(192 << 20, 1024 << 20);
-
-	Sys_CreateConsole();
 
 	SetErrorMode(SEM_FAILCRITICALERRORS);
 
@@ -1422,16 +1419,10 @@ int main(int argc, char *argv[])
 	{
 		Sys_ShowConsole(0, false);
 	}
-#ifdef SET_THREAD_AFFINITY
-	// give the main thread an affinity for the first cpu
-	SetThreadAffinityMask(GetCurrentThread(), 1);
-#endif
 
 	// main game loop
 	while (1)
 	{
-		Win_Frame();
-
 		// run the game
 		common->Frame();
 	}

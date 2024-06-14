@@ -501,20 +501,20 @@ static float TraceToMeshFace(const srfTriangles_t *highMesh, int faceNum,
 	VectorSubtract(*v[0], point, dir[0]);
 	VectorSubtract(*v[1], point, dir[1]);
 	edge = dir[0].Cross(dir[1]);
-	d = DotProduct(normal, edge);
+	d = idDotProduct(normal, edge);
 	if (d > 0.0f)
 	{
 		return DIST_NO_INTERSECTION;
 	}
 	VectorSubtract(*v[2], point, dir[2]);
 	edge = dir[1].Cross(dir[2]);
-	d = DotProduct(normal, edge);
+	d = idDotProduct(normal, edge);
 	if (d > 0.0f)
 	{
 		return DIST_NO_INTERSECTION;
 	}
 	edge = dir[2].Cross(dir[0]);
-	d = DotProduct(normal, edge);
+	d = idDotProduct(normal, edge);
 	if (d > 0.0f)
 	{
 		return DIST_NO_INTERSECTION;

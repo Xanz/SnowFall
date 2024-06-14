@@ -361,7 +361,7 @@ static mapTri_t *FixTriangleAgainstHashVert(const mapTri_t *a, const hashVert_t 
 
 		// if it is close to one of the edge vertexes, skip it
 		VectorSubtract(*v, v1->xyz, temp);
-		d = DotProduct(temp, dir);
+		d = idDotProduct(temp, dir);
 		if (d <= 0 || d >= len)
 		{
 			continue;
@@ -401,7 +401,7 @@ static mapTri_t *FixTriangleAgainstHashVert(const mapTri_t *a, const hashVert_t 
 		plane1.FromPoints(new1->hashVert[0]->v, new1->hashVert[1]->v, new1->hashVert[2]->v);
 		plane2.FromPoints(new2->hashVert[0]->v, new2->hashVert[1]->v, new2->hashVert[2]->v);
 
-		d = DotProduct(plane1, plane2);
+		d = idDotProduct(plane1, plane2);
 
 		// if the two split triangle's normals don't face the same way,
 		// it should not be split
