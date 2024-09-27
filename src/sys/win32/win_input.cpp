@@ -608,7 +608,7 @@ Not used currently but was useful for testing.
 */
 void CheckKeyboardEvent(int key)
 {
-	if (glfwGetKey(window, key) == GLFW_PRESS)
+	if (glfwGetKey(m_Window, key) == GLFW_PRESS)
 	{
 		m_KeyboardPolls.push_back(keyboard_poll_t(key, true));
 		Sys_QueEvent(GetTickCount(), SE_KEY, GLFWDoom_MapKey(key), true, 0, NULL);

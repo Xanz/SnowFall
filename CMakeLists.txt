@@ -24,6 +24,8 @@ file(GLOB_RECURSE SFRENDERER src/sfRenderer/*.cpp src/sfRenderer/*.h)
 # New Snowfall UI system. (Powered by RMLUI.)
 file(GLOB_RECURSE SFUI src/sfUI/*.cpp src/sfUI/*.h)
 
+file(GLOB_RECURSE EDITOR src/tools/editor/*.cpp src/tools/editor/*.h)
+
 set(D3Source
     ${D3GAME}
     ${D3GAME_AI}
@@ -43,6 +45,7 @@ set(D3Source
     ${TOOLS}
     ${UI}
     ${GLAD}
+    ${EDITOR}
     )
 
 add_compile_definitions(_WINDOWS)

@@ -49,6 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
 #include <vector>
+#include "sfUI/GuiManager.h"
 
 // Adds raw mouse input.
 idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1", 0, 1);
@@ -249,16 +250,16 @@ bool GLimp_Init(glimpParms_t parms)
 		glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
 
 		glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
-		window = glfwCreateWindow(mode->width, mode->height, "SnowFall Engine", NULL, NULL);
+		m_Window = glfwCreateWindow(mode->width, mode->height, "SnowFall Engine", NULL, NULL);
 		glConfig.vidWidth = mode->width;
 		glConfig.vidHeight = mode->height;
 	}
 	else
 	{
-		window = glfwCreateWindow(parms.width, parms.height, "SnowFall Engine", NULL, NULL);
+		m_Window = glfwCreateWindow(parms.width, parms.height, "SnowFall Engine", NULL, NULL);
 	}
 
-	if (!window)
+	if (!m_Window)
 	{
 		glfwTerminate();
 		return false;
@@ -270,18 +271,18 @@ bool GLimp_Init(glimpParms_t parms)
 	// Disable resizing.
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
-	glfwMakeContextCurrent(window);
-
+	glfwMakeContextCurrent(m_Window);
+	glewExperimental = GL_TRUE;
 	glewInit();
 
 	// Raw mouse input
 	if (m_rawInput.GetBool())
 	{
-		glfwSetInputMode(window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+		glfwSetInputMode(m_Window, GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
 	}
 
-	glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	glfwSetCursorPos(window, parms.width / 2, parms.height / 2);
+	glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetCursorPos(m_Window, parms.width / 2, parms.height / 2);
 
 	// Toggle V-Sync
 	if (r_swapInterval.GetInteger() == 1)
@@ -296,11 +297,13 @@ bool GLimp_Init(glimpParms_t parms)
 	// MSAA samples :)
 	glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
 
-	glfwSetMouseButtonCallback(window, MouseKey_Callback);
-	glfwSetKeyCallback(window, Key_Callback);
-	glfwSetCursorPosCallback(window, Cursor_Callback);
-	glfwSetScrollCallback(window, Scroll_Callback);
-	glfwSetCharCallback(window, Character_Callback);
+	glfwSetMouseButtonCallback(m_Window, MouseKey_Callback);
+	glfwSetKeyCallback(m_Window, Key_Callback);
+	glfwSetCursorPosCallback(m_Window, Cursor_Callback);
+	glfwSetScrollCallback(m_Window, Scroll_Callback);
+	glfwSetCharCallback(m_Window, Character_Callback);
+
+	guiManager.Init();
 
 	return true;
 }
@@ -317,7 +320,7 @@ void GLimp_Shutdown(void)
 {
 	common->Printf("Shutting down OpenGL subsystem\n");
 
-	glfwDestroyWindow(window);
+	glfwDestroyWindow(m_Window);
 
 	// restore gamma
 	GLimp_RestoreGamma();
@@ -330,7 +333,7 @@ GLimp_SwapBuffers
 */
 void GLimp_SwapBuffers(void)
 {
-	glfwSwapBuffers(window);
+	glfwSwapBuffers(m_Window);
 }
 
 /*
@@ -349,5 +352,5 @@ GLimp_DeactivateContext
 */
 void GLimp_DeactivateContext(void)
 {
-	glFinish();
+	// glFinish();
 }

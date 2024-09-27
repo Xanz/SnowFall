@@ -48,6 +48,8 @@ If you have questions concerning this license or the applicable additional terms
 #include "rc/CreateResourceIDs.h"
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
+#include "sfUI/GuiManager.h"
+#include "tools/editor/Editor.h"
 
 idCVar Win32Vars_t::sys_arch("sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "");
 idCVar Win32Vars_t::sys_cpustring("sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "");
@@ -65,7 +67,7 @@ idCVar Win32Vars_t::win_allowMultipleInstances("win_allowMultipleInstances", "0"
 
 Win32Vars_t win32;
 
-GLFWwindow *window;
+GLFWwindow *m_Window;
 
 std::vector<mouse_poll_t> m_MousePolls;
 
@@ -1399,14 +1401,13 @@ EXCEPTION_DISPOSITION __cdecl _except_handler(struct _EXCEPTION_RECORD *Exceptio
 int main(int argc, char *argv[])
 {
 
+#if (1)
 	SetErrorMode(SEM_FAILCRITICALERRORS);
 
 	for (int i = 0; i < MAX_CRITICAL_SECTIONS; i++)
 	{
 		InitializeCriticalSection(&win32.criticalSections[i]);
 	}
-
-	Sys_Milliseconds();
 
 	common->Init(0, NULL, NULL);
 
@@ -1419,12 +1420,29 @@ int main(int argc, char *argv[])
 	{
 		Sys_ShowConsole(0, false);
 	}
+#else
+	editor.Init();
+#endif
 
+	// glimpParms_t parms;
+	// parms.displayHz = 240;
+	// parms.fullScreen = 0;
+	// parms.height = 600;
+	// parms.width = 800;
+	// parms.stereo = 0;
+	// GLimp_Init(parms);
 	// main game loop
 	while (1)
 	{
 		// run the game
 		common->Frame();
+		// editor.Frame();
+
+		// guiManager.PreUpdate();
+		// guiManager.Update(0);
+
+		// GLimp_SwapBuffers();
+		// glfwSwapBuffers(m_Window);
 	}
 
 	return 0;
