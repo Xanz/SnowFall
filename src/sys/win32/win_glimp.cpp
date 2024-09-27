@@ -303,8 +303,6 @@ bool GLimp_Init(glimpParms_t parms)
 	glfwSetScrollCallback(m_Window, Scroll_Callback);
 	glfwSetCharCallback(m_Window, Character_Callback);
 
-	guiManager.Init();
-
 	return true;
 }
 
