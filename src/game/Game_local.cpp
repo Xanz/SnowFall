@@ -2624,12 +2624,12 @@ gameReturn_t idGameLocal::RunFrame(const usercmd_t *clientCmds)
 			}
 
 			// make sure we don't loop forever when skipping a cinematic
-			if (skipCinematic && (time > cinematicMaxSkipTime))
-			{
-				Warning("Exceeded maximum cinematic skip length.  Cinematic may be looping infinitely.");
-				skipCinematic = false;
-				break;
-			}
+			// if (skipCinematic && (time > cinematicMaxSkipTime))
+			// {
+			// 	Warning("Exceeded maximum cinematic skip length.  Cinematic may be looping infinitely.");
+			// 	skipCinematic = false;
+			// 	break;
+			// }
 		} while ((inCinematic || (time < cinematicStopTime)) && skipCinematic);
 
 	ret.syncNextGameFrame = skipCinematic;
@@ -4537,11 +4537,15 @@ bool idGameLocal::SkipCinematic(void)
 	soundSystem->SetMute(true);
 	if (!skipCinematic)
 	{
+		cinematicStopTime;
 		skipCinematic = true;
-		cinematicMaxSkipTime = Sys_Milliseconds() + SEC2MS(g_cinematicMaxSkipTime.GetFloat());
+		cinematicMaxSkipTime = Sys_Milliseconds() + SEC2MS(cinematicMaxSkipTime);
+		cinematicSkipTime;
+
+		common->Printf("skipTime: %i MaxTime: %i stopTime: %i gameTime: %i", cinematicSkipTime, cinematicMaxSkipTime, cinematicStopTime, time);
 
 		// Added to skip cinematic sound.
-		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime);
+		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime + cinematicSkipTime);
 	}
 
 	return true;

@@ -49,7 +49,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
 #include "sfUI/GuiManager.h"
-#include "tools/editor/Editor.h"
+// #include "tools/editor/Editor.h"
 
 idCVar Win32Vars_t::sys_arch("sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "");
 idCVar Win32Vars_t::sys_cpustring("sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "");
