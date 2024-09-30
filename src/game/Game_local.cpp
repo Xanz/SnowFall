@@ -524,9 +524,9 @@ void idGameLocal::SaveGame(idFile *f)
 
 	// FIXME: save smoke particles
 
-	savegame.WriteInt(cinematicSkipTime);
-	savegame.WriteInt(cinematicStopTime);
-	savegame.WriteInt(cinematicMaxSkipTime);
+	savegame.WriteFloat(cinematicSkipTime);
+	savegame.WriteFloat(cinematicStopTime);
+	savegame.WriteFloat(cinematicMaxSkipTime);
 	savegame.WriteBool(inCinematic);
 	savegame.WriteBool(skipCinematic);
 
@@ -1445,9 +1445,9 @@ bool idGameLocal::InitFromSaveGame(const char *mapName, idRenderWorld *renderWor
 
 	// FIXME: save smoke particles
 
-	savegame.ReadInt(cinematicSkipTime);
-	savegame.ReadInt(cinematicStopTime);
-	savegame.ReadInt(cinematicMaxSkipTime);
+	savegame.ReadFloat(cinematicSkipTime);
+	savegame.ReadFloat(cinematicStopTime);
+	savegame.ReadFloat(cinematicMaxSkipTime);
 	savegame.ReadBool(inCinematic);
 	savegame.ReadBool(skipCinematic);
 
@@ -4541,11 +4541,8 @@ bool idGameLocal::SkipCinematic(void)
 		skipCinematic = true;
 		cinematicMaxSkipTime = Sys_Milliseconds() + SEC2MS(cinematicMaxSkipTime);
 		cinematicSkipTime;
-
-		common->Printf("skipTime: %i MaxTime: %i stopTime: %i gameTime: %i", cinematicSkipTime, cinematicMaxSkipTime, cinematicStopTime, time);
-
 		// Added to skip cinematic sound.
-		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime + cinematicSkipTime);
+		soundSystem->GetPlayingSoundWorld()->Skip(cinematicMaxSkipTime);
 	}
 
 	return true;

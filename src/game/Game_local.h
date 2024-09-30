@@ -291,10 +291,10 @@ public:
 	idSmokeParticles *smokeParticles; // global smoke trails
 	idEditEntities *editEntities;	  // in game editing
 
-	int cinematicSkipTime;	  // don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
-	int cinematicStopTime;	  // cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
-	int cinematicMaxSkipTime; // time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
-	bool inCinematic;		  // game is playing cinematic (player controls frozen)
+	float cinematicSkipTime;	// don't allow skipping cinemetics until this time has passed so player doesn't skip out accidently from a firefight
+	float cinematicStopTime;	// cinematics have several camera changes, so keep track of when we stop them so that we don't reset cinematicSkipTime unnecessarily
+	float cinematicMaxSkipTime; // time to end cinematic when skipping.  there's a possibility of an infinite loop if the map isn't set up right.
+	bool inCinematic;			// game is playing cinematic (player controls frozen)
 	bool skipCinematic;
 
 	// are kept up to date with changes to serverInfo

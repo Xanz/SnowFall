@@ -1847,6 +1847,30 @@ char *va(const char *fmt, ...)
 }
 
 /*
+========================
+idStr::Format
+
+perform a threadsafe sprintf to the string
+========================
+*/
+void idStr::Format(const char *fmt, ...)
+{
+	va_list argptr;
+	char text[MAX_PRINT_MSG];
+
+	va_start(argptr, fmt);
+	// SRS - using idStr::vsnPrintf() guarantees size and null termination
+	int len = idStr::vsnPrintf(text, sizeof(text), fmt, argptr);
+	va_end(argptr);
+
+	if (len < 0)
+	{
+		idLib::common->FatalError("Tried to set a large buffer using %s", fmt);
+	}
+	*this = text;
+}
+
+/*
 ============
 idStr::BestUnit
 ============
