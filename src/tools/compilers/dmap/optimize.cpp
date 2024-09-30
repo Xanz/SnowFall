@@ -779,7 +779,7 @@ static void RemoveIfColinear(optVertex_t *ov, optIsland_t *island)
 	VectorSubtract(v3->v.xyz, v1->v.xyz, dir1);
 	len = dir1.Normalize();
 	VectorSubtract(v2->v.xyz, v1->v.xyz, dir2);
-	dist = DotProduct(dir2, dir1);
+	dist = idDotProduct(dir2, dir1);
 	VectorMA(v1->v.xyz, dist, dir1, point);
 	VectorSubtract(point, v2->v.xyz, offset);
 	off = offset.Length();

@@ -192,7 +192,7 @@ static bool MatchVert(const idDrawVert *a, const idDrawVert *b)
 	}
 
 	// otherwise do a dot-product cosine check
-	if (DotProduct(a->normal, b->normal) < COSINE_EPSILON)
+	if (idDotProduct(a->normal, b->normal) < COSINE_EPSILON)
 	{
 		return false;
 	}

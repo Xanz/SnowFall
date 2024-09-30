@@ -221,8 +221,8 @@ mapTri_t *TriListForSide(const side_t *s, const idWinding *w)
 #endif
 
 				// calculate texture s/t from brush primitive texture matrix
-				dv->st[0] = DotProduct(dv->xyz, s->texVec.v[0]) + s->texVec.v[0][3];
-				dv->st[1] = DotProduct(dv->xyz, s->texVec.v[1]) + s->texVec.v[1][3];
+				dv->st[0] = idDotProduct(dv->xyz, s->texVec.v[0]) + s->texVec.v[0][3];
+				dv->st[1] = idDotProduct(dv->xyz, s->texVec.v[1]) + s->texVec.v[1][3];
 
 				// copy normal
 				dv->normal = dmapGlobals.mapPlanes[s->planenum].Normal();
@@ -268,8 +268,8 @@ mapTri_t *TriListForSide(const side_t *s, const idWinding *w)
 				VectorCopy(*vec, dv->xyz);
 
 				// calculate texture s/t from brush primitive texture matrix
-				dv->st[0] = DotProduct(dv->xyz, s->texVec.v[0]) + s->texVec.v[0][3];
-				dv->st[1] = DotProduct(dv->xyz, s->texVec.v[1]) + s->texVec.v[1][3];
+				dv->st[0] = idDotProduct(dv->xyz, s->texVec.v[0]) + s->texVec.v[0][3];
+				dv->st[1] = idDotProduct(dv->xyz, s->texVec.v[1]) + s->texVec.v[1][3];
 
 				// copy normal
 				dv->normal = dmapGlobals.mapPlanes[s->planenum].Normal();

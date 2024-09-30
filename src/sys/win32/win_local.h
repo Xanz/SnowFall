@@ -192,7 +192,7 @@ typedef struct
 
 extern Win32Vars_t win32;
 
-extern GLFWwindow *window;
+extern GLFWwindow *m_Window;
 
 extern std::vector<mouse_poll_t> m_MousePolls;
 

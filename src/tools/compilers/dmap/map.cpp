@@ -237,8 +237,8 @@ static void AdjustEntityForOrigin(uEntity_t *ent)
 
 			s->planenum = FindFloatPlane(plane);
 
-			s->texVec.v[0][3] += DotProduct(ent->origin, s->texVec.v[0]);
-			s->texVec.v[1][3] += DotProduct(ent->origin, s->texVec.v[1]);
+			s->texVec.v[0][3] += idDotProduct(ent->origin, s->texVec.v[0]);
+			s->texVec.v[1][3] += idDotProduct(ent->origin, s->texVec.v[1]);
 
 			// remove any integral shift
 			s->texVec.v[0][3] -= floor(s->texVec.v[0][3]);

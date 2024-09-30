@@ -563,9 +563,9 @@ void R_GlobalPointToLocal(const float modelMatrix[16], const idVec3 &in, idVec3 
 
 	VectorSubtract(in, &modelMatrix[12], temp);
 
-	out[0] = DotProduct(temp, &modelMatrix[0]);
-	out[1] = DotProduct(temp, &modelMatrix[4]);
-	out[2] = DotProduct(temp, &modelMatrix[8]);
+	out[0] = idDotProduct(temp, &modelMatrix[0]);
+	out[1] = idDotProduct(temp, &modelMatrix[4]);
+	out[2] = idDotProduct(temp, &modelMatrix[8]);
 }
 
 void R_LocalVectorToGlobal(const float modelMatrix[16], const idVec3 &in, idVec3 &out)
@@ -577,16 +577,16 @@ void R_LocalVectorToGlobal(const float modelMatrix[16], const idVec3 &in, idVec3
 
 void R_GlobalVectorToLocal(const float modelMatrix[16], const idVec3 &in, idVec3 &out)
 {
-	out[0] = DotProduct(in, &modelMatrix[0]);
-	out[1] = DotProduct(in, &modelMatrix[4]);
-	out[2] = DotProduct(in, &modelMatrix[8]);
+	out[0] = idDotProduct(in, &modelMatrix[0]);
+	out[1] = idDotProduct(in, &modelMatrix[4]);
+	out[2] = idDotProduct(in, &modelMatrix[8]);
 }
 
 void R_GlobalPlaneToLocal(const float modelMatrix[16], const idPlane &in, idPlane &out)
 {
-	out[0] = DotProduct(in, &modelMatrix[0]);
-	out[1] = DotProduct(in, &modelMatrix[4]);
-	out[2] = DotProduct(in, &modelMatrix[8]);
+	out[0] = idDotProduct(in, &modelMatrix[0]);
+	out[1] = idDotProduct(in, &modelMatrix[4]);
+	out[2] = idDotProduct(in, &modelMatrix[8]);
 	out[3] = in[3] + modelMatrix[12] * in[0] + modelMatrix[13] * in[1] + modelMatrix[14] * in[2];
 }
 

@@ -1,5 +1,8 @@
 #include "GuiManager.h"
 
+// We can call commands using this.
+// cmdSystem->BufferCommandText(CMD_EXEC_NOW, "exec default.cfg");
+
 sfGUIManager guiManager;
 
 /// @brief Sets the GUI manager state.

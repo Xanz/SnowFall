@@ -485,60 +485,60 @@ void idSoundWorldLocal::Update()
 		// console->PrintOverlay(handle, JUSTIFY_LEFT, showVoiceTable.c_str());
 	}
 
-	// if (s_drawSounds.GetBool() && renderWorld != NULL)
-	// {
-	// 	for (int e = 0; e < emitters.Num(); e++)
-	// 	{
-	// 		idSoundEmitterLocal *emitter = emitters[e];
-	// 		bool audible = false;
-	// 		float maxGain = 0.0f;
-	// 		for (int c = 0; c < emitter->channels.Num(); c++)
-	// 		{
-	// 			if (emitter->channels[c]->hardwareVoice != NULL)
-	// 			{
-	// 				audible = true;
-	// 				maxGain = Max(maxGain, emitter->channels[c]->hardwareVoice->GetGain());
-	// 			}
-	// 		}
-	// 		if (!audible)
-	// 		{
-	// 			continue;
-	// 		}
+	if (s_drawSounds.GetBool() && renderWorld != NULL)
+	{
+		for (int e = 0; e < emitters.Num(); e++)
+		{
+			idSoundEmitterLocal *emitter = emitters[e];
+			bool audible = false;
+			float maxGain = 0.0f;
+			for (int c = 0; c < emitter->channels.Num(); c++)
+			{
+				if (emitter->channels[c]->hardwareVoice != NULL)
+				{
+					audible = true;
+					maxGain = Max(maxGain, emitter->channels[c]->hardwareVoice->GetGain());
+				}
+			}
+			if (!audible)
+			{
+				continue;
+			}
 
-	// 		static const int lifetime = 20;
+			static const int lifetime = 20;
 
-	// 		idBounds ref;
-	// 		ref.Clear();
-	// 		ref.AddPoint(idVec3(-10.0f));
-	// 		ref.AddPoint(idVec3(10.0f));
+			idBounds ref;
+			ref.Clear();
+			ref.AddPoint(idVec3(-10.0f, -10.0f, -10.0f));
+			ref.AddPoint(idVec3(10.0f, 10.0f, 10.0f));
 
-	// 		// draw a box
-	// 		renderWorld->DebugBounds(idVec4(maxGain, maxGain, 1.0f, 1.0f), ref, emitter->origin, lifetime);
-	// 		if (emitter->origin != emitter->spatializedOrigin)
-	// 		{
-	// 			renderWorld->DebugLine(idVec4(1.0f, 0.0f, 0.0f, 1.0f), emitter->origin, emitter->spatializedOrigin, lifetime);
-	// 		}
+			// draw a box
+			renderWorld->DebugBounds(idVec4(maxGain, maxGain, 1.0f, 1.0f), ref, emitter->origin, lifetime);
+			if (emitter->origin != emitter->spatializedOrigin)
+			{
+				renderWorld->DebugLine(idVec4(1.0f, 0.0f, 0.0f, 1.0f), emitter->origin, emitter->spatializedOrigin, lifetime);
+			}
 
-	// 		// draw the index
-	// 		idVec3 textPos = emitter->origin;
-	// 		textPos.z -= 8;
-	// 		renderWorld->DrawText(va("%i", e), textPos, 0.1f, idVec4(1, 0, 0, 1), listener.axis, 1, lifetime);
-	// 		textPos.z += 8;
+			// draw the index
+			idVec3 textPos = emitter->origin;
+			textPos.z -= 8;
+			renderWorld->DrawText(va("%i", e), textPos, 0.1f, idVec4(1, 0, 0, 1), listener.axis, 1, lifetime);
+			textPos.z += 8;
 
-	// 		// run through all the channels
-	// 		for (int k = 0; k < emitter->channels.Num(); k++)
-	// 		{
-	// 			idSoundChannel *chan = emitter->channels[k];
-	// 			float min = chan->parms.minDistance;
-	// 			float max = chan->parms.maxDistance;
-	// 			const char *defaulted = chan->leadinSample->IsDefault() ? " *DEFAULTED*" : "";
-	// 			idStr text;
-	// 			text.Format("%s (%i %i/%i)%s", chan->soundShader->GetName(), idMath::Ftoi(emitter->spatializedDistance), idMath::Ftoi(min), idMath::Ftoi(max), defaulted);
-	// 			renderWorld->DrawText(text, textPos, 0.1f, idVec4(1, 0, 0, 1), listener.axis, 1, lifetime);
-	// 			textPos.z += 8;
-	// 		}
-	// 	}
-	// }
+			// run through all the channels
+			for (int k = 0; k < emitter->channels.Num(); k++)
+			{
+				idSoundChannel *chan = emitter->channels[k];
+				float min = chan->parms.minDistance;
+				float max = chan->parms.maxDistance;
+				const char *defaulted = chan->leadinSample->IsDefault() ? " *DEFAULTED*" : "";
+				idStr text;
+				text.Format("%s (%i %i/%i)%s", chan->soundShader->GetName(), idMath::Ftoi(emitter->spatializedDistance), idMath::Ftoi(min), idMath::Ftoi(max), defaulted);
+				renderWorld->DrawText(text, textPos, 0.1f, idVec4(1, 0, 0, 1), listener.axis, 1, lifetime);
+				textPos.z += 8;
+			}
+		}
+	}
 }
 
 /*

@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "Session_local.h"
-#include "../ui/GuiManager.h"
+#include "../sfUI/GuiManager.h"
 
 idCVar idSessionLocal::com_showAngles("com_showAngles", "0", CVAR_SYSTEM | CVAR_BOOL, "");
 idCVar idSessionLocal::com_minTics("com_minTics", "1", CVAR_SYSTEM, "");
@@ -2274,7 +2274,7 @@ void idSessionLocal::PacifierUpdate()
 	}
 	lastPacifierTime = time;
 
-	// guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
+	guiManager.AdvanceLoading(com_frameTime, bytesNeededForMapLoad);
 
 	Sys_GenerateEvents();
 

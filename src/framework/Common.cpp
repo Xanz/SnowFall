@@ -31,7 +31,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../renderer/Image.h"
 #include "Session_local.h"
-#include "../ui/GuiManager.h"
+#include "../sfUI/GuiManager.h"
 
 typedef enum
 {
@@ -2953,6 +2953,8 @@ void idCommonLocal::Frame(void)
 
 	eventLoop->RunEventLoop();
 
+	Renderer::BeginScene();
+
 	//--------------------------------------------
 	// Determine how many game tics we are going to run,
 	// now that the previous frame is completely finished.
@@ -3043,6 +3045,8 @@ void idCommonLocal::Frame(void)
 		// normal, in-sequence screen update
 		session->UpdateScreen(false);
 	}
+
+	Renderer::EndScene();
 
 	soundSystem->Update();
 
@@ -3323,7 +3327,9 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		{
 #endif
 			// if the user didn't give any commands, run default action
-			session->StartMenu(true);
+
+			// Adding a new start menu can be done here in RMLUI.
+			// session->StartMenu(true);
 		}
 
 		Printf("--- Common Initialization Complete ---\n");
@@ -3345,6 +3351,8 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		// Needs to be set at init otherwise the fps will still be capped.
 		com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
+
+		Renderer::Init();
 	}
 
 	catch (idException &)

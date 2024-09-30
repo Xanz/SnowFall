@@ -324,7 +324,8 @@ int idSoundVoice_OpenAL::RestartAt(int offsetSamples)
 	idSoundSample_OpenAL *sample = leadinSample;
 	if (offsetSamples >= leadinSample->playLength)
 	{
-		if (loopingSample != NULL)
+		// Added more guarding to avoid division by zero.
+		if (loopingSample != NULL && loopingSample->playLength != 0 && offsetSamples != 0)
 		{
 			offsetSamples %= loopingSample->playLength;
 			sample = loopingSample;

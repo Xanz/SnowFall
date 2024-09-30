@@ -276,6 +276,7 @@ public:
 	static bool CheckExtension(const char *name, const char *ext);
 	static const char *FloatArrayToString(const float *array, const int length, const int precision);
 
+	void Format(const char *fmt, ...); // perform a threadsafe sprintf to the string
 	// hash keys
 	static int Hash(const char *string);
 	static int Hash(const char *string, int length);
