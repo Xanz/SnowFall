@@ -4,6 +4,3 @@
 [submodule "external/openal"]
 	path = external/openal
 	url = https://github.com/kcat/openal-soft.git
-[submodule "external/RmlUi"]
-	path = external/RmlUi
-	url = https://github.com/mikke89/RmlUi.git
