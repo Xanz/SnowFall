@@ -43,3 +43,5 @@ base/
 tools/
 
 .vscode/
+
+generated/

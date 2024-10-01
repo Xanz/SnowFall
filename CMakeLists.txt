@@ -21,7 +21,7 @@ file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
 # New Snowfall Renderer backend.
 file(GLOB_RECURSE SFRENDERER src/sfRenderer/*.cpp src/sfRenderer/*.h)
 
-# New Snowfall UI system. (Powered by RMLUI.)
+# New Snowfall UI system.
 file(GLOB_RECURSE SFUI src/sfUI/*.cpp src/sfUI/*.h)
 
 file(GLOB_RECURSE EDITOR src/tools/editor/*.cpp src/tools/editor/*.h)
@@ -54,17 +54,10 @@ add_compile_definitions(WIN32)
 add_compile_definitions(_XKEYCHECK_H)
 add_compile_definitions(USE_OPENAL)
 
-
-
-# Built as a sub directory should be moved to build as part of dependency scripts.
-add_subdirectory(external/RmlUi)
-
-add_definitions(-DRMLUI_STATIC_LIB)
-
 include_directories(${CMAKE_SOURCE_DIR}/src PUBLIC external/openal/include external/glfw/include external/glew/include)
 link_directories(external/openal/build/Release external/glfw/build/src/Release external/glew/lib/Release/x64)
 
-set(LIBS dbghelp dinput8 dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32 RmlUi::RmlUi)
+set(LIBS dbghelp dinput8 dxguid glu32 iphlpapi opengl32 winmm ws2_32 OpenAL32 odbc32 odbccp32 glfw3 glew32)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)

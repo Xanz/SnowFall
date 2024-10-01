@@ -2,6 +2,7 @@
 
 void Renderer::Init()
 {
+    glewInit();
     glEnable(GL_DEPTH_TEST);
 }
 

@@ -114,9 +114,7 @@ typedef unsigned long long uint64;
 #include <math.h>
 #include <thread>
 
-// #include <glad/glad.h>
 #include <GL/glew.h>
-// #define GLFW_INCLUDE_NON
 
 //-----------------------------------------------------
 

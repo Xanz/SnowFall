@@ -272,8 +272,6 @@ bool GLimp_Init(glimpParms_t parms)
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwMakeContextCurrent(m_Window);
-	glewExperimental = GL_TRUE;
-	glewInit();
 
 	// Raw mouse input
 	if (m_rawInput.GetBool())

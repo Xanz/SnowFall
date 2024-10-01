@@ -3351,8 +3351,6 @@ void idCommonLocal::Init(int argc, const char **argv, const char *cmdline)
 		// Needs to be set at init otherwise the fps will still be capped.
 		com_engineHz_denominator = 100.0f * com_engineHz.GetFloat();
 		com_engineHz_latched = com_engineHz.GetFloat();
-
-		Renderer::Init();
 	}
 
 	catch (idException &)
