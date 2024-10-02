@@ -17,9 +17,10 @@ void Renderer::BeginScene()
 void Renderer::EndScene()
 {
     // Draw shit here.
+    renderSystem->EndFrame(NULL, NULL);
 }
 
-void Renderer::SetViewport(int width, int height)
+void Renderer::SetViewport(int posX, int posY, int width, int height)
 {
     glViewport(0, 0, width, height);
 }

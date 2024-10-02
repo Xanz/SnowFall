@@ -2446,15 +2446,7 @@ void idSessionLocal::UpdateScreen(bool outOfSequence)
 	// draw everything
 	Draw();
 
-	if (com_speeds.GetBool())
-	{
-		renderSystem->EndFrame(&time_frontend, &time_backend);
-	}
-	else
-	{
-		renderSystem->EndFrame(NULL, NULL);
-	}
-
+	Renderer::EndScene();
 	insideUpdateScreen = false;
 }
 

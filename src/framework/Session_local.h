@@ -201,7 +201,6 @@ public:
 	logStats_t loggedStats[MAX_LOGGED_STATS];
 	int lastSaveIndex;
 	// each game tic, numClients usercmds will be added, until full
-
 	bool insideUpdateScreen; // true while inside ::UpdateScreen()
 
 	bool loadingSaveGame; // currently loading map from a SaveGame

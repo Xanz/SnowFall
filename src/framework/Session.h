@@ -157,6 +157,8 @@ public:
 	idDemoFile *readDemo;
 	idDemoFile *writeDemo;
 	int renderdemoVersion;
+
+	bool insideUpdateScreen;
 };
 
 extern idSession *session;

@@ -466,7 +466,7 @@ This is not used by the normal game paths, just by some tools
 void RB_SetGL2D(void)
 {
 	// set 2D virtual screen size
-	glViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
+	Renderer::SetViewport(0, 0, glConfig.vidWidth, glConfig.vidHeight);
 	if (r_useScissor.GetBool())
 	{
 		glScissor(0, 0, glConfig.vidWidth, glConfig.vidHeight);

@@ -619,10 +619,10 @@ void RB_BeginDrawingView(void)
 	glMatrixMode(GL_MODELVIEW);
 
 	// set the window clipping
-	glViewport(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1,
-			   tr.viewportOffset[1] + backEnd.viewDef->viewport.y1,
-			   backEnd.viewDef->viewport.x2 + 1 - backEnd.viewDef->viewport.x1,
-			   backEnd.viewDef->viewport.y2 + 1 - backEnd.viewDef->viewport.y1);
+	Renderer::SetViewport(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1,
+						  tr.viewportOffset[1] + backEnd.viewDef->viewport.y1,
+						  backEnd.viewDef->viewport.x2 + 1 - backEnd.viewDef->viewport.x1,
+						  backEnd.viewDef->viewport.y2 + 1 - backEnd.viewDef->viewport.y1);
 
 	// the scissor may be smaller than the viewport for subviews
 	glScissor(tr.viewportOffset[0] + backEnd.viewDef->viewport.x1 + backEnd.viewDef->scissor.x1,

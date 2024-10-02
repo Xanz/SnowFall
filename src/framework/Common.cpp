@@ -2914,6 +2914,8 @@ void idCommonLocal::PrintLoadingMessage(const char *msg)
 	{
 		return;
 	}
+
+	// Wtf is this honestly. The renderer should be able to update without being blocked by loading.
 	renderSystem->BeginFrame(renderSystem->GetScreenWidth(), renderSystem->GetScreenHeight());
 	renderSystem->DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, declManager->FindMaterial("splashScreen"));
 	int len = strlen(msg);
@@ -3030,23 +3032,21 @@ void idCommonLocal::Frame(void)
 
 	idAsyncNetwork::RunFrame();
 
-	if (idAsyncNetwork::IsActive())
-	{
-		if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
-		{
-			session->GuiFrameEvents();
-			session->UpdateScreen(false);
-		}
-	}
-	else
-	{
-		session->Frame();
+	// if (idAsyncNetwork::IsActive())
+	// {
+	// 	if (idAsyncNetwork::serverDedicated.GetInteger() != 1)
+	// 	{
+	// 		session->GuiFrameEvents();
+	// 		session->UpdateScreen(false);
+	// 	}
+	// }
+	// else
+	// {
+	session->Frame();
 
-		// normal, in-sequence screen update
-		session->UpdateScreen(false);
-	}
-
-	Renderer::EndScene();
+	// normal, in-sequence screen update
+	session->UpdateScreen(false);
+	// }
 
 	soundSystem->Update();
 

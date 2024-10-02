@@ -10,5 +10,5 @@ public:
 
     static void EndScene();
 
-    static void SetViewport(int width, int height);
+    static void SetViewport(int posX, int posY, int width, int height);
 };

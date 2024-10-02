@@ -1552,7 +1552,7 @@ void RenderBumpFlat_f(const idCmdArgs &args)
 	ResizeWindow(width, height);
 
 	// for small images, the viewport may be less than the minimum window
-	glViewport(0, 0, width, height);
+	Renderer::SetViewport(0, 0, width, height);
 
 	glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
