@@ -44,8 +44,6 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 
 #include "win_local.h"
-#include "rc/AFEditor_resource.h"
-#include "rc/doom_resource.h"
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
 #include <vector>

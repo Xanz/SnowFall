@@ -48,7 +48,7 @@ void RB_SetDefaultGLState(void)
 	RB_LogComment("--- R_SetDefaultGLState ---\n");
 
 	glClearDepth(1.0f);
-	glColor4f(1, 1, 1, 1);
+	glColor4f(0, 0, 1, 1);
 
 	// the vertex array is always enabled
 	glEnableClientState(GL_VERTEX_ARRAY);

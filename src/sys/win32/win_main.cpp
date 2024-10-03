@@ -45,7 +45,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "../sys_local.h"
 #include "win_local.h"
-#include "rc/CreateResourceIDs.h"
 #include "../../renderer/tr_local.h"
 #include <GLFW/glfw3.h>
 #include "sfUI/GuiManager.h"
@@ -53,7 +52,6 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar Win32Vars_t::sys_arch("sys_arch", "", CVAR_SYSTEM | CVAR_INIT, "");
 idCVar Win32Vars_t::sys_cpustring("sys_cpustring", "detect", CVAR_SYSTEM | CVAR_INIT, "");
-// idCVar Win32Vars_t::in_mouse( "in_mouse", "1", CVAR_SYSTEM | CVAR_BOOL, "enable mouse input" );
 idCVar Win32Vars_t::win_allowAltTab("win_allowAltTab", "0", CVAR_SYSTEM | CVAR_BOOL, "allow Alt-Tab when fullscreen");
 idCVar Win32Vars_t::win_notaskkeys("win_notaskkeys", "0", CVAR_SYSTEM | CVAR_INTEGER, "disable windows task keys");
 idCVar Win32Vars_t::win_username("win_username", "", CVAR_SYSTEM | CVAR_INIT, "windows user name");

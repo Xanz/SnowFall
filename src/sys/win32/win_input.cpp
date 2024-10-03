@@ -32,67 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 #include "win_local.h"
 #include "framework/Session_local.h"
 
-#define DINPUT_BUFFERSIZE 256
-
-#define CHAR_FIRSTREPEAT 200
-#define CHAR_REPEAT 100
-
-typedef struct MYDATA
-{
-	LONG lX;	   // X axis goes here
-	LONG lY;	   // Y axis goes here
-	LONG lZ;	   // Z axis goes here
-	BYTE bButtonA; // One button goes here
-	BYTE bButtonB; // Another button goes here
-	BYTE bButtonC; // Another button goes here
-	BYTE bButtonD; // Another button goes here
-} MYDATA;
-
-static DIOBJECTDATAFORMAT rgodf[] = {
-	{
-		&GUID_XAxis,
-		FIELD_OFFSET(MYDATA, lX),
-		DIDFT_AXIS | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		&GUID_YAxis,
-		FIELD_OFFSET(MYDATA, lY),
-		DIDFT_AXIS | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		&GUID_ZAxis,
-		FIELD_OFFSET(MYDATA, lZ),
-		0x80000000 | DIDFT_AXIS | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		0,
-		FIELD_OFFSET(MYDATA, bButtonA),
-		DIDFT_BUTTON | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		0,
-		FIELD_OFFSET(MYDATA, bButtonB),
-		DIDFT_BUTTON | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		0,
-		FIELD_OFFSET(MYDATA, bButtonC),
-		0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE,
-		0,
-	},
-	{
-		0,
-		FIELD_OFFSET(MYDATA, bButtonD),
-		0x80000000 | DIDFT_BUTTON | DIDFT_ANYINSTANCE,
-		0,
-	},
-};
-
 //==========================================================================
 
 static const unsigned char s_scantokey[256] = {
@@ -296,32 +235,6 @@ static const unsigned char *keyScanTable = s_scantokey;
 // scan codes instead of just the first 128.
 static unsigned char rightAltKey = K_ALT;
 
-#define NUM_OBJECTS (sizeof(rgodf) / sizeof(rgodf[0]))
-
-static DIDATAFORMAT df = {
-	sizeof(DIDATAFORMAT),		// this structure
-	sizeof(DIOBJECTDATAFORMAT), // size of object data format
-	DIDF_RELAXIS,				// absolute axis coordinates
-	sizeof(MYDATA),				// device data size
-	NUM_OBJECTS,				// number of objects
-	rgodf,						// and here they are
-};
-
-/*
-============================================================
-
-DIRECT INPUT KEYBOARD CONTROL
-
-============================================================
-*/
-
-bool IN_StartupKeyboard(void)
-{
-
-	common->Printf("keyboard: DirectInput initialized.\n");
-	return true;
-}
-
 // This function converts a GLFW scan code to its ASCII representation if possible
 int scanCodeToAscii(int scanCode)
 {
@@ -342,7 +255,6 @@ Map from GLFW to Doom keynums
 */
 int GLFWDoom_MapKey(int key)
 {
-
 	int scanCode = glfwGetKeyScancode(key);
 
 	int convertedKey = scanCodeToAscii(scanCode);
@@ -379,97 +291,6 @@ int GLFWDoom_MapKey(int key)
 }
 
 /*
-==========================
-IN_DeactivateKeyboard
-==========================
-*/
-void IN_DeactivateKeyboard(void)
-{
-	// if (!win32.g_pKeyboard) {
-	// 	return;
-	// }
-	// win32.g_pKeyboard->Unacquire( );
-}
-
-/*
-============================================================
-
-DIRECT INPUT MOUSE CONTROL
-
-============================================================
-*/
-
-/*
-========================
-IN_InitDirectInput
-========================
-*/
-
-void IN_InitDirectInput(void)
-{
-}
-
-/*
-========================
-IN_InitDIMouse
-========================
-*/
-bool IN_InitDIMouse(void)
-{
-
-	return true;
-}
-
-/*
-==========================
-IN_ActivateMouse
-==========================
-*/
-void IN_ActivateMouse(void)
-{
-
-	// if ( !win32.in_mouse.GetBool() || win32.mouseGrabbed || !win32.g_pMouse ) {
-	// 	return;
-	// }
-
-	// win32.mouseGrabbed = true;
-
-	// glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	// for ( i = 0; i < 10; i++ ) {
-	// if ( ::ShowCursor( false ) < 0 ) {
-	// 		break;
-	// 	}
-	// }
-
-	// we may fail to reacquire if the window has been recreated
-	// hr = win32.g_pMouse->Acquire();
-	// if (FAILED(hr)) {
-	// 	return;
-	// }
-
-	// set the cooperativity level.
-	// hr = win32.g_pMouse->SetCooperativeLevel( win32.hWnd, DISCL_EXCLUSIVE | DISCL_FOREGROUND);
-}
-
-/*
-==========================
-IN_DeactivateMouse
-==========================
-*/
-void IN_DeactivateMouse(void)
-{
-}
-
-/*
-==========================
-IN_DeactivateMouseIfWindowed
-==========================
-*/
-void IN_DeactivateMouseIfWindowed(void)
-{
-}
-
-/*
 ============================================================
 
   MOUSE CONTROL
@@ -486,8 +307,6 @@ void Sys_ShutdownInput(void)
 {
 	m_MousePolls.clear();
 	m_KeyboardPolls.clear();
-	IN_DeactivateMouse();
-	IN_DeactivateKeyboard();
 }
 
 /*
@@ -572,7 +391,6 @@ Called every frame, even if not generating commands
 */
 void IN_Frame(void)
 {
-
 	bool shouldGrab = true;
 	// Needed to be set up here.
 	bool menuActive = (sessLocal.GetActiveMenu() != NULL);
@@ -591,11 +409,6 @@ void Sys_GrabMouseCursor(bool grabIt)
 	}
 #endif
 }
-
-//=====================================================================================
-
-static int diFetch;
-static byte toggleFetch[2][256];
 
 /*
 ====================

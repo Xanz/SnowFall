@@ -1015,7 +1015,7 @@ static float R_RenderingFPS(const renderView_t *renderView)
 		// render
 		renderSystem->BeginFrame(glConfig.vidWidth, glConfig.vidHeight);
 		tr.primaryWorld->RenderScene(renderView);
-		renderSystem->EndFrame(NULL, NULL);
+		Renderer::EndScene();
 		glFinish();
 		count++;
 		end = Sys_Milliseconds();
