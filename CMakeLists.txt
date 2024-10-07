@@ -47,6 +47,13 @@ set(D3Source
     ${GLAD}
     ${EDITOR}
     )
+    
+    
+# Get the current time at build time
+string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
+
+# Pass the build time as a preprocessor definition to the compiler
+add_definitions(-DBUILD_TIME="${BUILD_TIME}")
 
 add_compile_definitions(_WINDOWS)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
@@ -63,6 +70,14 @@ add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
+
+
+add_custom_target(ForceRegenerate
+    COMMAND ${CMAKE_COMMAND} -S ${CMAKE_SOURCE_DIR} -B ${CMAKE_BINARY_DIR}
+    COMMENT "Forcing CMake regeneration"
+)
+
+add_dependencies(${PROJECT_NAME} ForceRegenerate)
 
 set_target_properties(${PROJECT_NAME} PROPERTIES
 LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"

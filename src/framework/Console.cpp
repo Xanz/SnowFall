@@ -1180,10 +1180,10 @@ void idConsoleLocal::DrawSolidConsole(float frac)
 
 	// draw the version number
 
-	renderSystem->SetColor(idStr::ColorForIndex(C_COLOR_CYAN));
+	renderSystem->SetColor(idStr::ColorForIndex(C_COLOR_GREEN));
 
 	// idStr version = va("%s.%i", ENGINE_VERSION, BUILD_NUMBER); Disabled build number for now.
-	idStr version = va("%s", ENGINE_VERSION);
+	idStr version = va("SnowFall %s", BUILD_TIME);
 	i = version.Length();
 
 	for (x = 0; x < i; x++)

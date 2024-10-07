@@ -50,9 +50,6 @@ If you have questions concerning this license or the applicable additional terms
 #define CD_EXE "doom.exe"
 #define CONFIG_FILE "DoomConfig.cfg"
 
-// base folder where the source code lives
-#define SOURCE_CODE_BASE_FOLDER "neo"
-
 // default idnet host address
 #ifndef IDNET_HOST
 #define IDNET_HOST "idnet.ua-corp.com"
