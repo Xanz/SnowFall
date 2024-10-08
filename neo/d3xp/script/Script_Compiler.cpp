@@ -208,7 +208,7 @@ idCompiler::idCompiler()
 ================
 */
 idCompiler::idCompiler() {
-	const char	*ptr;
+	const char	**ptr;
 	int		id;
 
 	// make sure we have the right # of opcodes in the table
@@ -230,8 +230,8 @@ idCompiler::idCompiler() {
 
 	memset( &immediate, 0, sizeof( immediate ) );
 	memset( punctuationValid, 0, sizeof( punctuationValid ) );
-	for( ptr = *punctuation; *ptr != NULL; ptr++ ) {
-		id = parserPtr->GetPunctuationId( ptr );
+	for( ptr = punctuation; *ptr != NULL; ptr++ ) {
+		id = parserPtr->GetPunctuationId( *ptr );
 		if ( ( id >= 0 ) && ( id < 256 ) ) {
 			punctuationValid[ id ] = true;
 		}

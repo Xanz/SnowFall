@@ -468,25 +468,27 @@ void idPlayerView::SingleView( const renderView_t *view, idMenuHandler_HUD * hud
 		}
 
 
+		// TODO: fix tunnel vision in new renderer.
+		// Disabled as the tunnel vision is not setting correctly.
 		// tunnel vision
-		float health = 0.0f;
-		if ( g_testHealthVision.GetFloat() != 0.0f ) {
-			health = g_testHealthVision.GetFloat();
-		} else {
-			health = player->health;
-		}
-		float alpha = health / 100.0f;
-		if ( alpha < 0.0f ) {
-			alpha = 0.0f;
-		}
-		if ( alpha > 1.0f ) {
-			alpha = 1.0f;
-		}
-
-		if ( alpha < 1.0f  ) {
-			renderSystem->SetColor4( ( player->health <= 0.0f ) ? MS2SEC( gameLocal.slow.time ) : lastDamageTime, 1.0f, 1.0f, ( player->health <= 0.0f ) ? 0.0f : alpha );
-			renderSystem->DrawStretchPic( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f, 1.0f, tunnelMaterial );
-		}
+		// float health = 0.0f;
+		// if ( g_testHealthVision.GetFloat() != 0.0f ) {
+		// 	health = g_testHealthVision.GetFloat();
+		// } else {
+		// 	health = player->health;
+		// }
+		// float alpha = health / 100.0f;
+		// if ( alpha < 0.0f ) {
+		// 	alpha = 0.0f;
+		// }
+		// if ( alpha > 1.0f ) {
+		// 	alpha = 1.0f;
+		// }
+		//
+		// if ( alpha < 1.0f  ) {
+		// 	renderSystem->SetColor4( ( player->health <= 0.0f ) ? MS2SEC( gameLocal.slow.time ) : lastDamageTime, 1.0f, 1.0f, ( player->health <= 0.0f ) ? 0.0f : alpha );
+		// 	renderSystem->DrawStretchPic( 0.0f, 0.0f, SCREEN_WIDTH, SCREEN_HEIGHT, 0.0f, 0.0f, 1.0f, 1.0f, tunnelMaterial );
+		// }
 
 		if ( bfgVision ) {
 			renderSystem->SetColor4( 1.0f, 1.0f, 1.0f, 1.0f );
