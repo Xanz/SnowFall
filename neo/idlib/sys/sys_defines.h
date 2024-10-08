@@ -202,6 +202,14 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 #pragma warning( disable: 5208 )
 
 #pragma warning( disable: 4644 )
+
+#pragma warning( disable: 5054 )
+
+#pragma warning( disable: 5055 )
+
+#pragma warning( disable: 6011 )
+
+#pragma warning( disable: 5056 )
 // We need to inform the compiler that Error() and FatalError() will
 // never return, so any conditions that leeds to them being called are
 // guaranteed to be false in the following code

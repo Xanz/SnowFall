@@ -2266,12 +2266,12 @@ Generates a CRC checksum file for each .resources file.
 void idFileSystemLocal::GenerateResourceCRCs_f( const idCmdArgs &args ) {
 	idLib::Printf( "Generating CRCs for resource files...\n" );
 
-	std::auto_ptr<idFileList> baseResourceFileList( fileSystem->ListFiles( ".", ".resources" ) );
+	std::unique_ptr<idFileList> baseResourceFileList( fileSystem->ListFiles( ".", ".resources" ) );
 	if ( baseResourceFileList.get() != NULL ) {
 		CreateCRCsForResourceFileList ( *baseResourceFileList );
 	}
 
-	std::auto_ptr<idFileList> mapResourceFileList( fileSystem->ListFilesTree( "maps", ".resources" ) );
+	std::unique_ptr<idFileList> mapResourceFileList( fileSystem->ListFilesTree( "maps", ".resources" ) );
 	if ( mapResourceFileList.get() != NULL ) {
 		CreateCRCsForResourceFileList ( *mapResourceFileList );
 	}
@@ -2288,7 +2288,7 @@ void idFileSystemLocal::CreateCRCsForResourceFileList( const idFileList & list )
 	for ( int fileIndex = 0; fileIndex < list.GetNumFiles(); ++fileIndex ) {
 		idLib::Printf( " Processing %s.\n", list.GetFile( fileIndex ) );
 
-		std::auto_ptr<idFile_Memory> currentFile( static_cast<idFile_Memory *>( fileSystem->OpenFileReadMemory( list.GetFile( fileIndex ) ) ) );
+		std::unique_ptr<idFile_Memory> currentFile( static_cast<idFile_Memory *>( fileSystem->OpenFileReadMemory( list.GetFile( fileIndex ) ) ) );
 
 		if ( currentFile.get() == NULL ) {
 			idLib::Printf( " Error reading %s.\n", list.GetFile( fileIndex ) );
@@ -2336,7 +2336,7 @@ void idFileSystemLocal::CreateCRCsForResourceFileList( const idFileList & list )
 		// Write the .crc file corresponding to the .resources file.
 		idStr crcFilename = list.GetFile( fileIndex );
 		crcFilename.SetFileExtension( ".crc" );
-		std::auto_ptr<idFile> crcOutputFile( fileSystem->OpenFileWrite( crcFilename, "fs_basepath" ) );
+		std::unique_ptr<idFile> crcOutputFile( fileSystem->OpenFileWrite( crcFilename, "fs_basepath" ) );
 		if ( crcOutputFile.get() == NULL ) {
 			idLib::Printf( "Error writing CRC file %s.\n", crcFilename );
 			continue;

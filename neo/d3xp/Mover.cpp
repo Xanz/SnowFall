@@ -3174,7 +3174,7 @@ idDoor::idDoor() {
 	nextSndTriggerTime = 0;
 	localTriggerOrigin.Zero();
 	localTriggerAxis.Identity();
-	requires.Clear();
+	required.Clear();
 	removeItem = 0;
 	syncLock.Clear();
 	companionDoor = NULL;
@@ -3212,7 +3212,7 @@ void idDoor::Save( idSaveGame *savefile ) const {
 	savefile->WriteVec3( localTriggerOrigin );
 	savefile->WriteMat3( localTriggerAxis );
 
-	savefile->WriteString( requires );
+	savefile->WriteString( required );
 	savefile->WriteInt( removeItem );
 	savefile->WriteString( syncLock );
 	savefile->WriteInt( normalAxisIndex );
@@ -3241,7 +3241,7 @@ void idDoor::Restore( idRestoreGame *savefile ) {
 	savefile->ReadVec3( localTriggerOrigin );
 	savefile->ReadMat3( localTriggerAxis );
 
-	savefile->ReadString( requires );
+	savefile->ReadString( required );
 	savefile->ReadInt( removeItem );
 	savefile->ReadString( syncLock );
 	savefile->ReadInt( normalAxisIndex );
@@ -3302,7 +3302,7 @@ void idDoor::Spawn() {
 
 	spawnArgs.GetString( "buddy", "", buddyStr );
 
-	spawnArgs.GetString( "requires", "", requires );
+	spawnArgs.GetString( "required", "", required );
 	spawnArgs.GetInt( "removeItem", "0", removeItem );
 
 	// ever separate piece of a door is considered solid when other team mates push entities
@@ -3558,7 +3558,7 @@ idDoor::Use
 ================
 */
 void idDoor::Use( idEntity *other, idEntity *activator ) {
-	if ( gameLocal.RequirementMet( activator, requires, removeItem ) ) {
+	if ( gameLocal.RequirementMet( activator, required, removeItem ) ) {
 		if ( syncLock.Length() ) {
 			idEntity *sync = gameLocal.FindEntity( syncLock );
 			if ( sync != NULL && sync->IsType( idDoor::Type ) ) {

@@ -410,7 +410,7 @@ private:
 	int						nextSndTriggerTime;
 	idVec3					localTriggerOrigin;
 	idMat3					localTriggerAxis;
-	idStr					requires;
+	idStr					required;
 	int						removeItem;
 	idStr					syncLock;
 	int						normalAxisIndex;		// door faces X or Y for spectator teleports

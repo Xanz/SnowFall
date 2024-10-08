@@ -626,7 +626,7 @@ void idParser::AddBuiltinDefines() {
 	define_t *define;
 	struct builtin
 	{
-		char *string;
+		const char *string;
 		int id;
 	} builtin[] = {
 		{ "__LINE__",	BUILTIN_LINE }, 

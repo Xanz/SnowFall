@@ -414,7 +414,7 @@ public:
 	void					UnregisterEntity( idEntity *ent );
 	const idDict &			GetSpawnArgs() const { return spawnArgs; }
 
-	bool					RequirementMet( idEntity *activator, const idStr &requires, int removeItem );
+	bool					RequirementMet( idEntity *activator, const idStr &required, int removeItem );
 
 	void					AlertAI( idEntity *ent );
 	idActor *				GetAlertEntity();

@@ -72,7 +72,7 @@ idCVar net_usercmd_timing_debug( "net_usercmd_timing_debug", "0", CVAR_BOOL, "Pr
 
 
 // List of all defs used by the player that will stay on the fast timeline
-static char* fastEntityList[] = {
+static const char* fastEntityList[] = {
 	"player_doommarine",
 		"weapon_chainsaw",
 		"weapon_fists",
@@ -3753,11 +3753,11 @@ void idGameLocal::KillBox( idEntity *ent, bool catch_teleport ) {
 idGameLocal::RequirementMet
 ================
 */
-bool idGameLocal::RequirementMet( idEntity *activator, const idStr &requires, int removeItem ) {
-	if ( requires.Length() ) {
+bool idGameLocal::RequirementMet( idEntity *activator, const idStr &required, int removeItem ) {
+	if ( required.Length() ) {
 		if ( activator->IsType( idPlayer::Type ) ) {
 			idPlayer *player = static_cast<idPlayer *>(activator);
-			idDict *item = player->FindInventoryItem( requires );
+			idDict *item = player->FindInventoryItem( required );
 			if ( item ) {
 				if ( removeItem ) {
 					player->RemoveInventoryItem( item );

@@ -523,20 +523,20 @@ void idCommonDialog::ClearAllDialogHack() {
 idCommonDialog::HasDialogMsg
 ================================================
 */
-bool idCommonDialog::HasDialogMsg( gameDialogMessages_t msg, bool * isNowActive ) {
+bool idCommonDialog::HasDialogMsg( gameDialogMessages_t msg, bool isNowActive ) {
 	for ( int index = 0; index < messageList.Num(); ++index ) {
 		idDialogInfo & info = messageList[index];
 
 		if ( info.msg == msg && !info.clear ) {
 			if ( isNowActive != NULL ) {
-				*isNowActive = ( index == 0 );
+				isNowActive = ( index == 0 );
 			}
 			return true;
 		}
 	}
 
 	if ( isNowActive != NULL ) {
-		*isNowActive = false;
+		isNowActive = false;
 	}
 
 	return false;

@@ -277,7 +277,7 @@ public:
 
 	bool	IsDialogPausing() { return dialogPause; }
 	void	ClearDialogs( bool forceClear = false );
-	bool	HasDialogMsg( gameDialogMessages_t msg, bool * isNowActive );
+	bool	HasDialogMsg( gameDialogMessages_t msg, bool isNowActive );
 	void	AddDialog( gameDialogMessages_t msg, dialogType_t type, idSWFScriptFunction * acceptCallback, idSWFScriptFunction * cancelCallback, bool pause, const char * location = NULL, int lineNumber = 0, bool leaveOnMapHeapReset = false, bool waitOnAtlas = false, bool renderDuringLoad = false );
 	void	AddDynamicDialog( gameDialogMessages_t msg, const idStaticList< idSWFScriptFunction *, 4 > & callbacks, const idStaticList< idStrId, 4 > & optionText, bool pause, idStrStatic< 256 > overrideMsg, bool leaveOnMapHeapReset = false, bool waitOnAtlas = false, bool renderDuringLoad = false );
 	void	AddDialogIntVal( const char * name, int val );

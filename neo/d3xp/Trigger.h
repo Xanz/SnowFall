@@ -93,7 +93,7 @@ protected:
 	float				delay;
 	float				random_delay;
 	int					nextTriggerTime;
-	idStr				requires;
+	idStr				required;
 	int					removeItem;
 	bool				touchClient;
 	bool				touchOther;

@@ -606,12 +606,12 @@ static idStr GetDeviceName( const int deviceNum ) {
 			deviceNum,
 			&device,
 			0 /* dwFlags */ ) ) {
-		return false;
+		return "";
 	}
 
 	// get the monitor for this display
 	if ( ! (device.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP ) ) {
-		return false;
+		return "";
 	}
 
 	return idStr( device.DeviceName );

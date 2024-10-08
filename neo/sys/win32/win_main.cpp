@@ -1347,14 +1347,14 @@ void EmailCrashReport( LPSTR messageText ) {
 			{
 				0,										// ulReserved
 					MAPI_TO,							// ulRecipClass
-					"DOOM 3 Crash",						// lpszName
-					"SMTP:programmers@idsoftware.com",	// lpszAddress
+					LPSTR("DOOM 3 Crash"),						// lpszName
+					LPSTR("SMTP:programmers@idsoftware.com"),	// lpszAddress
 					0,									// ulEIDSize
 					0									// lpEntry
 			};
 
 			MapiMessage		message = {};
-			message.lpszSubject = "DOOM 3 Fatal Error";
+			message.lpszSubject = LPSTR("DOOM 3 Fatal Error");
 			message.lpszNoteText = messageText;
 			message.nRecipCount = 1;
 			message.lpRecips = &toProgrammers;
