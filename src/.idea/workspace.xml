@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BackendCodeEditorMiscSettings">
+    <option name="/Default/RiderDebugger/RiderRestoreDecompile/RestoreDecompileSetting/@EntryValue" value="false" type="bool" />
+    <option name="/Default/Housekeeping/GlobalSettingsUpgraded/IsUpgraded/@EntryValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexedValue" value="true" type="bool" />
+    <option name="/Default/Housekeeping/FeatureSuggestion/FeatureSuggestionManager/DisabledSuggesters/=SwitchToGoToActionSuggester/@EntryIndexRemoved" />
+  </component>
+  <component name="CMakeProjectFlavorService">
+    <option name="flavorId" value="CMakePlainProjectFlavor" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="7476dc4c-5ff3-4010-9422-32ee21835dbe" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.command.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.command.1.tlog" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.read.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.read.1.tlog" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.write.1.tlog" beforeDir="false" afterPath="$PROJECT_DIR$/../doomclassic/timidity/Debug/timidity.tlog/CL.write.1.tlog" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doomclassic/timidity/timidity.h" beforeDir="false" afterPath="$PROJECT_DIR$/../doomclassic/timidity/timidity.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/../doomclassic/timidity/timidity.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/../doomclassic/timidity/timidity.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Debug/timidity.idb" beforeDir="false" afterPath="$PROJECT_DIR$/Debug/timidity.idb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doom3.sln.DotSettings.user" beforeDir="false" afterPath="$PROJECT_DIR$/doom3.sln.DotSettings.user" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/doomexe.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/doomexe.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/external.vcxproj" beforeDir="false" afterPath="$PROJECT_DIR$/external.vcxproj" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/File_SaveGame.h" beforeDir="false" afterPath="$PROJECT_DIR$/framework/File_SaveGame.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/Unzip.h" beforeDir="false" afterPath="$PROJECT_DIR$/framework/Unzip.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/Zip.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/framework/Zip.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/Zip.h" beforeDir="false" afterPath="$PROJECT_DIR$/framework/Zip.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/ChangeLog" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/FAQ" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/INDEX" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/Makefile" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/Makefile.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/README" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/adler32.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/algorithm.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/compress.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/configure" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/crc32.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/crc32.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/deflate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/deflate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/example.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/gzio.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/infback.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inffast.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inffast.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inffixed.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inflate.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inflate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inftrees.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/inftrees.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/minigzip.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/trees.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/trees.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/uncompr.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zconf.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zconf.in.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zlib.3" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zlib.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zutil.c" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/framework/zlib/zutil.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/Image_files.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/renderer/Image_files.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcapimin.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcapistd.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jccoefct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jccolor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcdctmgr.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jchuff.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jchuff.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcinit.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcmainct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcmarker.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcmaster.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcomapi.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jconfig.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcparam.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcphuff.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcprepct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jcsample.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jctrans.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdapimin.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdapistd.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdatadst.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdatasrc.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdcoefct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdcolor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdct.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jddctmgr.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdhuff.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdhuff.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdinput.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdmainct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdmarker.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdmaster.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdmerge.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdphuff.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdpostct.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdsample.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jdtrans.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jerror.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jerror.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jfdctflt.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jfdctfst.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jfdctint.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jidctflt.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jidctfst.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jidctint.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jidctred.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jinclude.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jload.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemansi.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemdos.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemmgr.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemname.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemnobs.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmemsys.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jmorecfg.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jpegint.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jpeglib.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jpegtran.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jquant1.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jquant2.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jutils.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/renderer/jpeg-6/jversion.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/swf/SWF_Image.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/swf/SWF_Image.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/swf/SWF_Zlib.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/swf/SWF_Zlib.cpp" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ClangdSettings">
+    <option name="formatViaClangd" value="false" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/.." />
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "associatedIndex": 8
+}]]></component>
+  <component name="ProjectId" id="2nAXjK9y90L9LySiNRBsL8ojFeU" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.RadMigrateCodeStyle": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.cidr.known.project.marker": "true",
+    "RunOnceActivity.readMode.enableVisualFormatting": "true",
+    "cf.first.check.clang-format": "false",
+    "cidr.known.project.marker": "true",
+    "git-widget-placeholder": "main",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="7476dc4c-5ff3-4010-9422-32ee21835dbe" name="Changes" comment="" />
+      <created>1728416987789</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1728416987789</updated>
+      <workItem from="1728416988845" duration="52000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+</project>

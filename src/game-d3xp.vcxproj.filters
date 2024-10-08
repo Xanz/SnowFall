@@ -1,0 +1,230 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="AI">
+      <UniqueIdentifier>{cbe3b616-1879-4177-ab0b-ef9dd6e1c344}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Animation">
+      <UniqueIdentifier>{f1a55916-cc4e-4c52-8097-90f53ec0e5ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="GameSys">
+      <UniqueIdentifier>{65cd4d56-59f1-4e72-af98-074176b18454}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Physics">
+      <UniqueIdentifier>{1cd6b287-0c8b-4445-b5a0-4e3068f8b3fe}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Script">
+      <UniqueIdentifier>{2024018a-67e2-4afd-8499-38ccbe8fc1aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Menus">
+      <UniqueIdentifier>{1549e84e-5718-4759-a11d-416cc73ac087}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="game\Achievements.cpp" />
+    <ClCompile Include="game\AimAssist.cpp" />
+    <ClCompile Include="game\ai\AAS.cpp" />
+    <ClCompile Include="game\ai\AAS_debug.cpp" />
+    <ClCompile Include="game\ai\AAS_pathing.cpp" />
+    <ClCompile Include="game\ai\AAS_routing.cpp" />
+    <ClCompile Include="game\ai\AI.cpp" />
+    <ClCompile Include="game\ai\AI_events.cpp" />
+    <ClCompile Include="game\ai\AI_pathing.cpp" />
+    <ClCompile Include="game\ai\AI_Vagary.cpp" />
+    <ClCompile Include="game\anim\Anim.cpp" />
+    <ClCompile Include="game\anim\Anim_Blend.cpp" />
+    <ClCompile Include="game\anim\Anim_Testmodel.cpp" />
+    <ClCompile Include="game\gamesys\Class.cpp" />
+    <ClCompile Include="game\gamesys\Event.cpp" />
+    <ClCompile Include="game\gamesys\SaveGame.cpp" />
+    <ClCompile Include="game\gamesys\SysCmds.cpp" />
+    <ClCompile Include="game\gamesys\SysCvar.cpp" />
+    <ClCompile Include="game\Leaderboards.cpp" />
+    <ClCompile Include="game\menus\MenuHandler.cpp" />
+    <ClCompile Include="game\menus\MenuHandler_HUD.cpp" />
+    <ClCompile Include="game\menus\MenuHandler_PDA.cpp" />
+    <ClCompile Include="game\menus\MenuHandler_Scoreboard.cpp" />
+    <ClCompile Include="game\menus\MenuHandler_Shell.cpp" />
+    <ClCompile Include="game\menus\MenuScreen.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_HUD.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_PDA_Inventory.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_PDA_UserData.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_PDA_UserEmails.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_PDA_VideoDisks.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Scoreboard.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Bindings.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Browser.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_ControllerLayout.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Controls.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Credits.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Dev.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Difficulty.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_GameLobby.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_GameOptions.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Gamepad.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Leaderboards.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Load.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_MatchSettings.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_ModeSelect.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_NewGame.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_PartyLobby.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Pause.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Playstation.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_PressStart.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Resolution.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Root.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Save.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Settings.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Singleplayer.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_Stereoscopics.cpp" />
+    <ClCompile Include="game\menus\MenuScreen_Shell_SystemOptions.cpp" />
+    <ClCompile Include="game\menus\MenuWidget.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_Button.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_Carousel.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_CommandBar.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_DynamicList.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_Help.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_InfoBox.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_ItemAssignment.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_List.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_LobbyList.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_MenuBar.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_NavBar.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_NavButton.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_PDA_AudioFiles.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_PDA_EmailInbox.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_PDA_Objective.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_PDA_UserData.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_PDA_VideoInfo.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_Scrollbar.cpp" />
+    <ClCompile Include="game\menus\MenuWidget_Shell_SaveInfo.cpp" />
+    <ClCompile Include="game\physics\Clip.cpp" />
+    <ClCompile Include="game\physics\Force.cpp" />
+    <ClCompile Include="game\physics\Force_Constant.cpp" />
+    <ClCompile Include="game\physics\Force_Drag.cpp" />
+    <ClCompile Include="game\physics\Force_Field.cpp" />
+    <ClCompile Include="game\physics\Force_Grab.cpp" />
+    <ClCompile Include="game\physics\Force_Spring.cpp" />
+    <ClCompile Include="game\physics\Physics.cpp" />
+    <ClCompile Include="game\physics\Physics_Actor.cpp" />
+    <ClCompile Include="game\physics\Physics_AF.cpp" />
+    <ClCompile Include="game\physics\Physics_Base.cpp" />
+    <ClCompile Include="game\physics\Physics_Monster.cpp" />
+    <ClCompile Include="game\physics\Physics_Parametric.cpp" />
+    <ClCompile Include="game\physics\Physics_Player.cpp" />
+    <ClCompile Include="game\physics\Physics_RigidBody.cpp" />
+    <ClCompile Include="game\physics\Physics_Static.cpp" />
+    <ClCompile Include="game\physics\Physics_StaticMulti.cpp" />
+    <ClCompile Include="game\physics\Push.cpp" />
+    <ClCompile Include="game\precompiled.cpp" />
+    <ClCompile Include="game\script\Script_Compiler.cpp" />
+    <ClCompile Include="game\script\Script_Interpreter.cpp" />
+    <ClCompile Include="game\script\Script_Program.cpp" />
+    <ClCompile Include="game\script\Script_Thread.cpp" />
+    <ClCompile Include="game\Actor.cpp" />
+    <ClCompile Include="game\AF.cpp" />
+    <ClCompile Include="game\AFEntity.cpp" />
+    <ClCompile Include="game\BrittleFracture.cpp" />
+    <ClCompile Include="game\Camera.cpp" />
+    <ClCompile Include="game\Entity.cpp" />
+    <ClCompile Include="game\Fx.cpp" />
+    <ClCompile Include="game\Game_local.cpp" />
+    <ClCompile Include="game\Game_network.cpp" />
+    <ClCompile Include="game\GameEdit.cpp" />
+    <ClCompile Include="game\Grabber.cpp" />
+    <ClCompile Include="game\IK.cpp" />
+    <ClCompile Include="game\Item.cpp" />
+    <ClCompile Include="game\Light.cpp" />
+    <ClCompile Include="game\Misc.cpp" />
+    <ClCompile Include="game\Moveable.cpp" />
+    <ClCompile Include="game\Mover.cpp" />
+    <ClCompile Include="game\MultiplayerGame.cpp" />
+    <ClCompile Include="game\Player.cpp" />
+    <ClCompile Include="game\PlayerIcon.cpp" />
+    <ClCompile Include="game\PlayerView.cpp" />
+    <ClCompile Include="game\Projectile.cpp" />
+    <ClCompile Include="game\Pvs.cpp" />
+    <ClCompile Include="game\SecurityCamera.cpp" />
+    <ClCompile Include="game\SmokeParticles.cpp" />
+    <ClCompile Include="game\Sound.cpp" />
+    <ClCompile Include="game\Target.cpp" />
+    <ClCompile Include="game\Trigger.cpp" />
+    <ClCompile Include="game\Weapon.cpp" />
+    <ClCompile Include="game\WorldSpawn.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="game\Achievements.h" />
+    <ClInclude Include="game\AimAssist.h" />
+    <ClInclude Include="game\ai\AAS.h" />
+    <ClInclude Include="game\ai\AAS_local.h" />
+    <ClInclude Include="game\ai\AI.h" />
+    <ClInclude Include="game\anim\Anim.h" />
+    <ClInclude Include="game\anim\Anim_Testmodel.h" />
+    <ClInclude Include="game\gamesys\Class.h" />
+    <ClInclude Include="game\gamesys\Event.h" />
+    <ClInclude Include="game\gamesys\SaveGame.h" />
+    <ClInclude Include="game\gamesys\SysCmds.h" />
+    <ClInclude Include="game\gamesys\SysCvar.h" />
+    <ClInclude Include="game\Leaderboards.h" />
+    <ClInclude Include="game\menus\MenuHandler.h" />
+    <ClInclude Include="game\menus\MenuScreen.h" />
+    <ClInclude Include="game\menus\MenuWidget.h" />
+    <ClInclude Include="game\physics\Clip.h" />
+    <ClInclude Include="game\physics\Force.h" />
+    <ClInclude Include="game\physics\Force_Constant.h" />
+    <ClInclude Include="game\physics\Force_Drag.h" />
+    <ClInclude Include="game\physics\Force_Field.h" />
+    <ClInclude Include="game\physics\Force_Grab.h" />
+    <ClInclude Include="game\physics\Force_Spring.h" />
+    <ClInclude Include="game\physics\Physics.h" />
+    <ClInclude Include="game\physics\Physics_Actor.h" />
+    <ClInclude Include="game\physics\Physics_AF.h" />
+    <ClInclude Include="game\physics\Physics_Base.h" />
+    <ClInclude Include="game\physics\Physics_Monster.h" />
+    <ClInclude Include="game\physics\Physics_Parametric.h" />
+    <ClInclude Include="game\physics\Physics_Player.h" />
+    <ClInclude Include="game\physics\Physics_RigidBody.h" />
+    <ClInclude Include="game\physics\Physics_Static.h" />
+    <ClInclude Include="game\physics\Physics_StaticMulti.h" />
+    <ClInclude Include="game\physics\Push.h" />
+    <ClInclude Include="game\PredictedValue.h" />
+    <ClInclude Include="game\PredictedValue_impl.h" />
+    <ClInclude Include="game\script\Script_Compiler.h" />
+    <ClInclude Include="game\script\Script_Interpreter.h" />
+    <ClInclude Include="game\script\Script_Program.h" />
+    <ClInclude Include="game\script\Script_Thread.h" />
+    <ClInclude Include="game\Actor.h" />
+    <ClInclude Include="game\AF.h" />
+    <ClInclude Include="game\AFEntity.h" />
+    <ClInclude Include="game\BrittleFracture.h" />
+    <ClInclude Include="game\Camera.h" />
+    <ClInclude Include="game\Entity.h" />
+    <ClInclude Include="game\Fx.h" />
+    <ClInclude Include="game\Game.h" />
+    <ClInclude Include="game\Game_local.h" />
+    <ClInclude Include="game\GameEdit.h" />
+    <ClInclude Include="game\Grabber.h" />
+    <ClInclude Include="game\IK.h" />
+    <ClInclude Include="game\Item.h" />
+    <ClInclude Include="game\Light.h" />
+    <ClInclude Include="game\Misc.h" />
+    <ClInclude Include="game\Moveable.h" />
+    <ClInclude Include="game\Mover.h" />
+    <ClInclude Include="game\MultiplayerGame.h" />
+    <ClInclude Include="game\Player.h" />
+    <ClInclude Include="game\PlayerIcon.h" />
+    <ClInclude Include="game\PlayerView.h" />
+    <ClInclude Include="game\Projectile.h" />
+    <ClInclude Include="game\Pvs.h" />
+    <ClInclude Include="game\SecurityCamera.h" />
+    <ClInclude Include="game\SmokeParticles.h" />
+    <ClInclude Include="game\Sound.h" />
+    <ClInclude Include="game\Target.h" />
+    <ClInclude Include="game\Trigger.h" />
+    <ClInclude Include="game\Weapon.h" />
+    <ClInclude Include="game\WorldSpawn.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="game\Game.def" />
+  </ItemGroup>
+</Project>

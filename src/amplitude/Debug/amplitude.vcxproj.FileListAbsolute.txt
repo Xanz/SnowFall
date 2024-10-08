@@ -1,0 +1,2 @@
+C:\Git\SnowFall\neo\amplitude\Debug\amplitude.exe
+C:\Git\SnowFall\src\amplitude\Debug\amplitude.exe
