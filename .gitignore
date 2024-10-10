@@ -34,7 +34,7 @@
 
 build/
 
-external/
+#external/
 
 src/.vs/
 
