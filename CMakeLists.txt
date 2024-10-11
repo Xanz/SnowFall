@@ -43,12 +43,6 @@ set(D3Source
     ${JPEG6}
     )
 
-
-if (MSVC)
-    # Force a specific toolset (e.g., v143 for Visual Studio 2022)
-    set(CMAKE_GENERATOR_TOOLSET "v143" CACHE STRING "Platform Toolset" FORCE)
-endif()
-
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
@@ -82,9 +76,6 @@ set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
-
-
-
 
 #add_custom_target(ForceRegenerate
 #    COMMAND ${CMAKE_COMMAND} -S ${CMAKE_SOURCE_DIR} -B ${CMAKE_BINARY_DIR}
