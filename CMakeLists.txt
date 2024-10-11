@@ -5,7 +5,10 @@ file(GLOB D3GAME src/game/*.cpp src/game/*.h src/game/Game.def)
 file(GLOB D3GAME_AI src/game/ai/*.cpp src/game/ai/*.h)
 file(GLOB D3GAME_ANIM src/game/anim/*.cpp src/game/anim/*.h)
 file(GLOB D3GAME_GAMESYS src/game/gamesys/*.cpp src/game/gamesys/*.h)
+
+# Removes callbacks. This is manually included in the right place.
 list(REMOVE_ITEM D3GAME_GAMESYS "${CMAKE_SOURCE_DIR}/src/game/gamesys/Callbacks.cpp")
+
 file(GLOB D3GAME_MENUS src/game/menus/*.cpp src/game/menus/*.h)
 file(GLOB D3GAME_PHYS src/game/physics/*.cpp src/game/physics/*.h)
 file(GLOB D3GAME_SCRIPT src/game/script/*.cpp src/game/script/*.h)
@@ -20,7 +23,6 @@ file(GLOB_RECURSE SWF src/swf/*.cpp src/swf/*.h)
 file(GLOB SYS src/sys/*.cpp src/sys/*.h)
 file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
-file(GLOB_RECURSE JPEG6 external/jpeg-6/src/*.cpp)
 
 set(D3Source
     ${D3GAME}
@@ -40,7 +42,6 @@ set(D3Source
     ${SYS}
     ${SYSWIN}
     ${UI}
-    ${JPEG6}
     )
 
 # Set the C++ standard
@@ -64,11 +65,12 @@ add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(_USE_32BIT_TIME_T)
 
 add_subdirectory(external/zlib)
+add_subdirectory(external/jpeg-6)
 
 include_directories(${CMAKE_SOURCE_DIR}/src  ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib)
 link_directories(external/openal/lib)
 
-set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 OpenAL32 zlibstatic)
+set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 OpenAL32 zlibstatic libjpeg)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 
