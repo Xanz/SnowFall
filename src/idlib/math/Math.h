@@ -845,7 +845,7 @@ idMath::ATan
 ========================
 */
 ID_INLINE float idMath::ATan( float y, float x ) {
-	assert( fabs( y ) > idMath::FLT_SMALLEST_NON_DENORMAL || fabs( x ) > idMath::FLT_SMALLEST_NON_DENORMAL );
+	// assert( fabs( y ) > idMath::FLT_SMALLEST_NON_DENORMAL || fabs( x ) > idMath::FLT_SMALLEST_NON_DENORMAL );
 	return atan2f( y, x );
 }
 

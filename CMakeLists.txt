@@ -51,46 +51,23 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 # Set the C standard (optional)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
-    
-    
-## Get the current time at build time
-#string(TIMESTAMP BUILD_TIME "%Y-%m-%d %H:%M:%S")
-#
-## Pass the build time as a preprocessor definition to the compiler
-#add_definitions(-DBUILD_TIME="${BUILD_TIME}")
 
 add_compile_definitions(__DOOM__)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(_USE_32BIT_TIME_T)
 
-add_subdirectory(external/zlib)
-add_subdirectory(external/jpeg-6)
+include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build)
+link_directories(external/openal/build/Release external/jpeg-6/build/Release external/zlib/build/Release)
 
-include_directories(${CMAKE_SOURCE_DIR}/src  ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib)
-link_directories(external/openal/lib)
-
-set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 OpenAL32 zlibstatic libjpeg)
+set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /SAFESEH:NO")
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
-#add_custom_target(ForceRegenerate
-#    COMMAND ${CMAKE_COMMAND} -S ${CMAKE_SOURCE_DIR} -B ${CMAKE_BINARY_DIR}
-#    COMMENT "Forcing CMake regeneration"
-#)
-
-#add_dependencies(${PROJECT_NAME} ForceRegenerate)
-
 #set_target_properties(${PROJECT_NAME} PROPERTIES
 #LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
-#)
-
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#    RUNTIME_OUTPUT_DIRECTORY_DEBUG ${CMAKE_SOURCE_DIR}
-#    RUNTIME_OUTPUT_DIRECTORY_RELEASE ${CMAKE_SOURCE_DIR}
 #)

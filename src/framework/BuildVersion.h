@@ -25,6 +25,7 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
+#pragma once
 
 const int BUILD_NUMBER_SAVE_VERSION_CHANGE			= 1400;		// Altering saves so that the version goes in the Details file that we read in during the enumeration phase
 
