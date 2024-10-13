@@ -32,3 +32,11 @@ popd
 echo "Copy openal dll"
 xcopy .\external\openal\build\Release\OpenAL32.dll .\build\Debug\ /Y
 xcopy .\external\openal\build\Release\OpenAL32.dll .\build\Release\ /Y
+
+echo "Copying game data"
+xcopy /E "C:\Program Files (x86)\Steam\steamapps\common\DOOM 3 BFG Edition\base\" .\build\Debug\base\ /Y
+xcopy /E "C:\Program Files (x86)\Steam\steamapps\common\DOOM 3 BFG Edition\base\" .\build\Release\base\ /Y
+
+echo "Deploying shader files"
+xcopy /E .\renderprogs\ .\build\Debug\base\renderprogs\ /Y
+xcopy /E .\renderprogs\ .\build\Release\base\renderprogs\ /Y
