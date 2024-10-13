@@ -140,7 +140,7 @@ public:
 	virtual const char *	BuildOSPath( const char *base, const char *game, const char *relativePath );
 	virtual const char *	BuildOSPath( const char *base, const char *relativePath );
 	virtual void			CreateOSPath( const char *OSPath );
-	virtual int				ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp );
+	virtual int				ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp, bool disableResourceFiles );
 	virtual void			FreeFile( void *buffer );
 	virtual int				WriteFile( const char *relativePath, const void *buffer, int size, const char *basePath = "fs_savepath" );
 	virtual void			RemoveFile( const char *relativePath );	
@@ -1580,7 +1580,7 @@ a null buffer will just return the file length and time without loading
 timestamp can be NULL if not required
 ============
 */
-int idFileSystemLocal::ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp ) {
+int idFileSystemLocal::ReadFile( const char *relativePath, void **buffer, ID_TIME_T *timestamp, bool disableResourceFiles ) {
 
 	idFile *	f;
 	byte *		buf;
@@ -1605,13 +1605,13 @@ int idFileSystemLocal::ReadFile( const char *relativePath, void **buffer, ID_TIM
 		*buffer = NULL;
 	} 
 
-	if ( buffer == NULL && timestamp != NULL && resourceFiles.Num() > 0 ) {
+	if ( buffer == NULL && timestamp != NULL && resourceFiles.Num() > 0 && !disableResourceFiles ) {
 		static idResourceCacheEntry rc;
 		int size = 0;
 		if ( GetResourceCacheEntry( relativePath, rc ) ) {
 			*timestamp = 0;
 			size = rc.length;
-		} 
+		}
 		return size;
 	}
 
@@ -2616,7 +2616,7 @@ void idFileSystemLocal::Init() {
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
 	// Dedicated servers can run with no outside files at all
-	if ( ReadFile( "default.cfg", NULL, NULL ) <= 0 ) {
+	if ( ReadFile( "default.cfg", NULL, NULL, false ) <= 0 ) {
 		common->FatalError( "Couldn't load default.cfg" );
 	}
 }
@@ -2635,7 +2635,7 @@ void idFileSystemLocal::Restart() {
 	// if we can't find default.cfg, assume that the paths are
 	// busted and error out now, rather than getting an unreadable
 	// graphics screen when the font fails to load
-	if ( ReadFile( "default.cfg", NULL, NULL ) <= 0 ) {
+	if ( ReadFile( "default.cfg", NULL, NULL, false ) <= 0 ) {
 		common->FatalError( "Couldn't load default.cfg" );
 	}
 }
