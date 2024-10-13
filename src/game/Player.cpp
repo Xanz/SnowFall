@@ -39,7 +39,7 @@ idCVar flashlight_minActivatePercent( "flashlight_minActivatePercent", ".25", CV
 idCVar flashlight_batteryFlickerPercent( "flashlight_batteryFlickerPercent", ".1", CVAR_FLOAT, "chance of flickering when battery is low" );
 
 // No longer userinfo, but I don't want to rename the cvar
-idCVar ui_showGun( "ui_showGun", "1", CVAR_GAME | CVAR_ARCHIVE | CVAR_BOOL, "show gun" );
+idCVar cl_viewmodel( "cl_viewmodel", "1", CVAR_GAME | CVAR_ARCHIVE | CVAR_BOOL, "show gun" );
 
 // Client-authoritative stuff
 idCVar pm_clientAuthoritative_debug( "pm_clientAuthoritative_debug", "0", CVAR_BOOL, "" );
@@ -3415,7 +3415,7 @@ idPlayer::FireWeapon
 ===============
 */
 idCVar g_infiniteAmmo( "g_infiniteAmmo", "0", CVAR_GAME | CVAR_BOOL, "infinite ammo" );
-extern idCVar ui_autoSwitch;
+extern idCVar cl_autowepswitch;
 void idPlayer::FireWeapon() {
 	idMat3 axis;
 	idVec3 muzzle;
@@ -10470,7 +10470,7 @@ idPlayer::CanShowWeaponViewmodel
 ===============
 */
 bool idPlayer::CanShowWeaponViewmodel() const {
-	return ui_showGun.GetBool();
+	return cl_viewmodel.GetBool();
 }
 
 /*

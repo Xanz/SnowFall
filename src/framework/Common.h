@@ -119,7 +119,7 @@ extern idCVar		com_version;
 extern idCVar		com_developer;
 extern idCVar		com_allowConsole;
 extern idCVar		com_speeds;
-extern idCVar		com_showFPS;
+extern idCVar		cl_showfps;
 extern idCVar		com_showMemoryUsage;
 extern idCVar		com_updateLoadSize;
 extern idCVar		com_productionMode;

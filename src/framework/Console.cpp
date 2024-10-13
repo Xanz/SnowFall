@@ -1120,7 +1120,7 @@ void idConsoleLocal::Draw( bool forceFullScreen ) {
 	float lefty = LOCALSAFE_TOP;
 	float righty = LOCALSAFE_TOP;
 	float centery = LOCALSAFE_TOP;
-	if ( com_showFPS.GetBool() ) {
+	if ( cl_showfps.GetBool() ) {
 		righty = DrawFPS( righty );
 	}
 	if ( com_showMemoryUsage.GetBool() ) {
