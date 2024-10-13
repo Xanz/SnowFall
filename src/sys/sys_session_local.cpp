@@ -33,8 +33,8 @@ If you have questions concerning this license or the applicable additional terms
 
 
 idCVar ui_skinIndex( "ui_skinIndex", "0", CVAR_ARCHIVE, "Selected skin index" );
-idCVar ui_autoSwitch( "ui_autoSwitch", "1", CVAR_ARCHIVE | CVAR_BOOL, "auto switch weapon" );
-idCVar ui_autoReload( "ui_autoReload", "1", CVAR_ARCHIVE | CVAR_BOOL, "auto reload weapon" );
+idCVar cl_autowepswitch( "cl_autowepswitch", "1", CVAR_ARCHIVE | CVAR_BOOL, "auto switch weapon" );
+idCVar cl_autoreload( "cl_autoreload", "1", CVAR_ARCHIVE | CVAR_BOOL, "auto reload weapon" );
 
 idCVar net_maxSearchResults( "net_maxSearchResults", "25", CVAR_INTEGER, "Max results that are allowed to be returned in a search request" );
 idCVar net_maxSearchResultsToTry( "net_maxSearchResultsToTry", "5", CVAR_INTEGER, "Max results to try before giving up." );		// At 15 second timeouts per, 1 min 15 worth of connecting attempt time
@@ -2894,8 +2894,8 @@ bool lobbyUser_t::UpdateClientMutableData( const idLocalUser * localUser ) {
 		updated |= CheckAndUpdateValue( level, profile->GetLevel() );
 	}
 	updated |= CheckAndUpdateValue( selectedSkin, ui_skinIndex.GetInteger() );
-	updated |= CheckAndUpdateValue( weaponAutoSwitch, ui_autoSwitch.GetBool() );
-	updated |= CheckAndUpdateValue( weaponAutoReload, ui_autoReload.GetBool() );
+	updated |= CheckAndUpdateValue( weaponAutoSwitch, cl_autowepswitch.GetBool() );
+	updated |= CheckAndUpdateValue( weaponAutoReload, cl_autoreload.GetBool() );
 	return updated;
 }
 

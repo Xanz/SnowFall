@@ -1015,10 +1015,9 @@ void idConsoleLocal::DrawSolidConsole( float frac ) {
 	renderSystem->DrawFilled( colorCyan, 0, y, SCREEN_WIDTH, 2 );
 
 	// draw the version number
-
 	renderSystem->SetColor( idStr::ColorForIndex( C_COLOR_GREEN ) );
 
-	idStr version = va( "SnowFall %s", "0.0.4");
+	idStr version = va( "SnowFall %s", "0.0.5");
 	i = version.Length();
 
 	for ( x = 0; x < i; x++ ) {
@@ -1120,7 +1119,7 @@ void idConsoleLocal::Draw( bool forceFullScreen ) {
 	float lefty = LOCALSAFE_TOP;
 	float righty = LOCALSAFE_TOP;
 	float centery = LOCALSAFE_TOP;
-	if ( com_showFPS.GetBool() ) {
+	if ( cl_showfps.GetBool() ) {
 		righty = DrawFPS( righty );
 	}
 	if ( com_showMemoryUsage.GetBool() ) {

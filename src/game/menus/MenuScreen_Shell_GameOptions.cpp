@@ -263,8 +263,8 @@ bool idMenuScreen_Shell_GameOptions::HandleAction( idWidgetAction & action, cons
 // SCREEN SETTINGS
 /////////////////////////////////
 
-extern idCVar ui_autoSwitch;
-extern idCVar ui_autoReload;
+extern idCVar cl_autowepswitch;
+extern idCVar cl_autoreload;
 extern idCVar aa_targetAimAssistEnable;
 extern idCVar in_alwaysRun;
 extern idCVar g_checkpoints;
@@ -288,8 +288,8 @@ idMenuScreen_Shell_GameOptions::idMenuDataSource_AudioSettings::LoadData
 void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::LoadData() {	
 	fields[ GAME_FIELD_FOV ].SetInteger( g_fov.GetFloat() );
 	fields[ GAME_FIELD_CHECKPOINTS ].SetBool( g_checkpoints.GetBool() );
-	fields[ GAME_FIELD_AUTO_SWITCH ].SetBool( ui_autoSwitch.GetBool() );
-	fields[ GAME_FIELD_AUTO_RELOAD ].SetBool( ui_autoReload.GetBool() );
+	fields[ GAME_FIELD_AUTO_SWITCH ].SetBool( cl_autowepswitch.GetBool() );
+	fields[ GAME_FIELD_AUTO_RELOAD ].SetBool( cl_autoreload.GetBool() );
 	fields[ GAME_FIELD_AIM_ASSIST ].SetBool( aa_targetAimAssistEnable.GetBool() );
 	fields[ GAME_FIELD_ALWAYS_SPRINT ].SetBool( in_alwaysRun.GetBool() );
 	fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].SetBool( g_weaponShadows.GetBool() );
@@ -307,8 +307,8 @@ void idMenuScreen_Shell_GameOptions::idMenuDataSource_GameSettings::CommitData()
 	g_gun_x.SetFloat( Lerp( MIN_FOV_GUN, MAX_FOV_GUN, ( fields[ GAME_FIELD_FOV ].ToFloat() - MIN_FOV ) / ( MAX_FOV - MIN_FOV ) ) );
 
 	g_checkpoints.SetBool( fields[ GAME_FIELD_CHECKPOINTS ].ToBool() );
-	ui_autoSwitch.SetBool( fields[ GAME_FIELD_AUTO_SWITCH ].ToBool() );
-	ui_autoReload.SetBool( fields[ GAME_FIELD_AUTO_RELOAD ].ToBool() );
+	cl_autowepswitch.SetBool( fields[ GAME_FIELD_AUTO_SWITCH ].ToBool() );
+	cl_autoreload.SetBool( fields[ GAME_FIELD_AUTO_RELOAD ].ToBool() );
 	aa_targetAimAssistEnable.SetBool( fields[ GAME_FIELD_AIM_ASSIST ].ToBool() );
 	in_alwaysRun.SetBool( fields[ GAME_FIELD_ALWAYS_SPRINT ].ToBool() );
 	g_weaponShadows.SetBool( fields[ GAME_FIELD_FLASHLIGHT_SHADOWS ].ToBool() );
