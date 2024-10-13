@@ -2,7 +2,7 @@ name: Enforce Checklist
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, synchronize]
 
 jobs:
   enforce-checklist:
