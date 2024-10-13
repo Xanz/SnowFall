@@ -1,16 +1,13 @@
-# SnowFall Engine
-
-SnowFall Engine or SFEngine is a fork of Id Tech 4. The overall goal is to move the engine to a point that standalone games can be more easily created and modernize the dated tooling associated with Id Tech 4. I will do this by introducing better tooling, improving the net code and improving the renderer/backend so that it can support higher entity counts/larger worlds.
+# SnowFall Engine 0.0.2
+SnowFall Engine or SFEngine is a fork of the BFG engine. The overall goal is to move the engine to a point that standalone games can be more easily created and modernize the dated tooling associated with Id Tech. I will do this by introducing better tooling, improving the net code and improving the renderer/backend so that it can support higher entity counts/larger worlds.
 
 ## Features
 
-- GLFW & GLEW support
+- GLFW and GLAD support
 - CMake
 - Lightweight
 - OpenGL renderer
-- Variable frame rate support
-- BFG OpenAL sound engine
-- 64 bit support
+- 32 bit support
 
 ## Supported Platforms
 

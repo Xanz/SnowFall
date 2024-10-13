@@ -25,5 +25,28 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
-#include "precompiled.h"
+
+#include "global.inc"
+
+uniform sampler2D samp0 : register(s0);
+
+struct PS_IN {
+	float4 position : VPOS;
+	float4 texcoord0 : TEXCOORD0_centroid;
+	float4 color : COLOR0;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+void main( PS_IN fragment, out PS_OUT result ) {
+
+	// we always do a projective texture lookup so that we can support texgen
+	// materials without a separate shader. Basic materials will have texture
+	// coordinates with w = 1 which will result in a NOP projection when tex2Dproj
+	// gets called.
+	float4 texSample = idtex2Dproj( samp0, fragment.texcoord0 );
+
+	result.color = texSample * fragment.color;
+}

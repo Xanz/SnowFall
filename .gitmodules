@@ -1,0 +1,9 @@
+[submodule "external/jpeg-6"]
+	path = external/jpeg-6
+	url = https://github.com/Xanz/jpeg-6.git
+[submodule "external/zlib"]
+	path = external/zlib
+	url = https://github.com/madler/zlib.git
+[submodule "external/openal"]
+	path = external/openal
+	url = https://github.com/kcat/openal-soft.git

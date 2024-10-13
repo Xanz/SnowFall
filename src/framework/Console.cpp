@@ -1016,13 +1016,13 @@ void idConsoleLocal::DrawSolidConsole( float frac ) {
 
 	// draw the version number
 
-	renderSystem->SetColor( idStr::ColorForIndex( C_COLOR_CYAN ) );
+	renderSystem->SetColor( idStr::ColorForIndex( C_COLOR_GREEN ) );
 
-	idStr version = va( "%s.%i.%i", ENGINE_VERSION, BUILD_NUMBER, BUILD_NUMBER_MINOR );
+	idStr version = va( "SnowFall %s", "0.0.2");
 	i = version.Length();
 
 	for ( x = 0; x < i; x++ ) {
-		renderSystem->DrawSmallChar( LOCALSAFE_WIDTH - ( i - x ) * SMALLCHAR_WIDTH, 
+		renderSystem->DrawSmallChar( LOCALSAFE_WIDTH - ( i - x ) * SMALLCHAR_WIDTH,
 			(lines-(SMALLCHAR_HEIGHT+SMALLCHAR_HEIGHT/4)), version[x] );
 
 	}

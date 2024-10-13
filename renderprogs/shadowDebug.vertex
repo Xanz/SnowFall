@@ -25,5 +25,23 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
-#include "precompiled.h"
+
+#include "global.inc"
+
+struct VS_IN {
+	float4 position : POSITION;
+};
+
+struct VS_OUT {
+	float4 position : POSITION;
+};
+
+void main( VS_IN vertex, out VS_OUT result ) {
+	float4 vPos = vertex.position - rpLocalLightOrigin;
+	vPos = ( vPos.wwww * rpLocalLightOrigin ) + vPos;
+
+	result.position.x = dot4( vPos, rpMVPmatrixX );
+	result.position.y = dot4( vPos, rpMVPmatrixY );
+	result.position.z = dot4( vPos, rpMVPmatrixZ );
+	result.position.w = dot4( vPos, rpMVPmatrixW );
+}

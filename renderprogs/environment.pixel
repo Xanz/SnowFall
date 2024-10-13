@@ -25,5 +25,32 @@ If you have questions concerning this license or the applicable additional terms
 
 ===========================================================================
 */
-#pragma hdrstop
-#include "precompiled.h"
+
+#include "global.inc"
+
+uniform samplerCUBE	samp0 : register(s0); // texture 0 is the cube map
+
+struct PS_IN {
+	float4 position		: VPOS;
+	float3 texcoord0	: TEXCOORD0_centroid;
+	float3 texcoord1	: TEXCOORD1_centroid;
+	float4 color		: COLOR0;
+};
+
+struct PS_OUT {
+	float4 color : COLOR;
+};
+
+void main( PS_IN fragment, out PS_OUT result ) {
+
+	float3 globalNormal = normalize( fragment.texcoord1 );
+	float3 globalEye = normalize( fragment.texcoord0 );
+
+	float3 reflectionVector = _float3( dot3( globalEye, globalNormal ) );
+	reflectionVector *= globalNormal;
+	reflectionVector = ( reflectionVector * 2.0f ) - globalEye;
+
+	float4 envMap = texCUBE( samp0, reflectionVector );
+
+	result.color = float4( envMap.xyz, 1.0f ) * fragment.color;
+}
