@@ -1018,7 +1018,7 @@ void idConsoleLocal::DrawSolidConsole( float frac ) {
 
 	renderSystem->SetColor( idStr::ColorForIndex( C_COLOR_GREEN ) );
 
-	idStr version = va( "SnowFall %s", "0.0.1");
+	idStr version = va( "SnowFall %s", "0.0.2");
 	i = version.Length();
 
 	for ( x = 0; x < i; x++ ) {
