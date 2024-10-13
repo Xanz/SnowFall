@@ -951,7 +951,7 @@ GLuint idRenderProgManager::LoadGLSLShader( GLenum target, const char * name, id
 
 	// first check whether we already have a valid GLSL file and compare it to the hlsl timestamp;
 	ID_TIME_T hlslTimeStamp;
-	int hlslFileLength = fileSystem->ReadFile( inFile.c_str(), NULL, &hlslTimeStamp );
+	int hlslFileLength = fileSystem->ReadFile( inFile.c_str(), NULL, &hlslTimeStamp, true );
 
 	ID_TIME_T glslTimeStamp;
 	int glslFileLength = fileSystem->ReadFile( outFileGLSL.c_str(), NULL, &glslTimeStamp );
