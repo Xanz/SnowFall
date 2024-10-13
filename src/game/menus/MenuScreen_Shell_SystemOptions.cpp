@@ -34,7 +34,7 @@ const static int NUM_SYSTEM_OPTIONS_OPTIONS = 8;
 extern idCVar r_multiSamples;
 extern idCVar r_motionBlur;
 extern idCVar r_swapInterval;
-extern idCVar s_volume_dB;
+extern idCVar s_volume;
 extern idCVar r_lightScale;
 
 /*
@@ -346,7 +346,7 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::LoadData
 	originalMotionBlur = r_motionBlur.GetInteger();
 	originalVsync = r_swapInterval.GetInteger();
 	originalBrightness = r_lightScale.GetFloat();
-	originalVolume = s_volume_dB.GetFloat();
+	originalVolume = s_volume.GetFloat();
 
 	const int fullscreen = r_fullscreen.GetInteger();
 	if ( fullscreen > 0 ) {
@@ -458,10 +458,10 @@ void idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::AdjustFi
 			break;
 		}
 		case SYSTEM_FIELD_VOLUME: {
-			const float percent = 100.0f * Square( 1.0f - ( s_volume_dB.GetFloat() / DB_SILENCE ) );
+			const float percent = 100.0f * Square( s_volume.GetFloat() );
 			const float adjusted = percent + (float)adjustAmount;
 			const float clamped = idMath::ClampFloat( 0.0f, 100.0f, adjusted );
-			s_volume_dB.SetFloat( DB_SILENCE - ( idMath::Sqrt( clamped / 100.0f ) * DB_SILENCE ) );
+			s_volume.SetFloat( idMath::Sqrt( clamped / 100.0f )  );
 			break;
 		}
 	}
@@ -515,7 +515,7 @@ idSWFScriptVar idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings
 		case SYSTEM_FIELD_BRIGHTNESS:
 			return LinearAdjust( r_lightScale.GetFloat(), 2.0f, 4.0f, 0.0f, 100.0f );
 		case SYSTEM_FIELD_VOLUME: {
-			return 100.0f * Square( 1.0f - ( s_volume_dB.GetFloat() / DB_SILENCE ) );
+			return 100.0f * Square( s_volume.GetFloat() );
 		}
 	}
 	return false;
@@ -542,7 +542,7 @@ bool idMenuScreen_Shell_SystemOptions::idMenuDataSource_SystemSettings::IsDataCh
 	if ( originalBrightness != r_lightScale.GetFloat() ) {
 		return true;
 	}
-	if ( originalVolume != s_volume_dB.GetFloat() ) {
+	if ( originalVolume != s_volume.GetFloat() ) {
 		return true;
 	}
 	return false;

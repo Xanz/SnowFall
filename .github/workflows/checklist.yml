@@ -2,7 +2,7 @@ name: Enforce Checklist
 
 on:
   pull_request:
-    types: [opened, edited]
+    types: [opened, edited, synchronize]
 
 jobs:
   enforce-checklist:
@@ -10,9 +10,15 @@ jobs:
     steps:
       - name: Check for unchecked items in the checklist
         run: |
-          if grep -q '\[ \]' "$GITHUB_EVENT_PATH"; then
+          # Extract the PR body from the GitHub event JSON
+          PR_BODY=$(jq -r .pull_request.body "$GITHUB_EVENT_PATH")
+
+          # Check for any unchecked items
+          if echo "$PR_BODY" | grep -q '\[ \]'; then
             echo "Checklist not completed!"
             exit 1
           else
             echo "Checklist completed!"
           fi
+        env:
+          GITHUB_EVENT_PATH: ${{ github.event_path }}
