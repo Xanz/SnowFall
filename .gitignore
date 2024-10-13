@@ -47,3 +47,5 @@ tools/
 .vscode/
 
 generated/
+
+.idea/
