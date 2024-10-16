@@ -7,3 +7,6 @@
 [submodule "external/openal"]
 	path = external/openal
 	url = https://github.com/kcat/openal-soft.git
+[submodule "external/glfw"]
+	path = external/glfw
+	url = https://github.com/glfw/glfw.git

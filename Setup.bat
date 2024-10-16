@@ -3,12 +3,11 @@ echo "Submodule download"
 git submodule init
 git submodule update
 
-@REM echo "GLFW build"
-@REM pushd "external/glfw"
-@REM cmake -DBUILD_SHARED_LIBS=OFF -B build -S .
-@REM cmake --build ./build --config Release
-@REM popd
-@REM
+echo "GLFW build"
+pushd "external/glfw"
+cmake -DBUILD_SHARED_LIBS=OFF -DGLFW_BUILD_EXAMPLES=OFF -A Win32 -B build -S .
+cmake --build ./build --config Release
+popd
 
 echo "zlib build"
 pushd "external/zlib"
