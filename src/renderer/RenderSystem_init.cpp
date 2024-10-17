@@ -332,48 +332,37 @@ static void R_CheckPortableExtensions()
 	const char* badVideoCard = idLocalization::GetString("#str_06780");
 	if (glConfig.glVersion < 2.0f)
 	{
-		idLib::FatalError(badVideoCard);
+		idLib::FatalError("%s", badVideoCard);
 	}
 
-	if (idStr::Icmpn(glConfig.renderer_string, "ATI ", 4) == 0 || idStr::Icmpn(glConfig.renderer_string, "AMD ", 4) ==
-		0)
+	if (idStr::Icmpn(glConfig.vendor_string, "ATI ", 4) == 0 || idStr::Icmpn(glConfig.renderer_string, "ATI ", 4) == 0
+		|| idStr::Icmpn(glConfig.renderer_string, "AMD ", 4) == 0)
 	{
 		glConfig.vendor = VENDOR_AMD;
 	}
-	else if (idStr::Icmpn(glConfig.renderer_string, "NVIDIA", 6) == 0)
+	else if (idStr::Icmpn(glConfig.vendor_string, "NVIDIA", 6) == 0 || idStr::Icmpn(
+		glConfig.renderer_string, "NVIDIA", 6) == 0)
 	{
 		glConfig.vendor = VENDOR_NVIDIA;
 	}
-	else if (idStr::Icmpn(glConfig.renderer_string, "Intel", 5) == 0)
+	else if (idStr::Icmpn(glConfig.vendor_string, "Intel", 5) == 0 || idStr::Icmpn(glConfig.renderer_string, "Intel", 5)
+		== 0)
 	{
 		glConfig.vendor = VENDOR_INTEL;
 	}
 
-	// GL_ARB_multitexture
-	glConfig.multitextureAvailable = R_CheckExtension("GL_ARB_multitexture");
-	if (glConfig.multitextureAvailable)
-	{
-	}
+
+	glConfig.multitextureAvailable = GLEW_ARB_multitexture != 0;
 
 	// GL_EXT_direct_state_access
-	glConfig.directStateAccess = R_CheckExtension("GL_EXT_direct_state_access");
-	if (glConfig.directStateAccess)
-	{
-	}
-	else
-	{
-	}
+	glConfig.directStateAccess = GLEW_EXT_direct_state_access != 0;
 
-	// GL_ARB_texture_compression + GL_S3_s3tc
-	// DRI drivers may have GL_ARB_texture_compression but no GL_EXT_texture_compression_s3tc
-	glConfig.textureCompressionAvailable = R_CheckExtension("GL_ARB_texture_compression") && R_CheckExtension(
-		"GL_EXT_texture_compression_s3tc");
-	if (glConfig.textureCompressionAvailable)
-	{
-	}
+
+	glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 && GLEW_EXT_texture_compression_s3tc !=
+		0;
 
 	// GL_EXT_texture_filter_anisotropic
-	glConfig.anisotropicFilterAvailable = R_CheckExtension("GL_EXT_texture_filter_anisotropic");
+	glConfig.anisotropicFilterAvailable = GLEW_EXT_texture_filter_anisotropic != 0;
 	if (glConfig.anisotropicFilterAvailable)
 	{
 		glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &glConfig.maxTextureAnisotropy);
@@ -387,7 +376,7 @@ static void R_CheckPortableExtensions()
 	// GL_EXT_texture_lod_bias
 	// The actual extension is broken as specificed, storing the state in the texture unit instead
 	// of the texture object.  The behavior in GL 1.4 is the behavior we use.
-	glConfig.textureLODBiasAvailable = (glConfig.glVersion >= 1.4 || R_CheckExtension("GL_EXT_texture_lod_bias"));
+	glConfig.textureLODBiasAvailable = (glConfig.glVersion >= 1.4 || GLEW_EXT_texture_lod_bias != 0);
 	if (glConfig.textureLODBiasAvailable)
 	{
 		common->Printf("...using %s\n", "GL_EXT_texture_lod_bias");
@@ -398,53 +387,35 @@ static void R_CheckPortableExtensions()
 	}
 
 	// GL_ARB_seamless_cube_map
-	glConfig.seamlessCubeMapAvailable = R_CheckExtension("GL_ARB_seamless_cube_map");
+	glConfig.seamlessCubeMapAvailable = GLEW_ARB_seamless_cube_map != 0;
 	r_useSeamlessCubeMap.SetModified(); // the CheckCvars() next frame will enable / disable it
 
-	// GL_ARB_framebuffer_sRGB
-	glConfig.sRGBFramebufferAvailable = R_CheckExtension("GL_ARB_framebuffer_sRGB");
-	r_useSRGB.SetModified(); // the CheckCvars() next frame will enable / disable it
-
 	// GL_ARB_vertex_buffer_object
-	glConfig.vertexBufferObjectAvailable = R_CheckExtension("GL_ARB_vertex_buffer_object");
-	if (glConfig.vertexBufferObjectAvailable)
-	{
-	}
+	glConfig.vertexBufferObjectAvailable = GLEW_ARB_vertex_buffer_object != 0;
 
-	// GL_ARB_map_buffer_range, map a section of a buffer object's data store
-	glConfig.mapBufferRangeAvailable = R_CheckExtension("GL_ARB_map_buffer_range");
-	if (glConfig.mapBufferRangeAvailable)
-	{
-	}
 
-	// GL_ARB_vertex_array_object
-	glConfig.vertexArrayObjectAvailable = R_CheckExtension("GL_ARB_vertex_array_object");
-	if (glConfig.vertexArrayObjectAvailable)
-	{
-	}
+	glConfig.mapBufferRangeAvailable = GLEW_ARB_map_buffer_range != 0;
+
+
+	glConfig.vertexArrayObjectAvailable = GLEW_ARB_vertex_array_object != 0;
+
 
 	// GL_ARB_draw_elements_base_vertex
-	glConfig.drawElementsBaseVertexAvailable = R_CheckExtension("GL_ARB_draw_elements_base_vertex");
-	if (glConfig.drawElementsBaseVertexAvailable)
-	{
-	}
+	glConfig.drawElementsBaseVertexAvailable = GLEW_ARB_draw_elements_base_vertex != 0;
 
 	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	glConfig.fragmentProgramAvailable = R_CheckExtension("GL_ARB_fragment_program");
-	if (glConfig.fragmentProgramAvailable)
+	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
+	//if( glConfig.fragmentProgramAvailable )
 	{
-		glGetIntegerv(GL_MAX_TEXTURE_COORDS_ARB, (GLint*)&glConfig.maxTextureCoords);
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS_ARB, (GLint*)&glConfig.maxTextureImageUnits);
+		glGetIntegerv(GL_MAX_TEXTURE_COORDS, (GLint*)&glConfig.maxTextureCoords);
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, (GLint*)&glConfig.maxTextureImageUnits);
 	}
 
 	// GLSL, core in OpenGL > 2.0
 	glConfig.glslAvailable = (glConfig.glVersion >= 2.0f);
-	if (glConfig.glslAvailable)
-	{
-	}
 
 	// GL_ARB_uniform_buffer_object
-	glConfig.uniformBufferAvailable = R_CheckExtension("GL_ARB_uniform_buffer_object");
+	glConfig.uniformBufferAvailable = GLEW_ARB_uniform_buffer_object != 0;
 	if (glConfig.uniformBufferAvailable)
 	{
 		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint*)&glConfig.uniformBufferOffsetAlignment);
@@ -455,42 +426,41 @@ static void R_CheckPortableExtensions()
 	}
 
 	// ATI_separate_stencil / OpenGL 2.0 separate stencil
-	glConfig.twoSidedStencilAvailable = (glConfig.glVersion >= 2.0f) || R_CheckExtension("GL_ATI_separate_stencil");
-	if (glConfig.twoSidedStencilAvailable)
-	{
-	}
+	glConfig.twoSidedStencilAvailable = (glConfig.glVersion >= 2.0f) || GLEW_ATI_separate_stencil != 0;
 
 	// GL_EXT_depth_bounds_test
-	glConfig.depthBoundsTestAvailable = R_CheckExtension("GL_EXT_depth_bounds_test");
-	if (glConfig.depthBoundsTestAvailable)
-	{
-	}
+	glConfig.depthBoundsTestAvailable = GLEW_EXT_depth_bounds_test != 0;
 
 	// GL_ARB_sync
-	glConfig.syncAvailable = R_CheckExtension("GL_ARB_sync") &&
+	glConfig.syncAvailable = GLEW_ARB_sync &&
 		// as of 5/24/2012 (driver version 15.26.12.64.2761) sync objects
 		// do not appear to work for the Intel HD 4000 graphics
 		(glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool());
-	if (glConfig.syncAvailable)
-	{
-	}
 
 	// GL_ARB_occlusion_query
-	glConfig.occlusionQueryAvailable = R_CheckExtension("GL_ARB_occlusion_query");
-	if (glConfig.occlusionQueryAvailable)
-	{
-	}
-
-	// GL_ARB_timer_query
-	glConfig.timerQueryAvailable = R_CheckExtension("GL_ARB_timer_query") || R_CheckExtension("GL_EXT_timer_query");
-	if (glConfig.timerQueryAvailable)
-	{
-	}
+	glConfig.occlusionQueryAvailable = GLEW_ARB_occlusion_query != 0;
 
 	// GL_ARB_debug_output
-	glConfig.debugOutputAvailable = R_CheckExtension("GL_ARB_debug_output");
+	glConfig.debugOutputAvailable = GLEW_ARB_debug_output != 0;
 	if (glConfig.debugOutputAvailable)
 	{
+		if (r_debugContext.GetInteger() >= 1)
+		{
+			glDebugMessageCallbackARB((GLDEBUGPROCARB)DebugCallback, NULL);
+		}
+		if (r_debugContext.GetInteger() >= 2)
+		{
+			// force everything to happen in the main thread instead of in a separate driver thread
+			glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS_ARB);
+		}
+		if (r_debugContext.GetInteger() >= 3)
+		{
+			// enable all the low priority messages
+			glDebugMessageControlARB(GL_DONT_CARE,
+			                         GL_DONT_CARE,
+			                         GL_DEBUG_SEVERITY_LOW_ARB,
+			                         0, NULL, true);
+		}
 	}
 
 	// GL_ARB_multitexture
@@ -524,10 +494,10 @@ static void R_CheckPortableExtensions()
 		idLib::Error("GL_ARB_draw_elements_base_vertex not available");
 	}
 	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	if (!glConfig.fragmentProgramAvailable)
-	{
-		idLib::Error("GL_ARB_fragment_program not available");
-	}
+	//if( !glConfig.fragmentProgramAvailable )
+	//{
+	//	idLib::Warning( "GL_ARB_fragment_program not available" );
+	//}
 	// GLSL
 	if (!glConfig.glslAvailable)
 	{
@@ -592,7 +562,7 @@ void R_SetNewMode(const bool fullInit)
 			continue; // don't even try for a stereo mode
 		}
 
-		glimpParms_t parms;
+		windowParms_t parms;
 
 		if (r_fullscreen.GetInteger() <= 0)
 		{
@@ -657,29 +627,10 @@ void R_SetNewMode(const bool fullInit)
 			parms.stereo = false;
 		}
 
-		if (fullInit)
-		{
-			// create the context as well as setting up the window
-			if (GLimp_Init(parms))
-			{
-				Renderer::Init();
-			}
 
-			if (GLimp_Init(parms))
-			{
-				// it worked
-				break;
-			}
-		}
-		else
-		{
-			// just rebuild the window
-			if (GLimp_SetScreenParms(parms))
-			{
-				// it worked
-				break;
-			}
-		}
+		// create the context as well as setting up the window
+		// Renderer::Init();
+		break;
 
 		if (i == 2)
 		{
@@ -764,11 +715,11 @@ void R_InitOpenGL()
 	}
 
 
-	float glVersion = atof(glConfig.version_string);
-	float glslVersion = atof(glConfig.shading_language_string);
-	idLib::Printf("OpenGL Version: %3.1f\n", glVersion);
-	idLib::Printf("OpenGL Vendor : %s\n", glConfig.vendor_string);
-	idLib::Printf("OpenGL GLSL   : %3.1f\n", glslVersion);
+	// float glVersion = atof(glConfig.version_string);
+	// float glslVersion = atof(glConfig.shading_language_string);
+	// idLib::Printf("OpenGL Version: %3.1f\n", glVersion);
+	// idLib::Printf("OpenGL Vendor : %s\n", glConfig.vendor_string);
+	// idLib::Printf("OpenGL GLSL   : %3.1f\n", glslVersion);
 
 	// OpenGL driver constants
 	GLint temp;
@@ -1694,7 +1645,7 @@ void R_SetColorMappings()
 		tr.gammaTable[i] = idMath::ClampInt(0, 0xFFFF, inf);
 	}
 
-	GLimp_SetGamma(tr.gammaTable, tr.gammaTable, tr.gammaTable);
+	// GLimp_SetGamma(tr.gammaTable, tr.gammaTable, tr.gammaTable);
 }
 
 /*
@@ -1745,9 +1696,9 @@ void GfxInfo_f(const idCmdArgs& args)
 
 	// WGL_EXT_swap_interval
 	typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
-	extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
+	// extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
-	if (r_swapInterval.GetInteger() && wglSwapIntervalEXT != NULL)
+	if (r_swapInterval.GetInteger())
 	{
 		common->Printf("Forcing swapInterval %i\n", r_swapInterval.GetInteger());
 	}
@@ -2535,7 +2486,7 @@ void idRenderSystemLocal::ShutdownOpenGL()
 {
 	// free the context and close the window
 	R_ShutdownFrameData();
-	GLimp_Shutdown();
+	// GLimp_Shutdown();
 	r_initialized = false;
 }
 

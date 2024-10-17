@@ -60,9 +60,11 @@ If you have questions concerning this license or the applicable additional terms
 Sys_Milliseconds
 ================
 */
-int Sys_Milliseconds() {
-	static DWORD sys_timeBase = timeGetTime();
-	return timeGetTime() - sys_timeBase;
+int Sys_Milliseconds()
+{
+	float curTimeSeconds = glfwGetTime();
+	float curTimeMsec = curTimeSeconds * 1000.0f;
+	return curTimeMsec;
 }
 
 /*
@@ -70,15 +72,10 @@ int Sys_Milliseconds() {
 Sys_Microseconds
 ========================
 */
-uint64 Sys_Microseconds() {
-	static uint64 ticksPerMicrosecondTimes1024 = 0;
-
-	if ( ticksPerMicrosecondTimes1024 == 0 ) {
-		ticksPerMicrosecondTimes1024 = ( (uint64)Sys_ClockTicksPerSecond() << 10 ) / 1000000;
-		assert( ticksPerMicrosecondTimes1024 > 0 );
-	}
-
-	return ((uint64)( (int64)Sys_GetClockTicks() << 10 )) / ticksPerMicrosecondTimes1024;
+uint64 Sys_Microseconds()
+{
+	double timeInSeconds = glfwGetTime();
+	return static_cast<uint64_t>(timeInSeconds * 1000000);
 }
 
 /*
@@ -88,13 +85,14 @@ Sys_GetSystemRam
 	returns amount of physical memory in MB
 ================
 */
-int Sys_GetSystemRam() {
+int Sys_GetSystemRam()
+{
 	MEMORYSTATUSEX statex;
-	statex.dwLength = sizeof ( statex );
-	GlobalMemoryStatusEx (&statex);
-	int physRam = statex.ullTotalPhys / ( 1024 * 1024 );
+	statex.dwLength = sizeof (statex);
+	GlobalMemoryStatusEx(&statex);
+	int physRam = statex.ullTotalPhys / (1024 * 1024);
 	// HACK: For some reason, ullTotalPhys is sometimes off by a meg or two, so we round up to the nearest 16 megs
-	physRam = ( physRam + 8 ) & ~15;
+	physRam = (physRam + 8) & ~15;
 	return physRam;
 }
 
@@ -105,14 +103,17 @@ Sys_GetDriveFreeSpace
 returns in megabytes
 ================
 */
-int Sys_GetDriveFreeSpace( const char *path ) {
+int Sys_GetDriveFreeSpace(const char* path)
+{
 	DWORDLONG lpFreeBytesAvailable;
 	DWORDLONG lpTotalNumberOfBytes;
 	DWORDLONG lpTotalNumberOfFreeBytes;
 	int ret = 26;
 	//FIXME: see why this is failing on some machines
-	if ( ::GetDiskFreeSpaceEx( path, (PULARGE_INTEGER)&lpFreeBytesAvailable, (PULARGE_INTEGER)&lpTotalNumberOfBytes, (PULARGE_INTEGER)&lpTotalNumberOfFreeBytes ) ) {
-		ret = ( double )( lpFreeBytesAvailable ) / ( 1024.0 * 1024.0 );
+	if (::GetDiskFreeSpaceEx(path, (PULARGE_INTEGER)&lpFreeBytesAvailable, (PULARGE_INTEGER)&lpTotalNumberOfBytes,
+	                         (PULARGE_INTEGER)&lpTotalNumberOfFreeBytes))
+	{
+		ret = (double)(lpFreeBytesAvailable) / (1024.0 * 1024.0);
 	}
 	return ret;
 }
@@ -122,13 +123,16 @@ int Sys_GetDriveFreeSpace( const char *path ) {
 Sys_GetDriveFreeSpaceInBytes
 ========================
 */
-int64 Sys_GetDriveFreeSpaceInBytes( const char * path ) {
+int64 Sys_GetDriveFreeSpaceInBytes(const char* path)
+{
 	DWORDLONG lpFreeBytesAvailable;
 	DWORDLONG lpTotalNumberOfBytes;
 	DWORDLONG lpTotalNumberOfFreeBytes;
 	int64 ret = 1;
 	//FIXME: see why this is failing on some machines
-	if ( ::GetDiskFreeSpaceEx( path, (PULARGE_INTEGER)&lpFreeBytesAvailable, (PULARGE_INTEGER)&lpTotalNumberOfBytes, (PULARGE_INTEGER)&lpTotalNumberOfFreeBytes ) ) {
+	if (::GetDiskFreeSpaceEx(path, (PULARGE_INTEGER)&lpFreeBytesAvailable, (PULARGE_INTEGER)&lpTotalNumberOfBytes,
+	                         (PULARGE_INTEGER)&lpTotalNumberOfFreeBytes))
+	{
 		ret = lpFreeBytesAvailable;
 	}
 	return ret;
@@ -140,48 +144,57 @@ Sys_GetVideoRam
 returns in megabytes
 ================
 */
-int Sys_GetVideoRam() {
+int Sys_GetVideoRam()
+{
 	unsigned int retSize = 64;
 
 	CComPtr<IWbemLocator> spLoc = NULL;
-	HRESULT hr = CoCreateInstance( CLSID_WbemLocator, 0, CLSCTX_SERVER, IID_IWbemLocator, ( LPVOID * ) &spLoc );
-	if ( hr != S_OK || spLoc == NULL ) {
+	HRESULT hr = CoCreateInstance(CLSID_WbemLocator, 0, CLSCTX_SERVER, IID_IWbemLocator, (LPVOID*)&spLoc);
+	if (hr != S_OK || spLoc == NULL)
+	{
 		return retSize;
 	}
 
-	CComBSTR bstrNamespace( _T( "\\\\.\\root\\CIMV2" ) );
+	CComBSTR bstrNamespace(_T("\\\\.\\root\\CIMV2"));
 	CComPtr<IWbemServices> spServices;
 
 	// Connect to CIM
-	hr = spLoc->ConnectServer( bstrNamespace, NULL, NULL, 0, NULL, 0, 0, &spServices );
-	if ( hr != WBEM_S_NO_ERROR ) {
+	hr = spLoc->ConnectServer(bstrNamespace, NULL, NULL, 0, NULL, 0, 0, &spServices);
+	if (hr != WBEM_S_NO_ERROR)
+	{
 		return retSize;
 	}
 
-	// Switch the security level to IMPERSONATE so that provider will grant access to system-level objects.  
-	hr = CoSetProxyBlanket( spServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL, RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE );
-	if ( hr != S_OK ) {
+	// Switch the security level to IMPERSONATE so that provider will grant access to system-level objects.
+	hr = CoSetProxyBlanket(spServices, RPC_C_AUTHN_WINNT, RPC_C_AUTHZ_NONE, NULL, RPC_C_AUTHN_LEVEL_CALL,
+	                       RPC_C_IMP_LEVEL_IMPERSONATE, NULL, EOAC_NONE);
+	if (hr != S_OK)
+	{
 		return retSize;
 	}
 
 	// Get the vid controller
 	CComPtr<IEnumWbemClassObject> spEnumInst = NULL;
-	hr = spServices->CreateInstanceEnum( CComBSTR( "Win32_VideoController" ), WBEM_FLAG_SHALLOW, NULL, &spEnumInst ); 
-	if ( hr != WBEM_S_NO_ERROR || spEnumInst == NULL ) {
+	hr = spServices->CreateInstanceEnum(CComBSTR("Win32_VideoController"), WBEM_FLAG_SHALLOW, NULL, &spEnumInst);
+	if (hr != WBEM_S_NO_ERROR || spEnumInst == NULL)
+	{
 		return retSize;
 	}
 
 	ULONG uNumOfInstances = 0;
 	CComPtr<IWbemClassObject> spInstance = NULL;
-	hr = spEnumInst->Next( 10000, 1, &spInstance, &uNumOfInstances );
+	hr = spEnumInst->Next(10000, 1, &spInstance, &uNumOfInstances);
 
-	if ( hr == S_OK && spInstance ) {
+	if (hr == S_OK && spInstance)
+	{
 		// Get properties from the object
 		CComVariant varSize;
-		hr = spInstance->Get( CComBSTR( _T( "AdapterRAM" ) ), 0, &varSize, 0, 0 );
-		if ( hr == S_OK ) {
-			retSize = varSize.intVal / ( 1024 * 1024 );
-			if ( retSize == 0 ) {
+		hr = spInstance->Get(CComBSTR(_T("AdapterRAM")), 0, &varSize, 0, 0);
+		if (hr == S_OK)
+		{
+			retSize = varSize.intVal / (1024 * 1024);
+			if (retSize == 0)
+			{
 				retSize = 64;
 			}
 		}
@@ -197,14 +210,15 @@ Sys_GetCurrentMemoryStatus
 	all values are in kB except the memoryload
 ================
 */
-void Sys_GetCurrentMemoryStatus( sysMemoryStats_t &stats ) {
+void Sys_GetCurrentMemoryStatus(sysMemoryStats_t& stats)
+{
 	MEMORYSTATUSEX statex = {};
 	unsigned __int64 work;
 
-	statex.dwLength = sizeof( statex );
-	GlobalMemoryStatusEx( &statex );
+	statex.dwLength = sizeof(statex);
+	GlobalMemoryStatusEx(&statex);
 
-	memset( &stats, 0, sizeof( stats ) );
+	memset(&stats, 0, sizeof(stats));
 
 	stats.memoryLoad = statex.dwMemoryLoad;
 
@@ -235,8 +249,9 @@ void Sys_GetCurrentMemoryStatus( sysMemoryStats_t &stats ) {
 Sys_LockMemory
 ================
 */
-bool Sys_LockMemory( void *ptr, int bytes ) {
-	return ( VirtualLock( ptr, (SIZE_T)bytes ) != FALSE );
+bool Sys_LockMemory(void* ptr, int bytes)
+{
+	return (VirtualLock(ptr, (SIZE_T)bytes) != FALSE);
 }
 
 /*
@@ -244,8 +259,9 @@ bool Sys_LockMemory( void *ptr, int bytes ) {
 Sys_UnlockMemory
 ================
 */
-bool Sys_UnlockMemory( void *ptr, int bytes ) {
-	return ( VirtualUnlock( ptr, (SIZE_T)bytes ) != FALSE );
+bool Sys_UnlockMemory(void* ptr, int bytes)
+{
+	return (VirtualUnlock(ptr, (SIZE_T)bytes) != FALSE);
 }
 
 /*
@@ -253,8 +269,9 @@ bool Sys_UnlockMemory( void *ptr, int bytes ) {
 Sys_SetPhysicalWorkMemory
 ================
 */
-void Sys_SetPhysicalWorkMemory( int minBytes, int maxBytes ) {
-	::SetProcessWorkingSetSize( GetCurrentProcess(), minBytes, maxBytes );
+void Sys_SetPhysicalWorkMemory(int minBytes, int maxBytes)
+{
+	::SetProcessWorkingSetSize(GetCurrentProcess(), minBytes, maxBytes);
 }
 
 /*
@@ -262,21 +279,24 @@ void Sys_SetPhysicalWorkMemory( int minBytes, int maxBytes ) {
 Sys_GetCurrentUser
 ================
 */
-char *Sys_GetCurrentUser() {
+char* Sys_GetCurrentUser()
+{
 	static char s_userName[1024];
-	unsigned long size = sizeof( s_userName );
+	unsigned long size = sizeof(s_userName);
 
 
-	if ( !GetUserName( s_userName, &size ) ) {
-		strcpy( s_userName, "player" );
+	if (!GetUserName(s_userName, &size))
+	{
+		strcpy(s_userName, "player");
 	}
 
-	if ( !s_userName[0] ) {
-		strcpy( s_userName, "player" );
+	if (!s_userName[0])
+	{
+		strcpy(s_userName, "player");
 	}
 
 	return s_userName;
-}	
+}
 
 
 /*
@@ -292,40 +312,45 @@ char *Sys_GetCurrentUser() {
 
 #include <dbghelp.h>
 
-const int UNDECORATE_FLAGS =	UNDNAME_NO_MS_KEYWORDS |
-								UNDNAME_NO_ACCESS_SPECIFIERS |
-								UNDNAME_NO_FUNCTION_RETURNS |
-								UNDNAME_NO_ALLOCATION_MODEL |
-								UNDNAME_NO_ALLOCATION_LANGUAGE |
-								UNDNAME_NO_MEMBER_TYPE;
+const int UNDECORATE_FLAGS = UNDNAME_NO_MS_KEYWORDS |
+	UNDNAME_NO_ACCESS_SPECIFIERS |
+	UNDNAME_NO_FUNCTION_RETURNS |
+	UNDNAME_NO_ALLOCATION_MODEL |
+	UNDNAME_NO_ALLOCATION_LANGUAGE |
+	UNDNAME_NO_MEMBER_TYPE;
 
 #if defined(_DEBUG) && 1
 
-typedef struct symbol_s {
-	int					address;
-	char *				name;
-	struct symbol_s *	next;
+typedef struct symbol_s
+{
+	int address;
+	char* name;
+	struct symbol_s* next;
 } symbol_t;
 
-typedef struct module_s {
-	int					address;
-	char *				name;
-	symbol_t *			symbols;
-	struct module_s *	next;
+typedef struct module_s
+{
+	int address;
+	char* name;
+	symbol_t* symbols;
+	struct module_s* next;
 } module_t;
 
-module_t *modules;
+module_t* modules;
 
 /*
 ==================
 SkipRestOfLine
 ==================
 */
-void SkipRestOfLine( const char **ptr ) {
-	while( (**ptr) != '\0' && (**ptr) != '\n' && (**ptr) != '\r' ) {
+void SkipRestOfLine(const char** ptr)
+{
+	while ((**ptr) != '\0' && (**ptr) != '\n' && (**ptr) != '\r')
+	{
 		(*ptr)++;
 	}
-	while( (**ptr) == '\n' || (**ptr) == '\r' ) {
+	while ((**ptr) == '\n' || (**ptr) == '\r')
+	{
 		(*ptr)++;
 	}
 }
@@ -335,8 +360,10 @@ void SkipRestOfLine( const char **ptr ) {
 SkipWhiteSpace
 ==================
 */
-void SkipWhiteSpace( const char **ptr ) {
-	while( (**ptr) == ' ' ) {
+void SkipWhiteSpace(const char** ptr)
+{
+	while ((**ptr) == ' ')
+	{
 		(*ptr)++;
 	}
 }
@@ -346,14 +373,19 @@ void SkipWhiteSpace( const char **ptr ) {
 ParseHexNumber
 ==================
 */
-int ParseHexNumber( const char **ptr ) {
+int ParseHexNumber(const char** ptr)
+{
 	int n = 0;
-	while( (**ptr) >= '0' && (**ptr) <= '9' || (**ptr) >= 'a' && (**ptr) <= 'f' ) {
+	while ((**ptr) >= '0' && (**ptr) <= '9' || (**ptr) >= 'a' && (**ptr) <= 'f')
+	{
 		n <<= 4;
-		if ( **ptr >= '0' && **ptr <= '9' ) {
-			n |= ( (**ptr) - '0' );
-		} else {
-			n |= 10 + ( (**ptr) - 'a' );
+		if (**ptr >= '0' && **ptr <= '9')
+		{
+			n |= ((**ptr) - '0');
+		}
+		else
+		{
+			n |= 10 + ((**ptr) - 'a');
 		}
 		(*ptr)++;
 	}
@@ -365,105 +397,118 @@ int ParseHexNumber( const char **ptr ) {
 Sym_Init
 ==================
 */
-void Sym_Init( long addr ) {
+void Sym_Init(long addr)
+{
 	TCHAR moduleName[MAX_STRING_CHARS];
 	MEMORY_BASIC_INFORMATION mbi;
 
-	VirtualQuery( (void*)addr, &mbi, sizeof(mbi) );
+	VirtualQuery((void*)addr, &mbi, sizeof(mbi));
 
-	GetModuleFileName( (HMODULE)mbi.AllocationBase, moduleName, sizeof( moduleName ) );
+	GetModuleFileName((HMODULE)mbi.AllocationBase, moduleName, sizeof(moduleName));
 
-	char *ext = moduleName + strlen( moduleName );
-	while( ext > moduleName && *ext != '.' ) {
+	char* ext = moduleName + strlen(moduleName);
+	while (ext > moduleName && *ext != '.')
+	{
 		ext--;
 	}
-	if ( ext == moduleName ) {
-		strcat( moduleName, ".map" );
-	} else {
-		strcpy( ext, ".map" );
+	if (ext == moduleName)
+	{
+		strcat(moduleName, ".map");
+	}
+	else
+	{
+		strcpy(ext, ".map");
 	}
 
-	module_t *module = (module_t *) malloc( sizeof( module_t ) );
-	module->name = (char *) malloc( strlen( moduleName ) + 1 );
-	strcpy( module->name, moduleName );
+	module_t* module = (module_t*)malloc(sizeof(module_t));
+	module->name = (char*)malloc(strlen(moduleName) + 1);
+	strcpy(module->name, moduleName);
 	module->address = (int)mbi.AllocationBase;
 	module->symbols = NULL;
 	module->next = modules;
 	modules = module;
 
-	FILE * fp = fopen( moduleName, "rb" );
-	if ( fp == NULL ) {
+	FILE* fp = fopen(moduleName, "rb");
+	if (fp == NULL)
+	{
 		return;
 	}
 
-	int pos = ftell( fp );
-	fseek( fp, 0, SEEK_END );
-	int length = ftell( fp );
-	fseek( fp, pos, SEEK_SET );
+	int pos = ftell(fp);
+	fseek(fp, 0, SEEK_END);
+	int length = ftell(fp);
+	fseek(fp, pos, SEEK_SET);
 
-	char *text = (char *) malloc( length+1 );
-	fread( text, 1, length, fp );
+	char* text = (char*)malloc(length + 1);
+	fread(text, 1, length, fp);
 	text[length] = '\0';
-	fclose( fp );
+	fclose(fp);
 
-	const char *ptr = text;
+	const char* ptr = text;
 
 	// skip up to " Address" on a new line
-	while( *ptr != '\0' ) {
-		SkipWhiteSpace( &ptr );
-		if ( idStr::Cmpn( ptr, "Address", 7 ) == 0 ) {
-			SkipRestOfLine( &ptr );
+	while (*ptr != '\0')
+	{
+		SkipWhiteSpace(&ptr);
+		if (idStr::Cmpn(ptr, "Address", 7) == 0)
+		{
+			SkipRestOfLine(&ptr);
 			break;
 		}
-		SkipRestOfLine( &ptr );
+		SkipRestOfLine(&ptr);
 	}
 
 	int symbolAddress;
 	int symbolLength;
 	char symbolName[MAX_STRING_CHARS];
-	symbol_t *symbol;
+	symbol_t* symbol;
 
 	// parse symbols
-	while( *ptr != '\0' ) {
+	while (*ptr != '\0')
+	{
+		SkipWhiteSpace(&ptr);
 
-		SkipWhiteSpace( &ptr );
-
-		ParseHexNumber( &ptr );
-		if ( *ptr == ':' ) {
+		ParseHexNumber(&ptr);
+		if (*ptr == ':')
+		{
 			ptr++;
-		} else {
+		}
+		else
+		{
 			break;
 		}
-		ParseHexNumber( &ptr );
+		ParseHexNumber(&ptr);
 
-		SkipWhiteSpace( &ptr );
+		SkipWhiteSpace(&ptr);
 
 		// parse symbol name
 		symbolLength = 0;
-		while( *ptr != '\0' && *ptr != ' ' ) {
+		while (*ptr != '\0' && *ptr != ' ')
+		{
 			symbolName[symbolLength++] = *ptr++;
-			if ( symbolLength >= sizeof( symbolName ) - 1 ) {
+			if (symbolLength >= sizeof(symbolName) - 1)
+			{
 				break;
 			}
 		}
 		symbolName[symbolLength++] = '\0';
 
-		SkipWhiteSpace( &ptr );
+		SkipWhiteSpace(&ptr);
 
 		// parse symbol address
-		symbolAddress = ParseHexNumber( &ptr );
+		symbolAddress = ParseHexNumber(&ptr);
 
-		SkipRestOfLine( &ptr );
+		SkipRestOfLine(&ptr);
 
-		symbol = (symbol_t *) malloc( sizeof( symbol_t ) );
-		symbol->name = (char *) malloc( symbolLength );
-		strcpy( symbol->name, symbolName );
+		symbol = (symbol_t*)malloc(sizeof(symbol_t));
+		symbol->name = (char*)malloc(symbolLength);
+		strcpy(symbol->name, symbolName);
 		symbol->address = symbolAddress;
 		symbol->next = module->symbols;
 		module->symbols = symbol;
 	}
 
-	free( text );
+	free(text);
 }
 
 /*
@@ -471,19 +516,22 @@ void Sym_Init( long addr ) {
 Sym_Shutdown
 ==================
 */
-void Sym_Shutdown() {
-	module_t *m;
-	symbol_t *s;
+void Sym_Shutdown()
+{
+	module_t* m;
+	symbol_t* s;
 
-	for ( m = modules; m != NULL; m = modules ) {
+	for (m = modules; m != NULL; m = modules)
+	{
 		modules = m->next;
-		for ( s = m->symbols; s != NULL; s = m->symbols ) {
+		for (s = m->symbols; s != NULL; s = m->symbols)
+		{
 			m->symbols = s->next;
-			free( s->name );
-			free( s );
+			free(s->name);
+			free(s);
 		}
-		free( m->name );
-		free( m );
+		free(m->name);
+		free(m);
 	}
 	modules = NULL;
 }
@@ -493,35 +541,45 @@ void Sym_Shutdown() {
 Sym_GetFuncInfo
 ==================
 */
-void Sym_GetFuncInfo( long addr, idStr &module, idStr &funcName ) {
+void Sym_GetFuncInfo(long addr, idStr& module, idStr& funcName)
+{
 	MEMORY_BASIC_INFORMATION mbi;
-	module_t *m;
-	symbol_t *s;
+	module_t* m;
+	symbol_t* s;
 
-	VirtualQuery( (void*)addr, &mbi, sizeof(mbi) );
+	VirtualQuery((void*)addr, &mbi, sizeof(mbi));
 
-	for ( m = modules; m != NULL; m = m->next ) {
-		if ( m->address == (int) mbi.AllocationBase ) {
+	for (m = modules; m != NULL; m = m->next)
+	{
+		if (m->address == (int)mbi.AllocationBase)
+		{
 			break;
 		}
 	}
-	if ( !m ) {
-		Sym_Init( addr );
+	if (!m)
+	{
+		Sym_Init(addr);
 		m = modules;
 	}
 
-	for ( s = m->symbols; s != NULL; s = s->next ) {
-		if ( s->address == addr ) {
-
+	for (s = m->symbols; s != NULL; s = s->next)
+	{
+		if (s->address == addr)
+		{
 			char undName[MAX_STRING_CHARS];
-			if ( UnDecorateSymbolName( s->name, undName, sizeof(undName), UNDECORATE_FLAGS ) ) {
+			if (UnDecorateSymbolName(s->name, undName, sizeof(undName), UNDECORATE_FLAGS))
+			{
 				funcName = undName;
-			} else {
+			}
+			else
+			{
 				funcName = s->name;
 			}
-			for ( int i = 0; i < funcName.Length(); i++ ) {
-				if ( funcName[i] == '(' ) {
-					funcName.CapLength( i );
+			for (int i = 0; i < funcName.Length(); i++)
+			{
+				if (funcName[i] == '(')
+				{
+					funcName.CapLength(i);
 					break;
 				}
 			}
@@ -530,7 +588,7 @@ void Sym_GetFuncInfo( long addr, idStr &module, idStr &funcName ) {
 		}
 	}
 
-	sprintf( funcName, "0x%08x", addr );
+	sprintf(funcName, "0x%08x", addr);
 	module = "";
 }
 
@@ -626,7 +684,7 @@ void Sym_GetFuncInfo( long addr, idStr &module, idStr &funcName ) {
 						MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), // Default language
 						(LPTSTR) &lpMsgBuf,
 						0,
-						NULL 
+						NULL
 						);
 		LocalFree( lpMsgBuf );
 
@@ -671,15 +729,19 @@ void Sym_GetFuncInfo( long addr, idStr &module, idStr &funcName ) {
 GetFuncAddr
 ==================
 */
-address_t GetFuncAddr( address_t midPtPtr ) {
+address_t GetFuncAddr(address_t midPtPtr)
+{
 	long temp;
-	do {
+	do
+	{
 		temp = (long)(*(long*)midPtPtr);
-		if ( (temp&0x00FFFFFF) == PROLOGUE_SIGNATURE ) {
+		if ((temp & 0x00FFFFFF) == PROLOGUE_SIGNATURE)
+		{
 			break;
 		}
 		midPtPtr--;
-	} while(true);
+	}
+	while (true);
 
 	return midPtPtr;
 }
@@ -689,21 +751,22 @@ address_t GetFuncAddr( address_t midPtPtr ) {
 GetCallerAddr
 ==================
 */
-address_t GetCallerAddr( long _ebp ) {
+address_t GetCallerAddr(long _ebp)
+{
 	long midPtPtr;
 	long res = 0;
 
 	__asm {
-		mov		eax, _ebp
-		mov		ecx, [eax]		// check for end of stack frames list
-		test	ecx, ecx		// check for zero stack frame
-		jz		label
-		mov		eax, [eax+4]	// get the ret address
-		test	eax, eax		// check for zero return address
-		jz		label
-		mov		midPtPtr, eax
-	}
-	res = GetFuncAddr( midPtPtr );
+		mov eax, _ebp
+		mov ecx, [eax] // check for end of stack frames list
+		test ecx, ecx // check for zero stack frame
+		jz label
+		mov eax, [eax+4] // get the ret address
+		test eax, eax // check for zero return address
+		jz label
+		mov midPtPtr, eax
+		}
+	res = GetFuncAddr(midPtPtr);
 label:
 	return res;
 }
@@ -715,7 +778,8 @@ Sys_GetCallStack
  use /Oy option
 ==================
 */
-void Sys_GetCallStack( address_t *callStack, const int callStackSize ) {
+void Sys_GetCallStack(address_t* callStack, const int callStackSize)
+{
 #if 1 //def _DEBUG
 	int i;
 	long m_ebp;
@@ -723,14 +787,16 @@ void Sys_GetCallStack( address_t *callStack, const int callStackSize ) {
 	__asm {
 		mov eax, ebp
 		mov m_ebp, eax
-	}
+		}
 	// skip last two functions
 	m_ebp = *((long*)m_ebp);
 	m_ebp = *((long*)m_ebp);
 	// list functions
-	for ( i = 0; i < callStackSize; i++ ) {
-		callStack[i] = GetCallerAddr( m_ebp );
-		if ( callStack[i] == 0 ) {
+	for (i = 0; i < callStackSize; i++)
+	{
+		callStack[i] = GetCallerAddr(m_ebp);
+		if (callStack[i] == 0)
+		{
 			break;
 		}
 		m_ebp = *((long*)m_ebp);
@@ -738,7 +804,8 @@ void Sys_GetCallStack( address_t *callStack, const int callStackSize ) {
 #else
 	int i = 0;
 #endif
-	while( i < callStackSize ) {
+	while (i < callStackSize)
+	{
 		callStack[i++] = 0;
 	}
 }
@@ -748,15 +815,17 @@ void Sys_GetCallStack( address_t *callStack, const int callStackSize ) {
 Sys_GetCallStackStr
 ==================
 */
-const char *Sys_GetCallStackStr( const address_t *callStack, const int callStackSize ) {
-	static char string[MAX_STRING_CHARS*2];
+const char* Sys_GetCallStackStr(const address_t* callStack, const int callStackSize)
+{
+	static char string[MAX_STRING_CHARS * 2];
 	int index, i;
 	idStr module, funcName;
 
 	index = 0;
-	for ( i = callStackSize-1; i >= 0; i-- ) {
-		Sym_GetFuncInfo( callStack[i], module, funcName );
-		index += sprintf( string+index, " -> %s", funcName.c_str() );
+	for (i = callStackSize - 1; i >= 0; i--)
+	{
+		Sym_GetFuncInfo(callStack[i], module, funcName);
+		index += sprintf(string + index, " -> %s", funcName.c_str());
 	}
 	return string;
 }
@@ -766,12 +835,13 @@ const char *Sys_GetCallStackStr( const address_t *callStack, const int callStack
 Sys_GetCallStackCurStr
 ==================
 */
-const char *Sys_GetCallStackCurStr( int depth ) {
-	address_t *callStack;
+const char* Sys_GetCallStackCurStr(int depth)
+{
+	address_t* callStack;
 
-	callStack = (address_t *) _alloca( depth * sizeof( address_t ) );
-	Sys_GetCallStack( callStack, depth );
-	return Sys_GetCallStackStr( callStack, depth );
+	callStack = (address_t*)_alloca(depth * sizeof(address_t));
+	Sys_GetCallStack(callStack, depth);
+	return Sys_GetCallStackStr(callStack, depth);
 }
 
 /*
@@ -779,17 +849,19 @@ const char *Sys_GetCallStackCurStr( int depth ) {
 Sys_GetCallStackCurAddressStr
 ==================
 */
-const char *Sys_GetCallStackCurAddressStr( int depth ) {
-	static char string[MAX_STRING_CHARS*2];
-	address_t *callStack;
+const char* Sys_GetCallStackCurAddressStr(int depth)
+{
+	static char string[MAX_STRING_CHARS * 2];
+	address_t* callStack;
 	int index, i;
 
-	callStack = (address_t *) _alloca( depth * sizeof( address_t ) );
-	Sys_GetCallStack( callStack, depth );
+	callStack = (address_t*)_alloca(depth * sizeof(address_t));
+	Sys_GetCallStack(callStack, depth);
 
 	index = 0;
-	for ( i = depth-1; i >= 0; i-- ) {
-		index += sprintf( string+index, " -> 0x%08x", callStack[i] );
+	for (i = depth - 1; i >= 0; i--)
+	{
+		index += sprintf(string + index, " -> 0x%08x", callStack[i]);
 	}
 	return string;
 }
@@ -799,6 +871,7 @@ const char *Sys_GetCallStackCurAddressStr( int depth ) {
 Sys_ShutdownSymbols
 ==================
 */
-void Sys_ShutdownSymbols() {
+void Sys_ShutdownSymbols()
+{
 	Sym_Shutdown();
 }

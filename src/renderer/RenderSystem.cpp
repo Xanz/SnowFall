@@ -267,7 +267,7 @@ static void R_CheckCvars() {
 	}
 
 	// check for changes to logging state
-	GLimp_EnableLogging( r_logFile.GetInteger() != 0 );
+	// GLimp_EnableLogging( r_logFile.GetInteger() != 0 );
 }
 
 /*
