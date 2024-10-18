@@ -30,6 +30,8 @@ public:
 
   bool Create();
 
+  ~Window();
+
 private:
   void SetState(eWindowState state) { m_State = state; }
 

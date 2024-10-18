@@ -1660,108 +1660,6 @@ EXCEPTION_DISPOSITION __cdecl _except_handler(struct _EXCEPTION_RECORD* Exceptio
 							/*	FPU_EXCEPTION_INEXACT_RESULT |			*/	\
 								0
 
-// /*
-// ==================
-// WinMain
-// ==================
-// */
-// int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
-// {
-// 	const HCURSOR hcurSave = ::SetCursor(LoadCursor(0, IDC_WAIT));
-//
-// 	Sys_SetPhysicalWorkMemory(192 << 20, 1024 << 20);
-//
-// 	Sys_GetCurrentMemoryStatus(exeLaunchMemoryStats);
-//
-// #if 0
-//     DWORD handler = (DWORD)_except_handler;
-//     __asm
-//     {                           // Build EXCEPTION_REGISTRATION record:
-//         push    handler         // Address of handler function
-//         push    FS:[0]          // Address of previous handler
-//         mov     FS:[0],ESP      // Install new EXECEPTION_REGISTRATION
-//     }
-// #endif
-//
-// 	win32.hInstance = hInstance;
-// 	idStr::Copynz(sys_cmdline, lpCmdLine, sizeof(sys_cmdline));
-//
-// 	// done before Com/Sys_Init since we need this for error output
-// 	Sys_CreateConsole();
-//
-// 	// no abort/retry/fail errors
-// 	SetErrorMode(SEM_FAILCRITICALERRORS);
-//
-// 	for (int i = 0; i < MAX_CRITICAL_SECTIONS; i++)
-// 	{
-// 		InitializeCriticalSection(&win32.criticalSections[i]);
-// 	}
-//
-// 	// make sure the timer is high precision, otherwise
-// 	// NT gets 18ms resolution
-// 	timeBeginPeriod(1);
-//
-// 	// get the initial time base
-// 	Sys_Milliseconds();
-//
-// #ifdef DEBUG
-// 	// disable the painfully slow MS heap check every 1024 allocs
-// 	_CrtSetDbgFlag( 0 );
-// #endif
-//
-// 	//	Sys_FPU_EnableExceptions( TEST_FPU_EXCEPTIONS );
-// 	Sys_FPU_SetPrecision(FPU_PRECISION_DOUBLE_EXTENDED);
-//
-// 	common->Init(0, NULL, lpCmdLine);
-//
-// #if TEST_FPU_EXCEPTIONS != 0
-// 	common->Printf( Sys_FPU_GetState() );
-// #endif
-//
-// 	if (win32.win_notaskkeys.GetInteger())
-// 	{
-// 		DisableTaskKeys(TRUE, FALSE, /*( win32.win_notaskkeys.GetInteger() == 2 )*/ FALSE);
-// 	}
-//
-// 	// hide or show the early console as necessary
-// 	if (win32.win_viewlog.GetInteger())
-// 	{
-// 		Sys_ShowConsole(1, true);
-// 	}
-// 	else
-// 	{
-// 		Sys_ShowConsole(0, false);
-// 	}
-//
-// #ifdef SET_THREAD_AFFINITY
-// 	// give the main thread an affinity for the first cpu
-// 	SetThreadAffinityMask( GetCurrentThread(), 1 );
-// #endif
-//
-// 	::SetCursor(hcurSave);
-//
-// 	::SetFocus(win32.hWnd);
-//
-// 	// main game loop
-// 	while (1)
-// 	{
-// 		Win_Frame();
-//
-// #ifdef DEBUG
-// 		Sys_MemFrame();
-// #endif
-//
-// 		// set exceptions, even if some crappy syscall changes them!
-// 		Sys_FPU_EnableExceptions(TEST_FPU_EXCEPTIONS);
-//
-// 		// run the game
-// 		common->Frame();
-// 	}
-//
-// 	// never gets here
-// 	return 0;
-// }
-
 
 int main(int argc, char* argv[])
 {
@@ -1775,8 +1673,6 @@ int main(int argc, char* argv[])
 	// main game loop
 	while (1)
 	{
-		// s_Window->PreUpdate();
-
 		Sys_FPU_EnableExceptions(TEST_FPU_EXCEPTIONS);
 
 		// run the game

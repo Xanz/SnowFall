@@ -19,6 +19,15 @@ Window::Window()
     SetState(FAILED);
 }
 
+
+Window::~Window()
+{
+    common->Printf("Window:: Destroying window");
+    glfwDestroyWindow(m_Window);
+    glfwTerminate();
+}
+
+
 bool Window::Create()
 {
     common->Printf("Creating GLFW Window.\n");
@@ -32,12 +41,14 @@ bool Window::Create()
 
     windowParms_t parms = SetupParms();
 
-    // full screen window
-    if (parms.fullScreen)
+    switch (parms.fullScreen)
     {
-        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        const GLFWvidmode* mode;
+    // FullScreen is always borderless.
+    case 1:
+        mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 
-        // We need this to set our refresh rate correctly.
+    // We need this to set our refresh rate correctly.
         glfwWindowHint(GLFW_RED_BITS, mode->redBits);
         glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
         glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
@@ -45,10 +56,11 @@ bool Window::Create()
 
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         m_Window = glfwCreateWindow(mode->width, mode->height, "SnowFall Engine", NULL, NULL);
-    }
-    else
-    {
+        break;
+    // Windowed.
+    case 0:
         m_Window = glfwCreateWindow(parms.width, parms.height, "SnowFall Engine", NULL, NULL);
+        break;
     }
 
     if (!m_Window)
@@ -93,7 +105,6 @@ bool Window::Create()
     glfwSetCursorPosCallback(m_Window, Cursor_Callback);
     glfwSetScrollCallback(m_Window, Scroll_Callback);
     glfwSetCharCallback(m_Window, Character_Callback);
-    // glConfig.global_vao
 
     glConfig.isFullscreen = parms.fullScreen;
     glConfig.isStereoPixelFormat = parms.stereo;
@@ -208,23 +219,19 @@ void Window::Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset)
     if (yoffset >= 1)
     {
         s_MousePolls.emplace_back(mousePoll_t(M_DELTAZ, yoffset));
-        // Sys_QueEvent(SE_MOUSE, 1, 0, 0, NULL, 0);
         Sys_QueEvent(SE_KEY, K_MWHEELUP, yoffset, 0, NULL, 0);
 
         // I hate this but we have to reset the scroll straight after.
         s_MousePolls.emplace_back(mousePoll_t(M_DELTAZ, 0));
-        // Sys_QueEvent(SE_MOUSE, 1, 0, 0, NULL, 0);
         Sys_QueEvent(SE_KEY, K_MWHEELUP, 0, 0, NULL, 0);
     }
     else if (yoffset <= -1)
     {
         s_MousePolls.emplace_back(mousePoll_t(M_DELTAZ, yoffset));
-        // Sys_QueEvent(SE_MOUSE, -1, 0, 0, NULL, 0);
         Sys_QueEvent(SE_KEY, K_MWHEELDOWN, yoffset, 0, NULL, 0);
 
         // I hate this but we have to reset the scroll straight after.
         s_MousePolls.emplace_back(mousePoll_t(M_DELTAZ, 0));
-        // Sys_QueEvent(SE_MOUSE, -1, 0, 0, NULL, 0);
         Sys_QueEvent(SE_KEY, K_MWHEELDOWN, 0, 0, NULL, 0);
     }
 }
@@ -263,8 +270,6 @@ windowParms_t Window::SetupParms()
 {
     windowParms_t parms = windowParms_t();
 
-    // for (int i = 0; i < 3; i++)
-    // {
     if (r_fullscreen.GetInteger() <= 0)
     {
         // use explicit position / size for window
@@ -272,7 +277,7 @@ windowParms_t Window::SetupParms()
         parms.y = r_windowY.GetInteger();
         parms.width = r_windowWidth.GetInteger();
         parms.height = r_windowHeight.GetInteger();
-        // may still be -1 to force a borderless window
+        // Windowed mode is always borderless.
         parms.fullScreen = r_fullscreen.GetInteger();
         parms.displayHz = 0; // ignored
     }
@@ -302,7 +307,6 @@ windowParms_t Window::SetupParms()
     parms.multiSamples = r_multiSamples.GetInteger();
 
     parms.stereo = false;
-    // }
 
     return parms;
 }
