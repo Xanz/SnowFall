@@ -4,6 +4,12 @@
 #include "precompiled.h"
 #include "renderer/tr_local.h"
 
+
+extern idCVar r_windowX;
+extern idCVar r_windowY;
+extern idCVar r_windowWidth;
+extern idCVar r_windowHeight;
+
 enum eWindowState
 {
   ACTIVE, // Window is updating.
@@ -18,11 +24,11 @@ public:
 
   eWindowState GetState() { return m_State; };
 
-  void Create(windowParms_t parms);
-
   void Update();
 
   void PreUpdate();
+
+  bool Create();
 
 private:
   void SetState(eWindowState state) { m_State = state; }
@@ -36,6 +42,8 @@ private:
   static void Scroll_Callback(GLFWwindow* window, double xoffset, double yoffset);
 
   static void Character_Callback(GLFWwindow* window, unsigned int codepoint);
+
+  windowParms_t SetupParms();
 
   eWindowState m_State;
 

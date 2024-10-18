@@ -1765,24 +1765,13 @@ EXCEPTION_DISPOSITION __cdecl _except_handler(struct _EXCEPTION_RECORD* Exceptio
 
 int main(int argc, char* argv[])
 {
-	windowParms_t parms;
-	parms.displayHz = 240;
-	parms.fullScreen = 0;
-	parms.height = 600;
-	parms.width = 800;
-	parms.stereo = 0;
-
 	s_Window = new Window();
-	s_Window->Create(parms);
 
 	Sys_Milliseconds();
-
-	Renderer::Init();
 
 	Sys_FPU_SetPrecision(FPU_PRECISION_DOUBLE_EXTENDED);
 
 	common->Init(0, NULL, NULL);
-
 	// main game loop
 	while (1)
 	{

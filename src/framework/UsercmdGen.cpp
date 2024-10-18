@@ -335,9 +335,9 @@ idCVar idUsercmdGenLocal::sensitivity("sensitivity", "5", CVAR_SYSTEM | CVAR_ARC
                                       "mouse view sensitivity");
 idCVar idUsercmdGenLocal::m_pitch("m_pitch", "0.022", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "mouse pitch scale");
 idCVar idUsercmdGenLocal::m_yaw("m_yaw", "0.022", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_FLOAT, "mouse yaw scale");
-idCVar idUsercmdGenLocal::m_smooth("m_smooth", "1", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_INTEGER,
-                                   "number of samples blended for mouse viewing", 1, 8,
-                                   idCmdSystem::ArgCompletion_Integer<1, 8>);
+idCVar idUsercmdGenLocal::m_smooth("m_smooth", "0", CVAR_SYSTEM | CVAR_ARCHIVE | CVAR_INTEGER,
+                                   "number of samples blended for mouse viewing", 0, 8,
+                                   idCmdSystem::ArgCompletion_Integer<0, 8>);
 idCVar idUsercmdGenLocal::m_showMouseRate("m_showMouseRate", "0", CVAR_SYSTEM | CVAR_BOOL, "shows mouse movement");
 
 static idUsercmdGenLocal localUsercmdGen;
@@ -533,8 +533,8 @@ void idUsercmdGenLocal::MouseMove()
 	mouseDx = 0;
 	mouseDy = 0;
 
-	viewangles[YAW] -= m_yaw.GetFloat() * mx * in_mouseSpeed.GetFloat();
-	viewangles[PITCH] += m_pitch.GetFloat() * in_mouseSpeed.GetFloat() * (in_mouseInvertLook.GetBool() ? -my : my);
+	viewangles[YAW] -= m_yaw.GetFloat() * mx;
+	viewangles[PITCH] += m_pitch.GetFloat() * (in_mouseInvertLook.GetBool() ? -my : my);
 }
 
 /*

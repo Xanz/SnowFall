@@ -5,20 +5,32 @@
 
 idCVar m_rawInput("m_rawinput", "1", CVAR_BOOL, "use raw input value : 0 : 1", 0, 1);
 
+idCVar r_customWidth("r_customWidth", "1280", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
+                     "custom screen width. set r_vidMode to -1 to activate");
+idCVar r_customHeight("r_customHeight", "720", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
+                      "custom screen height. set r_vidMode to -1 to activate");
+idCVar r_windowX("r_windowX", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
+idCVar r_windowY("r_windowY", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
+idCVar r_windowWidth("r_windowWidth", "1280", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
+idCVar r_windowHeight("r_windowHeight", "720", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
+
 Window::Window()
 {
     SetState(FAILED);
 }
 
-void Window::Create(windowParms_t parms)
+bool Window::Create()
 {
-    common->Printf("Initializing OpenGL subsystem\n");
+    common->Printf("Creating GLFW Window.\n");
 
     if (!glfwInit())
     {
-        common->Error("Could not start GLFW\n");
+        common->Error("Could not start GLFW.\n");
         SetState(FAILED);
+        return false;
     }
+
+    windowParms_t parms = SetupParms();
 
     // full screen window
     if (parms.fullScreen)
@@ -33,8 +45,6 @@ void Window::Create(windowParms_t parms)
 
         glfwWindowHint(GLFW_DECORATED, GLFW_FALSE);
         m_Window = glfwCreateWindow(mode->width, mode->height, "SnowFall Engine", NULL, NULL);
-        // glConfig.vidWidth = mode->width;
-        // glConfig.vidHeight = mode->height;
     }
     else
     {
@@ -45,7 +55,9 @@ void Window::Create(windowParms_t parms)
     {
         glfwTerminate();
         SetState(FAILED);
+        return false;
     }
+
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -53,6 +65,8 @@ void Window::Create(windowParms_t parms)
     // Disable resizing.
     glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
+    // MSAA samples :)
+    glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
     glfwMakeContextCurrent(m_Window);
 
 
@@ -74,9 +88,6 @@ void Window::Create(windowParms_t parms)
         glfwSwapInterval(0);
     }
 
-    // MSAA samples :)
-    glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
-
     glfwSetMouseButtonCallback(m_Window, MouseKey_Callback);
     glfwSetKeyCallback(m_Window, Key_Callback);
     glfwSetCursorPosCallback(m_Window, Cursor_Callback);
@@ -91,6 +102,8 @@ void Window::Create(windowParms_t parms)
     glConfig.multisamples = parms.multiSamples;
 
     glConfig.pixelAspect = 1.0f;
+
+    return true;
 }
 
 void Window::PreUpdate()
@@ -171,11 +184,11 @@ void Window::Cursor_Callback(GLFWwindow* window, double xpos, double ypos)
 void Window::Key_Callback(GLFWwindow* window, int key, int scancode, int action, int mods)
 {
     // Backspace needs to be handled here.
-    // if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
-    // {
-    //     Sys_QueEvent(SE_CHAR, K_BACKSPACE, 0, 0, NULL, 0);
-    //     return;
-    // }
+    if (key == GLFW_KEY_BACKSPACE && (action == GLFW_PRESS || action == GLFW_REPEAT))
+    {
+        Sys_QueEvent(SE_CHAR, K_BACKSPACE, 0, 0, NULL, 0);
+        return;
+    }
 
     if (action == GLFW_PRESS || action == GLFW_RELEASE)
     {
@@ -244,4 +257,52 @@ void Window::Character_Callback(GLFWwindow* window, unsigned int codepoint)
     }
 
     Sys_QueEvent(SE_CHAR, (unsigned char)text[0], 0, 0, NULL, 0);
+}
+
+windowParms_t Window::SetupParms()
+{
+    windowParms_t parms = windowParms_t();
+
+    // for (int i = 0; i < 3; i++)
+    // {
+    if (r_fullscreen.GetInteger() <= 0)
+    {
+        // use explicit position / size for window
+        parms.x = r_windowX.GetInteger();
+        parms.y = r_windowY.GetInteger();
+        parms.width = r_windowWidth.GetInteger();
+        parms.height = r_windowHeight.GetInteger();
+        // may still be -1 to force a borderless window
+        parms.fullScreen = r_fullscreen.GetInteger();
+        parms.displayHz = 0; // ignored
+    }
+    else
+    {
+        const GLFWvidmode* mode = glfwGetVideoMode(glfwGetPrimaryMonitor());
+        parms.x = 0; // ignored
+        parms.y = 0; // ignored
+        parms.fullScreen = r_fullscreen.GetInteger();
+
+        // set the parameters we are trying
+        if (r_vidMode.GetInteger() == 0)
+        {
+            // try forcing a specific mode, even if it isn't on the list
+            parms.width = r_customWidth.GetInteger();
+            parms.height = r_customHeight.GetInteger();
+            parms.displayHz = r_displayRefresh.GetInteger();
+        }
+        else
+        {
+            parms.width = mode->width;
+            parms.height = mode->height;
+            parms.displayHz = mode->refreshRate;
+        }
+    }
+
+    parms.multiSamples = r_multiSamples.GetInteger();
+
+    parms.stereo = false;
+    // }
+
+    return parms;
 }

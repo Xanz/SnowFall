@@ -38,11 +38,6 @@ LONG WINAPI MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
 
 static bool s_alttab_disabled;
 
-extern idCVar r_windowX;
-extern idCVar r_windowY;
-extern idCVar r_windowWidth;
-extern idCVar r_windowHeight;
-
 static void WIN_DisableAltTab()
 {
 	if (s_alttab_disabled || win32.win_allowAltTab.GetBool())

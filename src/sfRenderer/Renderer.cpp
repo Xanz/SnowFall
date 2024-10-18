@@ -10,4 +10,6 @@ void Renderer::Init()
   {
     common->FatalError("Could not init graphics API!");
   }
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_MULTISAMPLE);
 }
