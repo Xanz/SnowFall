@@ -28,6 +28,7 @@ If you have questions concerning this license or the applicable additional terms
 #pragma hdrstop
 #include "../idlib/precompiled.h"
 #include "tr_local.h"
+#include "glew.h"
 
 idCVar r_showBuffers( "r_showBuffers", "0", CVAR_INTEGER, "" );
 
@@ -68,8 +69,8 @@ UnbindBufferObjects
 ========================
 */
 void UnbindBufferObjects() {
-	qglBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-	qglBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
 }
 
 #ifdef ID_WIN_X86_SSE2_INTRIN
@@ -170,20 +171,20 @@ bool idVertexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 
 
 	// clear out any previous error
-	qglGetError();
+	glGetError();
 
 	GLuint bufferObject = 0xFFFF;
-	qglGenBuffersARB( 1, & bufferObject );
+	glGenBuffersARB( 1, & bufferObject );
 	if ( bufferObject == 0xFFFF ) {
 		idLib::FatalError( "idVertexBuffer::AllocBufferObject: failed" );
 	}
-	qglBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
 
 	// these are rewritten every frame
-	qglBufferDataARB( GL_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
+	glBufferDataARB( GL_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
 	apiObject = reinterpret_cast< void * >( bufferObject );
 
-	GLenum err = qglGetError();
+	GLenum err = glGetError();
 	if ( err == GL_OUT_OF_MEMORY ) {
 		idLib::Warning( "idVertexBuffer::AllocBufferObject: allocation failed" );
 		allocationFailed = true;
@@ -227,7 +228,7 @@ void idVertexBuffer::FreeBufferObject() {
 	}
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglDeleteBuffersARB( 1, & bufferObject );
+	glDeleteBuffersARB( 1, & bufferObject );
 
 	ClearWithoutFreeing();
 }
@@ -288,8 +289,8 @@ void idVertexBuffer::Update( const void * data, int updateSize ) const {
 	int numBytes = ( updateSize + 15 ) & ~15;
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
-	qglBufferSubDataARB( GL_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
 /*
 	void * buffer = MapBuffer( BM_WRITE );
 	CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
@@ -309,16 +310,16 @@ void * idVertexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 	void * buffer = NULL;
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
 	if ( mapType == BM_READ ) {
-		//buffer = qglMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
-		buffer = qglMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+		//buffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
+		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
 	} else if ( mapType == BM_WRITE ) {
-		//buffer = qglMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
-		buffer = qglMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+		//buffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
@@ -345,8 +346,8 @@ void idVertexBuffer::UnmapBuffer() const {
 	assert( IsMapped() );
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
-	if ( !qglUnmapBufferARB( GL_ARRAY_BUFFER_ARB ) ) {
+	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	if ( !glUnmapBufferARB( GL_ARRAY_BUFFER_ARB ) ) {
 		idLib::Printf( "idVertexBuffer::UnmapBuffer failed\n" );
 	}
 
@@ -414,21 +415,21 @@ bool idIndexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 
 
 	// clear out any previous error
-	qglGetError();
+	glGetError();
 
 	GLuint bufferObject = 0xFFFF;
-	qglGenBuffersARB( 1, & bufferObject );
+	glGenBuffersARB( 1, & bufferObject );
 	if ( bufferObject == 0xFFFF ) {
-		GLenum error = qglGetError();
+		GLenum error = glGetError();
 		idLib::FatalError( "idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error );
 	}
-	qglBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
 
 	// these are rewritten every frame
-	qglBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
+	glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
 	apiObject = reinterpret_cast< void * >( bufferObject );
 
-	GLenum err = qglGetError();
+	GLenum err = glGetError();
 	if ( err == GL_OUT_OF_MEMORY ) {
 		idLib::Warning( "idIndexBuffer:AllocBufferObject: allocation failed" );
 		allocationFailed = true;
@@ -472,7 +473,7 @@ void idIndexBuffer::FreeBufferObject() {
 	}
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglDeleteBuffersARB( 1, & bufferObject );
+	glDeleteBuffersARB( 1, & bufferObject );
 
 	ClearWithoutFreeing();
 }
@@ -534,8 +535,8 @@ void idIndexBuffer::Update( const void * data, int updateSize ) const {
 	int numBytes = ( updateSize + 15 ) & ~15;
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
-	qglBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
 /*
 	void * buffer = MapBuffer( BM_WRITE );
 	CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
@@ -556,16 +557,16 @@ void * idIndexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 	void * buffer = NULL;
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
 	if ( mapType == BM_READ ) {
-		//buffer = qglMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
-		buffer = qglMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
+		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
 	} else if ( mapType == BM_WRITE ) {
-		//buffer = qglMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
-		buffer = qglMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
+		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
 		if ( buffer != NULL ) {
 			buffer = (byte *)buffer + GetOffset();
 		}
@@ -592,8 +593,8 @@ void idIndexBuffer::UnmapBuffer() const {
 	assert( IsMapped() );
 
 	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	qglBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
-	if ( !qglUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ) ) {
+	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	if ( !glUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ) ) {
 		idLib::Printf( "idIndexBuffer::UnmapBuffer failed\n" );
 	}
 
@@ -660,10 +661,10 @@ bool idJointBuffer::AllocBufferObject( const float * joints, int numAllocJoints 
 	const int numBytes = GetAllocedSize();
 
 	GLuint buffer = 0;
-	qglGenBuffersARB( 1, &buffer );
-	qglBindBufferARB( GL_UNIFORM_BUFFER, buffer );
-	qglBufferDataARB( GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB );
-	qglBindBufferARB( GL_UNIFORM_BUFFER, 0);
+	glGenBuffersARB( 1, &buffer );
+	glBindBufferARB( GL_UNIFORM_BUFFER, buffer );
+	glBufferDataARB( GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB );
+	glBindBufferARB( GL_UNIFORM_BUFFER, 0);
 	apiObject = reinterpret_cast< void * >( buffer );
 
 	if ( r_showBuffers.GetBool() ) {
@@ -703,8 +704,8 @@ void idJointBuffer::FreeBufferObject() {
 	}
 
 	GLuint buffer = reinterpret_cast< GLuint > ( apiObject );
-	qglBindBufferARB( GL_UNIFORM_BUFFER, 0 );
-	qglDeleteBuffersARB( 1, & buffer );
+	glBindBufferARB( GL_UNIFORM_BUFFER, 0 );
+	glDeleteBuffersARB( 1, & buffer );
 
 	ClearWithoutFreeing();
 }
@@ -765,8 +766,8 @@ void idJointBuffer::Update( const float * joints, int numUpdateJoints ) const {
 
 	const int numBytes = numUpdateJoints * 3 * 4 * sizeof( float );
 
-	qglBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
-	qglBufferSubDataARB( GL_UNIFORM_BUFFER, GetOffset(), (GLsizeiptrARB)numBytes, joints );
+	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBufferSubDataARB( GL_UNIFORM_BUFFER, GetOffset(), (GLsizeiptrARB)numBytes, joints );
 }
 
 /*
@@ -783,11 +784,11 @@ float * idJointBuffer::MapBuffer( bufferMapType_t mapType ) const {
 
 	void * buffer = NULL;
 
-	qglBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
 	numBytes = numBytes;
 	assert( GetOffset() == 0 );
-	//buffer = qglMapBufferARB( GL_UNIFORM_BUFFER, GL_WRITE_ONLY_ARB );
-	buffer = qglMapBufferRange( GL_UNIFORM_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
+	//buffer = glMapBufferARB( GL_UNIFORM_BUFFER, GL_WRITE_ONLY_ARB );
+	buffer = glMapBufferRange( GL_UNIFORM_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
 	if ( buffer != NULL ) {
 		buffer = (byte *)buffer + GetOffset();
 	}
@@ -809,8 +810,8 @@ void idJointBuffer::UnmapBuffer() const {
 	assert( apiObject != NULL );
 	assert( IsMapped() );
 
-	qglBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
-	if ( !qglUnmapBufferARB( GL_UNIFORM_BUFFER ) ) {
+	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	if ( !glUnmapBufferARB( GL_UNIFORM_BUFFER ) ) {
 		idLib::Printf( "idJointBuffer::UnmapBuffer failed\n" );
 	}
 

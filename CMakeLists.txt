@@ -23,26 +23,28 @@ file(GLOB_RECURSE SWF src/swf/*.cpp src/swf/*.h)
 file(GLOB SYS src/sys/*.cpp src/sys/*.h)
 file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
 file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
+file(GLOB_RECURSE SFRenderer src/sfRenderer/*.cpp src/sfRenderer/*.h)
 
 set(D3Source
-    ${D3GAME}
-    ${D3GAME_AI}
-    ${D3GAME_ANIM}
-    ${D3GAME_GAMESYS}
-    ${D3GAME_MENUS}
-    ${D3GAME_PHYS}
-    ${D3GAME_SCRIPT}
-    ${FRAMEWORK}
-    ${IDLIB}
-    ${AAS}
-    ${CM}
-    ${RENDERER}
-    ${SOUND}
-    ${SWF}
-    ${SYS}
-    ${SYSWIN}
-    ${UI}
-    )
+        ${D3GAME}
+        ${D3GAME_AI}
+        ${D3GAME_ANIM}
+        ${D3GAME_GAMESYS}
+        ${D3GAME_MENUS}
+        ${D3GAME_PHYS}
+        ${D3GAME_SCRIPT}
+        ${FRAMEWORK}
+        ${IDLIB}
+        ${AAS}
+        ${CM}
+        ${RENDERER}
+        ${SOUND}
+        ${SWF}
+        ${SYS}
+        ${SYSWIN}
+        ${UI}
+        ${SFRenderer}
+)
 
 # Set the C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -56,11 +58,13 @@ add_compile_definitions(__DOOM__)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(_USE_32BIT_TIME_T)
+#add_compile_definitions(GLEW_STATIC)
 
-include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build)
-link_directories(external/openal/build/Release external/jpeg-6/build/Release external/zlib/build/Release)
+include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build external/glew/include external/glfw/include)
 
-set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32)
+link_directories(external/openal/build/Release external/jpeg-6/build/Release external/zlib/build/Release external/glew/lib external/glfw/build/src/Release)
+
+set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32 glfw3)
 
 add_executable(${PROJECT_NAME} WIN32 ${D3Source})
 
@@ -68,6 +72,6 @@ target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
 target_link_libraries(${PROJECT_NAME} ${LIBS})
 
-#set_target_properties(${PROJECT_NAME} PROPERTIES
-#LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
-#)
+set_target_properties(${PROJECT_NAME} PROPERTIES
+        LINK_FLAGS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup"
+)
