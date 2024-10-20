@@ -57,7 +57,6 @@ set(CMAKE_C_STANDARD_REQUIRED True)
 add_compile_definitions(__DOOM__)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
-add_compile_definitions(_USE_32BIT_TIME_T)
 #add_compile_definitions(GLEW_STATIC)
 
 include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build external/glew/include external/glfw/include)

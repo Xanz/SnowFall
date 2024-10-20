@@ -40,12 +40,13 @@ If you have questions concerning this license or the applicable additional terms
 ===============================================================================
 */
 
-class idSIMD {
+class idSIMD
+{
 public:
-	static void			Init();
-	static void			InitProcessor( const char *module, bool forceGeneric );
-	static void			Shutdown();
-	static void			Test_f( const class idCmdArgs &args );
+	static void Init();
+	static void InitProcessor(const char* module, bool forceGeneric);
+	static void Shutdown();
+	static void Test_f(const class idCmdArgs& args);
 };
 
 
@@ -57,7 +58,7 @@ public:
 ===============================================================================
 */
 
-#define VPCALL __fastcall
+#define VPCALL
 
 class idVec2;
 class idVec3;
@@ -77,33 +78,41 @@ class idJointQuat;
 class idJointMat;
 struct dominantTri_t;
 
-class idSIMDProcessor {
+class idSIMDProcessor
+{
 public:
-									idSIMDProcessor() { cpuid = CPUID_NONE; }
+	idSIMDProcessor() { cpuid = CPUID_NONE; }
 
-	cpuid_t							cpuid;
+	cpuid_t cpuid;
 
-	virtual const char * VPCALL		GetName() const = 0;
+	virtual const char* VPCALL GetName() const = 0;
 
-	virtual	void VPCALL MinMax( float &min,			float &max,				const float *src,		const int count ) = 0;
-	virtual	void VPCALL MinMax( idVec2 &min,		idVec2 &max,			const idVec2 *src,		const int count ) = 0;
-	virtual	void VPCALL MinMax( idVec3 &min,		idVec3 &max,			const idVec3 *src,		const int count ) = 0;
-	virtual	void VPCALL MinMax( idVec3 &min,		idVec3 &max,			const idDrawVert *src,	const int count ) = 0;
-	virtual	void VPCALL MinMax( idVec3 &min,		idVec3 &max,			const idDrawVert *src,	const triIndex_t *indexes,		const int count ) = 0;
+	virtual void VPCALL MinMax(float& min, float& max, const float* src, const int count) = 0;
+	virtual void VPCALL MinMax(idVec2& min, idVec2& max, const idVec2* src, const int count) = 0;
+	virtual void VPCALL MinMax(idVec3& min, idVec3& max, const idVec3* src, const int count) = 0;
+	virtual void VPCALL MinMax(idVec3& min, idVec3& max, const idDrawVert* src, const int count) = 0;
+	virtual void VPCALL MinMax(idVec3& min, idVec3& max, const idDrawVert* src, const triIndex_t* indexes,
+	                           const int count) = 0;
 
-	virtual void VPCALL Memcpy( void *dst,			const void *src,		const int count ) = 0;
-	virtual void VPCALL Memset( void *dst,			const int val,			const int count ) = 0;
+	virtual void VPCALL Memcpy(void* dst, const void* src, const int count) = 0;
+	virtual void VPCALL Memset(void* dst, const int val, const int count) = 0;
 
 	// animation
-	virtual void VPCALL BlendJoints( idJointQuat *joints, const idJointQuat *blendJoints, const float lerp, const int *index, const int numJoints ) = 0;
-	virtual void VPCALL BlendJointsFast( idJointQuat *joints, const idJointQuat *blendJoints, const float lerp, const int *index, const int numJoints ) = 0;
-	virtual void VPCALL ConvertJointQuatsToJointMats( idJointMat *jointMats, const idJointQuat *jointQuats, const int numJoints ) = 0;
-	virtual void VPCALL ConvertJointMatsToJointQuats( idJointQuat *jointQuats, const idJointMat *jointMats, const int numJoints ) = 0;
-	virtual void VPCALL TransformJoints( idJointMat *jointMats, const int *parents, const int firstJoint, const int lastJoint ) = 0;
-	virtual void VPCALL UntransformJoints( idJointMat *jointMats, const int *parents, const int firstJoint, const int lastJoint ) = 0;
+	virtual void VPCALL BlendJoints(idJointQuat* joints, const idJointQuat* blendJoints, const float lerp,
+	                                const int* index, const int numJoints) = 0;
+	virtual void VPCALL BlendJointsFast(idJointQuat* joints, const idJointQuat* blendJoints, const float lerp,
+	                                    const int* index, const int numJoints) = 0;
+	virtual void VPCALL ConvertJointQuatsToJointMats(idJointMat* jointMats, const idJointQuat* jointQuats,
+	                                                 const int numJoints) = 0;
+	virtual void VPCALL ConvertJointMatsToJointQuats(idJointQuat* jointQuats, const idJointMat* jointMats,
+	                                                 const int numJoints) = 0;
+	virtual void VPCALL TransformJoints(idJointMat* jointMats, const int* parents, const int firstJoint,
+	                                    const int lastJoint) = 0;
+	virtual void VPCALL UntransformJoints(idJointMat* jointMats, const int* parents, const int firstJoint,
+	                                      const int lastJoint) = 0;
 };
 
 // pointer to SIMD processor
-extern idSIMDProcessor *SIMDProcessor;
+extern idSIMDProcessor* SIMDProcessor;
 
 #endif /* !__MATH_SIMD_H__ */

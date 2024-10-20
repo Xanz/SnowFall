@@ -174,7 +174,7 @@ void RB_DrawElementsWithCounters(const drawSurf_t* surf)
 		}
 		indexBuffer = &vertexCache.frameData[vertexCache.drawListNum].indexBuffer;
 	}
-	const int indexOffset = (int)(ibHandle >> VERTCACHE_OFFSET_SHIFT) & VERTCACHE_OFFSET_MASK;
+	const GLintptr indexOffset = (GLintptr)(ibHandle >> VERTCACHE_OFFSET_SHIFT) & VERTCACHE_OFFSET_MASK;
 
 	RENDERLOG_PRINTF("Binding Buffers: %p:%i %p:%i\n", vertexBuffer, vertOffset, indexBuffer, indexOffset);
 
@@ -204,24 +204,24 @@ void RB_DrawElementsWithCounters(const drawSurf_t* surf)
 		}
 		assert(( jointBuffer.GetOffset() & ( glConfig.uniformBufferOffsetAlignment - 1 ) ) == 0);
 
-		const GLuint ubo = reinterpret_cast<GLuint>(jointBuffer.GetAPIObject());
+		const GLintptr ubo = jointBuffer.GetAPIObject();
 		glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, jointBuffer.GetOffset(),
 		                  jointBuffer.GetNumJoints() * sizeof(idJointMat));
 	}
 
 	renderProgManager.CommitUniforms();
 
-	if (backEnd.glState.currentIndexBuffer != (GLuint)indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool())
+	if (backEnd.glState.currentIndexBuffer != (GLintptr)indexBuffer->GetAPIObject() || !r_useStateCaching.GetBool())
 	{
-		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, (GLuint)indexBuffer->GetAPIObject());
-		backEnd.glState.currentIndexBuffer = (GLuint)indexBuffer->GetAPIObject();
+		glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, (GLintptr)indexBuffer->GetAPIObject());
+		backEnd.glState.currentIndexBuffer = (GLintptr)indexBuffer->GetAPIObject();
 	}
 
-	if ((backEnd.glState.vertexLayout != LAYOUT_DRAW_VERT) || (backEnd.glState.currentVertexBuffer != (GLuint)
+	if ((backEnd.glState.vertexLayout != LAYOUT_DRAW_VERT) || (backEnd.glState.currentVertexBuffer != (GLintptr)
 		vertexBuffer->GetAPIObject()) || !r_useStateCaching.GetBool())
 	{
-		glBindBufferARB(GL_ARRAY_BUFFER_ARB, (GLuint)vertexBuffer->GetAPIObject());
-		backEnd.glState.currentVertexBuffer = (GLuint)vertexBuffer->GetAPIObject();
+		glBindBufferARB(GL_ARRAY_BUFFER_ARB, (GLintptr)vertexBuffer->GetAPIObject());
+		backEnd.glState.currentVertexBuffer = (GLintptr)vertexBuffer->GetAPIObject();
 
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_VERTEX);
 		glEnableVertexAttribArrayARB(PC_ATTRIB_INDEX_NORMAL);
@@ -1737,7 +1737,7 @@ static void RB_StencilShadowPass(const drawSurf_t* drawSurfs, const viewLight_t*
 			}
 			assert(( jointBuffer.GetOffset() & ( glConfig.uniformBufferOffsetAlignment - 1 ) ) == 0);
 
-			const GLuint ubo = reinterpret_cast<GLuint>(jointBuffer.GetAPIObject());
+			const GLuint ubo = static_cast<GLuint>(jointBuffer.GetAPIObject());
 			glBindBufferRange(GL_UNIFORM_BUFFER, 0, ubo, jointBuffer.GetOffset(),
 			                  jointBuffer.GetNumJoints() * sizeof(idJointMat));
 

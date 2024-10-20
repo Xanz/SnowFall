@@ -5,26 +5,26 @@ git submodule update
 
 echo "GLFW build"
 pushd "external/glfw"
-cmake -DBUILD_SHARED_LIBS=OFF -DGLFW_BUILD_EXAMPLES=OFF -A Win32 -B build -S .
+cmake -DBUILD_SHARED_LIBS=OFF -DGLFW_BUILD_EXAMPLES=OFF -A x64 -B build -S .
 cmake --build ./build --config Release
 popd
 
 echo "zlib build"
 pushd "external/zlib"
-cmake -B build -S . -A Win32 -DBUILD_SHARED_LIBS=OFF
+cmake -B build -S . -A x64 -DBUILD_SHARED_LIBS=OFF
 cmake --build ./build --config Release
 popd
 
 echo "JPEG-6 build"
 pushd "external/jpeg-6"
-cmake -B build -S . -A Win32
+cmake -B build -S . -A x64
 cmake --build ./build --config Release
 popd
 
 
 echo "OpenAL build"
 pushd "external/openal"
-cmake -B build -S . -A Win32
+cmake -B build -S . -A x64
 cmake --build ./build --config Release
 popd
 
