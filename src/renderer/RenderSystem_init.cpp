@@ -1572,10 +1572,6 @@ void GfxInfo_f(const idCmdArgs& args)
 	common->Printf("GL_MAX_TEXTURE_COORDS_ARB: %d\n", glConfig.maxTextureCoords);
 	common->Printf("GL_MAX_TEXTURE_IMAGE_UNITS_ARB: %d\n", glConfig.maxTextureImageUnits);
 
-	// print all the display adapters, monitors, and video modes
-	void DumpAllDisplayDevices();
-	DumpAllDisplayDevices();
-
 	common->Printf("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits,
 	               glConfig.stencilBits);
 	common->Printf("MODE: %d, %d x %d %s hz:", r_vidMode.GetInteger(), renderSystem->GetWidth(),

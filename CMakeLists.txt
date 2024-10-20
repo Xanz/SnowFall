@@ -54,7 +54,6 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_C_STANDARD_REQUIRED True)
 
-add_compile_definitions(__DOOM__)
 add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 #add_compile_definitions(GLEW_STATIC)
@@ -65,7 +64,7 @@ link_directories(external/openal/build/Release external/jpeg-6/build/Release ext
 
 set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32 glfw3)
 
-add_executable(${PROJECT_NAME} WIN32 ${D3Source})
+add_executable(${PROJECT_NAME} ${D3Source})
 
 target_precompile_headers(${PROJECT_NAME} PRIVATE src/idLib/precompiled.h)
 
