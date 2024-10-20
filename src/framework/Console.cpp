@@ -39,7 +39,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #define	COMMAND_HISTORY			64
 
-const char* VERSION_NUMBER = "0.0.6";
+const char* VERSION_NUMBER = "0.0.7";
 
 struct overlayText_t
 {

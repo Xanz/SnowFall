@@ -1,4 +1,4 @@
-# SnowFall Engine 0.0.6
+# SnowFall Engine 0.0.7
 
 SnowFall Engine or SFEngine is a fork of the BFG engine. The overall goal is to move the engine to a point that
 standalone games can be more easily created and modernize the dated tooling associated with Id Tech. I will do this by
@@ -11,7 +11,7 @@ entity counts/larger worlds.
 - CMake
 - Lightweight
 - OpenGL renderer
-- 32 bit support
+- 64 bit support
 - Raw input support
 
 ## Supported Platforms
