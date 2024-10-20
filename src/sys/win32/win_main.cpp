@@ -616,7 +616,7 @@ int Sys_ListFiles(const char* directory, const char* extension, idStrList& list)
 {
 	idStr search;
 	struct _finddata_t findinfo;
-	int findhandle;
+	intptr_t findhandle;
 	int flag;
 
 	if (!extension)
@@ -935,10 +935,10 @@ DLL Loading
 Sys_DLL_Load
 =====================
 */
-int Sys_DLL_Load(const char* dllName)
+intptr_t Sys_DLL_Load(const char* dllName)
 {
 	HINSTANCE libHandle = LoadLibrary(dllName);
-	return (int)libHandle;
+	return (intptr_t)libHandle;
 }
 
 /*
@@ -946,9 +946,9 @@ int Sys_DLL_Load(const char* dllName)
 Sys_DLL_GetProcAddress
 =====================
 */
-void* Sys_DLL_GetProcAddress(int dllHandle, const char* procName)
+void* Sys_DLL_GetProcAddress(intptr_t dllHandle, const char* procName)
 {
-	return GetProcAddress((HINSTANCE)dllHandle, procName);
+	return (void*)GetProcAddress((HINSTANCE)dllHandle, procName);
 }
 
 /*
@@ -956,7 +956,7 @@ void* Sys_DLL_GetProcAddress(int dllHandle, const char* procName)
 Sys_DLL_Unload
 =====================
 */
-void Sys_DLL_Unload(int dllHandle)
+void Sys_DLL_Unload(intptr_t dllHandle)
 {
 	if (!dllHandle)
 	{
@@ -1464,21 +1464,6 @@ void TestChkStk()
 
 /*
 ====================
-HackChkStk
-====================
-*/
-void HackChkStk()
-{
-	DWORD old;
-	VirtualProtect(_chkstk, 6, PAGE_EXECUTE_READWRITE, &old);
-	*(byte*)_chkstk = 0xe9;
-	*(int*)((int)_chkstk + 1) = (int)clrstk - (int)_chkstk - 5;
-
-	TestChkStk();
-}
-
-/*
-====================
 GetExceptionCodeInfo
 ====================
 */
@@ -1579,79 +1564,6 @@ void EmailCrashReport(LPSTR messageText)
 	}
 }
 
-int Sys_FPU_PrintStateFlags(char* ptr, int ctrl, int stat, int tags, int inof, int inse, int opof, int opse);
-
-/*
-====================
-_except_handler
-====================
-*/
-EXCEPTION_DISPOSITION __cdecl _except_handler(struct _EXCEPTION_RECORD* ExceptionRecord, void* EstablisherFrame,
-                                              struct _CONTEXT* ContextRecord, void* DispatcherContext)
-{
-	static char msg[8192];
-	char FPUFlags[2048];
-
-	Sys_FPU_PrintStateFlags(FPUFlags, ContextRecord->FloatSave.ControlWord,
-	                        ContextRecord->FloatSave.StatusWord,
-	                        ContextRecord->FloatSave.TagWord,
-	                        ContextRecord->FloatSave.ErrorOffset,
-	                        ContextRecord->FloatSave.ErrorSelector,
-	                        ContextRecord->FloatSave.DataOffset,
-	                        ContextRecord->FloatSave.DataSelector);
-
-
-	sprintf(msg,
-	        "Please describe what you were doing when DOOM 3 crashed!\n"
-	        "If this text did not pop into your email client please copy and email it to programmers@idsoftware.com\n"
-	        "\n"
-	        "-= FATAL EXCEPTION =-\n"
-	        "\n"
-	        "%s\n"
-	        "\n"
-	        "0x%x at address 0x%08p\n"
-	        "\n"
-	        "%s\n"
-	        "\n"
-	        "EAX = 0x%08x EBX = 0x%08x\n"
-	        "ECX = 0x%08x EDX = 0x%08x\n"
-	        "ESI = 0x%08x EDI = 0x%08x\n"
-	        "EIP = 0x%08x ESP = 0x%08x\n"
-	        "EBP = 0x%08x EFL = 0x%08x\n"
-	        "\n"
-	        "CS = 0x%04x\n"
-	        "SS = 0x%04x\n"
-	        "DS = 0x%04x\n"
-	        "ES = 0x%04x\n"
-	        "FS = 0x%04x\n"
-	        "GS = 0x%04x\n"
-	        "\n"
-	        "%s\n",
-	        com_version.GetString(),
-	        ExceptionRecord->ExceptionCode,
-	        ExceptionRecord->ExceptionAddress,
-	        GetExceptionCodeInfo(ExceptionRecord->ExceptionCode),
-	        ContextRecord->Eax, ContextRecord->Ebx,
-	        ContextRecord->Ecx, ContextRecord->Edx,
-	        ContextRecord->Esi, ContextRecord->Edi,
-	        ContextRecord->Eip, ContextRecord->Esp,
-	        ContextRecord->Ebp, ContextRecord->EFlags,
-	        ContextRecord->SegCs,
-	        ContextRecord->SegSs,
-	        ContextRecord->SegDs,
-	        ContextRecord->SegEs,
-	        ContextRecord->SegFs,
-	        ContextRecord->SegGs,
-	        FPUFlags
-	);
-
-	EmailCrashReport(msg);
-	common->FatalError(msg);
-
-	// Tell the OS to restart the faulting instruction
-	return ExceptionContinueExecution;
-}
-
 #define TEST_FPU_EXCEPTIONS	/*	FPU_EXCEPTION_INVALID_OPERATION |		*/	\
 							/*	FPU_EXCEPTION_DENORMALIZED_OPERAND |	*/	\
 							/*	FPU_EXCEPTION_DIVIDE_BY_ZERO |			*/	\
@@ -1680,43 +1592,6 @@ int main(int argc, char* argv[])
 	}
 }
 
-/*
-====================
-clrstk
-
-I tried to get the run time to call this at every function entry, but
-====================
-*/
-static int parmBytes;
-
-__declspec( naked ) void clrstk()
-{
-	// eax = bytes to add to stack
-	__asm {
-		mov [parmBytes],eax
-		neg eax ; compute new stack pointer in eax
-		add eax,esp
-		add eax,4
-		xchg eax,esp
-		mov eax,dword ptr [eax] ; copy the return address
-		push eax
-
-		; clear to zero
-		push edi
-		push ecx
-		mov edi,esp
-		add edi,12
-		mov ecx,[parmBytes]
-		shr ecx,2
-		xor eax,eax
-		cld
-		rep stosd
-		pop ecx
-		pop edi
-
-		ret
-		}
-}
 
 /*
 ==================

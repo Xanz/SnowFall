@@ -35,15 +35,16 @@ If you have questions concerning this license or the applicable additional terms
 //
 //===============================================================
 
-float	idVecX::temp[VECX_MAX_TEMP+4];
-float *	idVecX::tempPtr = (float *) ( ( (int) idVecX::temp + 15 ) & ~15 );
-int		idVecX::tempIndex = 0;
+float idVecX::temp[VECX_MAX_TEMP + 4];
+float* idVecX::tempPtr = (float*)(((intptr_t)idVecX::temp + 15) & ~15);
+int idVecX::tempIndex = 0;
 
 /*
 =============
 idVecX::ToString
 =============
 */
-const char *idVecX::ToString( int precision ) const {
-	return idStr::FloatArrayToString( ToFloatPtr(), GetDimension(), precision );
+const char* idVecX::ToString(int precision) const
+{
+	return idStr::FloatArrayToString(ToFloatPtr(), GetDimension(), precision);
 }

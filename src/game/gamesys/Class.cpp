@@ -46,9 +46,9 @@ instancing of objects.
 ***********************************************************************/
 
 // this is the head of a singly linked list of all the idTypes
-static idTypeInfo				*typelist = NULL;
-static idHierarchy<idTypeInfo>	classHierarchy;
-static int						eventCallbackMemory	= 0;
+static idTypeInfo* typelist = NULL;
+static idHierarchy<idTypeInfo> classHierarchy;
+static int eventCallbackMemory = 0;
 
 /*
 ================
@@ -61,43 +61,50 @@ initialized in any order, the constructor must handle the case that subclasses
 are initialized before superclasses.
 ================
 */
-idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFunc<idClass> *eventCallbacks, idClass *( *CreateInstance )(), 
-	void ( idClass::*Spawn )(), void ( idClass::*Save )( idSaveGame *savefile ) const, void ( idClass::*Restore )( idRestoreGame *savefile ) ) {
+idTypeInfo::idTypeInfo(const char* classname, const char* superclass, idEventFunc<idClass>* eventCallbacks,
+                       idClass*(*CreateInstance)(),
+                       void (idClass::*Spawn)(), void (idClass::*Save)(idSaveGame* savefile) const,
+                       void (idClass::*Restore)(idRestoreGame* savefile))
+{
+	idTypeInfo* type;
+	idTypeInfo** insert;
 
-	idTypeInfo *type;
-	idTypeInfo **insert;
-
-	this->classname			= classname;
-	this->superclass		= superclass;
-	this->eventCallbacks	= eventCallbacks;
-	this->eventMap			= NULL;
-	this->Spawn				= Spawn;
-	this->Save				= Save;
-	this->Restore			= Restore;
-	this->CreateInstance	= CreateInstance;
-	this->super				= idClass::GetClass( superclass );
-	this->freeEventMap		= false;
-	typeNum					= 0;
-	lastChild				= 0;
+	this->classname = classname;
+	this->superclass = superclass;
+	this->eventCallbacks = eventCallbacks;
+	this->eventMap = NULL;
+	this->Spawn = Spawn;
+	this->Save = Save;
+	this->Restore = Restore;
+	this->CreateInstance = CreateInstance;
+	this->super = idClass::GetClass(superclass);
+	this->freeEventMap = false;
+	typeNum = 0;
+	lastChild = 0;
 
 	// Check if any subclasses were initialized before their superclass
-	for( type = typelist; type != NULL; type = type->next ) {
-		if ( ( type->super == NULL ) && !idStr::Cmp( type->superclass, this->classname ) && 
-			idStr::Cmp( type->classname, "idClass" ) ) {
-			type->super	= this;
+	for (type = typelist; type != NULL; type = type->next)
+	{
+		if ((type->super == NULL) && !idStr::Cmp(type->superclass, this->classname) &&
+			idStr::Cmp(type->classname, "idClass"))
+		{
+			type->super = this;
 		}
 	}
 
 	// Insert sorted
-	for ( insert = &typelist; *insert; insert = &(*insert)->next ) {
-		assert( idStr::Cmp( classname, (*insert)->classname ) );
-		if ( idStr::Cmp( classname, (*insert)->classname ) < 0 ) {
+	for (insert = &typelist; *insert; insert = &(*insert)->next)
+	{
+		assert(idStr::Cmp( classname, (*insert)->classname ));
+		if (idStr::Cmp(classname, (*insert)->classname) < 0)
+		{
 			next = *insert;
 			*insert = this;
 			break;
 		}
 	}
-	if ( !*insert ) {
+	if (!*insert)
+	{
 		*insert = this;
 		next = NULL;
 	}
@@ -108,7 +115,8 @@ idTypeInfo::idTypeInfo( const char *classname, const char *superclass, idEventFu
 idTypeInfo::~idTypeInfo
 ================
 */
-idTypeInfo::~idTypeInfo() {
+idTypeInfo::~idTypeInfo()
+{
 	Shutdown();
 }
 
@@ -116,43 +124,51 @@ idTypeInfo::~idTypeInfo() {
 ================
 idTypeInfo::Init
 
-Initializes the event callback table for the class.  Creates a 
+Initializes the event callback table for the class.  Creates a
 table for fast lookups of event functions.  Should only be called once.
 ================
 */
-void idTypeInfo::Init() {
-	idTypeInfo				*c;
-	idEventFunc<idClass>	*def;
-	int						ev;
-	int						i;
-	bool					*set;
-	int						num;
+void idTypeInfo::Init()
+{
+	idTypeInfo* c;
+	idEventFunc<idClass>* def;
+	int ev;
+	int i;
+	bool* set;
+	int num;
 
-	if ( eventMap ) {
+	if (eventMap)
+	{
 		// we've already been initialized by a subclass
 		return;
 	}
 
 	// make sure our superclass is initialized first
-	if ( super && !super->eventMap ) {
+	if (super && !super->eventMap)
+	{
 		super->Init();
 	}
 
 	// add to our node hierarchy
-	if ( super ) {
-		node.ParentTo( super->node );
-	} else {
-		node.ParentTo( classHierarchy );
+	if (super)
+	{
+		node.ParentTo(super->node);
 	}
-	node.SetOwner( this );
+	else
+	{
+		node.ParentTo(classHierarchy);
+	}
+	node.SetOwner(this);
 
 	// keep track of the number of children below each class
-	for( c = super; c != NULL; c = c->super ) {
+	for (c = super; c != NULL; c = c->super)
+	{
 		c->lastChild++;
 	}
 
 	// if we're not adding any new event callbacks, we can just use our superclass's table
-	if ( ( !eventCallbacks || !eventCallbacks->event ) && super ) {
+	if ((!eventCallbacks || !eventCallbacks->event) && super)
+	{
 		eventMap = super->eventMap;
 		return;
 	}
@@ -164,33 +180,37 @@ void idTypeInfo::Init() {
 	// are events.  NOTE: could save some space by keeping track of the maximum
 	// event that the class responds to and doing range checking.
 	num = idEventDef::NumEventCommands();
-	eventMap = new (TAG_SYSTEM) eventCallback_t[ num ];
-	memset( eventMap, 0, sizeof( eventCallback_t ) * num );
-	eventCallbackMemory += sizeof( eventCallback_t ) * num;
+	eventMap = new(TAG_SYSTEM) eventCallback_t[num];
+	memset(eventMap, 0, sizeof(eventCallback_t) * num);
+	eventCallbackMemory += sizeof(eventCallback_t) * num;
 
 	// allocate temporary memory for flags so that the subclass's event callbacks
 	// override the superclass's event callback
-	set = new (TAG_SYSTEM) bool[ num ];
-	memset( set, 0, sizeof( bool ) * num );
+	set = new(TAG_SYSTEM) bool[num];
+	memset(set, 0, sizeof(bool) * num);
 
 	// go through the inheritence order and copies the event callback function into
 	// a list indexed by the event number.  This allows fast lookups of
 	// event functions.
-	for( c = this; c != NULL; c = c->super ) {
+	for (c = this; c != NULL; c = c->super)
+	{
 		def = c->eventCallbacks;
-		if ( !def ) {
+		if (!def)
+		{
 			continue;
 		}
 
 		// go through each entry until we hit the NULL terminator
-		for( i = 0; def[ i ].event != NULL; i++ )	{
-			ev = def[ i ].event->GetEventNum();
+		for (i = 0; def[i].event != NULL; i++)
+		{
+			ev = def[i].event->GetEventNum();
 
-			if ( set[ ev ] ) {
+			if (set[ev])
+			{
 				continue;
 			}
-			set[ ev ] = true;
-			eventMap[ ev ] = def[ i ].function;
+			set[ev] = true;
+			eventMap[ev] = def[i].function;
 		}
 	}
 
@@ -202,14 +222,17 @@ void idTypeInfo::Init() {
 idTypeInfo::Shutdown
 
 Should only be called when DLL or EXE is being shutdown.
-Although it cleans up any allocated memory, it doesn't bother to remove itself 
+Although it cleans up any allocated memory, it doesn't bother to remove itself
 from the class list since the program is shutting down.
 ================
 */
-void idTypeInfo::Shutdown() {
+void idTypeInfo::Shutdown()
+{
 	// free up the memory used for event lookups
-	if ( eventMap ) {
-		if ( freeEventMap ) {
+	if (eventMap)
+	{
+		if (freeEventMap)
+		{
 			delete[] eventMap;
 		}
 		eventMap = NULL;
@@ -225,34 +248,35 @@ void idTypeInfo::Shutdown() {
 
 ***********************************************************************/
 
-const idEventDef EV_Remove( "<immediateremove>", NULL );
-const idEventDef EV_SafeRemove( "remove", NULL );
+const idEventDef EV_Remove("<immediateremove>", NULL);
+const idEventDef EV_SafeRemove("remove", NULL);
 
-ABSTRACT_DECLARATION( NULL, idClass )
-	EVENT( EV_Remove,				idClass::Event_Remove )
-	EVENT( EV_SafeRemove,			idClass::Event_SafeRemove )
+ABSTRACT_DECLARATION(NULL, idClass)
+	EVENT(EV_Remove, idClass::Event_Remove)
+	EVENT(EV_SafeRemove, idClass::Event_SafeRemove)
 END_CLASS
 
 // alphabetical order
-idList<idTypeInfo *, TAG_IDCLASS>	idClass::types;
+idList<idTypeInfo*, TAG_IDCLASS> idClass::types;
 // typenum order
-idList<idTypeInfo *, TAG_IDCLASS>	idClass::typenums;
+idList<idTypeInfo*, TAG_IDCLASS> idClass::typenums;
 
-bool	idClass::initialized	= false;
-int		idClass::typeNumBits	= 0;
-int		idClass::memused		= 0;
-int		idClass::numobjects		= 0;
+bool idClass::initialized = false;
+int idClass::typeNumBits = 0;
+int idClass::memused = 0;
+int idClass::numobjects = 0;
 
 /*
 ================
 idClass::CallSpawn
 ================
 */
-void idClass::CallSpawn() {
-	idTypeInfo *type;
+void idClass::CallSpawn()
+{
+	idTypeInfo* type;
 
 	type = GetType();
-	CallSpawnFunc( type );
+	CallSpawnFunc(type);
 }
 
 /*
@@ -260,19 +284,22 @@ void idClass::CallSpawn() {
 idClass::CallSpawnFunc
 ================
 */
-classSpawnFunc_t idClass::CallSpawnFunc( idTypeInfo *cls ) {
+classSpawnFunc_t idClass::CallSpawnFunc(idTypeInfo* cls)
+{
 	classSpawnFunc_t func;
 
-	if ( cls->super ) {
-		func = CallSpawnFunc( cls->super );
-		if ( func == cls->Spawn ) {
+	if (cls->super)
+	{
+		func = CallSpawnFunc(cls->super);
+		if (func == cls->Spawn)
+		{
 			// don't call the same function twice in a row.
 			// this can happen when subclasses don't have their own spawn function.
 			return func;
 		}
 	}
 
-	( this->*cls->Spawn )();
+	(this->*cls->Spawn)();
 
 	return cls->Spawn;
 }
@@ -282,7 +309,8 @@ classSpawnFunc_t idClass::CallSpawnFunc( idTypeInfo *cls ) {
 idClass::FindUninitializedMemory
 ================
 */
-void idClass::FindUninitializedMemory() {
+void idClass::FindUninitializedMemory()
+{
 #ifdef ID_DEBUG_UNINITIALIZED_MEMORY
 	unsigned long *ptr = ( ( unsigned long * )this ) - 1;
 	int size = *ptr;
@@ -302,7 +330,8 @@ void idClass::FindUninitializedMemory() {
 idClass::Spawn
 ================
 */
-void idClass::Spawn() {
+void idClass::Spawn()
+{
 }
 
 /*
@@ -312,8 +341,9 @@ idClass::~idClass
 Destructor for object.  Cancels any events that depend on this object.
 ================
 */
-idClass::~idClass() {
-	idEvent::CancelEvents( this );
+idClass::~idClass()
+{
+	idEvent::CancelEvents(this);
 }
 
 /*
@@ -321,8 +351,9 @@ idClass::~idClass() {
 idClass::DisplayInfo_f
 ================
 */
-void idClass::DisplayInfo_f( const idCmdArgs &args ) {
-	gameLocal.Printf( "Class memory status: %i bytes allocated in %i objects\n", memused, numobjects );
+void idClass::DisplayInfo_f(const idCmdArgs& args)
+{
+	gameLocal.Printf("Class memory status: %i bytes allocated in %i objects\n", memused, numobjects);
 }
 
 /*
@@ -330,19 +361,22 @@ void idClass::DisplayInfo_f( const idCmdArgs &args ) {
 idClass::ListClasses_f
 ================
 */
-void idClass::ListClasses_f( const idCmdArgs &args ) {
-	int			i;
-	idTypeInfo *type;
+void idClass::ListClasses_f(const idCmdArgs& args)
+{
+	int i;
+	idTypeInfo* type;
 
-	gameLocal.Printf( "%-24s %-24s %-6s %-6s\n", "Classname", "Superclass", "Type", "Subclasses" );
-	gameLocal.Printf( "----------------------------------------------------------------------\n" );
+	gameLocal.Printf("%-24s %-24s %-6s %-6s\n", "Classname", "Superclass", "Type", "Subclasses");
+	gameLocal.Printf("----------------------------------------------------------------------\n");
 
-	for( i = 0; i < types.Num(); i++ ) {
-		type = types[ i ];
-		gameLocal.Printf( "%-24s %-24s %6d %6d\n", type->classname, type->superclass, type->typeNum, type->lastChild - type->typeNum );
+	for (i = 0; i < types.Num(); i++)
+	{
+		type = types[i];
+		gameLocal.Printf("%-24s %-24s %6d %6d\n", type->classname, type->superclass, type->typeNum,
+		                 type->lastChild - type->typeNum);
 	}
 
-	gameLocal.Printf( "...%d classes", types.Num() );
+	gameLocal.Printf("...%d classes", types.Num());
 }
 
 /*
@@ -350,12 +384,14 @@ void idClass::ListClasses_f( const idCmdArgs &args ) {
 idClass::CreateInstance
 ================
 */
-idClass *idClass::CreateInstance( const char *name ) {
-	const idTypeInfo	*type;
-	idClass				*obj;
+idClass* idClass::CreateInstance(const char* name)
+{
+	const idTypeInfo* type;
+	idClass* obj;
 
-	type = idClass::GetClass( name );
-	if ( !type ) {
+	type = idClass::GetClass(name);
+	if (!type)
+	{
 		return NULL;
 	}
 
@@ -373,48 +409,53 @@ their event callback table for the associated class.  This should only be called
 once during the execution of the program or DLL.
 ================
 */
-void idClass::Init() {
-	idTypeInfo	*c;
-	int			num;
+void idClass::Init()
+{
+	idTypeInfo* c;
+	int num;
 
-	gameLocal.Printf( "Initializing class hierarchy\n" );
+	gameLocal.Printf("Initializing class hierarchy\n");
 
-	if ( initialized ) {
-		gameLocal.Printf( "...already initialized\n" );
+	if (initialized)
+	{
+		gameLocal.Printf("...already initialized\n");
 		return;
 	}
 
 	// init the event callback tables for all the classes
-	for( c = typelist; c != NULL; c = c->next ) {
+	for (c = typelist; c != NULL; c = c->next)
+	{
 		c->Init();
 	}
 
 	// number the types according to the class hierarchy so we can quickly determine if a class
 	// is a subclass of another
 	num = 0;
-	for( c = classHierarchy.GetNext(); c != NULL; c = c->node.GetNext(), num++ ) {
-        c->typeNum = num;
+	for (c = classHierarchy.GetNext(); c != NULL; c = c->node.GetNext(), num++)
+	{
+		c->typeNum = num;
 		c->lastChild += num;
 	}
 
 	// number of bits needed to send types over network
-	typeNumBits = idMath::BitsForInteger( num );
+	typeNumBits = idMath::BitsForInteger(num);
 
 	// create a list of the types so we can do quick lookups
 	// one list in alphabetical order, one in typenum order
-	types.SetGranularity( 1 );
-	types.SetNum( num );
-	typenums.SetGranularity( 1 );
-	typenums.SetNum( num );
+	types.SetGranularity(1);
+	types.SetNum(num);
+	typenums.SetGranularity(1);
+	typenums.SetNum(num);
 	num = 0;
-	for( c = typelist; c != NULL; c = c->next, num++ ) {
-		types[ num ] = c;
-		typenums[ c->typeNum ] = c;
+	for (c = typelist; c != NULL; c = c->next, num++)
+	{
+		types[num] = c;
+		typenums[c->typeNum] = c;
 	}
 
 	initialized = true;
 
-	gameLocal.Printf( "...%i classes, %i bytes for event callbacks\n", types.Num(), eventCallbackMemory );
+	gameLocal.Printf("...%i classes, %i bytes for event callbacks\n", types.Num(), eventCallbackMemory);
 }
 
 /*
@@ -422,10 +463,12 @@ void idClass::Init() {
 idClass::Shutdown
 ================
 */
-void idClass::Shutdown() {
-	idTypeInfo	*c;
+void idClass::Shutdown()
+{
+	idTypeInfo* c;
 
-	for( c = typelist; c != NULL; c = c->next ) {
+	for (c = typelist; c != NULL; c = c->next)
+	{
 		c->Shutdown();
 	}
 	types.Clear();
@@ -439,11 +482,12 @@ void idClass::Shutdown() {
 idClass::new
 ================
 */
-void * idClass::operator new( size_t s ) {
-	int *p;
+void* idClass::operator new(size_t s)
+{
+	int* p;
 
-	s += sizeof( int );
-	p = (int *)Mem_Alloc( s, TAG_IDCLASS );
+	s += sizeof(int);
+	p = (int*)Mem_Alloc(s, TAG_IDCLASS);
 	*p = s;
 	memused += s;
 	numobjects++;
@@ -456,14 +500,16 @@ void * idClass::operator new( size_t s ) {
 idClass::delete
 ================
 */
-void idClass::operator delete( void *ptr ) {
-	int *p;
+void idClass::operator delete(void* ptr)
+{
+	int* p;
 
-	if ( ptr ) {
-		p = ( ( int * )ptr ) - 1;
+	if (ptr)
+	{
+		p = ((int*)ptr) - 1;
 		memused -= *p;
 		numobjects--;
-        Mem_Free( p );
+		Mem_Free(p);
 	}
 }
 
@@ -475,33 +521,45 @@ Returns the idTypeInfo for the name of the class passed in.  This is a static fu
 so it must be called as idClass::GetClass( classname )
 ================
 */
-idTypeInfo *idClass::GetClass( const char *name ) {
-	idTypeInfo	*c;
-	int			order;
-	int			mid;
-	int			min;
-	int			max;
+idTypeInfo* idClass::GetClass(const char* name)
+{
+	idTypeInfo* c;
+	int order;
+	int mid;
+	int min;
+	int max;
 
-	if ( !initialized ) {
+	if (!initialized)
+	{
 		// idClass::Init hasn't been called yet, so do a slow lookup
-		for( c = typelist; c != NULL; c = c->next ) {
-			if ( !idStr::Cmp( c->classname, name ) ) {
+		for (c = typelist; c != NULL; c = c->next)
+		{
+			if (!idStr::Cmp(c->classname, name))
+			{
 				return c;
 			}
 		}
-	} else {
+	}
+	else
+	{
 		// do a binary search through the list of types
 		min = 0;
 		max = types.Num() - 1;
-		while( min <= max ) {
-			mid = ( min + max ) / 2;
-			c = types[ mid ];
-			order = idStr::Cmp( c->classname, name );
-			if ( !order ) {
+		while (min <= max)
+		{
+			mid = (min + max) / 2;
+			c = types[mid];
+			order = idStr::Cmp(c->classname, name);
+			if (!order)
+			{
 				return c;
-			} else if ( order > 0 ) {
+			}
+			else if (order > 0)
+			{
 				max = mid - 1;
-			} else {
+			}
+			else
+			{
 				min = mid + 1;
 			}
 		}
@@ -515,17 +573,23 @@ idTypeInfo *idClass::GetClass( const char *name ) {
 idClass::GetType
 ================
 */
-idTypeInfo *idClass::GetType( const int typeNum ) {
-	idTypeInfo *c;
+idTypeInfo* idClass::GetType(const int typeNum)
+{
+	idTypeInfo* c;
 
-	if ( !initialized ) {
-		for( c = typelist; c != NULL; c = c->next ) {
-			if ( c->typeNum == typeNum ) {
+	if (!initialized)
+	{
+		for (c = typelist; c != NULL; c = c->next)
+		{
+			if (c->typeNum == typeNum)
+			{
 				return c;
 			}
 		}
-	} else if ( ( typeNum >= 0 ) && ( typeNum < types.Num() ) ) {
-		return typenums[ typeNum ];
+	}
+	else if ((typeNum >= 0) && (typeNum < types.Num()))
+	{
+		return typenums[typeNum];
 	}
 
 	return NULL;
@@ -538,8 +602,9 @@ idClass::GetClassname
 Returns the text classname of the object.
 ================
 */
-const char *idClass::GetClassname() const {
-	idTypeInfo *type;
+const char* idClass::GetClassname() const
+{
+	idTypeInfo* type;
 
 	type = GetType();
 	return type->classname;
@@ -552,8 +617,9 @@ idClass::GetSuperclass
 Returns the text classname of the superclass.
 ================
 */
-const char *idClass::GetSuperclass() const {
-	idTypeInfo *cls;
+const char* idClass::GetSuperclass() const
+{
+	idTypeInfo* cls;
 
 	cls = GetType();
 	return cls->superclass;
@@ -564,8 +630,9 @@ const char *idClass::GetSuperclass() const {
 idClass::CancelEvents
 ================
 */
-void idClass::CancelEvents( const idEventDef *ev ) {
-	idEvent::CancelEvents( this, ev );
+void idClass::CancelEvents(const idEventDef* ev)
+{
+	idEvent::CancelEvents(this, ev);
 }
 
 /*
@@ -573,28 +640,33 @@ void idClass::CancelEvents( const idEventDef *ev ) {
 idClass::PostEventArgs
 ================
 */
-bool idClass::PostEventArgs( const idEventDef *ev, int time, int numargs, ... ) {
-	idTypeInfo	*c;
-	idEvent		*event;
-	va_list		args;
-	
-	assert( ev );
-	
-	if ( !idEvent::initialized ) {
+bool idClass::PostEventArgs(const idEventDef* ev, int time, int numargs, ...)
+{
+	idTypeInfo* c;
+	idEvent* event;
+	va_list args;
+
+	assert(ev);
+
+	if (!idEvent::initialized)
+	{
 		return false;
 	}
 
 	c = GetType();
-	if ( !c->eventMap[ ev->GetEventNum() ] ) {
+	if (!c->eventMap[ev->GetEventNum()])
+	{
 		// we don't respond to this event, so ignore it
 		return false;
 	}
 
 	bool isReplicated = true;
 	// If this is an entity with skipReplication, we want to process the event normally even on clients.
-	if ( IsType( idEntity::Type ) ) {
-		idEntity * thisEnt = static_cast< idEntity * >( this );
-		if ( thisEnt->fl.skipReplication ) {
+	if (IsType(idEntity::Type))
+	{
+		idEntity* thisEnt = static_cast<idEntity*>(this);
+		if (thisEnt->fl.skipReplication)
+		{
 			isReplicated = false;
 		}
 	}
@@ -602,15 +674,16 @@ bool idClass::PostEventArgs( const idEventDef *ev, int time, int numargs, ... ) 
 	// we service events on the client to avoid any bad code filling up the event pool
 	// we don't want them processed usually, unless when the map is (re)loading.
 	// we allow threads to run fine, though.
-	if ( common->IsClient() && isReplicated && ( gameLocal.GameState() != GAMESTATE_STARTUP ) && !IsType( idThread::Type ) ) {
+	if (common->IsClient() && isReplicated && (gameLocal.GameState() != GAMESTATE_STARTUP) && !IsType(idThread::Type))
+	{
 		return true;
 	}
 
-	va_start( args, numargs );
-	event = idEvent::Alloc( ev, numargs, args );
-	va_end( args );
+	va_start(args, numargs);
+	event = idEvent::Alloc(ev, numargs, args);
+	va_end(args);
 
-	event->Schedule( this, c, time );
+	event->Schedule(this, c, time);
 
 	return true;
 }
@@ -620,8 +693,9 @@ bool idClass::PostEventArgs( const idEventDef *ev, int time, int numargs, ... ) 
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time ) {
-	return PostEventArgs( ev, time, 0 );
+bool idClass::PostEventMS(const idEventDef* ev, int time)
+{
+	return PostEventArgs(ev, time, 0);
 }
 
 /*
@@ -629,8 +703,9 @@ bool idClass::PostEventMS( const idEventDef *ev, int time ) {
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1 ) {
-	return PostEventArgs( ev, time, 1, &arg1 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1)
+{
+	return PostEventArgs(ev, time, 1, &arg1);
 }
 
 /*
@@ -638,8 +713,9 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1 ) {
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2 ) {
-	return PostEventArgs( ev, time, 2, &arg1, &arg2 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2)
+{
+	return PostEventArgs(ev, time, 2, &arg1, &arg2);
 }
 
 /*
@@ -647,8 +723,9 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3 ) {
-	return PostEventArgs( ev, time, 3, &arg1, &arg2, &arg3 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3)
+{
+	return PostEventArgs(ev, time, 3, &arg1, &arg2, &arg3);
 }
 
 /*
@@ -656,8 +733,10 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4 ) {
-	return PostEventArgs( ev, time, 4, &arg1, &arg2, &arg3, &arg4 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                          idEventArg arg4)
+{
+	return PostEventArgs(ev, time, 4, &arg1, &arg2, &arg3, &arg4);
 }
 
 /*
@@ -665,8 +744,10 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5 ) {
-	return PostEventArgs( ev, time, 5, &arg1, &arg2, &arg3, &arg4, &arg5 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                          idEventArg arg4, idEventArg arg5)
+{
+	return PostEventArgs(ev, time, 5, &arg1, &arg2, &arg3, &arg4, &arg5);
 }
 
 /*
@@ -674,8 +755,10 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6 ) {
-	return PostEventArgs( ev, time, 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                          idEventArg arg4, idEventArg arg5, idEventArg arg6)
+{
+	return PostEventArgs(ev, time, 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
 }
 
 /*
@@ -683,8 +766,10 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7 ) {
-	return PostEventArgs( ev, time, 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                          idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7)
+{
+	return PostEventArgs(ev, time, 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7);
 }
 
 /*
@@ -692,8 +777,10 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventMS
 ================
 */
-bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8 ) {
-	return PostEventArgs( ev, time, 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8 );
+bool idClass::PostEventMS(const idEventDef* ev, int time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                          idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8)
+{
+	return PostEventArgs(ev, time, 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8);
 }
 
 /*
@@ -701,8 +788,9 @@ bool idClass::PostEventMS( const idEventDef *ev, int time, idEventArg arg1, idEv
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time ) {
-	return PostEventArgs( ev, SEC2MS( time ), 0 );
+bool idClass::PostEventSec(const idEventDef* ev, float time)
+{
+	return PostEventArgs(ev, SEC2MS(time), 0);
 }
 
 /*
@@ -710,8 +798,9 @@ bool idClass::PostEventSec( const idEventDef *ev, float time ) {
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 1, &arg1 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1)
+{
+	return PostEventArgs(ev, SEC2MS(time), 1, &arg1);
 }
 
 /*
@@ -719,8 +808,9 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1 ) 
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 2, &arg1, &arg2 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2)
+{
+	return PostEventArgs(ev, SEC2MS(time), 2, &arg1, &arg2);
 }
 
 /*
@@ -728,8 +818,9 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 3, &arg1, &arg2, &arg3 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3)
+{
+	return PostEventArgs(ev, SEC2MS(time), 3, &arg1, &arg2, &arg3);
 }
 
 /*
@@ -737,8 +828,10 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 4, &arg1, &arg2, &arg3, &arg4 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                           idEventArg arg4)
+{
+	return PostEventArgs(ev, SEC2MS(time), 4, &arg1, &arg2, &arg3, &arg4);
 }
 
 /*
@@ -746,8 +839,10 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 5, &arg1, &arg2, &arg3, &arg4, &arg5 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                           idEventArg arg4, idEventArg arg5)
+{
+	return PostEventArgs(ev, SEC2MS(time), 5, &arg1, &arg2, &arg3, &arg4, &arg5);
 }
 
 /*
@@ -755,8 +850,10 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                           idEventArg arg4, idEventArg arg5, idEventArg arg6)
+{
+	return PostEventArgs(ev, SEC2MS(time), 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
 }
 
 /*
@@ -764,8 +861,10 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                           idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7)
+{
+	return PostEventArgs(ev, SEC2MS(time), 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7);
 }
 
 /*
@@ -773,8 +872,10 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::PostEventSec
 ================
 */
-bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8 ) {
-	return PostEventArgs( ev, SEC2MS( time ), 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8 );
+bool idClass::PostEventSec(const idEventDef* ev, float time, idEventArg arg1, idEventArg arg2, idEventArg arg3,
+                           idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8)
+{
+	return PostEventArgs(ev, SEC2MS(time), 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8);
 }
 
 /*
@@ -782,27 +883,29 @@ bool idClass::PostEventSec( const idEventDef *ev, float time, idEventArg arg1, i
 idClass::ProcessEventArgs
 ================
 */
-bool idClass::ProcessEventArgs( const idEventDef *ev, int numargs, ... ) {
-	idTypeInfo	*c;
-	int			num;
-	int			data[ D_EVENT_MAXARGS ];
-	va_list		args;
-	
-	assert( ev );
-	assert( idEvent::initialized );
+bool idClass::ProcessEventArgs(const idEventDef* ev, int numargs, ...)
+{
+	idTypeInfo* c;
+	int num;
+	intptr_t data[D_EVENT_MAXARGS];
+	va_list args;
+
+	assert(ev);
+	assert(idEvent::initialized);
 
 	c = GetType();
 	num = ev->GetEventNum();
-	if ( !c->eventMap[ num ] ) {
+	if (!c->eventMap[num])
+	{
 		// we don't respond to this event, so ignore it
 		return false;
 	}
 
-	va_start( args, numargs );
-	idEvent::CopyArgs( ev, numargs, args, data );
-	va_end( args );
+	va_start(args, numargs);
+	idEvent::CopyArgs(ev, numargs, args, data);
+	va_end(args);
 
-	ProcessEventArgPtr( ev, data );
+	ProcessEventArgPtr(ev, data);
 
 	return true;
 }
@@ -812,8 +915,9 @@ bool idClass::ProcessEventArgs( const idEventDef *ev, int numargs, ... ) {
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev ) {
-	return ProcessEventArgs( ev, 0 );
+bool idClass::ProcessEvent(const idEventDef* ev)
+{
+	return ProcessEventArgs(ev, 0);
 }
 
 /*
@@ -821,8 +925,9 @@ bool idClass::ProcessEvent( const idEventDef *ev ) {
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1 ) {
-	return ProcessEventArgs( ev, 1, &arg1 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1)
+{
+	return ProcessEventArgs(ev, 1, &arg1);
 }
 
 /*
@@ -830,8 +935,9 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1 ) {
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2 ) {
-	return ProcessEventArgs( ev, 2, &arg1, &arg2 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2)
+{
+	return ProcessEventArgs(ev, 2, &arg1, &arg2);
 }
 
 /*
@@ -839,8 +945,9 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3 ) {
-	return ProcessEventArgs( ev, 3, &arg1, &arg2, &arg3 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3)
+{
+	return ProcessEventArgs(ev, 3, &arg1, &arg2, &arg3);
 }
 
 /*
@@ -848,8 +955,9 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4 ) {
-	return ProcessEventArgs( ev, 4, &arg1, &arg2, &arg3, &arg4 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4)
+{
+	return ProcessEventArgs(ev, 4, &arg1, &arg2, &arg3, &arg4);
 }
 
 /*
@@ -857,8 +965,10 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5 ) {
-	return ProcessEventArgs( ev, 5, &arg1, &arg2, &arg3, &arg4, &arg5 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4,
+                           idEventArg arg5)
+{
+	return ProcessEventArgs(ev, 5, &arg1, &arg2, &arg3, &arg4, &arg5);
 }
 
 /*
@@ -866,8 +976,10 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6 ) {
-	return ProcessEventArgs( ev, 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4,
+                           idEventArg arg5, idEventArg arg6)
+{
+	return ProcessEventArgs(ev, 6, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6);
 }
 
 /*
@@ -875,8 +987,10 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7 ) {
-	return ProcessEventArgs( ev, 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4,
+                           idEventArg arg5, idEventArg arg6, idEventArg arg7)
+{
+	return ProcessEventArgs(ev, 7, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7);
 }
 
 /*
@@ -884,8 +998,10 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEvent
 ================
 */
-bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4, idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8 ) {
-	return ProcessEventArgs( ev, 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8 );
+bool idClass::ProcessEvent(const idEventDef* ev, idEventArg arg1, idEventArg arg2, idEventArg arg3, idEventArg arg4,
+                           idEventArg arg5, idEventArg arg6, idEventArg arg7, idEventArg arg8)
+{
+	return ProcessEventArgs(ev, 8, &arg1, &arg2, &arg3, &arg4, &arg5, &arg6, &arg7, &arg8);
 }
 
 /*
@@ -893,54 +1009,60 @@ bool idClass::ProcessEvent( const idEventDef *ev, idEventArg arg1, idEventArg ar
 idClass::ProcessEventArgPtr
 ================
 */
-bool idClass::ProcessEventArgPtr( const idEventDef *ev, int *data ) {
-	idTypeInfo	*c;
-	int			num;
-	eventCallback_t	callback;
+bool idClass::ProcessEventArgPtr(const idEventDef* ev, intptr_t* data)
+{
+	idTypeInfo* c;
+	int num;
+	eventCallback_t callback;
 
-	assert( ev );
-	assert( idEvent::initialized );
+	assert(ev);
+	assert(idEvent::initialized);
 
 	SetTimeState ts;
 
-	if ( IsType( idEntity::Type ) ) {
-		idEntity *ent = (idEntity*)this;
-		ts.PushState( ent->timeGroup );
+	if (IsType(idEntity::Type))
+	{
+		idEntity* ent = (idEntity*)this;
+		ts.PushState(ent->timeGroup);
 	}
 
-	if ( g_debugTriggers.GetBool() && ( ev == &EV_Activate ) && IsType( idEntity::Type ) ) {
-		const idEntity *ent = *reinterpret_cast<idEntity **>( data );
-		gameLocal.Printf( "%d: '%s' activated by '%s'\n", gameLocal.framenum, static_cast<idEntity *>( this )->GetName(), ent ? ent->GetName() : "NULL" );
+	if (g_debugTriggers.GetBool() && (ev == &EV_Activate) && IsType(idEntity::Type))
+	{
+		const idEntity* ent = *reinterpret_cast<idEntity**>(data);
+		gameLocal.Printf("%d: '%s' activated by '%s'\n", gameLocal.framenum, static_cast<idEntity*>(this)->GetName(),
+		                 ent ? ent->GetName() : "NULL");
 	}
 
 	c = GetType();
 	num = ev->GetEventNum();
-	if ( !c->eventMap[ num ] ) {
+	if (!c->eventMap[num])
+	{
 		// we don't respond to this event, so ignore it
 		return false;
 	}
 
-	callback = c->eventMap[ num ];
+	callback = c->eventMap[num];
 
 #if !CPU_EASYARGS
 
-/*
-on ppc architecture, floats are passed in a seperate set of registers
-the function prototypes must have matching float declaration
+	/*
+	on ppc architecture, floats are passed in a seperate set of registers
+	the function prototypes must have matching float declaration
 
-http://developer.apple.com/documentation/DeveloperTools/Conceptual/MachORuntime/2rt_powerpc_abi/chapter_9_section_5.html
-*/
+	http://developer.apple.com/documentation/DeveloperTools/Conceptual/MachORuntime/2rt_powerpc_abi/chapter_9_section_5.html
+	*/
 
-	switch( ev->GetFormatspecIndex() ) {
-	case 1 << D_EVENT_MAXARGS :
-		( this->*callback )();
+	switch (ev->GetFormatspecIndex())
+	{
+	case 1 << D_EVENT_MAXARGS:
+		(this->*callback)();
 		break;
 
-// generated file - see CREATE_EVENT_CODE
+	// generated file - see CREATE_EVENT_CODE
 #include "Callbacks.cpp"
 
 	default:
-		gameLocal.Warning( "Invalid formatspec on event '%s'", ev->GetName() );
+		gameLocal.Warning("Invalid formatspec on event '%s'", ev->GetName());
 		break;
 	}
 
@@ -1008,7 +1130,8 @@ http://developer.apple.com/documentation/DeveloperTools/Conceptual/MachORuntime/
 idClass::Event_Remove
 ================
 */
-void idClass::Event_Remove() {
+void idClass::Event_Remove()
+{
 	delete this;
 }
 
@@ -1017,7 +1140,8 @@ void idClass::Event_Remove() {
 idClass::Event_SafeRemove
 ================
 */
-void idClass::Event_SafeRemove() {
+void idClass::Event_SafeRemove()
+{
 	// Forces the remove to be done at a safe time
-	PostEventMS( &EV_Remove, 0 );
+	PostEventMS(&EV_Remove, 0);
 }

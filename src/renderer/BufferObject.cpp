@@ -30,7 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "tr_local.h"
 #include "glew.h"
 
-idCVar r_showBuffers( "r_showBuffers", "0", CVAR_INTEGER, "" );
+idCVar r_showBuffers("r_showBuffers", "0", CVAR_INTEGER, "");
 
 
 //static const GLenum bufferUsage = GL_STATIC_DRAW_ARB;
@@ -41,18 +41,19 @@ static const GLenum bufferUsage = GL_DYNAMIC_DRAW_ARB;
 IsWriteCombined
 ==================
 */
-bool IsWriteCombined( void * base ) {
+bool IsWriteCombined(void* base)
+{
 	MEMORY_BASIC_INFORMATION info;
-	SIZE_T size = VirtualQueryEx( GetCurrentProcess(), base, &info, sizeof( info ) );
-	if ( size == 0 ) {
+	SIZE_T size = VirtualQueryEx(GetCurrentProcess(), base, &info, sizeof(info));
+	if (size == 0)
+	{
 		DWORD error = GetLastError();
 		error = error;
 		return false;
 	}
-	bool isWriteCombined = ( ( info.AllocationProtect & PAGE_WRITECOMBINE ) != 0 );
+	bool isWriteCombined = ((info.AllocationProtect & PAGE_WRITECOMBINE) != 0);
 	return isWriteCombined;
 }
-
 
 
 /*
@@ -68,9 +69,10 @@ bool IsWriteCombined( void * base ) {
 UnbindBufferObjects
 ========================
 */
-void UnbindBufferObjects() {
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, 0 );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, 0 );
+void UnbindBufferObjects()
+{
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, 0);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, 0);
 }
 
 #ifdef ID_WIN_X86_SSE2_INTRIN
@@ -113,10 +115,11 @@ void CopyBuffer( byte * dst, const byte * src, int numBytes ) {
 
 #else
 
-void CopyBuffer( byte * dst, const byte * src, int numBytes ) {
-	assert_16_byte_aligned( dst );
-	assert_16_byte_aligned( src );
-	memcpy( dst, src, numBytes );
+void CopyBuffer(byte* dst, const byte* src, int numBytes)
+{
+	assert_16_byte_aligned(dst);
+	assert_16_byte_aligned(src);
+	memcpy(dst, src, numBytes);
 }
 
 #endif
@@ -134,7 +137,8 @@ void CopyBuffer( byte * dst, const byte * src, int numBytes ) {
 idVertexBuffer::idVertexBuffer
 ========================
 */
-idVertexBuffer::idVertexBuffer() {
+idVertexBuffer::idVertexBuffer()
+{
 	size = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -146,7 +150,8 @@ idVertexBuffer::idVertexBuffer() {
 idVertexBuffer::~idVertexBuffer
 ========================
 */
-idVertexBuffer::~idVertexBuffer() {
+idVertexBuffer::~idVertexBuffer()
+{
 	FreeBufferObject();
 }
 
@@ -155,12 +160,14 @@ idVertexBuffer::~idVertexBuffer() {
 idVertexBuffer::AllocBufferObject
 ========================
 */
-bool idVertexBuffer::AllocBufferObject( const void * data, int allocSize ) {
-	assert( apiObject == NULL );
-	assert_16_byte_aligned( data );
+bool idVertexBuffer::AllocBufferObject(const void* data, int allocSize)
+{
+	assert(apiObject == NULL);
+	assert_16_byte_aligned(data);
 
-	if ( allocSize <= 0 ) {
-		idLib::Error( "idVertexBuffer::AllocBufferObject: allocSize = %i", allocSize );
+	if (allocSize <= 0)
+	{
+		idLib::Error("idVertexBuffer::AllocBufferObject: allocSize = %i", allocSize);
 	}
 
 	size = allocSize;
@@ -174,30 +181,34 @@ bool idVertexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 	glGetError();
 
 	GLuint bufferObject = 0xFFFF;
-	glGenBuffersARB( 1, & bufferObject );
-	if ( bufferObject == 0xFFFF ) {
-		idLib::FatalError( "idVertexBuffer::AllocBufferObject: failed" );
+	glGenBuffersARB(1, &bufferObject);
+	if (bufferObject == 0xFFFF)
+	{
+		idLib::FatalError("idVertexBuffer::AllocBufferObject: failed");
 	}
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, bufferObject);
 
 	// these are rewritten every frame
-	glBufferDataARB( GL_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
-	apiObject = reinterpret_cast< void * >( bufferObject );
+	glBufferDataARB(GL_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage);
+	apiObject = reinterpret_cast<void*>(bufferObject);
 
 	GLenum err = glGetError();
-	if ( err == GL_OUT_OF_MEMORY ) {
-		idLib::Warning( "idVertexBuffer::AllocBufferObject: allocation failed" );
+	if (err == GL_OUT_OF_MEMORY)
+	{
+		idLib::Warning("idVertexBuffer::AllocBufferObject: allocation failed");
 		allocationFailed = true;
 	}
 
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "vertex buffer alloc %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("vertex buffer alloc %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize());
 	}
 
 	// copy the data
-	if ( data != NULL ) {
-		Update( data, allocSize );
+	if (data != NULL)
+	{
+		Update(data, allocSize);
 	}
 
 	return !allocationFailed;
@@ -208,27 +219,32 @@ bool idVertexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 idVertexBuffer::FreeBufferObject
 ========================
 */
-void idVertexBuffer::FreeBufferObject() {
-	if ( IsMapped() ) {
+void idVertexBuffer::FreeBufferObject()
+{
+	if (IsMapped())
+	{
 		UnmapBuffer();
 	}
 
 	// if this is a sub-allocation inside a larger buffer, don't actually free anything.
-	if ( OwnsBuffer() == false ) {
+	if (OwnsBuffer() == false)
+	{
 		ClearWithoutFreeing();
 		return;
 	}
 
-	if ( apiObject == NULL ) {
+	if (apiObject == NULL)
+	{
 		return;
 	}
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "vertex buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("vertex buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize());
 	}
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glDeleteBuffersARB( 1, & bufferObject );
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glDeleteBuffersARB(1, &bufferObject);
 
 	ClearWithoutFreeing();
 }
@@ -238,17 +254,18 @@ void idVertexBuffer::FreeBufferObject() {
 idVertexBuffer::Reference
 ========================
 */
-void idVertexBuffer::Reference( const idVertexBuffer & other ) {
-	assert( IsMapped() == false );
+void idVertexBuffer::Reference(const idVertexBuffer& other)
+{
+	assert(IsMapped() == false);
 	//assert( other.IsMapped() == false );	// this happens when building idTriangles while at the same time setting up idDrawVerts
-	assert( other.GetAPIObject() != NULL );
-	assert( other.GetSize() > 0 );
+	assert(other.GetAPIObject() != NULL);
+	assert(other.GetSize() > 0);
 
 	FreeBufferObject();
-	size = other.GetSize();						// this strips the MAPPED_FLAG
-	offsetInOtherBuffer = other.GetOffset();	// this strips the OWNS_BUFFER_FLAG
+	size = other.GetSize(); // this strips the MAPPED_FLAG
+	offsetInOtherBuffer = other.GetOffset(); // this strips the OWNS_BUFFER_FLAG
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -256,19 +273,20 @@ void idVertexBuffer::Reference( const idVertexBuffer & other ) {
 idVertexBuffer::Reference
 ========================
 */
-void idVertexBuffer::Reference( const idVertexBuffer & other, int refOffset, int refSize ) {
-	assert( IsMapped() == false );
+void idVertexBuffer::Reference(const idVertexBuffer& other, int refOffset, int refSize)
+{
+	assert(IsMapped() == false);
 	//assert( other.IsMapped() == false );	// this happens when building idTriangles while at the same time setting up idDrawVerts
-	assert( other.GetAPIObject() != NULL );
-	assert( refOffset >= 0 );
-	assert( refSize >= 0 );
-	assert( refOffset + refSize <= other.GetSize() );
+	assert(other.GetAPIObject() != NULL);
+	assert(refOffset >= 0);
+	assert(refSize >= 0);
+	assert(refOffset + refSize <= other.GetSize());
 
 	FreeBufferObject();
 	size = refSize;
 	offsetInOtherBuffer = other.GetOffset() + refOffset;
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -276,26 +294,28 @@ void idVertexBuffer::Reference( const idVertexBuffer & other, int refOffset, int
 idVertexBuffer::Update
 ========================
 */
-void idVertexBuffer::Update( const void * data, int updateSize ) const {
-	assert( apiObject != NULL );
-	assert( IsMapped() == false );
-	assert_16_byte_aligned( data );
-	assert( ( GetOffset() & 15 ) == 0 );
+void idVertexBuffer::Update(const void* data, int updateSize) const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped() == false);
+	assert_16_byte_aligned(data);
+	assert(( GetOffset() & 15 ) == 0);
 
-	if ( updateSize > size ) {
-		idLib::FatalError( "idVertexBuffer::Update: size overrun, %i > %i\n", updateSize, GetSize() );
+	if (updateSize > size)
+	{
+		idLib::FatalError("idVertexBuffer::Update: size overrun, %i > %i\n", updateSize, GetSize());
 	}
 
-	int numBytes = ( updateSize + 15 ) & ~15;
+	int numBytes = (updateSize + 15) & ~15;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
-	glBufferSubDataARB( GL_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
-/*
-	void * buffer = MapBuffer( BM_WRITE );
-	CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
-	UnmapBuffer();
-*/
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, bufferObject);
+	glBufferSubDataARB(GL_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data);
+	/*
+		void * buffer = MapBuffer( BM_WRITE );
+		CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
+		UnmapBuffer();
+	*/
 }
 
 /*
@@ -303,35 +323,46 @@ void idVertexBuffer::Update( const void * data, int updateSize ) const {
 idVertexBuffer::MapBuffer
 ========================
 */
-void * idVertexBuffer::MapBuffer( bufferMapType_t mapType ) const {
-	assert( apiObject != NULL );
-	assert( IsMapped() == false );
+void* idVertexBuffer::MapBuffer(bufferMapType_t mapType) const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped() == false);
 
-	void * buffer = NULL;
+	void* buffer = NULL;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
-	if ( mapType == BM_READ ) {
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, bufferObject);
+	if (mapType == BM_READ)
+	{
 		//buffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
-		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if ( buffer != NULL ) {
-			buffer = (byte *)buffer + GetOffset();
+		buffer = glMapBufferRange(GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(),
+		                          GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
 		}
-	} else if ( mapType == BM_WRITE ) {
+	}
+	else if (mapType == BM_WRITE)
+	{
 		//buffer = glMapBufferARB( GL_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
-		buffer = glMapBufferRange( GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if ( buffer != NULL ) {
-			buffer = (byte *)buffer + GetOffset();
+		buffer = glMapBufferRange(GL_ARRAY_BUFFER_ARB, 0, GetAllocedSize(),
+		                          GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
 		}
-		assert( IsWriteCombined( buffer ) );
-	} else {
-		assert( false );
+		assert(IsWriteCombined( buffer ));
+	}
+	else
+	{
+		assert(false);
 	}
 
 	SetMapped();
 
-	if ( buffer == NULL ) {
-		idLib::FatalError( "idVertexBuffer::MapBuffer: failed" );
+	if (buffer == NULL)
+	{
+		idLib::FatalError("idVertexBuffer::MapBuffer: failed");
 	}
 	return buffer;
 }
@@ -341,14 +372,16 @@ void * idVertexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 idVertexBuffer::UnmapBuffer
 ========================
 */
-void idVertexBuffer::UnmapBuffer() const {
-	assert( apiObject != NULL );
-	assert( IsMapped() );
+void idVertexBuffer::UnmapBuffer() const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped());
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ARRAY_BUFFER_ARB, bufferObject );
-	if ( !glUnmapBufferARB( GL_ARRAY_BUFFER_ARB ) ) {
-		idLib::Printf( "idVertexBuffer::UnmapBuffer failed\n" );
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ARRAY_BUFFER_ARB, bufferObject);
+	if (!glUnmapBufferARB(GL_ARRAY_BUFFER_ARB))
+	{
+		idLib::Printf("idVertexBuffer::UnmapBuffer failed\n");
 	}
 
 	SetUnmapped();
@@ -359,7 +392,8 @@ void idVertexBuffer::UnmapBuffer() const {
 idVertexBuffer::ClearWithoutFreeing
 ========================
 */
-void idVertexBuffer::ClearWithoutFreeing() {
+void idVertexBuffer::ClearWithoutFreeing()
+{
 	size = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -378,7 +412,8 @@ void idVertexBuffer::ClearWithoutFreeing() {
 idIndexBuffer::idIndexBuffer
 ========================
 */
-idIndexBuffer::idIndexBuffer() {
+idIndexBuffer::idIndexBuffer()
+{
 	size = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -390,7 +425,8 @@ idIndexBuffer::idIndexBuffer() {
 idIndexBuffer::~idIndexBuffer
 ========================
 */
-idIndexBuffer::~idIndexBuffer() {
+idIndexBuffer::~idIndexBuffer()
+{
 	FreeBufferObject();
 }
 
@@ -399,12 +435,14 @@ idIndexBuffer::~idIndexBuffer() {
 idIndexBuffer::AllocBufferObject
 ========================
 */
-bool idIndexBuffer::AllocBufferObject( const void * data, int allocSize ) {
-	assert( apiObject == NULL );
-	assert_16_byte_aligned( data );
+bool idIndexBuffer::AllocBufferObject(const void* data, int allocSize)
+{
+	assert(apiObject == NULL);
+	assert_16_byte_aligned(data);
 
-	if ( allocSize <= 0 ) {
-		idLib::Error( "idIndexBuffer::AllocBufferObject: allocSize = %i", allocSize );
+	if (allocSize <= 0)
+	{
+		idLib::Error("idIndexBuffer::AllocBufferObject: allocSize = %i", allocSize);
 	}
 
 	size = allocSize;
@@ -418,31 +456,35 @@ bool idIndexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 	glGetError();
 
 	GLuint bufferObject = 0xFFFF;
-	glGenBuffersARB( 1, & bufferObject );
-	if ( bufferObject == 0xFFFF ) {
+	glGenBuffersARB(1, &bufferObject);
+	if (bufferObject == 0xFFFF)
+	{
 		GLenum error = glGetError();
-		idLib::FatalError( "idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error );
+		idLib::FatalError("idIndexBuffer::AllocBufferObject: failed - GL_Error %d", error);
 	}
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject);
 
 	// these are rewritten every frame
-	glBufferDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage );
-	apiObject = reinterpret_cast< void * >( bufferObject );
+	glBufferDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, numBytes, NULL, bufferUsage);
+	apiObject = reinterpret_cast<void*>(bufferObject);
 
 	GLenum err = glGetError();
-	if ( err == GL_OUT_OF_MEMORY ) {
-		idLib::Warning( "idIndexBuffer:AllocBufferObject: allocation failed" );
+	if (err == GL_OUT_OF_MEMORY)
+	{
+		idLib::Warning("idIndexBuffer:AllocBufferObject: allocation failed");
 		allocationFailed = true;
 	}
 
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "index buffer alloc %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("index buffer alloc %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize());
 	}
 
 	// copy the data
-	if ( data != NULL ) {
-		Update( data, allocSize );
+	if (data != NULL)
+	{
+		Update(data, allocSize);
 	}
 
 	return !allocationFailed;
@@ -453,27 +495,32 @@ bool idIndexBuffer::AllocBufferObject( const void * data, int allocSize ) {
 idIndexBuffer::FreeBufferObject
 ========================
 */
-void idIndexBuffer::FreeBufferObject() {
-	if ( IsMapped() ) {
+void idIndexBuffer::FreeBufferObject()
+{
+	if (IsMapped())
+	{
 		UnmapBuffer();
 	}
 
 	// if this is a sub-allocation inside a larger buffer, don't actually free anything.
-	if ( OwnsBuffer() == false ) {
+	if (OwnsBuffer() == false)
+	{
 		ClearWithoutFreeing();
 		return;
 	}
 
-	if ( apiObject == NULL ) {
+	if (apiObject == NULL)
+	{
 		return;
 	}
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "index buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("index buffer free %p, api %p (%i bytes)\n", this, GetAPIObject(), GetSize());
 	}
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glDeleteBuffersARB( 1, & bufferObject );
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glDeleteBuffersARB(1, &bufferObject);
 
 	ClearWithoutFreeing();
 }
@@ -483,17 +530,18 @@ void idIndexBuffer::FreeBufferObject() {
 idIndexBuffer::Reference
 ========================
 */
-void idIndexBuffer::Reference( const idIndexBuffer & other ) {
-	assert( IsMapped() == false );
+void idIndexBuffer::Reference(const idIndexBuffer& other)
+{
+	assert(IsMapped() == false);
 	//assert( other.IsMapped() == false );	// this happens when building idTriangles while at the same time setting up triIndex_t
-	assert( other.GetAPIObject() != NULL );
-	assert( other.GetSize() > 0 );
+	assert(other.GetAPIObject() != NULL);
+	assert(other.GetSize() > 0);
 
 	FreeBufferObject();
-	size = other.GetSize();						// this strips the MAPPED_FLAG
-	offsetInOtherBuffer = other.GetOffset();	// this strips the OWNS_BUFFER_FLAG
+	size = other.GetSize(); // this strips the MAPPED_FLAG
+	offsetInOtherBuffer = other.GetOffset(); // this strips the OWNS_BUFFER_FLAG
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -501,19 +549,20 @@ void idIndexBuffer::Reference( const idIndexBuffer & other ) {
 idIndexBuffer::Reference
 ========================
 */
-void idIndexBuffer::Reference( const idIndexBuffer & other, int refOffset, int refSize ) {
-	assert( IsMapped() == false );
+void idIndexBuffer::Reference(const idIndexBuffer& other, int refOffset, int refSize)
+{
+	assert(IsMapped() == false);
 	//assert( other.IsMapped() == false );	// this happens when building idTriangles while at the same time setting up triIndex_t
-	assert( other.GetAPIObject() != NULL );
-	assert( refOffset >= 0 );
-	assert( refSize >= 0 );
-	assert( refOffset + refSize <= other.GetSize() );
+	assert(other.GetAPIObject() != NULL);
+	assert(refOffset >= 0);
+	assert(refSize >= 0);
+	assert(refOffset + refSize <= other.GetSize());
 
 	FreeBufferObject();
 	size = refSize;
 	offsetInOtherBuffer = other.GetOffset() + refOffset;
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -521,27 +570,28 @@ void idIndexBuffer::Reference( const idIndexBuffer & other, int refOffset, int r
 idIndexBuffer::Update
 ========================
 */
-void idIndexBuffer::Update( const void * data, int updateSize ) const {
+void idIndexBuffer::Update(const void* data, int updateSize) const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped() == false);
+	assert_16_byte_aligned(data);
+	assert(( GetOffset() & 15 ) == 0);
 
-	assert( apiObject != NULL );
-	assert( IsMapped() == false );
-	assert_16_byte_aligned( data );
-	assert( ( GetOffset() & 15 ) == 0 );
-
-	if ( updateSize > size ) {
-		idLib::FatalError( "idIndexBuffer::Update: size overrun, %i > %i\n", updateSize, GetSize() );
+	if (updateSize > size)
+	{
+		idLib::FatalError("idIndexBuffer::Update: size overrun, %i > %i\n", updateSize, GetSize());
 	}
 
-	int numBytes = ( updateSize + 15 ) & ~15;
+	int numBytes = (updateSize + 15) & ~15;
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
-	glBufferSubDataARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data );
-/*
-	void * buffer = MapBuffer( BM_WRITE );
-	CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
-	UnmapBuffer();
-*/
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject);
+	glBufferSubDataARB(GL_ELEMENT_ARRAY_BUFFER_ARB, GetOffset(), (GLsizeiptrARB)numBytes, data);
+	/*
+		void * buffer = MapBuffer( BM_WRITE );
+		CopyBuffer( (byte *)buffer + GetOffset(), (byte *)data, numBytes );
+		UnmapBuffer();
+	*/
 }
 
 /*
@@ -549,36 +599,46 @@ void idIndexBuffer::Update( const void * data, int updateSize ) const {
 idIndexBuffer::MapBuffer
 ========================
 */
-void * idIndexBuffer::MapBuffer( bufferMapType_t mapType ) const {
+void* idIndexBuffer::MapBuffer(bufferMapType_t mapType) const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped() == false);
 
-	assert( apiObject != NULL );
-	assert( IsMapped() == false );
+	void* buffer = NULL;
 
-	void * buffer = NULL;
-
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
-	if ( mapType == BM_READ ) {
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject);
+	if (mapType == BM_READ)
+	{
 		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_READ_ONLY_ARB );
-		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if ( buffer != NULL ) {
-			buffer = (byte *)buffer + GetOffset();
+		buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(),
+		                          GL_MAP_READ_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
 		}
-	} else if ( mapType == BM_WRITE ) {
+	}
+	else if (mapType == BM_WRITE)
+	{
 		//buffer = glMapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, GL_WRITE_ONLY_ARB );
-		buffer = glMapBufferRange( GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-		if ( buffer != NULL ) {
-			buffer = (byte *)buffer + GetOffset();
+		buffer = glMapBufferRange(GL_ELEMENT_ARRAY_BUFFER_ARB, 0, GetAllocedSize(),
+		                          GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+		if (buffer != NULL)
+		{
+			buffer = (byte*)buffer + GetOffset();
 		}
-		assert( IsWriteCombined( buffer ) );
-	} else {
-		assert( false );
+		assert(IsWriteCombined( buffer ));
+	}
+	else
+	{
+		assert(false);
 	}
 
 	SetMapped();
 
-	if ( buffer == NULL ) {
-		idLib::FatalError( "idIndexBuffer::MapBuffer: failed" );
+	if (buffer == NULL)
+	{
+		idLib::FatalError("idIndexBuffer::MapBuffer: failed");
 	}
 	return buffer;
 }
@@ -588,14 +648,16 @@ void * idIndexBuffer::MapBuffer( bufferMapType_t mapType ) const {
 idIndexBuffer::UnmapBuffer
 ========================
 */
-void idIndexBuffer::UnmapBuffer() const {
-	assert( apiObject != NULL );
-	assert( IsMapped() );
+void idIndexBuffer::UnmapBuffer() const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped());
 
-	GLuint bufferObject = reinterpret_cast< GLuint >( apiObject );
-	glBindBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject );
-	if ( !glUnmapBufferARB( GL_ELEMENT_ARRAY_BUFFER_ARB ) ) {
-		idLib::Printf( "idIndexBuffer::UnmapBuffer failed\n" );
+	GLuint bufferObject = reinterpret_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB, bufferObject);
+	if (!glUnmapBufferARB(GL_ELEMENT_ARRAY_BUFFER_ARB))
+	{
+		idLib::Printf("idIndexBuffer::UnmapBuffer failed\n");
 	}
 
 	SetUnmapped();
@@ -606,7 +668,8 @@ void idIndexBuffer::UnmapBuffer() const {
 idIndexBuffer::ClearWithoutFreeing
 ========================
 */
-void idIndexBuffer::ClearWithoutFreeing() {
+void idIndexBuffer::ClearWithoutFreeing()
+{
 	size = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -625,7 +688,8 @@ void idIndexBuffer::ClearWithoutFreeing() {
 idJointBuffer::idJointBuffer
 ========================
 */
-idJointBuffer::idJointBuffer() {
+idJointBuffer::idJointBuffer()
+{
 	numJoints = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -637,7 +701,8 @@ idJointBuffer::idJointBuffer() {
 idJointBuffer::~idJointBuffer
 ========================
 */
-idJointBuffer::~idJointBuffer() {
+idJointBuffer::~idJointBuffer()
+{
 	FreeBufferObject();
 }
 
@@ -646,12 +711,14 @@ idJointBuffer::~idJointBuffer() {
 idJointBuffer::AllocBufferObject
 ========================
 */
-bool idJointBuffer::AllocBufferObject( const float * joints, int numAllocJoints ) {
-	assert( apiObject == NULL );
-	assert_16_byte_aligned( joints );
+bool idJointBuffer::AllocBufferObject(const float* joints, int numAllocJoints)
+{
+	assert(apiObject == NULL);
+	assert_16_byte_aligned(joints);
 
-	if ( numAllocJoints <= 0 ) {
-		idLib::Error( "idJointBuffer::AllocBufferObject: joints = %i", numAllocJoints );
+	if (numAllocJoints <= 0)
+	{
+		idLib::Error("idJointBuffer::AllocBufferObject: joints = %i", numAllocJoints);
 	}
 
 	numJoints = numAllocJoints;
@@ -661,19 +728,21 @@ bool idJointBuffer::AllocBufferObject( const float * joints, int numAllocJoints 
 	const int numBytes = GetAllocedSize();
 
 	GLuint buffer = 0;
-	glGenBuffersARB( 1, &buffer );
-	glBindBufferARB( GL_UNIFORM_BUFFER, buffer );
-	glBufferDataARB( GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB );
-	glBindBufferARB( GL_UNIFORM_BUFFER, 0);
-	apiObject = reinterpret_cast< void * >( buffer );
+	glGenBuffersARB(1, &buffer);
+	glBindBufferARB(GL_UNIFORM_BUFFER, buffer);
+	glBufferDataARB(GL_UNIFORM_BUFFER, numBytes, NULL, GL_STREAM_DRAW_ARB);
+	glBindBufferARB(GL_UNIFORM_BUFFER, 0);
+	apiObject = buffer;
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "joint buffer alloc %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("joint buffer alloc %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints());
 	}
 
 	// copy the data
-	if ( joints != NULL ) {
-		Update( joints, numAllocJoints );
+	if (joints != NULL)
+	{
+		Update(joints, numAllocJoints);
 	}
 
 	return !allocationFailed;
@@ -684,28 +753,33 @@ bool idJointBuffer::AllocBufferObject( const float * joints, int numAllocJoints 
 idJointBuffer::FreeBufferObject
 ========================
 */
-void idJointBuffer::FreeBufferObject() {
-	if ( IsMapped() ) {
+void idJointBuffer::FreeBufferObject()
+{
+	if (IsMapped())
+	{
 		UnmapBuffer();
 	}
 
 	// if this is a sub-allocation inside a larger buffer, don't actually free anything.
-	if ( OwnsBuffer() == false ) {
+	if (OwnsBuffer() == false)
+	{
 		ClearWithoutFreeing();
 		return;
 	}
 
-	if ( apiObject == NULL ) {
+	if (apiObject == NULL)
+	{
 		return;
 	}
 
-	if ( r_showBuffers.GetBool() ) {
-		idLib::Printf( "joint buffer free %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints() );
+	if (r_showBuffers.GetBool())
+	{
+		idLib::Printf("joint buffer free %p, api %p (%i joints)\n", this, GetAPIObject(), GetNumJoints());
 	}
 
-	GLuint buffer = reinterpret_cast< GLuint > ( apiObject );
-	glBindBufferARB( GL_UNIFORM_BUFFER, 0 );
-	glDeleteBuffersARB( 1, & buffer );
+	GLuint buffer = static_cast<GLuint>(apiObject);
+	glBindBufferARB(GL_UNIFORM_BUFFER, 0);
+	glDeleteBuffersARB(1, &buffer);
 
 	ClearWithoutFreeing();
 }
@@ -715,17 +789,18 @@ void idJointBuffer::FreeBufferObject() {
 idJointBuffer::Reference
 ========================
 */
-void idJointBuffer::Reference( const idJointBuffer & other ) {
-	assert( IsMapped() == false );
-	assert( other.IsMapped() == false );
-	assert( other.GetAPIObject() != NULL );
-	assert( other.GetNumJoints() > 0 );
+void idJointBuffer::Reference(const idJointBuffer& other)
+{
+	assert(IsMapped() == false);
+	assert(other.IsMapped() == false);
+	assert(other.GetAPIObject() != NULL);
+	assert(other.GetNumJoints() > 0);
 
 	FreeBufferObject();
-	numJoints = other.GetNumJoints();			// this strips the MAPPED_FLAG
-	offsetInOtherBuffer = other.GetOffset();	// this strips the OWNS_BUFFER_FLAG
+	numJoints = other.GetNumJoints(); // this strips the MAPPED_FLAG
+	offsetInOtherBuffer = other.GetOffset(); // this strips the OWNS_BUFFER_FLAG
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -733,20 +808,21 @@ void idJointBuffer::Reference( const idJointBuffer & other ) {
 idJointBuffer::Reference
 ========================
 */
-void idJointBuffer::Reference( const idJointBuffer & other, int jointRefOffset, int numRefJoints ) {
-	assert( IsMapped() == false );
-	assert( other.IsMapped() == false );
-	assert( other.GetAPIObject() != NULL );
-	assert( jointRefOffset >= 0 );
-	assert( numRefJoints >= 0 );
-	assert( jointRefOffset + numRefJoints * sizeof( idJointMat ) <= other.GetNumJoints() * sizeof( idJointMat ) );
-	assert_16_byte_aligned( numRefJoints * 3 * 4 * sizeof( float ) );
+void idJointBuffer::Reference(const idJointBuffer& other, int jointRefOffset, int numRefJoints)
+{
+	assert(IsMapped() == false);
+	assert(other.IsMapped() == false);
+	assert(other.GetAPIObject() != NULL);
+	assert(jointRefOffset >= 0);
+	assert(numRefJoints >= 0);
+	assert(jointRefOffset + numRefJoints * sizeof( idJointMat ) <= other.GetNumJoints() * sizeof( idJointMat ));
+	assert_16_byte_aligned(numRefJoints * 3 * 4 * sizeof( float ));
 
 	FreeBufferObject();
 	numJoints = numRefJoints;
 	offsetInOtherBuffer = other.GetOffset() + jointRefOffset;
 	apiObject = other.apiObject;
-	assert( OwnsBuffer() == false );
+	assert(OwnsBuffer() == false);
 }
 
 /*
@@ -754,20 +830,22 @@ void idJointBuffer::Reference( const idJointBuffer & other, int jointRefOffset, 
 idJointBuffer::Update
 ========================
 */
-void idJointBuffer::Update( const float * joints, int numUpdateJoints ) const {
-	assert( apiObject != NULL );
-	assert( IsMapped() == false );
-	assert_16_byte_aligned( joints );
-	assert( ( GetOffset() & 15 ) == 0 );
+void idJointBuffer::Update(const float* joints, int numUpdateJoints) const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped() == false);
+	assert_16_byte_aligned(joints);
+	assert(( GetOffset() & 15 ) == 0);
 
-	if ( numUpdateJoints > numJoints ) {
-		idLib::FatalError( "idJointBuffer::Update: size overrun, %i > %i\n", numUpdateJoints, numJoints );
+	if (numUpdateJoints > numJoints)
+	{
+		idLib::FatalError("idJointBuffer::Update: size overrun, %i > %i\n", numUpdateJoints, numJoints);
 	}
 
-	const int numBytes = numUpdateJoints * 3 * 4 * sizeof( float );
+	const int numBytes = numUpdateJoints * 3 * 4 * sizeof(float);
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
-	glBufferSubDataARB( GL_UNIFORM_BUFFER, GetOffset(), (GLsizeiptrARB)numBytes, joints );
+	glBindBufferARB(GL_UNIFORM_BUFFER, static_cast<GLuint>(apiObject));
+	glBufferSubDataARB(GL_UNIFORM_BUFFER, GetOffset(), (GLsizeiptrARB)numBytes, joints);
 }
 
 /*
@@ -775,30 +853,34 @@ void idJointBuffer::Update( const float * joints, int numUpdateJoints ) const {
 idJointBuffer::MapBuffer
 ========================
 */
-float * idJointBuffer::MapBuffer( bufferMapType_t mapType ) const {
-	assert( IsMapped() == false );
-	assert( mapType == BM_WRITE );
-	assert( apiObject != NULL );
+float* idJointBuffer::MapBuffer(bufferMapType_t mapType) const
+{
+	assert(IsMapped() == false);
+	assert(mapType == BM_WRITE);
+	assert(apiObject != NULL);
 
 	int numBytes = GetAllocedSize();
 
-	void * buffer = NULL;
+	void* buffer = NULL;
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
+	glBindBufferARB(GL_UNIFORM_BUFFER, static_cast<GLuint>(apiObject));
 	numBytes = numBytes;
-	assert( GetOffset() == 0 );
+	assert(GetOffset() == 0);
 	//buffer = glMapBufferARB( GL_UNIFORM_BUFFER, GL_WRITE_ONLY_ARB );
-	buffer = glMapBufferRange( GL_UNIFORM_BUFFER, 0, GetAllocedSize(), GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT );
-	if ( buffer != NULL ) {
-		buffer = (byte *)buffer + GetOffset();
+	buffer = glMapBufferRange(GL_UNIFORM_BUFFER, 0, GetAllocedSize(),
+	                          GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_RANGE_BIT | GL_MAP_UNSYNCHRONIZED_BIT);
+	if (buffer != NULL)
+	{
+		buffer = (byte*)buffer + GetOffset();
 	}
 
 	SetMapped();
 
-	if ( buffer == NULL ) {
-		idLib::FatalError( "idJointBuffer::MapBuffer: failed" );
+	if (buffer == NULL)
+	{
+		idLib::FatalError("idJointBuffer::MapBuffer: failed");
 	}
-	return (float *) buffer;
+	return (float*)buffer;
 }
 
 /*
@@ -806,13 +888,15 @@ float * idJointBuffer::MapBuffer( bufferMapType_t mapType ) const {
 idJointBuffer::UnmapBuffer
 ========================
 */
-void idJointBuffer::UnmapBuffer() const {
-	assert( apiObject != NULL );
-	assert( IsMapped() );
+void idJointBuffer::UnmapBuffer() const
+{
+	assert(apiObject != NULL);
+	assert(IsMapped());
 
-	glBindBufferARB( GL_UNIFORM_BUFFER, reinterpret_cast< GLuint >( apiObject ) );
-	if ( !glUnmapBufferARB( GL_UNIFORM_BUFFER ) ) {
-		idLib::Printf( "idJointBuffer::UnmapBuffer failed\n" );
+	glBindBufferARB(GL_UNIFORM_BUFFER, static_cast<GLuint>(apiObject));
+	if (!glUnmapBufferARB(GL_UNIFORM_BUFFER))
+	{
+		idLib::Printf("idJointBuffer::UnmapBuffer failed\n");
 	}
 
 	SetUnmapped();
@@ -823,7 +907,8 @@ void idJointBuffer::UnmapBuffer() const {
 idJointBuffer::ClearWithoutFreeing
 ========================
 */
-void idJointBuffer::ClearWithoutFreeing() {
+void idJointBuffer::ClearWithoutFreeing()
+{
 	numJoints = 0;
 	offsetInOtherBuffer = OWNS_BUFFER_FLAG;
 	apiObject = NULL;
@@ -834,11 +919,12 @@ void idJointBuffer::ClearWithoutFreeing() {
 idJointBuffer::Swap
 ========================
 */
-void idJointBuffer::Swap( idJointBuffer & other ) {
+void idJointBuffer::Swap(idJointBuffer& other)
+{
 	// Make sure the ownership of the buffer is not transferred to an unintended place.
-	assert( other.OwnsBuffer() == OwnsBuffer() );
+	assert(other.OwnsBuffer() == OwnsBuffer());
 
-	SwapValues( other.numJoints, numJoints );
-	SwapValues( other.offsetInOtherBuffer, offsetInOtherBuffer );
-	SwapValues( other.apiObject, apiObject );
+	SwapValues(other.numJoints, numJoints);
+	SwapValues(other.offsetInOtherBuffer, offsetInOtherBuffer);
+	SwapValues(other.apiObject, apiObject);
 }
