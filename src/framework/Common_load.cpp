@@ -43,8 +43,6 @@ idCVar com_disableAllSaves( "com_disableAllSaves", "0", CVAR_SYSTEM | CVAR_BOOL,
 
 extern idCVar sys_lang;
 
-extern idCVar g_demoMode;
-
 // This is for the dirty hack to get a dialog to show up before we capture the screen for autorender.
 const int NumScreenUpdatesToShowDialog = 25;
 
@@ -219,7 +217,7 @@ void idCommonLocal::MoveToNewMap( const char *mapName, bool devmap ) {
 		mapSpawnData.persistentPlayerInfo.Clear();
 	} else {
 		matchParameters.serverInfo.Delete( "devmap" );
-		mapSpawnData.persistentPlayerInfo = game->GetPersistentPlayerInfo( 0 );
+		// mapSpawnData.persistentPlayerInfo = game->GetPersistentPlayerInfo( 0 );
 	}
 	session->QuitMatchToTitle();
 	if ( WaitForSessionState( idSession::IDLE ) ) {
@@ -246,9 +244,9 @@ void idCommonLocal::UnloadMap() {
 	StopPlayingRenderDemo();
 
 	// end the current map in the game
-	if ( game ) {
-		game->MapShutdown();
-	}
+	// if ( game ) {
+	// 	game->MapShutdown();
+	// }
 
 	if ( writeDemo ) {
 		StopRecordingRenderDemo();
@@ -266,22 +264,6 @@ void idCommonLocal::LoadLoadingGui( const char *mapName, bool & hellMap ) {
 
 	defaultLoadscreen = false;
 	loadGUI = new idSWF( "loading/default", NULL );	
-	
-	if ( g_demoMode.GetBool() ) {
-		hellMap = false;
-		if ( loadGUI != NULL ) {					
-			const idMaterial * defaultMat = declManager->FindMaterial( "guis/assets/loadscreens/default" );
-			renderSystem->LoadLevelImages();
-			
-			loadGUI->Activate( true );
-			idSWFSpriteInstance * bgImg = loadGUI->GetRootObject().GetSprite( "bgImage" );
-			if ( bgImg != NULL ) {
-				bgImg->SetMaterial( defaultMat );
-			}
-		}
-		defaultLoadscreen = true;
-		return;
-	}
 
 	// load / program a gui to stay up on the screen while loading
 	idStrStatic< MAX_OSPATH > stripped = mapName;
@@ -493,7 +475,7 @@ void idCommonLocal::ExecuteMapChange() {
 		manifest.LoadManifest( manifestName );
 		renderSystem->Preload( manifest, currentMapName );
 		soundSystem->Preload( manifest );
-		game->Preload( manifest );
+		// game->Preload( manifest );
 	}
 
 	if ( common->IsMultiplayer() ) {
@@ -526,22 +508,22 @@ void idCommonLocal::ExecuteMapChange() {
 
 	// load and spawn all other entities ( from a savegame possibly )
 	if ( mapSpawnData.savegameFile ) {
-		if ( !game->InitFromSaveGame( fullMapName, renderWorld, soundWorld, mapSpawnData.savegameFile, mapSpawnData.stringTableFile, mapSpawnData.savegameVersion ) ) {
-			// If the loadgame failed, end the session, which will force us to go back to the main menu
-			session->QuitMatchToTitle();
-		}
+		// if ( !game->InitFromSaveGame( fullMapName, renderWorld, soundWorld, mapSpawnData.savegameFile, mapSpawnData.stringTableFile, mapSpawnData.savegameVersion ) ) {
+		// 	// If the loadgame failed, end the session, which will force us to go back to the main menu
+		// 	session->QuitMatchToTitle();
+		// }
 	} else {
 		if ( !IsMultiplayer() ) {
-			assert( game->GetLocalClientNum() == 0 );
+			// assert( game->GetLocalClientNum() == 0 );
 			assert( matchParameters.gameMode == GAME_MODE_SINGLEPLAYER );
 			assert( matchParameters.gameMap == GAME_MAP_SINGLEPLAYER );
-			game->SetPersistentPlayerInfo( 0, mapSpawnData.persistentPlayerInfo );
+			// game->SetPersistentPlayerInfo( 0, mapSpawnData.persistentPlayerInfo );
 		}
-		game->SetServerInfo( matchParameters.serverInfo );
-		game->InitFromNewMap( fullMapName, renderWorld, soundWorld, matchParameters.gameMode, Sys_Milliseconds() );
+		// game->SetServerInfo( matchParameters.serverInfo );
+		// game->InitFromNewMap( fullMapName, renderWorld, soundWorld, matchParameters.gameMode, Sys_Milliseconds() );
 	}
 
-	game->Shell_CreateMenu( true );
+	// game->Shell_CreateMenu( true );
 
 	// Reset some values important to multiplayer
 	ResetNetworkingState();
@@ -562,14 +544,14 @@ void idCommonLocal::ExecuteMapChange() {
 	if ( !mapSpawnData.savegameFile ) {
 		// run a single frame to catch any resources that are referenced by events posted in spawn
 		idUserCmdMgr emptyCommandManager;
-		gameReturn_t emptyGameReturn;
+		// gameReturn_t emptyGameReturn;
 		for ( int playerIndex = 0; playerIndex < MAX_PLAYERS; ++playerIndex ) {
 			emptyCommandManager.PutUserCmdForPlayer( playerIndex, usercmd_t() );
 		}
 		if ( IsClient() ) {
-			game->ClientRunFrame( emptyCommandManager, false, emptyGameReturn );
+			// game->ClientRunFrame( emptyCommandManager, false, emptyGameReturn );
 		} else {
-			game->RunFrame( emptyCommandManager, emptyGameReturn );
+			// game->RunFrame( emptyCommandManager, emptyGameReturn );
 		}
 	}
 
@@ -584,12 +566,12 @@ void idCommonLocal::ExecuteMapChange() {
 
 		// In single player, run a bunch of frames to make sure ragdolls are settled
 		idUserCmdMgr emptyCommandManager;
-		gameReturn_t emptyGameReturn;
+		// gameReturn_t emptyGameReturn;
 		for ( int i = 0; i < 100; i++ ) {
 			for ( int playerIndex = 0; playerIndex < MAX_PLAYERS; ++playerIndex ) {
 				emptyCommandManager.PutUserCmdForPlayer( playerIndex, usercmd_t() );
 			}
-			game->RunFrame( emptyCommandManager, emptyGameReturn );
+			// game->RunFrame( emptyCommandManager, emptyGameReturn );
 		}
 
 		// kick off an auto-save of the game (so we can always continue in this map if we die before hitting an autosave)
@@ -791,11 +773,11 @@ bool idCommonLocal::SaveGame( const char * saveName ) {
 		return false;
 	}
 
-	const idDict & persistentPlayerInfo = game->GetPersistentPlayerInfo( 0 );
-	if ( persistentPlayerInfo.GetInt( "health" ) <= 0 ) {
-		common->Printf( "You must be alive to save the game\n" );
-		return false;
-	}
+	// const idDict & persistentPlayerInfo = game->GetPersistentPlayerInfo( 0 );
+	// if ( persistentPlayerInfo.GetInt( "health" ) <= 0 ) {
+	// 	common->Printf( "You must be alive to save the game\n" );
+	// 	return false;
+	// }
 
 	soundWorld->Pause();
 	soundSystem->SetPlayingSoundWorld( menuSoundWorld );
@@ -835,15 +817,15 @@ bool idCommonLocal::SaveGame( const char * saveName ) {
 
 	saveFile.WriteBool( consoleUsed );
 
-	game->GetServerInfo().WriteToFileHandle( &saveFile );
+	// game->GetServerInfo().WriteToFileHandle( &saveFile );
 
 	// let the game save its state
-	game->SaveGame( pipelineFile, &stringsFile );
+	// game->SaveGame( pipelineFile, &stringsFile );
 
 	pipelineFile->Finish();
 
 	idSaveGameDetails gameDetails;
-	game->GetSaveGameDetails( gameDetails );
+	// game->GetSaveGameDetails( gameDetails );
 
 	gameDetails.descriptors.Set( SAVEGAME_DETAIL_FIELD_LANGUAGE, sys_lang.GetString() );
 	gameDetails.descriptors.SetInt( SAVEGAME_DETAIL_FIELD_CHECKSUM, (int)gameDetails.descriptors.Checksum() );
@@ -1010,7 +992,7 @@ void idCommonLocal::OnSaveCompleted( idSaveLoadParms & parms ) {
 	pipelineFile = NULL;
 
 	if ( parms.GetError() == SAVEGAME_E_NONE ) {
-		game->Shell_UpdateSavedGames();
+		// game->Shell_UpdateSavedGames();
 	}
 
 	if ( !HandleCommonErrors( parms ) ) {
@@ -1099,7 +1081,7 @@ idCommonLocal::OnEnumerationCompleted
 */
 void idCommonLocal::OnEnumerationCompleted( idSaveLoadParms & parms ) {
 	if ( parms.GetError() == SAVEGAME_E_NONE ) {
-		game->Shell_UpdateSavedGames();
+		// game->Shell_UpdateSavedGames();
 	}
 }
 
@@ -1110,7 +1092,7 @@ idCommonLocal::OnDeleteCompleted
 */
 void idCommonLocal::OnDeleteCompleted( idSaveLoadParms & parms ) {
 	if ( parms.GetError() == SAVEGAME_E_NONE ) {
-		game->Shell_UpdateSavedGames();
+		// game->Shell_UpdateSavedGames();
 	}
 }
 
@@ -1153,9 +1135,6 @@ Common_RestartMap_f
 ==================
 */
 CONSOLE_COMMAND_SHIP( restartMap, "restarts the current map", NULL ) {
-	if ( g_demoMode.GetBool() ) {
-		cmdSystem->AppendCommandText( va( "devmap %s %d\n", commonLocal.GetCurrentMapName(), 0 ) );
-	}
 }
 
 /*

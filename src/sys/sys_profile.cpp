@@ -261,9 +261,9 @@ void idProfileMgr::OnSaveSettingsCompleted( idSaveLoadParms * parms ) {
 	if ( parms->GetError() != SAVEGAME_E_NONE ) {
 		common->Dialog().AddDialog( GDM_PROFILE_SAVE_ERROR, DIALOG_CONTINUE, NULL, NULL, false );
 	}
-	if ( game ) {
-		game->Shell_UpdateSavedGames();
-	}
+	// if ( game ) {
+	// 	game->Shell_UpdateSavedGames();
+	// }
 }
 
 /*

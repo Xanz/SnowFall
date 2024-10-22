@@ -120,7 +120,7 @@ bool idDeclEntityDef::Parse( const char *text, const int textLength, bool allowB
 		dict.SetDefaults( &defList[ i ]->dict );
 	}
 
-	game->CacheDictionaryMedia( &dict );
+	// game->CacheDictionaryMedia( &dict );
 
 	return true;
 }

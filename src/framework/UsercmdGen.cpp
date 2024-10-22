@@ -654,11 +654,11 @@ void idUsercmdGenLocal::HandleJoystickAxis(int keyNum, float unclampedValue, flo
 		lookValue = idMath::Pow(value, joy_powerScale.GetFloat());
 	}
 
-	idGame* game = common->Game();
-	if (game != NULL)
-	{
-		lookValue *= game->GetAimAssistSensitivity();
-	}
+	// idGame* game = common->Game();
+	// if (game != NULL)
+	// {
+	// 	// lookValue *= game->GetAimAssistSensitivity();
+	// }
 
 	switch (action)
 	{
@@ -1021,8 +1021,8 @@ void idUsercmdGenLocal::JoystickMove2()
 	const float pitchSpeed = joy_pitchSpeed.GetFloat();
 	const float yawSpeed = joy_yawSpeed.GetFloat();
 
-	idGame* game = common->Game();
-	const float aimAssist = game != NULL ? game->GetAimAssistSensitivity() : 1.0f;
+	// idGame* game = common->Game();
+	// const float aimAssist = game != NULL ? game->GetAimAssistSensitivity() : 1.0f;
 
 	idVec2 leftRaw(joystickAxis[AXIS_LEFT_X], joystickAxis[AXIS_LEFT_Y]);
 	idVec2 rightRaw(joystickAxis[AXIS_RIGHT_X], joystickAxis[AXIS_RIGHT_Y]);
@@ -1045,7 +1045,7 @@ void idUsercmdGenLocal::JoystickMove2()
 	lastLookJoypad = rightRaw;
 
 	idVec2 leftMapped = JoypadFunction(leftRaw, 1.0f, threshold, range, shape, mergedThreshold);
-	idVec2 rightMapped = JoypadFunction(rightRaw, aimAssist, threshold, range, shape, mergedThreshold);
+	// idVec2 rightMapped = JoypadFunction(rightRaw, aimAssist, threshold, range, shape, mergedThreshold);
 
 	// because idPhysics_Player::CmdScale scales mvoement values down so that 1,1 = sqrt(2), sqrt(2),
 	// we need to expand our circular values out to a square
@@ -1055,8 +1055,8 @@ void idUsercmdGenLocal::JoystickMove2()
 	cmd.forwardmove = idMath::ClampChar(cmd.forwardmove + KEY_MOVESPEED * -leftMapped.y);
 	cmd.rightmove = idMath::ClampChar(cmd.rightmove + KEY_MOVESPEED * leftMapped.x);
 
-	viewangles[PITCH] += MS2SEC(pollTime - lastPollTime) * rightMapped.y * pitchSpeed;
-	viewangles[YAW] += MS2SEC(pollTime - lastPollTime) * -rightMapped.x * yawSpeed;
+	// viewangles[PITCH] += MS2SEC(pollTime - lastPollTime) * rightMapped.y * pitchSpeed;
+	// viewangles[YAW] += MS2SEC(pollTime - lastPollTime) * -rightMapped.x * yawSpeed;
 
 	const float triggerThreshold = joy_triggerThreshold.GetFloat();
 	HandleJoystickAxis(K_JOY_TRIGGER1, joystickAxis[AXIS_LEFT_TRIG], triggerThreshold, true);
@@ -1203,11 +1203,11 @@ void idUsercmdGenLocal::AimAssist()
 	// callback to the game to update the aim assist for the current device
 	idAngles aimAssistAngles(0.0f, 0.0f, 0.0f);
 
-	idGame* game = common->Game();
-	if (game != NULL)
-	{
-		game->GetAimAssistAngles(aimAssistAngles);
-	}
+	// idGame* game = common->Game();
+	// if (game != NULL)
+	// {
+	// 	game->GetAimAssistAngles(aimAssistAngles);
+	// }
 
 	viewangles[YAW] += aimAssistAngles.yaw;
 	viewangles[PITCH] += aimAssistAngles.pitch;

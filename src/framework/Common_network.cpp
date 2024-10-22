@@ -133,7 +133,7 @@ void idCommonLocal::SendSnapshots() {
 		return;
 	}
 	idSnapShot ss;
-	game->ServerWriteSnapshot( ss );
+	// game->ServerWriteSnapshot( ss );
 
 	session->SendSnapshot( ss );
 	nextSnapshotSendTime = MSEC_ALIGN_TO_FRAME( currentTime + net_snapRate.GetInteger() );
@@ -207,13 +207,14 @@ idCommonLocal::NetReceiveUsercmds
 ===============
 */
 void idCommonLocal::NetReceiveUsercmds( int peer, idBitMsg & msg ) {
-	int clientNum = Game()->MapPeerToClient( peer );
-	if ( clientNum == -1 ) {
-		idLib::Warning( "NetReceiveUsercmds: Could not find client for peer %d", peer );
-		return;
-	}
+	// TODO: Fix this later.
+	// int clientNum = Game()->MapPeerToClient( peer );
+	// if ( clientNum == -1 ) {
+	// 	idLib::Warning( "NetReceiveUsercmds: Could not find client for peer %d", peer );
+	// 	return;
+	// }
 
-	NetReadUsercmds( clientNum, msg );
+	// NetReadUsercmds( clientNum, msg );
 }
 
 /*
@@ -222,21 +223,22 @@ idCommonLocal::NetReceiveReliable
 ===============
 */
 void idCommonLocal::NetReceiveReliable( int peer, int type, idBitMsg & msg ) {
-	int clientNum = Game()->MapPeerToClient( peer );
+	// TODO: Fix this later.
+	// int clientNum = Game()->MapPeerToClient( peer );
 	// Only servers care about the client num. Band-aid for problems related to the host's peerIndex being -1 on clients.
-	if ( common->IsServer() && clientNum == -1 ) {
-		idLib::Warning( "NetReceiveReliable: Could not find client for peer %d", peer );
-		return;
-	}
+	// if ( common->IsServer() && clientNum == -1 ) {
+	// 	idLib::Warning( "NetReceiveReliable: Could not find client for peer %d", peer );
+	// 	return;
+	// }
 
-	const byte * msgData = msg.GetReadData() + msg.GetReadCount();
-	int msgSize = msg.GetRemainingData();
-	reliableMsg_t & reliable = reliableQueue.Alloc();
-	reliable.client = clientNum;
-	reliable.type = type;
-	reliable.dataSize = msgSize;
-	reliable.data = (byte *)Mem_Alloc( msgSize, TAG_NETWORKING );
-	memcpy( reliable.data, msgData, msgSize );
+	// const byte * msgData = msg.GetReadData() + msg.GetReadCount();
+	// int msgSize = msg.GetRemainingData();
+	// reliableMsg_t & reliable = reliableQueue.Alloc();
+	// reliable.client = clientNum;
+	// reliable.type = type;
+	// reliable.dataSize = msgSize;
+	// reliable.data = (byte *)Mem_Alloc( msgSize, TAG_NETWORKING );
+	// memcpy( reliable.data, msgData, msgSize );
 }
 
 /*
@@ -282,27 +284,27 @@ void idCommonLocal::ProcessSnapshot( idSnapShot & ss ) {
 	*/
 
 	// Read usercmds from other players
-	for ( int p = 0; p < MAX_PLAYERS; p++ ) {
-		if ( p == game->GetLocalClientNum() ) {
-			continue;
-		}
-		idBitMsg msg;
-		if ( ss.GetObjectMsgByID( SNAP_USERCMDS + p, msg ) ) {
-			NetReadUsercmds( p, msg );
-		}
-	}
+	// for ( int p = 0; p < MAX_PLAYERS; p++ ) {
+	// 	if ( p == game->GetLocalClientNum() ) {
+	// 		continue;
+	// 	}
+	// 	idBitMsg msg;
+	// 	if ( ss.GetObjectMsgByID( SNAP_USERCMDS + p, msg ) ) {
+	// 		NetReadUsercmds( p, msg );
+	// 	}
+	// }
 
 
 
 
 	// Set server game time here so that it accurately reflects the time when this frame was saved out, in case any serialize function needs it.
-	int oldTime = Game()->GetServerGameTimeMs();		
-	Game()->SetServerGameTimeMs( snapCurrent.serverTime );
+	// int oldTime = Game()->GetServerGameTimeMs();		
+	// Game()->SetServerGameTimeMs( snapCurrent.serverTime );
 
-	Game()->ClientReadSnapshot( ss ); //, &oldss );
+	// Game()->ClientReadSnapshot( ss ); //, &oldss );
 
-	// Restore server game time
-	Game()->SetServerGameTimeMs( oldTime );
+	// // Restore server game time
+	// Game()->SetServerGameTimeMs( oldTime );
 
 	snapTimeDelta = ss.GetRecvTime() - oldss.GetRecvTime();
 	oldss = ss;
@@ -426,8 +428,8 @@ void idCommonLocal::InterpolateSnapshot( netTimes_t & prev, netTimes_t & next, f
 
 	int serverTime = Lerp( prev.serverTime, next.serverTime, fraction );
 
-	Game()->SetServerGameTimeMs( serverTime );		// Set the global server time to the interpolated time of the server
-	Game()->SetInterpolation( fraction, serverTime, prev.serverTime, next.serverTime );
+	// Game()->SetServerGameTimeMs( serverTime );		// Set the global server time to the interpolated time of the server
+	// Game()->SetInterpolation( fraction, serverTime, prev.serverTime, next.serverTime );
 
 	//Game()->RunFrame( &userCmdMgr, &ret, true );
 	
@@ -442,7 +444,7 @@ void idCommonLocal::RunNetworkSnapshotFrame() {
 
 	// Process any reliable messages we've received
 	for ( int i = 0; i < reliableQueue.Num(); i++ ) {
-		game->ProcessReliableMessage( reliableQueue[i].client, reliableQueue[i].type, idBitMsg( (const byte *)reliableQueue[i].data, reliableQueue[i].dataSize ) );
+		// game->ProcessReliableMessage( reliableQueue[i].client, reliableQueue[i].type, idBitMsg( (const byte *)reliableQueue[i].data, reliableQueue[i].dataSize ) );
 		Mem_Free( reliableQueue[i].data );
 	}
 	reliableQueue.Clear();
@@ -587,7 +589,7 @@ void idCommonLocal::ExecuteReliableMessages() {
 	// Process any reliable messages we've received
 	for ( int i = 0; i < reliableQueue.Num(); i++ ) {
 		reliableMsg_t & reliable = reliableQueue[i];
-		game->ProcessReliableMessage( reliable.client, reliable.type, idBitMsg( (const byte *)reliable.data, reliable.dataSize ) );
+		// game->ProcessReliableMessage( reliable.client, reliable.type, idBitMsg( (const byte *)reliable.data, reliable.dataSize ) );
 		Mem_Free( reliable.data );
 	}
 	reliableQueue.Clear();

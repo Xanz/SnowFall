@@ -275,8 +275,7 @@ public:
 
 	virtual idDemoFile *		ReadDemo() = 0;
 	virtual idDemoFile *		WriteDemo() = 0;
-
-	virtual idGame *			Game() = 0;
+	
 	virtual idRenderWorld *		RW() = 0;
 	virtual idSoundWorld *		SW() = 0;
 	virtual idSoundWorld *		MenuSW() = 0;

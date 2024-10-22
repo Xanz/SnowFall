@@ -111,7 +111,7 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #include "../aas/AASFileManager.h"
 
 // game
-#include "../game/Game.h"
+// #include "../game/Game.h"
 
 // Session / Network
 #include "../sys/LightweightCompression.h"

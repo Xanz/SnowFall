@@ -32,8 +32,6 @@ If you have questions concerning this license or the applicable additional terms
 
 idCVar popupDialog_debug( "popupDialog_debug", "0", CVAR_BOOL | CVAR_ARCHIVE, "display debug spam" );
 
-extern idCVar g_demoMode;
-
 static const char * dialogStateToString[ GDM_MAX + 1 ] = {
 	ASSERT_ENUM_STRING( GDM_INVALID, 0 ),
 	ASSERT_ENUM_STRING( GDM_SWAP_DISKS_TO1, 1 ),
@@ -803,11 +801,7 @@ idStr idCommonDialog::GetDialogMsg( gameDialogMessages_t msg, idStr & message, i
 		case GDM_SP_QUIT_SAVE: {
 			title = idLocalization::GetString( "#str_04215" );
 			title.ToUpper();
-			if ( g_demoMode.GetBool() ) {
-				message = "#str_04145";
-			} else {
-				message = "#str_dlg_quit_progress_lost";
-			}
+			message = "#str_dlg_quit_progress_lost";
 			break;
 		}
 		case GDM_SP_LOAD_SAVE: {

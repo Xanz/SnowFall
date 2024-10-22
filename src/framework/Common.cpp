@@ -72,8 +72,6 @@ idCVar preload_CommonAssets( "preload_CommonAssets", "1", CVAR_SYSTEM | CVAR_BOO
 
 idCVar net_inviteOnly( "net_inviteOnly", "1", CVAR_BOOL | CVAR_ARCHIVE, "whether or not the private server you create allows friends to join or invite only" );
 
-extern idCVar g_demoMode;
-
 idCVar com_engineHz( "com_engineHz", "60", CVAR_FLOAT | CVAR_ARCHIVE, "Frames per second the engine runs at", 10.0f, 1024.0f );
 float com_engineHz_latched = 60.0f; // Latched version of cvar, updated between map loads
 int64 com_engineHz_numerator = 100LL * 1000LL;
@@ -727,9 +725,9 @@ Com_FinishBuild_f
 =================
 */
 CONSOLE_COMMAND( finishBuild, "finishes the build process", NULL ) {
-	if ( game ) {
-		game->CacheDictionaryMedia( NULL );
-	}
+	// if ( game ) {
+	// 	game->CacheDictionaryMedia( NULL );
+	// }
 	globalImages->FinishBuild( ( args.Argc() > 1 ) );
 }
 
@@ -811,67 +809,12 @@ idCommonLocal::LoadGameDLL
 =================
 */
 void idCommonLocal::LoadGameDLL() {
-#ifdef __DOOM_DLL__
-	char			dllPath[ MAX_OSPATH ];
-
-	gameImport_t	gameImport;
-	gameExport_t	gameExport;
-	GetGameAPI_t	GetGameAPI;
-
-	fileSystem->FindDLL( "game", dllPath, true );
-
-	if ( !dllPath[ 0 ] ) {
-		common->FatalError( "couldn't find game dynamic library" );
-		return;
-	}
-	common->DPrintf( "Loading game DLL: '%s'\n", dllPath );
-	gameDLL = sys->DLL_Load( dllPath );
-	if ( !gameDLL ) {
-		common->FatalError( "couldn't load game dynamic library" );
-		return;
-	}
-
-	const char * functionName = "GetGameAPI";
-	GetGameAPI = (GetGameAPI_t) Sys_DLL_GetProcAddress( gameDLL, functionName );
-	if ( !GetGameAPI ) {
-		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
-		common->FatalError( "couldn't find game DLL API" );
-		return;
-	}
-
-	gameImport.version					= GAME_API_VERSION;
-	gameImport.sys						= ::sys;
-	gameImport.common					= ::common;
-	gameImport.cmdSystem				= ::cmdSystem;
-	gameImport.cvarSystem				= ::cvarSystem;
-	gameImport.fileSystem				= ::fileSystem;
-	gameImport.renderSystem				= ::renderSystem;
-	gameImport.soundSystem				= ::soundSystem;
-	gameImport.renderModelManager		= ::renderModelManager;
-	gameImport.uiManager				= ::uiManager;
-	gameImport.declManager				= ::declManager;
-	gameImport.AASFileManager			= ::AASFileManager;
-	gameImport.collisionModelManager	= ::collisionModelManager;
-
-	gameExport							= *GetGameAPI( &gameImport );
-
-	if ( gameExport.version != GAME_API_VERSION ) {
-		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
-		common->FatalError( "wrong game DLL API version" );
-		return;
-	}
-
-	game								= gameExport.game;
-	gameEdit							= gameExport.gameEdit;
-
-#endif
+	// We probably will need to restore the old game DLL functionality when we come to start working on the game.
 
 	// initialize the game object
-	if ( game != NULL ) {
-		game->Init();
-	}
+	// if ( game != NULL ) {
+	// 	game->Init();
+	// }
 }
 
 /*
@@ -880,9 +823,9 @@ idCommonLocal::UnloadGameDLL
 =================
 */
 void idCommonLocal::CleanupShell() {
-	if ( game != NULL ) {
-		game->Shell_Cleanup();
-	}
+	// if ( game != NULL ) {
+	// 	game->Shell_Cleanup();
+	// }
 }
 
 /*
@@ -893,20 +836,9 @@ idCommonLocal::UnloadGameDLL
 void idCommonLocal::UnloadGameDLL() {
 
 	// shut down the game object
-	if ( game != NULL ) {
-		game->Shutdown();
-	}
-
-#ifdef __DOOM_DLL__
-
-	if ( gameDLL ) {
-		Sys_DLL_Unload( gameDLL );
-		gameDLL = NULL;
-	}
-	game = NULL;
-	gameEdit = NULL;
-
-#endif
+	// if ( game != NULL ) {
+	// 	game->Shutdown();
+	// }
 }
 
 /*
@@ -1023,7 +955,7 @@ void idCommonLocal::Init( int argc, const char * const * argv, const char *cmdli
 
 #ifdef CONFIG_FILE
 		// skip the config file if "safe" is on the command line
-		if ( !SafeMode() && !g_demoMode.GetBool() ) {
+		if ( !SafeMode() ) {
 			cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "exec " CONFIG_FILE "\n" );
 		}
 #endif
@@ -1138,9 +1070,9 @@ void idCommonLocal::Init( int argc, const char * const * argv, const char *cmdli
 		InitializeMPMapsModes();
 
 		// leaderboards need to be initialized after InitializeMPMapsModes, which populates the MP Map list.
-		if( game != NULL ) {
-			game->Leaderboards_Init();
-		}
+		// if( game != NULL ) {
+		// 	game->Leaderboards_Init();
+		// }
 
 		CreateMainMenu();
 
@@ -1167,7 +1099,6 @@ void idCommonLocal::Init( int argc, const char * const * argv, const char *cmdli
 
 		CheckStartupStorageRequirements();
 
-
 		if ( preload_CommonAssets.GetBool() && fileSystem->UsingResourceFiles() ) {
 			idPreloadManifest manifest;
 			manifest.LoadManifest( "_common.preload" );
@@ -1177,21 +1108,7 @@ void idCommonLocal::Init( int argc, const char * const * argv, const char *cmdli
 
 		fileSystem->EndLevelLoad();
 
-		// Initialize support for Doom classic.
-		doomClassicMaterial = declManager->FindMaterial( "_doomClassic" );
-		idImage *image = globalImages->GetImage( "_doomClassic" );
-		if ( image != NULL ) {
-			idImageOpts opts;
-			opts.format = FMT_RGBA8;
-			opts.colorFormat = CFM_DEFAULT;
-			opts.width = DOOMCLASSIC_RENDERWIDTH;
-			opts.height = DOOMCLASSIC_RENDERHEIGHT;
-			opts.numLevels = 1;
-			image->AllocImage( opts, TF_LINEAR, TR_REPEAT );
-		}
-
 		com_fullyInitialized = true;
-
 
 		// No longer need the splash screen
 		if ( splashScreen != NULL ) {
@@ -1269,10 +1186,10 @@ void idCommonLocal::Shutdown() {
 	session->Shutdown();
 
 	// shutdown, deallocate leaderboard definitions.
-	if( game != NULL ) {
-		printf( "game->Leaderboards_Shutdown();\n" );
-		game->Leaderboards_Shutdown();
-	}
+	// if( game != NULL ) {
+	// 	printf( "game->Leaderboards_Shutdown();\n" );
+	// 	game->Leaderboards_Shutdown();
+	// }
 
 	// shut down the user interfaces
 	printf( "uiManager->Shutdown();\n" );
@@ -1357,25 +1274,26 @@ idCommonLocal::CreateMainMenu
 ========================
 */
 void idCommonLocal::CreateMainMenu() {
-	if ( game != NULL ) {
-		// note which media we are going to need to load
-		declManager->BeginLevelLoad();
-		renderSystem->BeginLevelLoad();
-		soundSystem->BeginLevelLoad();
-		uiManager->BeginLevelLoad();
+	// Load main menu
+	// if ( game != NULL ) {
+	// 	// note which media we are going to need to load
+	// 	declManager->BeginLevelLoad();
+	// 	renderSystem->BeginLevelLoad();
+	// 	soundSystem->BeginLevelLoad();
+	// 	uiManager->BeginLevelLoad();
 		
-		// create main inside an "empty" game level load - so assets get
-		// purged automagically when we transition to a "real" map
-		game->Shell_CreateMenu( false );
-		game->Shell_Show( true );
-		game->Shell_SyncWithSession();
+	// 	// create main inside an "empty" game level load - so assets get
+	// 	// purged automagically when we transition to a "real" map
+	// 	game->Shell_CreateMenu( false );
+	// 	game->Shell_Show( true );
+	// 	game->Shell_SyncWithSession();
 
-		// load
-		renderSystem->EndLevelLoad();
-		soundSystem->EndLevelLoad();
-		declManager->EndLevelLoad();
-		uiManager->EndLevelLoad( "" );
-	}
+	// 	// load
+	// 	renderSystem->EndLevelLoad();
+	// 	soundSystem->EndLevelLoad();
+	// 	declManager->EndLevelLoad();
+	// 	uiManager->EndLevelLoad( "" );
+	// }
 }
 
 /*
@@ -1477,31 +1395,31 @@ idCommonLocal::ProcessEvent
 */
 bool idCommonLocal::ProcessEvent( const sysEvent_t *event ) {
 	// hitting escape anywhere brings up the menu
-	if ( game && game->IsInGame() ) {
-		if ( event->evType == SE_KEY && event->evValue2 == 1 && ( event->evValue == K_ESCAPE || event->evValue == K_JOY9 ) ) {
-			if ( !game->Shell_IsActive() ) {
+	// if ( game && game->IsInGame() ) {
+	// 	if ( event->evType == SE_KEY && event->evValue2 == 1 && ( event->evValue == K_ESCAPE || event->evValue == K_JOY9 ) ) {
+	// 		if ( !game->Shell_IsActive() ) {
 
-				// menus / etc
-				if ( MenuEvent( event ) ) {
-					return true;
-				}
+	// 			// menus / etc
+	// 			if ( MenuEvent( event ) ) {
+	// 				return true;
+	// 			}
 
-				console->Close();
+	// 			console->Close();
 
-				StartMenu();
-				return true;
-			} else {
-				console->Close();
+	// 			StartMenu();
+	// 			return true;
+	// 		} else {
+	// 			console->Close();
 
-				// menus / etc
-				if ( MenuEvent( event ) ) {
-					return true;
-				}
+	// 			// menus / etc
+	// 			if ( MenuEvent( event ) ) {
+	// 				return true;
+	// 			}
 
-				game->Shell_ClosePause();
-			}
-		} 
-	}
+	// 			game->Shell_ClosePause();
+	// 		}
+	// 	} 
+	// }
 
 	// let the pull-down console take it if desired
 	if ( console->ProcessEvent( event, false ) ) {
@@ -1552,39 +1470,6 @@ idCommonLocal::SwitchToGame
 */
 void idCommonLocal::SwitchToGame( currentGame_t newGame ) {
 	idealCurrentGame = newGame;
-}
-
-/*
-========================
-idCommonLocal::PerformGameSwitch
-========================
-*/
-void idCommonLocal::PerformGameSwitch() {
-	// If the session state is past the menu, we should be in Doom 3.
-	// This will happen if, for example, we accept an invite while playing
-	// Doom or Doom 2.
-	if ( session->GetState() > idSession::IDLE ) {
-		idealCurrentGame = DOOM3_BFG;
-	}
-
-	if ( currentGame == idealCurrentGame ) {
-		return;
-	}
-		com_engineHz_denominator = 100LL * com_engineHz.GetFloat();
-		com_engineHz_latched = com_engineHz.GetFloat();
-		
-		// Don't MoveToPressStart if we have an invite, we need to go
-		// directly to the lobby.
-		if ( session->GetState() <= idSession::IDLE ) {
-			session->MoveToPressStart();
-		}
-
-		// Unpause Doom 3 sound.
-		if ( menuSoundWorld != NULL ) {
-			menuSoundWorld->UnPause();
-		}
-
-	currentGame = idealCurrentGame;
 }
 
 /*

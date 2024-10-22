@@ -46,14 +46,13 @@ public:
 		threadGameTime(),
 		threadRenderTime(),
 		userCmdMgr( NULL ),
-		ret(),
 		numGameFrames(),
 		isClient()
 	{}
 
 	// the gameReturn_t is from the previous frame, the
 	// new frame will be running in parallel on exit
-	gameReturn_t	RunGameAndDraw( int numGameFrames, idUserCmdMgr & userCmdMgr_, bool isClient_, int startGameFrame );
+	void	RunGameAndDraw( int numGameFrames, idUserCmdMgr & userCmdMgr_, bool isClient_, int startGameFrame );
 
 	// Accessors to the stored frame/thread time information
 	void			SetThreadTotalTime( const int inTime ) { threadTime = inTime; }
@@ -74,7 +73,6 @@ private:
 	int				threadGameTime;				// game time only
 	int				threadRenderTime;			// render fg time only
 	idUserCmdMgr *	userCmdMgr;
-	gameReturn_t	ret;
 	int				numGameFrames;
 	bool			isClient;
 };
@@ -167,8 +165,7 @@ public:
 
 	virtual idDemoFile *		ReadDemo() { return readDemo; }
 	virtual idDemoFile *		WriteDemo() { return writeDemo; }
-
-	virtual idGame *			Game() { return game; }
+	
 	virtual idRenderWorld *		RW() { return renderWorld; }
 	virtual idSoundWorld *		SW() { return soundWorld; }
 	virtual idSoundWorld *		MenuSW() { return menuSoundWorld; }
@@ -453,7 +450,7 @@ private:
 
 	void	AdvanceRenderDemo( bool singleFrameOnly );
 
-	void	ProcessGameReturn( const gameReturn_t & ret );
+	// void	ProcessGameReturn( const gameReturn_t & ret );
 
 	void	RunNetworkSnapshotFrame();
 	void	ExecuteReliableMessages();
@@ -493,12 +490,6 @@ private:
 	void	PlayIntroGui();
 	
 	void	ScrubSaveGameFileName( idStr &saveFileName ) const;
-
-	// Doom classic support
-	void	RunDoomClassicFrame();
-	void	RenderDoomClassic();
-	bool	IsPlayingDoomClassic() const { return GetCurrentGame() != DOOM3_BFG; }
-	void	PerformGameSwitch();
 };
 
 extern idCommonLocal commonLocal;

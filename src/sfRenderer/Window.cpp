@@ -135,8 +135,8 @@ void Window::MouseKey_Callback(GLFWwindow* window, int button, int action, int m
         int state = action == GLFW_PRESS ? 1 : 0;
 
         // UI seems to use K_MOUSE1 instead of M_ACTION1
-        if (game->Shell_IsActive())
-        {
+        // if (game->Shell_IsActive())
+        // {
             switch (button)
             {
             case GLFW_MOUSE_BUTTON_LEFT:
@@ -155,28 +155,28 @@ void Window::MouseKey_Callback(GLFWwindow* window, int button, int action, int m
                 key = K_MOUSE5;
                 break;
             }
-        }
-        else
-        {
-            switch (button)
-            {
-            case GLFW_MOUSE_BUTTON_LEFT:
-                key = M_ACTION1;
-                break;
-            case GLFW_MOUSE_BUTTON_RIGHT:
-                key = M_ACTION2;
-                break;
-            case GLFW_MOUSE_BUTTON_MIDDLE:
-                key = M_ACTION3;
-                break;
-            case GLFW_MOUSE_BUTTON_4:
-                key = M_ACTION4;
-                break;
-            case GLFW_MOUSE_BUTTON_5:
-                key = M_ACTION5;
-                break;
-            }
-        }
+        // }
+        // else
+        // {
+            // switch (button)
+            // {
+            // case GLFW_MOUSE_BUTTON_LEFT:
+            //     key = M_ACTION1;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_RIGHT:
+            //     key = M_ACTION2;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_MIDDLE:
+            //     key = M_ACTION3;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_4:
+            //     key = M_ACTION4;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_5:
+            //     key = M_ACTION5;
+            //     break;
+            // }
+        // }
 
         s_MousePolls.emplace_back(mousePoll_t(key, state));
         Sys_QueEvent(SE_KEY, key, state, 0, NULL, 0);

@@ -52,7 +52,7 @@ private:
 	idRenderWorld *world;
 	renderEntity_t worldEntity;
 	renderLight_t rLight;
-	const idMD5Anim *modelAnim;
+	// const idMD5Anim *modelAnim;
 
 	qhandle_t	worldModelDef;
 	qhandle_t	lightDef;

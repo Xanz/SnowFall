@@ -56,7 +56,7 @@ void idRenderWindow::CommonInit() {
 	lightColor = idVec4(1.0f, 1.0f, 1.0f, 1.0f);
 	modelOrigin.Zero();
 	viewOffset = idVec4(-128.0f, 0.0f, 0.0f, 1.0f);
-	modelAnim = NULL;
+	// modelAnim = NULL;
 	animLength = 0;
 	animEndTime = -1;
 	modelDef = -1;
@@ -73,11 +73,11 @@ void idRenderWindow::BuildAnimation(int time) {
 	if (animName.Length() && animClass.Length()) {
 		worldEntity.numJoints = worldEntity.hModel->NumJoints();
 		worldEntity.joints = ( idJointMat * )Mem_Alloc16( SIMD_ROUND_JOINTS( worldEntity.numJoints ) * sizeof( *worldEntity.joints ), TAG_JOINTMAT );
-		modelAnim = gameEdit->ANIM_GetAnimFromEntityDef( animClass, animName );
-		if ( modelAnim ) {
-			animLength = gameEdit->ANIM_GetLength( modelAnim );
-			animEndTime = time + animLength;
-		}
+		// modelAnim = gameEdit->ANIM_GetAnimFromEntityDef( animClass, animName );
+		// if ( modelAnim ) {
+		// 	animLength = gameEdit->ANIM_GetLength( modelAnim );
+		// 	animEndTime = time + animLength;
+		// }
 	}
 	updateAnimation = false;
 
@@ -91,7 +91,7 @@ void idRenderWindow::PreRender() {
 		spawnArgs.Set("name", "light_1");
 		spawnArgs.Set("origin", lightOrigin.ToVec3().ToString());
 		spawnArgs.Set("_color", lightColor.ToVec3().ToString());
-		gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &rLight );
+		// gameEdit->ParseSpawnArgsToRenderLight( &spawnArgs, &rLight );
 		lightDef = world->AddLightDef( &rLight );
 		if ( !modelName[0] ) {
 			common->Warning( "Window '%s' in gui '%s': no model set", GetName(), GetGui()->GetSourceFile() );
@@ -101,7 +101,7 @@ void idRenderWindow::PreRender() {
 		spawnArgs.Set("classname", "func_static");
 		spawnArgs.Set("model", modelName);
 		spawnArgs.Set("origin", modelOrigin.c_str());
-		gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &worldEntity );
+		// gameEdit->ParseSpawnArgsToRenderEntity( &spawnArgs, &worldEntity );
 		if ( worldEntity.hModel ) {
 			idVec3 v = modelRotate.ToVec3();
 			worldEntity.axis = v.ToMat3();
@@ -125,12 +125,12 @@ void idRenderWindow::Render( int time ) {
 		if (updateAnimation) {
 			BuildAnimation(time);
 		}
-		if (modelAnim) {
-			if (time > animEndTime) {
-				animEndTime = time + animLength;
-			}
-			gameEdit->ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), vec3_origin, false );
-		}
+		// if (modelAnim) {
+		// 	if (time > animEndTime) {
+		// 		animEndTime = time + animLength;
+		// 	}
+		// 	gameEdit->ANIM_CreateAnimFrame(worldEntity.hModel, modelAnim, worldEntity.numJoints, worldEntity.joints, animLength - (animEndTime - time), vec3_origin, false );
+		// }
 		worldEntity.axis = idAngles(modelRotate.x(), modelRotate.y(), modelRotate.z()).ToMat3();
 		world->UpdateEntityDef(modelDef, &worldEntity);
 	}

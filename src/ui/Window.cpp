@@ -2675,15 +2675,16 @@ bool idWindow::Parse(idTokenParser* src, bool rebuild)
 			// D3 could render a 3D model in a subrect of a full screen
 			// GUI for the main menus, but we have cut that ability so
 			// we don't need to deal with offset viewports on all platforms.
-			idRenderWindow* win = new(TAG_OLD_UI) idRenderWindow(gui);
-			SaveExpressionParseState();
-			win->Parse(src, rebuild);
-			RestoreExpressionParseState();
-			AddChild(win);
-			win->SetParent(this);
-			dwt.simp = NULL;
-			dwt.win = win;
-			drawWindows.Append(dwt);
+			// idRenderWindow* win = new(TAG_OLD_UI) idRenderWindow(gui);
+			// SaveExpressionParseState();
+			// win->Parse(src, rebuild);
+			// RestoreExpressionParseState();
+			// AddChild(win);
+			// win->SetParent(this);
+			// dwt.simp = NULL;
+			// dwt.win = win;
+			// drawWindows.Append(dwt);
+			common->Error("Tried to create a 3D Render in a GUI.");
 		}
 		else if (token == "gameSSDDef")
 		{

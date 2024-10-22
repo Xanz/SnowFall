@@ -1,18 +1,6 @@
 cmake_minimum_required(VERSION 3.13.0)
 project(SnowFall LANGUAGES C CXX)
 
-file(GLOB D3GAME src/game/*.cpp src/game/*.h src/game/Game.def)
-file(GLOB D3GAME_AI src/game/ai/*.cpp src/game/ai/*.h)
-file(GLOB D3GAME_ANIM src/game/anim/*.cpp src/game/anim/*.h)
-file(GLOB D3GAME_GAMESYS src/game/gamesys/*.cpp src/game/gamesys/*.h)
-
-# Removes callbacks. This is manually included in the right place.
-list(REMOVE_ITEM D3GAME_GAMESYS "${CMAKE_SOURCE_DIR}/src/game/gamesys/Callbacks.cpp")
-
-file(GLOB D3GAME_MENUS src/game/menus/*.cpp src/game/menus/*.h)
-file(GLOB D3GAME_PHYS src/game/physics/*.cpp src/game/physics/*.h)
-file(GLOB D3GAME_SCRIPT src/game/script/*.cpp src/game/script/*.h)
-
 file(GLOB_RECURSE AAS src/aas/*.cpp src/aas/*.h)
 file(GLOB_RECURSE CM src/cm/*.cpp src/cm/*.h)
 file(GLOB_RECURSE FRAMEWORK src/framework/*.cpp src/framework/*.h)
@@ -26,13 +14,6 @@ file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
 file(GLOB_RECURSE SFRenderer src/sfRenderer/*.cpp src/sfRenderer/*.h)
 
 set(D3Source
-        ${D3GAME}
-        ${D3GAME_AI}
-        ${D3GAME_ANIM}
-        ${D3GAME_GAMESYS}
-        ${D3GAME_MENUS}
-        ${D3GAME_PHYS}
-        ${D3GAME_SCRIPT}
         ${FRAMEWORK}
         ${IDLIB}
         ${AAS}
