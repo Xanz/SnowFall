@@ -1785,7 +1785,7 @@ void R_TouchGui_f(const idCmdArgs &args)
 	common->Printf("touchGui %s\n", gui);
 	const bool captureToImage = false;
 	common->UpdateScreen(captureToImage);
-	uiManager->Touch(gui);
+	// uiManager->Touch(gui);
 }
 
 /*
@@ -2237,7 +2237,7 @@ idRenderSystemLocal::Preload
 void idRenderSystemLocal::Preload(const idPreloadManifest &manifest, const char *mapName)
 {
 	globalImages->Preload(manifest, true);
-	uiManager->Preload(mapName);
+	// uiManager->Preload(mapName);
 	renderModelManager->Preload(manifest);
 }
 

@@ -136,8 +136,6 @@ idCommonLocal::idCommonLocal() : readSnapshotIndex(0),
 	rd_flush = NULL;
 
 	gameDLL = 0;
-
-	loadGUI = NULL;
 	nextLoadTip = 0;
 	isHellMap = false;
 	wipeForced = false;
@@ -643,21 +641,7 @@ void idCommonLocal::CheckStartupStorageRequirements()
 
 	if ((int64)(requiredSizeBytes - availableSpace) > 0)
 	{
-		class idSWFScriptFunction_Continue : public idSWFScriptFunction_RefCounted
-		{
-		public:
-			virtual ~idSWFScriptFunction_Continue() {}
-			idSWFScriptVar Call(idSWFScriptObject *thisObject, const idSWFParmList &parms)
-			{
-				common->Dialog().ClearDialog(GDM_INSUFFICENT_STORAGE_SPACE);
-				common->Quit();
-				return idSWFScriptVar();
-			}
-		};
-
-		idStaticList<idSWFScriptFunction *, 4> callbacks;
 		idStaticList<idStrId, 4> optionText;
-		callbacks.Append(new (TAG_SWF) idSWFScriptFunction_Continue());
 		optionText.Append(idStrId("#STR_SWF_ACCEPT"));
 
 		// build custom space required string
@@ -673,8 +657,6 @@ void idCommonLocal::CheckStartupStorageRequirements()
 			size = va("%.1f KB", (float)requiredSizeBytes / 1024.0f + 0.1f);
 		}
 		idStr msg = va(format.c_str(), size.c_str());
-
-		common->Dialog().AddDynamicDialog(GDM_INSUFFICENT_STORAGE_SPACE, callbacks, optionText, true, msg);
 	}
 
 	session->GetAchievementSystem().Start();
@@ -1115,8 +1097,6 @@ void idCommonLocal::Init(int argc, const char *const *argv, const char *cmdline)
 
 		CreateMainMenu();
 
-		commonDialog.Init();
-
 		// load the console history file
 		consoleHistory.LoadHistoryFile();
 
@@ -1191,10 +1171,6 @@ void idCommonLocal::Shutdown()
 	printf("CleanupShell();\n");
 	CleanupShell();
 
-	printf("delete loadGUI;\n");
-	delete loadGUI;
-	loadGUI = NULL;
-
 	printf("delete renderWorld;\n");
 	delete renderWorld;
 	renderWorld = NULL;
@@ -1212,16 +1188,6 @@ void idCommonLocal::Shutdown()
 	session->ShutdownSoundRelatedSystems();
 	printf("session->Shutdown();\n");
 	session->Shutdown();
-
-	// shutdown, deallocate leaderboard definitions.
-	// if( game != NULL ) {
-	// 	printf( "game->Leaderboards_Shutdown();\n" );
-	// 	game->Leaderboards_Shutdown();
-	// }
-
-	// shut down the user interfaces
-	printf("uiManager->Shutdown();\n");
-	uiManager->Shutdown();
 
 	// shut down the sound system
 	printf("soundSystem->Shutdown();\n");
@@ -1242,9 +1208,6 @@ void idCommonLocal::Shutdown()
 	// shut down the renderSystem
 	printf("renderSystem->Shutdown();\n");
 	renderSystem->Shutdown();
-
-	printf("commonDialog.Shutdown();\n");
-	commonDialog.Shutdown();
 
 	// unload the game dll
 	printf("UnloadGameDLL();\n");
@@ -1467,12 +1430,6 @@ bool idCommonLocal::ProcessEvent(const sysEvent_t *event)
 		return true;
 	}
 
-	if (Dialog().IsDialogActive())
-	{
-		Dialog().HandleDialogEvent(event);
-		return true;
-	}
-
 	// menus / etc
 	if (MenuEvent(event))
 	{
@@ -1533,7 +1490,6 @@ CONSOLE_COMMAND(writePrecache, "writes precache commands", NULL)
 	idFile *f = fileSystem->OpenFileWrite(str);
 	declManager->WritePrecacheCommands(f);
 	renderModelManager->WritePrecacheCommands(f);
-	uiManager->WritePrecacheCommands(f);
 
 	fileSystem->CloseFile(f);
 }

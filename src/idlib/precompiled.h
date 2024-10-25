@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 BFG Edition GPL Source Code
-Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -40,8 +40,6 @@ If you have questions concerning this license or the applicable additional terms
 //-----------------------------------------------------
 
 #define ID_TIME_T int64 // Signed because -1 means "File not found" and we don't want that to compare > than any other time
-
-
 
 // non-portable system services
 #include "../sys/sys_public.h"
@@ -97,12 +95,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 // sound engine
 #include "../sound/sound.h"
 
-// user interfaces
-#include "../ui/ListGUI.h"
-#include "../ui/UserInterface.h"
-
-#include "../swf/SWF.h"
-
 // collision detection system
 #include "../cm/CollisionModel.h"
 
@@ -149,7 +141,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 #include "../framework/DebugGraph.h"
 #include "../framework/Console.h"
 #include "../framework/DemoFile.h"
-#include "../framework/Common_dialog.h"
 
 #endif /* !GAME_DLL */
 
@@ -159,6 +150,6 @@ const int MAX_EXPRESSION_REGISTERS = 4096;
 
 #undef min
 #undef max
-#include <algorithm>	// for min / max / swap
+#include <algorithm> // for min / max / swap
 
 #endif /* !__PRECOMPILED_H__ */
