@@ -2,14 +2,11 @@
 
 #include <string>
 
+Renderer s_Renderer;
+
 void Renderer::Init()
 {
-  glewExperimental = GL_TRUE;
-  GLenum err = glewInit();
-  if (GLEW_OK != err)
-  {
-    common->FatalError("Could not init graphics API!");
-  }
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_MULTISAMPLE);
+    // grab the instance
+    m_Instance = std::make_unique<VulkanInstance>("SFEditor");
+    m_Debugger = std::make_unique<VulkanDebug>();
 }

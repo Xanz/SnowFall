@@ -39,11 +39,14 @@ add_compile_definitions(_CRT_SECURE_NO_WARNINGS)
 add_compile_definitions(_CRT_NONSTDC_NO_DEPRECATE)
 add_compile_definitions(GLEW_STATIC)
 
-include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build external/glew/include external/glfw/include)
+# Find Vulkan
+find_package(Vulkan REQUIRED)
+
+include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC external/openal/include external/jpeg-6/include external/zlib external/zlib/build external/glew/include external/glfw/include ${Vulkan_INCLUDE_DIRS})
 
 link_directories(external/openal/build/Release external/jpeg-6/build/Release external/zlib/build/Release external/glew/lib external/glfw/build/src/Release)
 
-set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32s glfw3)
+set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32s glfw3 Vulkan::Vulkan)
 
 add_executable(${PROJECT_NAME} ${D3Source})
 

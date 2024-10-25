@@ -870,10 +870,6 @@ extern glconfig_t glConfig; // outside of TR since it shouldn't be cleared durin
 extern idCVar r_debugContext; // enable various levels of context debug
 extern idCVar r_glDriver; // "opengl32", etc
 extern idCVar r_skipIntelWorkarounds; // skip work arounds for Intel driver bugs
-extern idCVar r_vidMode; // video mode number
-extern idCVar r_displayRefresh; // optional display refresh rate option for vid mode
-extern idCVar r_fullscreen; // 0 = windowed, 1 = full screen
-extern idCVar r_multiSamples; // number of antialiasing samples
 
 extern idCVar r_znear; // near Z clip plane
 

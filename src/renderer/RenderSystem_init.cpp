@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 BFG Edition GPL Source Code
-Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -35,60 +35,53 @@ If you have questions concerning this license or the applicable additional terms
 #include "../sys/win32/win_local.h"
 
 // DeviceContext bypasses RenderSystem to work directly with this
-idGuiModel* tr_guiModel;
+idGuiModel *tr_guiModel;
 
 // functions that are not called every frame
 glconfig_t glConfig;
 
 idCVar r_requestStereoPixelFormat("r_requestStereoPixelFormat", "1", CVAR_RENDERER,
-                                  "Ask for a stereo GL pixel format on startup");
+								  "Ask for a stereo GL pixel format on startup");
 idCVar r_debugContext("r_debugContext", "0", CVAR_RENDERER, "Enable various levels of context debug.");
 idCVar r_glDriver("r_glDriver", "", CVAR_RENDERER, "\"opengl32\", etc.");
 idCVar r_skipIntelWorkarounds("r_skipIntelWorkarounds", "0", CVAR_RENDERER | CVAR_BOOL,
-                              "skip workarounds for Intel driver bugs");
-idCVar r_multiSamples("r_multiSamples", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
-                      "number of antialiasing samples");
-idCVar r_vidMode("r_vidMode", "0", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_INTEGER, "fullscreen video mode number", 0, 1);
-idCVar r_displayRefresh("r_displayRefresh", "0", CVAR_RENDERER | CVAR_INTEGER | CVAR_NOCHEAT,
-                        "optional display refresh rate option for vid mode", 0.0f, 240.0f);
-idCVar r_fullscreen("r_fullscreen", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
-                    "0 = windowed, 1 = full screen on monitor 1, 2 = full screen on monitor 2, etc");
+							  "skip workarounds for Intel driver bugs");
 
 idCVar r_useViewBypass("r_useViewBypass", "1", CVAR_RENDERER | CVAR_INTEGER, "bypass a frame of latency to the view");
 idCVar r_useLightPortalFlow("r_useLightPortalFlow", "1", CVAR_RENDERER | CVAR_BOOL,
-                            "use a more precise area reference determination");
+							"use a more precise area reference determination");
 idCVar r_singleTriangle("r_singleTriangle", "0", CVAR_RENDERER | CVAR_BOOL,
-                        "only draw a single triangle per primitive");
+						"only draw a single triangle per primitive");
 idCVar r_checkBounds("r_checkBounds", "0", CVAR_RENDERER | CVAR_BOOL,
-                     "compare all surface bounds with precalculated ones");
+					 "compare all surface bounds with precalculated ones");
 idCVar r_useConstantMaterials("r_useConstantMaterials", "1", CVAR_RENDERER | CVAR_BOOL,
-                              "use pre-calculated material registers if possible");
+							  "use pre-calculated material registers if possible");
 idCVar r_useSilRemap("r_useSilRemap", "1", CVAR_RENDERER | CVAR_BOOL,
-                     "consider verts with the same XYZ, but different ST the same for shadows");
+					 "consider verts with the same XYZ, but different ST the same for shadows");
 idCVar r_useNodeCommonChildren("r_useNodeCommonChildren", "1", CVAR_RENDERER | CVAR_BOOL,
-                               "stop pushing reference bounds early when possible");
+							   "stop pushing reference bounds early when possible");
 idCVar r_useShadowSurfaceScissor("r_useShadowSurfaceScissor", "1", CVAR_RENDERER | CVAR_BOOL,
-                                 "scissor shadows by the scissor rect of the interaction surfaces");
+								 "scissor shadows by the scissor rect of the interaction surfaces");
 idCVar r_useCachedDynamicModels("r_useCachedDynamicModels", "1", CVAR_RENDERER | CVAR_BOOL,
-                                "cache snapshots of dynamic models");
+								"cache snapshots of dynamic models");
 idCVar r_useSeamlessCubeMap("r_useSeamlessCubeMap", "1", CVAR_RENDERER | CVAR_BOOL,
-                            "use ARB_seamless_cube_map if available");
+							"use ARB_seamless_cube_map if available");
 idCVar r_useSRGB("r_useSRGB", "0", CVAR_RENDERER | CVAR_INTEGER | CVAR_ARCHIVE,
-                 "1 = both texture and framebuffer, 2 = framebuffer only, 3 = texture only");
+				 "1 = both texture and framebuffer, 2 = framebuffer only, 3 = texture only");
 idCVar r_maxAnisotropicFiltering("r_maxAnisotropicFiltering", "8", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
-                                 "limit aniso filtering");
+								 "limit aniso filtering");
 idCVar r_useTrilinearFiltering("r_useTrilinearFiltering", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL,
-                               "Extra quality filtering");
+							   "Extra quality filtering");
 idCVar r_lodBias("r_lodBias", "0.5", CVAR_RENDERER | CVAR_ARCHIVE, "image lod bias");
 
 idCVar r_useStateCaching("r_useStateCaching", "1", CVAR_RENDERER | CVAR_BOOL,
-                         "avoid redundant state changes in GL_*() calls");
+						 "avoid redundant state changes in GL_*() calls");
 
 idCVar r_znear("r_znear", "3", CVAR_RENDERER | CVAR_FLOAT, "near Z clip plane distance", 0.001f, 200.0f);
 
 idCVar r_ignoreGLErrors("r_ignoreGLErrors", "1", CVAR_RENDERER | CVAR_BOOL, "ignore GL errors");
 idCVar r_swapInterval("r_swapInterval", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
-                      "0 = tear, 1 = swap-tear where available, 2 = always v-sync");
+					  "0 = tear, 1 = swap-tear where available, 2 = always v-sync");
 
 idCVar r_gamma("r_gamma", "1.0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLOAT, "changes gamma tables", 0.5f, 3.0f);
 idCVar r_brightness("r_brightness", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLOAT, "changes gamma tables", 0.5f, 2.0f);
@@ -96,195 +89,194 @@ idCVar r_brightness("r_brightness", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_FLO
 idCVar r_jitter("r_jitter", "0", CVAR_RENDERER | CVAR_BOOL, "randomly subpixel jitter the projection matrix");
 
 idCVar r_skipStaticInteractions("r_skipStaticInteractions", "0", CVAR_RENDERER | CVAR_BOOL,
-                                "skip interactions created at level load");
+								"skip interactions created at level load");
 idCVar r_skipDynamicInteractions("r_skipDynamicInteractions", "0", CVAR_RENDERER | CVAR_BOOL,
-                                 "skip interactions created after level load");
+								 "skip interactions created after level load");
 idCVar r_skipSuppress("r_skipSuppress", "0", CVAR_RENDERER | CVAR_BOOL, "ignore the per-view suppressions");
 idCVar r_skipPostProcess("r_skipPostProcess", "0", CVAR_RENDERER | CVAR_BOOL, "skip all post-process renderings");
 idCVar r_skipInteractions("r_skipInteractions", "0", CVAR_RENDERER | CVAR_BOOL,
-                          "skip all light/surface interaction drawing");
+						  "skip all light/surface interaction drawing");
 idCVar r_skipDynamicTextures("r_skipDynamicTextures", "0", CVAR_RENDERER | CVAR_BOOL,
-                             "don't dynamically create textures");
+							 "don't dynamically create textures");
 idCVar r_skipCopyTexture("r_skipCopyTexture", "0", CVAR_RENDERER | CVAR_BOOL,
-                         "do all rendering, but don't actually copyTexSubImage2D");
+						 "do all rendering, but don't actually copyTexSubImage2D");
 idCVar r_skipBackEnd("r_skipBackEnd", "0", CVAR_RENDERER | CVAR_BOOL, "don't draw anything");
 idCVar r_skipRender("r_skipRender", "0", CVAR_RENDERER | CVAR_BOOL, "skip 3D rendering, but pass 2D");
 idCVar r_skipRenderContext("r_skipRenderContext", "0", CVAR_RENDERER | CVAR_BOOL,
-                           "NULL the rendering context during backend 3D rendering");
+						   "NULL the rendering context during backend 3D rendering");
 idCVar r_skipTranslucent("r_skipTranslucent", "0", CVAR_RENDERER | CVAR_BOOL,
-                         "skip the translucent interaction rendering");
+						 "skip the translucent interaction rendering");
 idCVar r_skipAmbient("r_skipAmbient", "0", CVAR_RENDERER | CVAR_BOOL, "bypasses all non-interaction drawing");
 idCVar r_skipNewAmbient("r_skipNewAmbient", "0", CVAR_RENDERER | CVAR_BOOL | CVAR_ARCHIVE,
-                        "bypasses all vertex/fragment program ambient drawing");
+						"bypasses all vertex/fragment program ambient drawing");
 idCVar r_skipBlendLights("r_skipBlendLights", "0", CVAR_RENDERER | CVAR_BOOL, "skip all blend lights");
 idCVar r_skipFogLights("r_skipFogLights", "0", CVAR_RENDERER | CVAR_BOOL, "skip all fog lights");
 idCVar r_skipDeforms("r_skipDeforms", "0", CVAR_RENDERER | CVAR_BOOL,
-                     "leave all deform materials in their original state");
+					 "leave all deform materials in their original state");
 idCVar r_skipFrontEnd("r_skipFrontEnd", "0", CVAR_RENDERER | CVAR_BOOL,
-                      "bypasses all front end work, but 2D gui rendering still draws");
+					  "bypasses all front end work, but 2D gui rendering still draws");
 idCVar r_skipUpdates("r_skipUpdates", "0", CVAR_RENDERER | CVAR_BOOL,
-                     "1 = don't accept any entity or light updates, making everything static");
+					 "1 = don't accept any entity or light updates, making everything static");
 idCVar r_skipDecals("r_skipDecals", "0", CVAR_RENDERER | CVAR_BOOL, "skip decal surfaces");
 idCVar r_skipOverlays("r_skipOverlays", "0", CVAR_RENDERER | CVAR_BOOL, "skip overlay surfaces");
 idCVar r_skipSpecular("r_skipSpecular", "0", CVAR_RENDERER | CVAR_BOOL | CVAR_CHEAT | CVAR_ARCHIVE,
-                      "use black for specular1");
+					  "use black for specular1");
 idCVar r_skipBump("r_skipBump", "0", CVAR_RENDERER | CVAR_BOOL | CVAR_ARCHIVE,
-                  "uses a flat surface instead of the bump map");
+				  "uses a flat surface instead of the bump map");
 idCVar r_skipDiffuse("r_skipDiffuse", "0", CVAR_RENDERER | CVAR_BOOL, "use black for diffuse");
 idCVar r_skipSubviews("r_skipSubviews", "0", CVAR_RENDERER | CVAR_INTEGER,
-                      "1 = don't render any gui elements on surfaces");
+					  "1 = don't render any gui elements on surfaces");
 idCVar r_skipGuiShaders("r_skipGuiShaders", "0", CVAR_RENDERER | CVAR_INTEGER,
-                        "1 = skip all gui elements on surfaces, 2 = skip drawing but still handle events, 3 = draw but skip events",
-                        0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+						"1 = skip all gui elements on surfaces, 2 = skip drawing but still handle events, 3 = draw but skip events",
+						0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_skipParticles("r_skipParticles", "0", CVAR_RENDERER | CVAR_INTEGER, "1 = skip all particle systems", 0, 1,
-                       idCmdSystem::ArgCompletion_Integer<0, 1>);
+					   idCmdSystem::ArgCompletion_Integer<0, 1>);
 idCVar r_skipShadows("r_skipShadows", "0", CVAR_RENDERER | CVAR_BOOL | CVAR_ARCHIVE, "disable shadows");
 
 idCVar r_useLightPortalCulling("r_useLightPortalCulling", "1", CVAR_RENDERER | CVAR_INTEGER,
-                               "0 = none, 1 = cull frustum corners to plane, 2 = exact clip the frustum faces", 0, 2,
-                               idCmdSystem::ArgCompletion_Integer<0, 2>);
+							   "0 = none, 1 = cull frustum corners to plane, 2 = exact clip the frustum faces", 0, 2,
+							   idCmdSystem::ArgCompletion_Integer<0, 2>);
 idCVar r_useLightAreaCulling("r_useLightAreaCulling", "1", CVAR_RENDERER | CVAR_BOOL, "0 = off, 1 = on");
 idCVar r_useLightScissors("r_useLightScissors", "3", CVAR_RENDERER | CVAR_INTEGER,
-                          "0 = no scissor, 1 = non-clipped scissor, 2 = near-clipped scissor, 3 = fully-clipped scissor",
-                          0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+						  "0 = no scissor, 1 = non-clipped scissor, 2 = near-clipped scissor, 3 = fully-clipped scissor",
+						  0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_useEntityPortalCulling("r_useEntityPortalCulling", "1", CVAR_RENDERER | CVAR_INTEGER,
-                                "0 = none, 1 = cull frustum corners to plane, 2 = exact clip the frustum faces", 0, 2,
-                                idCmdSystem::ArgCompletion_Integer<0, 2>);
+								"0 = none, 1 = cull frustum corners to plane, 2 = exact clip the frustum faces", 0, 2,
+								idCmdSystem::ArgCompletion_Integer<0, 2>);
 idCVar r_logFile("r_logFile", "0", CVAR_RENDERER | CVAR_INTEGER, "number of frames to emit GL logs");
 idCVar r_clear("r_clear", "2", CVAR_RENDERER,
-               "force screen clear every frame, 1 = purple, 2 = black, 'r g b' = custom");
+			   "force screen clear every frame, 1 = purple, 2 = black, 'r g b' = custom");
 
 idCVar r_offsetFactor("r_offsetfactor", "0", CVAR_RENDERER | CVAR_FLOAT, "polygon offset parameter");
 idCVar r_offsetUnits("r_offsetunits", "-600", CVAR_RENDERER | CVAR_FLOAT, "polygon offset parameter");
 
 idCVar r_shadowPolygonOffset("r_shadowPolygonOffset", "-1", CVAR_RENDERER | CVAR_FLOAT,
-                             "bias value added to depth test for stencil shadow drawing");
+							 "bias value added to depth test for stencil shadow drawing");
 idCVar r_shadowPolygonFactor("r_shadowPolygonFactor", "0", CVAR_RENDERER | CVAR_FLOAT,
-                             "scale value for stencil shadow drawing");
+							 "scale value for stencil shadow drawing");
 idCVar r_subviewOnly("r_subviewOnly", "0", CVAR_RENDERER | CVAR_BOOL,
-                     "1 = don't render main view, allowing subviews to be debugged");
+					 "1 = don't render main view, allowing subviews to be debugged");
 idCVar r_testGamma("r_testGamma", "0", CVAR_RENDERER | CVAR_FLOAT, "if > 0 draw a grid pattern to test gamma levels", 0,
-                   195);
+				   195);
 idCVar r_testGammaBias("r_testGammaBias", "0", CVAR_RENDERER | CVAR_FLOAT,
-                       "if > 0 draw a grid pattern to test gamma levels");
+					   "if > 0 draw a grid pattern to test gamma levels");
 idCVar r_lightScale("r_lightScale", "3", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_FLOAT,
-                    "all light intensities are multiplied by this");
+					"all light intensities are multiplied by this");
 idCVar r_flareSize("r_flareSize", "1", CVAR_RENDERER | CVAR_FLOAT, "scale the flare deforms from the material def");
 
 idCVar r_skipPrelightShadows("r_skipPrelightShadows", "0", CVAR_RENDERER | CVAR_BOOL,
-                             "skip the dmap generated static shadow volumes");
+							 "skip the dmap generated static shadow volumes");
 idCVar r_useScissor("r_useScissor", "1", CVAR_RENDERER | CVAR_BOOL, "scissor clip as portals and lights are processed");
 idCVar r_useLightDepthBounds("r_useLightDepthBounds", "1", CVAR_RENDERER | CVAR_BOOL,
-                             "use depth bounds test on lights to reduce both shadow and interaction fill");
+							 "use depth bounds test on lights to reduce both shadow and interaction fill");
 idCVar r_useShadowDepthBounds("r_useShadowDepthBounds", "1", CVAR_RENDERER | CVAR_BOOL,
-                              "use depth bounds test on individual shadow volumes to reduce shadow fill");
+							  "use depth bounds test on individual shadow volumes to reduce shadow fill");
 
 idCVar r_screenFraction("r_screenFraction", "100", CVAR_RENDERER | CVAR_INTEGER,
-                        "for testing fill rate, the resolution of the entire screen can be changed");
+						"for testing fill rate, the resolution of the entire screen can be changed");
 idCVar r_usePortals("r_usePortals", "1", CVAR_RENDERER | CVAR_BOOL,
-                    " 1 = use portals to perform area culling, otherwise draw everything");
+					" 1 = use portals to perform area culling, otherwise draw everything");
 idCVar r_singleLight("r_singleLight", "-1", CVAR_RENDERER | CVAR_INTEGER, "suppress all but one light");
 idCVar r_singleEntity("r_singleEntity", "-1", CVAR_RENDERER | CVAR_INTEGER, "suppress all but one entity");
 idCVar r_singleSurface("r_singleSurface", "-1", CVAR_RENDERER | CVAR_INTEGER,
-                       "suppress all but one surface on each entity");
+					   "suppress all but one surface on each entity");
 idCVar r_singleArea("r_singleArea", "0", CVAR_RENDERER | CVAR_BOOL,
-                    "only draw the portal area the view is actually in");
+					"only draw the portal area the view is actually in");
 idCVar r_orderIndexes("r_orderIndexes", "1", CVAR_RENDERER | CVAR_BOOL,
-                      "perform index reorganization to optimize vertex use");
+					  "perform index reorganization to optimize vertex use");
 idCVar r_lightAllBackFaces("r_lightAllBackFaces", "0", CVAR_RENDERER | CVAR_BOOL,
-                           "light all the back faces, even when they would be shadowed");
+						   "light all the back faces, even when they would be shadowed");
 
 // visual debugging info
 idCVar r_showPortals("r_showPortals", "0", CVAR_RENDERER | CVAR_BOOL,
-                     "draw portal outlines in color based on passed / not passed");
+					 "draw portal outlines in color based on passed / not passed");
 idCVar r_showUnsmoothedTangents("r_showUnsmoothedTangents", "0", CVAR_RENDERER | CVAR_BOOL,
-                                "if 1, put all nvidia register combiner programming in display lists");
+								"if 1, put all nvidia register combiner programming in display lists");
 idCVar r_showSilhouette("r_showSilhouette", "0", CVAR_RENDERER | CVAR_BOOL,
-                        "highlight edges that are casting shadow planes");
+						"highlight edges that are casting shadow planes");
 idCVar r_showVertexColor("r_showVertexColor", "0", CVAR_RENDERER | CVAR_BOOL,
-                         "draws all triangles with the solid vertex color");
+						 "draws all triangles with the solid vertex color");
 idCVar r_showUpdates("r_showUpdates", "0", CVAR_RENDERER | CVAR_BOOL, "report entity and light updates and ref counts");
 idCVar r_showDemo("r_showDemo", "0", CVAR_RENDERER | CVAR_BOOL, "report reads and writes to the demo file");
 idCVar r_showDynamic("r_showDynamic", "0", CVAR_RENDERER | CVAR_BOOL, "report stats on dynamic surface generation");
 idCVar r_showTrace("r_showTrace", "0", CVAR_RENDERER | CVAR_INTEGER,
-                   "show the intersection of an eye trace with the world", idCmdSystem::ArgCompletion_Integer<0, 2>);
+				   "show the intersection of an eye trace with the world", idCmdSystem::ArgCompletion_Integer<0, 2>);
 idCVar r_showIntensity("r_showIntensity", "0", CVAR_RENDERER | CVAR_BOOL,
-                       "draw the screen colors based on intensity, red = 0, green = 128, blue = 255");
+					   "draw the screen colors based on intensity, red = 0, green = 128, blue = 255");
 idCVar r_showLights("r_showLights", "0", CVAR_RENDERER | CVAR_INTEGER,
-                    "1 = just print volumes numbers, highlighting ones covering the view, 2 = also draw planes of each volume, 3 = also draw edges of each volume",
-                    0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+					"1 = just print volumes numbers, highlighting ones covering the view, 2 = also draw planes of each volume, 3 = also draw edges of each volume",
+					0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_showShadows("r_showShadows", "0", CVAR_RENDERER | CVAR_INTEGER,
-                     "1 = visualize the stencil shadow volumes, 2 = draw filled in", 0, 3,
-                     idCmdSystem::ArgCompletion_Integer<0, 3>);
+					 "1 = visualize the stencil shadow volumes, 2 = draw filled in", 0, 3,
+					 idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_showLightScissors("r_showLightScissors", "0", CVAR_RENDERER | CVAR_BOOL, "show light scissor rectangles");
 idCVar r_showLightCount("r_showLightCount", "0", CVAR_RENDERER | CVAR_INTEGER,
-                        "1 = colors surfaces based on light count, 2 = also count everything through walls, 3 = also print overdraw",
-                        0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+						"1 = colors surfaces based on light count, 2 = also count everything through walls, 3 = also print overdraw",
+						0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_showViewEntitys("r_showViewEntitys", "0", CVAR_RENDERER | CVAR_INTEGER,
-                         "1 = displays the bounding boxes of all view models, 2 = print index numbers");
+						 "1 = displays the bounding boxes of all view models, 2 = print index numbers");
 idCVar r_showTris("r_showTris", "0", CVAR_RENDERER | CVAR_INTEGER,
-                  "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all, 4 = draw with alpha",
-                  0, 4, idCmdSystem::ArgCompletion_Integer<0, 4>);
+				  "enables wireframe rendering of the world, 1 = only draw visible ones, 2 = draw all front facing, 3 = draw all, 4 = draw with alpha",
+				  0, 4, idCmdSystem::ArgCompletion_Integer<0, 4>);
 idCVar r_showSurfaceInfo("r_showSurfaceInfo", "0", CVAR_RENDERER | CVAR_BOOL,
-                         "show surface material name under crosshair");
+						 "show surface material name under crosshair");
 idCVar r_showNormals("r_showNormals", "0", CVAR_RENDERER | CVAR_FLOAT, "draws wireframe normals");
 idCVar r_showMemory("r_showMemory", "0", CVAR_RENDERER | CVAR_BOOL, "print frame memory utilization");
 idCVar r_showCull("r_showCull", "0", CVAR_RENDERER | CVAR_BOOL, "report sphere and box culling stats");
 idCVar r_showAddModel("r_showAddModel", "0", CVAR_RENDERER | CVAR_BOOL, "report stats from tr_addModel");
 idCVar r_showDepth("r_showDepth", "0", CVAR_RENDERER | CVAR_BOOL,
-                   "display the contents of the depth buffer and the depth range");
+				   "display the contents of the depth buffer and the depth range");
 idCVar r_showSurfaces("r_showSurfaces", "0", CVAR_RENDERER | CVAR_BOOL, "report surface/light/shadow counts");
 idCVar r_showPrimitives("r_showPrimitives", "0", CVAR_RENDERER | CVAR_INTEGER, "report drawsurf/index/vertex counts");
 idCVar r_showEdges("r_showEdges", "0", CVAR_RENDERER | CVAR_BOOL, "draw the sil edges");
 idCVar r_showTexturePolarity("r_showTexturePolarity", "0", CVAR_RENDERER | CVAR_BOOL,
-                             "shade triangles by texture area polarity");
+							 "shade triangles by texture area polarity");
 idCVar r_showTangentSpace("r_showTangentSpace", "0", CVAR_RENDERER | CVAR_INTEGER,
-                          "shade triangles by tangent space, 1 = use 1st tangent vector, 2 = use 2nd tangent vector, 3 = use normal vector",
-                          0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+						  "shade triangles by tangent space, 1 = use 1st tangent vector, 2 = use 2nd tangent vector, 3 = use normal vector",
+						  0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 idCVar r_showDominantTri("r_showDominantTri", "0", CVAR_RENDERER | CVAR_BOOL,
-                         "draw lines from vertexes to center of dominant triangles");
+						 "draw lines from vertexes to center of dominant triangles");
 idCVar r_showTextureVectors("r_showTextureVectors", "0", CVAR_RENDERER | CVAR_FLOAT,
-                            " if > 0 draw each triangles texture (tangent) vectors");
+							" if > 0 draw each triangles texture (tangent) vectors");
 idCVar r_showOverDraw("r_showOverDraw", "0", CVAR_RENDERER | CVAR_INTEGER,
-                      "1 = geometry overdraw, 2 = light interaction overdraw, 3 = geometry and light interaction overdraw",
-                      0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
+					  "1 = geometry overdraw, 2 = light interaction overdraw, 3 = geometry and light interaction overdraw",
+					  0, 3, idCmdSystem::ArgCompletion_Integer<0, 3>);
 
 idCVar r_useEntityCallbacks("r_useEntityCallbacks", "1", CVAR_RENDERER | CVAR_BOOL,
-                            "if 0, issue the callback immediately at update time, rather than defering");
+							"if 0, issue the callback immediately at update time, rather than defering");
 
 idCVar r_showSkel("r_showSkel", "0", CVAR_RENDERER | CVAR_INTEGER,
-                  "draw the skeleton when model animates, 1 = draw model with skeleton, 2 = draw skeleton only", 0, 2,
-                  idCmdSystem::ArgCompletion_Integer<0, 2>);
+				  "draw the skeleton when model animates, 1 = draw model with skeleton, 2 = draw skeleton only", 0, 2,
+				  idCmdSystem::ArgCompletion_Integer<0, 2>);
 idCVar r_jointNameScale("r_jointNameScale", "0.02", CVAR_RENDERER | CVAR_FLOAT,
-                        "size of joint names when r_showskel is set to 1");
+						"size of joint names when r_showskel is set to 1");
 idCVar r_jointNameOffset("r_jointNameOffset", "0.5", CVAR_RENDERER | CVAR_FLOAT,
-                         "offset of joint names when r_showskel is set to 1");
+						 "offset of joint names when r_showskel is set to 1");
 
 idCVar r_debugLineDepthTest("r_debugLineDepthTest", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL,
-                            "perform depth test on debug lines");
+							"perform depth test on debug lines");
 idCVar r_debugLineWidth("r_debugLineWidth", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_BOOL, "width of debug lines");
 idCVar r_debugArrowStep("r_debugArrowStep", "120", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
-                        "step size of arrow cone line rotation in degrees", 0, 120);
+						"step size of arrow cone line rotation in degrees", 0, 120);
 idCVar r_debugPolygonFilled("r_debugPolygonFilled", "1", CVAR_RENDERER | CVAR_BOOL, "draw a filled polygon");
 
 idCVar r_materialOverride("r_materialOverride", "", CVAR_RENDERER, "overrides all materials",
-                          idCmdSystem::ArgCompletion_Decl<DECL_MATERIAL>);
+						  idCmdSystem::ArgCompletion_Decl<DECL_MATERIAL>);
 
 idCVar r_debugRenderToTexture("r_debugRenderToTexture", "0", CVAR_RENDERER | CVAR_INTEGER, "");
 
 idCVar stereoRender_swapEyes("stereoRender_swapEyes", "0", CVAR_BOOL | CVAR_ARCHIVE, "reverse eye adjustments");
 idCVar stereoRender_deGhost("stereoRender_deGhost", "0.05", CVAR_FLOAT | CVAR_ARCHIVE,
-                            "subtract from opposite eye to reduce ghosting");
+							"subtract from opposite eye to reduce ghosting");
 idCVar stereoRender_enable("stereoRender_enable", "0", CVAR_INTEGER | CVAR_ARCHIVE,
-                           "1 = side-by-side compressed, 2 = top and bottom compressed, 3 = side-by-side, 4 = 720 frame packed, 5 = interlaced, 6 = OpenGL quad buffer");
-
+						   "1 = side-by-side compressed, 2 = top and bottom compressed, 3 = side-by-side, 4 = 720 frame packed, 5 = interlaced, 6 = OpenGL quad buffer");
 
 /*
 =================
 R_CheckExtension
 =================
 */
-bool R_CheckExtension(const char* name)
+bool R_CheckExtension(const char *name)
 {
 	if (!strstr(glConfig.extensions_string, name))
 	{
@@ -296,7 +288,6 @@ bool R_CheckExtension(const char* name)
 	return true;
 }
 
-
 /*
 ========================
 DebugCallback
@@ -305,8 +296,8 @@ For ARB_debug_output
 ========================
 */
 static void CALLBACK DebugCallback(unsigned int source, unsigned int type,
-                                   unsigned int id, unsigned int severity, int length, const char* message,
-                                   void* userParam)
+								   unsigned int id, unsigned int severity, int length, const char *message,
+								   void *userParam)
 {
 	// it probably isn't safe to do an idLib::Printf at this point
 	OutputDebugString(message);
@@ -321,37 +312,33 @@ R_CheckPortableExtensions
 static void R_CheckPortableExtensions()
 {
 	glConfig.glVersion = atof(glConfig.version_string);
-	const char* badVideoCard = idLocalization::GetString("#str_06780");
+	const char *badVideoCard = idLocalization::GetString("#str_06780");
 	if (glConfig.glVersion < 2.0f)
 	{
 		idLib::FatalError("%s", badVideoCard);
 	}
 
-	if (idStr::Icmpn(glConfig.vendor_string, "ATI ", 4) == 0 || idStr::Icmpn(glConfig.renderer_string, "ATI ", 4) == 0
-		|| idStr::Icmpn(glConfig.renderer_string, "AMD ", 4) == 0)
+	if (idStr::Icmpn(glConfig.vendor_string, "ATI ", 4) == 0 || idStr::Icmpn(glConfig.renderer_string, "ATI ", 4) == 0 || idStr::Icmpn(glConfig.renderer_string, "AMD ", 4) == 0)
 	{
 		glConfig.vendor = VENDOR_AMD;
 	}
 	else if (idStr::Icmpn(glConfig.vendor_string, "NVIDIA", 6) == 0 || idStr::Icmpn(
-		glConfig.renderer_string, "NVIDIA", 6) == 0)
+																		   glConfig.renderer_string, "NVIDIA", 6) == 0)
 	{
 		glConfig.vendor = VENDOR_NVIDIA;
 	}
-	else if (idStr::Icmpn(glConfig.vendor_string, "Intel", 5) == 0 || idStr::Icmpn(glConfig.renderer_string, "Intel", 5)
-		== 0)
+	else if (idStr::Icmpn(glConfig.vendor_string, "Intel", 5) == 0 || idStr::Icmpn(glConfig.renderer_string, "Intel", 5) == 0)
 	{
 		glConfig.vendor = VENDOR_INTEL;
 	}
-
 
 	glConfig.multitextureAvailable = GLEW_ARB_multitexture != 0;
 
 	// GL_EXT_direct_state_access
 	glConfig.directStateAccess = GLEW_EXT_direct_state_access != 0;
 
-
 	glConfig.textureCompressionAvailable = GLEW_ARB_texture_compression != 0 && GLEW_EXT_texture_compression_s3tc !=
-		0;
+																					0;
 
 	// GL_EXT_texture_filter_anisotropic
 	glConfig.anisotropicFilterAvailable = GLEW_EXT_texture_filter_anisotropic != 0;
@@ -385,22 +372,19 @@ static void R_CheckPortableExtensions()
 	// GL_ARB_vertex_buffer_object
 	glConfig.vertexBufferObjectAvailable = GLEW_ARB_vertex_buffer_object != 0;
 
-
 	glConfig.mapBufferRangeAvailable = GLEW_ARB_map_buffer_range != 0;
 
-
 	glConfig.vertexArrayObjectAvailable = GLEW_ARB_vertex_array_object != 0;
-
 
 	// GL_ARB_draw_elements_base_vertex
 	glConfig.drawElementsBaseVertexAvailable = GLEW_ARB_draw_elements_base_vertex != 0;
 
 	// GL_ARB_vertex_program / GL_ARB_fragment_program
 	glConfig.fragmentProgramAvailable = GLEW_ARB_fragment_program != 0;
-	//if( glConfig.fragmentProgramAvailable )
+	// if( glConfig.fragmentProgramAvailable )
 	{
-		glGetIntegerv(GL_MAX_TEXTURE_COORDS, (GLint*)&glConfig.maxTextureCoords);
-		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, (GLint*)&glConfig.maxTextureImageUnits);
+		glGetIntegerv(GL_MAX_TEXTURE_COORDS, (GLint *)&glConfig.maxTextureCoords);
+		glGetIntegerv(GL_MAX_TEXTURE_IMAGE_UNITS, (GLint *)&glConfig.maxTextureImageUnits);
 	}
 
 	// GLSL, core in OpenGL > 2.0
@@ -410,7 +394,7 @@ static void R_CheckPortableExtensions()
 	glConfig.uniformBufferAvailable = GLEW_ARB_uniform_buffer_object != 0;
 	if (glConfig.uniformBufferAvailable)
 	{
-		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint*)&glConfig.uniformBufferOffsetAlignment);
+		glGetIntegerv(GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT, (GLint *)&glConfig.uniformBufferOffsetAlignment);
 		if (glConfig.uniformBufferOffsetAlignment < 256)
 		{
 			glConfig.uniformBufferOffsetAlignment = 256;
@@ -425,9 +409,9 @@ static void R_CheckPortableExtensions()
 
 	// GL_ARB_sync
 	glConfig.syncAvailable = GLEW_ARB_sync &&
-		// as of 5/24/2012 (driver version 15.26.12.64.2761) sync objects
-		// do not appear to work for the Intel HD 4000 graphics
-		(glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool());
+							 // as of 5/24/2012 (driver version 15.26.12.64.2761) sync objects
+							 // do not appear to work for the Intel HD 4000 graphics
+							 (glConfig.vendor != VENDOR_INTEL || r_skipIntelWorkarounds.GetBool());
 
 	// GL_ARB_occlusion_query
 	glConfig.occlusionQueryAvailable = GLEW_ARB_occlusion_query != 0;
@@ -449,9 +433,9 @@ static void R_CheckPortableExtensions()
 		{
 			// enable all the low priority messages
 			glDebugMessageControlARB(GL_DONT_CARE,
-			                         GL_DONT_CARE,
-			                         GL_DEBUG_SEVERITY_LOW_ARB,
-			                         0, NULL, true);
+									 GL_DONT_CARE,
+									 GL_DEBUG_SEVERITY_LOW_ARB,
+									 0, NULL, true);
 		}
 	}
 
@@ -486,7 +470,7 @@ static void R_CheckPortableExtensions()
 		idLib::Error("GL_ARB_draw_elements_base_vertex not available");
 	}
 	// GL_ARB_vertex_program / GL_ARB_fragment_program
-	//if( !glConfig.fragmentProgramAvailable )
+	// if( !glConfig.fragmentProgramAvailable )
 	//{
 	//	idLib::Warning( "GL_ARB_fragment_program not available" );
 	//}
@@ -510,7 +494,6 @@ static void R_CheckPortableExtensions()
 	glGenVertexArrays(1, &glConfig.global_vao);
 	glBindVertexArray(glConfig.global_vao);
 }
-
 
 static bool r_initialized = false;
 
@@ -574,21 +557,15 @@ void R_InitOpenGL()
 		common->FatalError("R_InitOpenGL called while active");
 	}
 
-	// This is the earliest we can create the window and renderer context.
-	if (s_Window->Create())
-	{
-		Renderer::Init();
-	}
-
 	// input and sound systems need to be tied to the new window
 	Sys_InitInput();
 
 	// get our config strings
-	glConfig.vendor_string = (const char*)glGetString(GL_VENDOR);
-	glConfig.renderer_string = (const char*)glGetString(GL_RENDERER);
-	glConfig.version_string = (const char*)glGetString(GL_VERSION);
-	glConfig.shading_language_string = (const char*)glGetString(GL_SHADING_LANGUAGE_VERSION);
-	glConfig.extensions_string = (const char*)glGetString(GL_EXTENSIONS);
+	glConfig.vendor_string = (const char *)glGetString(GL_VENDOR);
+	glConfig.renderer_string = (const char *)glGetString(GL_RENDERER);
+	glConfig.version_string = (const char *)glGetString(GL_VERSION);
+	glConfig.shading_language_string = (const char *)glGetString(GL_SHADING_LANGUAGE_VERSION);
+	glConfig.extensions_string = (const char *)glGetString(GL_EXTENSIONS);
 
 	if (glConfig.extensions_string == NULL)
 	{
@@ -601,7 +578,7 @@ void R_InitOpenGL()
 		extensions_string.Clear();
 		for (int i = 0; i < numExtensions; i++)
 		{
-			extensions_string.Append((const char*)glGetStringi(GL_EXTENSIONS, i));
+			extensions_string.Append((const char *)glGetStringi(GL_EXTENSIONS, i));
 			// the now deprecated glGetString method usaed to create a single string with each extension separated by a space
 			if (i < numExtensions - 1)
 			{
@@ -610,7 +587,6 @@ void R_InitOpenGL()
 		}
 		glConfig.extensions_string = extensions_string.c_str();
 	}
-
 
 	// float glVersion = atof(glConfig.version_string);
 	// float glslVersion = atof(glConfig.shading_language_string);
@@ -651,8 +627,7 @@ void R_InitOpenGL()
 	if (!glCheck && win32.osversion.dwMajorVersion == 6)
 	{
 		glCheck = true;
-		if (!idStr::Icmp(glConfig.vendor_string, "Microsoft") && idStr::FindText(glConfig.renderer_string, "OpenGL-D3D")
-			!= -1)
+		if (!idStr::Icmp(glConfig.vendor_string, "Microsoft") && idStr::FindText(glConfig.renderer_string, "OpenGL-D3D") != -1)
 		{
 			if (cvarSystem->GetCVarBool("r_fullscreen"))
 			{
@@ -660,8 +635,7 @@ void R_InitOpenGL()
 				Sys_GrabMouseCursor(false);
 			}
 			int ret = MessageBox(
-				NULL, "Please install OpenGL drivers from your graphics hardware vendor to run " GAME_NAME
-				".\nYour OpenGL functionality is limited.",
+				NULL, "Please install OpenGL drivers from your graphics hardware vendor to run " GAME_NAME ".\nYour OpenGL functionality is limited.",
 				"Insufficient OpenGL capabilities", MB_OKCANCEL | MB_ICONWARNING | MB_TASKMODAL);
 			if (ret == IDCANCEL)
 			{
@@ -734,7 +708,7 @@ R_ReloadSurface_f
 Reload the material displayed by r_showSurfaceInfo
 =====================
 */
-static void R_ReloadSurface_f(const idCmdArgs& args)
+static void R_ReloadSurface_f(const idCmdArgs &args)
 {
 	modelTrace_t mt;
 	idVec3 start, end;
@@ -761,9 +735,9 @@ static void R_ReloadSurface_f(const idCmdArgs& args)
 R_ListModes_f
 ==============
 */
-static void R_ListModes_f(const idCmdArgs& args)
+static void R_ListModes_f(const idCmdArgs &args)
 {
-	for (int displayNum = 0; ; displayNum++)
+	for (int displayNum = 0;; displayNum++)
 	{
 		idList<vidMode_t> modeList;
 		if (!R_GetModeListForDisplay(displayNum, modeList))
@@ -773,7 +747,7 @@ static void R_ListModes_f(const idCmdArgs& args)
 		for (int i = 0; i < modeList.Num(); i++)
 		{
 			common->Printf("Monitor %i, mode %3i: %4i x %4i @ %ihz\n", displayNum + 1, i, modeList[i].width,
-			               modeList[i].height, modeList[i].displayHz);
+						   modeList[i].height, modeList[i].displayHz);
 		}
 	}
 }
@@ -787,7 +761,7 @@ testimage <number>
 testimage <filename>
 =============
 */
-void R_TestImage_f(const idCmdArgs& args)
+void R_TestImage_f(const idCmdArgs &args)
 {
 	int imageNum;
 
@@ -824,7 +798,7 @@ R_TestVideo_f
 Plays the cinematic file in a testImage
 =============
 */
-void R_TestVideo_f(const idCmdArgs& args)
+void R_TestVideo_f(const idCmdArgs &args)
 {
 	if (tr.testVideo)
 	{
@@ -866,12 +840,12 @@ void R_TestVideo_f(const idCmdArgs& args)
 	common->SW()->PlayShaderDirectly(wavString.c_str());
 }
 
-static int R_QsortSurfaceAreas(const void* a, const void* b)
+static int R_QsortSurfaceAreas(const void *a, const void *b)
 {
 	const idMaterial *ea, *eb;
 	int ac, bc;
 
-	ea = *(idMaterial**)a;
+	ea = *(idMaterial **)a;
 	if (!ea->EverReferenced())
 	{
 		ac = 0;
@@ -880,7 +854,7 @@ static int R_QsortSurfaceAreas(const void* a, const void* b)
 	{
 		ac = ea->GetSurfaceArea();
 	}
-	eb = *(idMaterial**)b;
+	eb = *(idMaterial **)b;
 	if (!eb->EverReferenced())
 	{
 		bc = 0;
@@ -902,7 +876,6 @@ static int R_QsortSurfaceAreas(const void* a, const void* b)
 	return idStr::Icmp(ea->GetName(), eb->GetName());
 }
 
-
 /*
 ===================
 R_ReportSurfaceAreas_f
@@ -910,14 +883,12 @@ R_ReportSurfaceAreas_f
 Prints a list of the materials sorted by surface area
 ===================
 */
-#pragma warning( disable: 6385 ) // This is simply to get pass a false defect for /analyze -- if you can figure out a better way, please let Shawn know...
+#pragma warning(disable : 6385) // This is simply to get pass a false defect for /analyze -- if you can figure out a better way, please let Shawn know...
 
-
-
-void R_ReportSurfaceAreas_f(const idCmdArgs& args)
+void R_ReportSurfaceAreas_f(const idCmdArgs &args)
 {
 	unsigned int i;
-	idMaterial** list;
+	idMaterial **list;
 
 	const unsigned int count = declManager->GetNumDecls(DECL_MATERIAL);
 	if (count == 0)
@@ -925,11 +896,11 @@ void R_ReportSurfaceAreas_f(const idCmdArgs& args)
 		return;
 	}
 
-	list = (idMaterial**)_alloca(count * sizeof(*list));
+	list = (idMaterial **)_alloca(count * sizeof(*list));
 
 	for (i = 0; i < count; i++)
 	{
-		list[i] = (idMaterial*)declManager->DeclByIndex(DECL_MATERIAL, i, false);
+		list[i] = (idMaterial *)declManager->DeclByIndex(DECL_MATERIAL, i, false);
 	}
 
 	qsort(list, count, sizeof(list[0]), R_QsortSurfaceAreas);
@@ -950,8 +921,7 @@ void R_ReportSurfaceAreas_f(const idCmdArgs& args)
 		common->Printf("%7i %s\n", blocks, list[i]->GetName());
 	}
 }
-#pragma warning( default: 6385 )
-
+#pragma warning(default : 6385)
 
 /*
 ==============================================================================
@@ -973,12 +943,12 @@ tiling it into window-sized chunks and rendering each chunk separately
 If ref isn't specified, the full session UpdateScreen will be done.
 ====================
 */
-void R_ReadTiledPixels(int width, int height, byte* buffer, renderView_t* ref = NULL)
+void R_ReadTiledPixels(int width, int height, byte *buffer, renderView_t *ref = NULL)
 {
 	// include extra space for OpenGL padding to word boundaries
 	int sysWidth = renderSystem->GetWidth();
 	int sysHeight = renderSystem->GetHeight();
-	byte* temp = (byte*)R_StaticAlloc((sysWidth + 3) * sysHeight * 3);
+	byte *temp = (byte *)R_StaticAlloc((sysWidth + 3) * sysHeight * 3);
 
 	// disable scissor, so we don't need to adjust all those rects
 	r_useScissor.SetBool(false);
@@ -996,7 +966,7 @@ void R_ReadTiledPixels(int width, int height, byte* buffer, renderView_t* ref = 
 				tr.primaryWorld->RenderScene(ref);
 
 				// finish off these commands
-				const emptyCommand_t* cmd = tr.SwapCommandBuffers(NULL, NULL, NULL, NULL);
+				const emptyCommand_t *cmd = tr.SwapCommandBuffers(NULL, NULL, NULL, NULL);
 
 				// issue the commands to the GPU
 				tr.RenderCommandBuffers(cmd);
@@ -1026,7 +996,7 @@ void R_ReadTiledPixels(int width, int height, byte* buffer, renderView_t* ref = 
 			for (int y = 0; y < h; y++)
 			{
 				memcpy(buffer + ((yo + y) * width + xo) * 3,
-				       temp + y * row, w * 3);
+					   temp + y * row, w * 3);
 			}
 		}
 	}
@@ -1035,7 +1005,6 @@ void R_ReadTiledPixels(int width, int height, byte* buffer, renderView_t* ref = 
 
 	R_StaticFree(temp);
 }
-
 
 /*
 ==================
@@ -1047,9 +1016,9 @@ Downsample is the number of steps to mipmap the image before saving it
 If ref == NULL, common->UpdateScreen will be used
 ==================
 */
-void idRenderSystemLocal::TakeScreenshot(int width, int height, const char* fileName, int blends, renderView_t* ref)
+void idRenderSystemLocal::TakeScreenshot(int width, int height, const char *fileName, int blends, renderView_t *ref)
 {
-	byte* buffer;
+	byte *buffer;
 	int i, j, c, temp;
 
 	takingScreenshot = true;
@@ -1057,7 +1026,7 @@ void idRenderSystemLocal::TakeScreenshot(int width, int height, const char* file
 	const int pix = width * height;
 	const int bufferSize = pix * 3 + 18;
 
-	buffer = (byte*)R_StaticAlloc(bufferSize);
+	buffer = (byte *)R_StaticAlloc(bufferSize);
 	memset(buffer, 0, bufferSize);
 
 	if (blends <= 1)
@@ -1066,7 +1035,7 @@ void idRenderSystemLocal::TakeScreenshot(int width, int height, const char* file
 	}
 	else
 	{
-		unsigned short* shortBuffer = (unsigned short*)R_StaticAlloc(pix * 2 * 3);
+		unsigned short *shortBuffer = (unsigned short *)R_StaticAlloc(pix * 2 * 3);
 		memset(shortBuffer, 0, pix * 2 * 3);
 
 		// enable anti-aliasing jitter
@@ -1126,7 +1095,7 @@ from the beginning, because recording demo avis can involve
 thousands of shots
 ==================
 */
-void R_ScreenshotFilename(int& lastNumber, const char* base, idStr& fileName)
+void R_ScreenshotFilename(int &lastNumber, const char *base, idStr &fileName)
 {
 	int a, b, c, d, e;
 
@@ -1177,9 +1146,9 @@ screenshot [width] [height]
 screenshot [width] [height] [samples]
 ==================
 */
-#define	MAX_BLENDS	256	// to keep the accumulation in shorts
+#define MAX_BLENDS 256 // to keep the accumulation in shorts
 
-void R_ScreenShot_f(const idCmdArgs& args)
+void R_ScreenShot_f(const idCmdArgs &args)
 {
 	static int lastNumber = 0;
 	idStr checkname;
@@ -1263,7 +1232,7 @@ void R_StencilShot()
 	{
 		buffer[18 + i * 3] =
 			buffer[18 + i * 3 + 1] =
-			//		buffer[18+i*3+2] = ( byteBuffer[i] & 15 ) * 16;
+				//		buffer[18+i*3+2] = ( byteBuffer[i] & 15 ) * 16;
 			buffer[18 + i * 3 + 2] = byteBuffer[i];
 	}
 
@@ -1278,18 +1247,16 @@ void R_StencilShot()
 	fileSystem->WriteFile("screenshots/stencilShot.tga", buffer.Ptr(), c, "fs_savepath");
 }
 
-
 //============================================================================
 
 static idMat3 cubeAxis[6];
-
 
 /*
 ==================
 R_SampleCubeMap
 ==================
 */
-void R_SampleCubeMap(const idVec3& dir, int size, byte* buffers[6], byte result[4])
+void R_SampleCubeMap(const idVec3 &dir, int size, byte *buffers[6], byte result[4])
 {
 	float adir[3];
 	int axis, x, y;
@@ -1362,20 +1329,19 @@ R_MakeAmbientMap_f <basename> [size]
 Saves out env/<basename>_amb_ft.tga, etc
 ==================
 */
-void R_MakeAmbientMap_f(const idCmdArgs& args)
+void R_MakeAmbientMap_f(const idCmdArgs &args)
 {
 	idStr fullname;
-	const char* baseName;
+	const char *baseName;
 	int i;
 	renderView_t ref;
 	viewDef_t primary;
 	int downSample;
-	const char* extensions[6] = {
+	const char *extensions[6] = {
 		"_px.tga", "_nx.tga", "_py.tga", "_ny.tga",
-		"_pz.tga", "_nz.tga"
-	};
+		"_pz.tga", "_nz.tga"};
 	int outSize;
-	byte* buffers[6];
+	byte *buffers[6];
 	int width = 0, height = 0;
 
 	if (args.Argc() != 2 && args.Argc() != 3)
@@ -1442,7 +1408,7 @@ void R_MakeAmbientMap_f(const idCmdArgs& args)
 	// resample with hemispherical blending
 	int samples = 1000;
 
-	byte* outBuffer = (byte*)_alloca(outSize * outSize * 4);
+	byte *outBuffer = (byte *)_alloca(outSize * outSize * 4);
 
 	for (int map = 0; map < 2; map++)
 	{
@@ -1455,11 +1421,10 @@ void R_MakeAmbientMap_f(const idCmdArgs& args)
 					idVec3 dir;
 					float total[3];
 
-					dir = cubeAxis[i][0] + -(-1 + 2.0 * x / (outSize - 1)) * cubeAxis[i][1] + -(-1 + 2.0 * y / (outSize
-						- 1)) * cubeAxis[i][2];
+					dir = cubeAxis[i][0] + -(-1 + 2.0 * x / (outSize - 1)) * cubeAxis[i][1] + -(-1 + 2.0 * y / (outSize - 1)) * cubeAxis[i][2];
 					dir.Normalize();
 					total[0] = total[1] = total[2] = 0;
-					//samples = 1;
+					// samples = 1;
 					float limit = map ? 0.95 : 0.25; // small for specular, almost hemisphere for ambient
 
 					for (int s = 0; s < samples; s++)
@@ -1485,7 +1450,7 @@ void R_MakeAmbientMap_f(const idCmdArgs& args)
 							}
 						}
 						byte result[4];
-						//test = dir;
+						// test = dir;
 						R_SampleCubeMap(test, width, buffers, result);
 						total[0] += result[0];
 						total[1] += result[1];
@@ -1524,7 +1489,6 @@ void R_MakeAmbientMap_f(const idCmdArgs& args)
 
 //============================================================================
 
-
 /*
 ===============
 R_SetColorMappings
@@ -1550,15 +1514,14 @@ void R_SetColorMappings()
 GfxInfo_f
 ================
 */
-void GfxInfo_f(const idCmdArgs& args)
+void GfxInfo_f(const idCmdArgs &args)
 {
 	common->Printf("CPU: %s\n", Sys_GetProcessorString());
 
-	const char* fsstrings[] =
-	{
-		"windowed",
-		"fullscreen"
-	};
+	const char *fsstrings[] =
+		{
+			"windowed",
+			"fullscreen"};
 
 	common->Printf("\nGL_VENDOR: %s\n", glConfig.vendor_string);
 	common->Printf("GL_RENDERER: %s\n", glConfig.renderer_string);
@@ -1573,9 +1536,9 @@ void GfxInfo_f(const idCmdArgs& args)
 	common->Printf("GL_MAX_TEXTURE_IMAGE_UNITS_ARB: %d\n", glConfig.maxTextureImageUnits);
 
 	common->Printf("\nPIXELFORMAT: color(%d-bits) Z(%d-bit) stencil(%d-bits)\n", glConfig.colorBits, glConfig.depthBits,
-	               glConfig.stencilBits);
+				   glConfig.stencilBits);
 	common->Printf("MODE: %d, %d x %d %s hz:", r_vidMode.GetInteger(), renderSystem->GetWidth(),
-	               renderSystem->GetHeight(), fsstrings[r_fullscreen.GetBool()]);
+				   renderSystem->GetHeight(), fsstrings[r_fullscreen.GetBool()]);
 	if (glConfig.displayFrequency)
 	{
 		common->Printf("%d\n", glConfig.displayFrequency);
@@ -1588,7 +1551,7 @@ void GfxInfo_f(const idCmdArgs& args)
 	common->Printf("-------\n");
 
 	// WGL_EXT_swap_interval
-	typedef BOOL (WINAPI *PFNWGLSWAPINTERVALEXTPROC)(int interval);
+	typedef BOOL(WINAPI * PFNWGLSWAPINTERVALEXTPROC)(int interval);
 	// extern PFNWGLSWAPINTERVALEXTPROC wglSwapIntervalEXT;
 
 	if (r_swapInterval.GetInteger())
@@ -1616,36 +1579,42 @@ void GfxInfo_f(const idCmdArgs& args)
 	idLib::Printf("Stereo mode: ");
 	switch (renderSystem->GetStereo3DMode())
 	{
-	case STEREO3D_OFF: idLib::Printf("STEREO3D_OFF\n");
+	case STEREO3D_OFF:
+		idLib::Printf("STEREO3D_OFF\n");
 		break;
-	case STEREO3D_SIDE_BY_SIDE_COMPRESSED: idLib::Printf("STEREO3D_SIDE_BY_SIDE_COMPRESSED\n");
+	case STEREO3D_SIDE_BY_SIDE_COMPRESSED:
+		idLib::Printf("STEREO3D_SIDE_BY_SIDE_COMPRESSED\n");
 		break;
-	case STEREO3D_TOP_AND_BOTTOM_COMPRESSED: idLib::Printf("STEREO3D_TOP_AND_BOTTOM_COMPRESSED\n");
+	case STEREO3D_TOP_AND_BOTTOM_COMPRESSED:
+		idLib::Printf("STEREO3D_TOP_AND_BOTTOM_COMPRESSED\n");
 		break;
-	case STEREO3D_SIDE_BY_SIDE: idLib::Printf("STEREO3D_SIDE_BY_SIDE\n");
+	case STEREO3D_SIDE_BY_SIDE:
+		idLib::Printf("STEREO3D_SIDE_BY_SIDE\n");
 		break;
-	case STEREO3D_HDMI_720: idLib::Printf("STEREO3D_HDMI_720\n");
+	case STEREO3D_HDMI_720:
+		idLib::Printf("STEREO3D_HDMI_720\n");
 		break;
-	case STEREO3D_INTERLACED: idLib::Printf("STEREO3D_INTERLACED\n");
+	case STEREO3D_INTERLACED:
+		idLib::Printf("STEREO3D_INTERLACED\n");
 		break;
-	case STEREO3D_QUAD_BUFFER: idLib::Printf("STEREO3D_QUAD_BUFFER\n");
+	case STEREO3D_QUAD_BUFFER:
+		idLib::Printf("STEREO3D_QUAD_BUFFER\n");
 		break;
-	default: idLib::Printf("Unknown (%i)\n", renderSystem->GetStereo3DMode());
+	default:
+		idLib::Printf("Unknown (%i)\n", renderSystem->GetStereo3DMode());
 		break;
 	}
 
 	idLib::Printf("%i multisamples\n", glConfig.multisamples);
 
 	common->Printf("%5.1f cm screen width (%4.1f\" diagonal)\n",
-	               glConfig.physicalScreenWidthInCentimeters, glConfig.physicalScreenWidthInCentimeters / 2.54f
-	               * sqrt((float)(16 * 16 + 9 * 9)) / 16.0f);
+				   glConfig.physicalScreenWidthInCentimeters, glConfig.physicalScreenWidthInCentimeters / 2.54f * sqrt((float)(16 * 16 + 9 * 9)) / 16.0f);
 	extern idCVar r_forceScreenWidthCentimeters;
 	if (r_forceScreenWidthCentimeters.GetFloat())
 	{
 		common->Printf("screen size manually forced to %5.1f cm width (%4.1f\" diagonal)\n",
-		               renderSystem->GetPhysicalScreenWidthInCentimeters(),
-		               renderSystem->GetPhysicalScreenWidthInCentimeters() / 2.54f
-		               * sqrt((float)(16 * 16 + 9 * 9)) / 16.0f);
+					   renderSystem->GetPhysicalScreenWidthInCentimeters(),
+					   renderSystem->GetPhysicalScreenWidthInCentimeters() / 2.54f * sqrt((float)(16 * 16 + 9 * 9)) / 16.0f);
 	}
 }
 
@@ -1654,7 +1623,7 @@ void GfxInfo_f(const idCmdArgs& args)
 R_VidRestart_f
 =================
 */
-void R_VidRestart_f(const idCmdArgs& args)
+void R_VidRestart_f(const idCmdArgs &args)
 {
 	// if OpenGL isn't started, do nothing
 	if (!R_IsInitialized())
@@ -1758,7 +1727,6 @@ void R_InitMaterials()
 	tr.charSetMaterial = declManager->FindMaterial("textures/bigchars");
 }
 
-
 /*
 =================
 R_SizeUp_f
@@ -1766,7 +1734,7 @@ R_SizeUp_f
 Keybinding command
 =================
 */
-static void R_SizeUp_f(const idCmdArgs& args)
+static void R_SizeUp_f(const idCmdArgs &args)
 {
 	if (r_screenFraction.GetInteger() + 10 > 100)
 	{
@@ -1778,7 +1746,6 @@ static void R_SizeUp_f(const idCmdArgs& args)
 	}
 }
 
-
 /*
 =================
 R_SizeDown_f
@@ -1786,7 +1753,7 @@ R_SizeDown_f
 Keybinding command
 =================
 */
-static void R_SizeDown_f(const idCmdArgs& args)
+static void R_SizeDown_f(const idCmdArgs &args)
 {
 	if (r_screenFraction.GetInteger() - 10 < 10)
 	{
@@ -1798,7 +1765,6 @@ static void R_SizeDown_f(const idCmdArgs& args)
 	}
 }
 
-
 /*
 ===============
 TouchGui_f
@@ -1806,9 +1772,9 @@ TouchGui_f
   this is called from the main thread
 ===============
 */
-void R_TouchGui_f(const idCmdArgs& args)
+void R_TouchGui_f(const idCmdArgs &args)
 {
-	const char* gui = args.Argv(1);
+	const char *gui = args.Argv(1);
 
 	if (!gui[0])
 	{
@@ -1848,21 +1814,21 @@ void R_InitCommands()
 	cmdSystem->AddCommand("makeAmbientMap", R_MakeAmbientMap_f, CMD_FL_RENDERER | CMD_FL_CHEAT, "makes an ambient map");
 	cmdSystem->AddCommand("gfxInfo", GfxInfo_f, CMD_FL_RENDERER, "show graphics info");
 	cmdSystem->AddCommand("modulateLights", R_ModulateLights_f, CMD_FL_RENDERER | CMD_FL_CHEAT,
-	                      "modifies shader parms on all lights");
+						  "modifies shader parms on all lights");
 	cmdSystem->AddCommand("testImage", R_TestImage_f, CMD_FL_RENDERER | CMD_FL_CHEAT,
-	                      "displays the given image centered on screen", idCmdSystem::ArgCompletion_ImageName);
+						  "displays the given image centered on screen", idCmdSystem::ArgCompletion_ImageName);
 	cmdSystem->AddCommand("testVideo", R_TestVideo_f, CMD_FL_RENDERER | CMD_FL_CHEAT, "displays the given cinematic",
-	                      idCmdSystem::ArgCompletion_VideoName);
+						  idCmdSystem::ArgCompletion_VideoName);
 	cmdSystem->AddCommand("reportSurfaceAreas", R_ReportSurfaceAreas_f, CMD_FL_RENDERER,
-	                      "lists all used materials sorted by surface area");
+						  "lists all used materials sorted by surface area");
 	cmdSystem->AddCommand("showInteractionMemory", R_ShowInteractionMemory_f, CMD_FL_RENDERER,
-	                      "shows memory used by interactions");
+						  "shows memory used by interactions");
 	cmdSystem->AddCommand("vid_restart", R_VidRestart_f, CMD_FL_RENDERER, "restarts renderSystem");
 	cmdSystem->AddCommand("listRenderEntityDefs", R_ListRenderEntityDefs_f, CMD_FL_RENDERER, "lists the entity defs");
 	cmdSystem->AddCommand("listRenderLightDefs", R_ListRenderLightDefs_f, CMD_FL_RENDERER, "lists the light defs");
 	cmdSystem->AddCommand("listModes", R_ListModes_f, CMD_FL_RENDERER, "lists all video modes");
 	cmdSystem->AddCommand("reloadSurface", R_ReloadSurface_f, CMD_FL_RENDERER,
-	                      "reloads the decl and images for selected surface");
+						  "reloads the decl and images for selected surface");
 }
 
 /*
@@ -1922,23 +1888,23 @@ void idRenderSystemLocal::Clear()
 R_MakeFullScreenTris
 =============
 */
-static srfTriangles_t* R_MakeFullScreenTris()
+static srfTriangles_t *R_MakeFullScreenTris()
 {
 	// copy verts and indexes
-	srfTriangles_t* tri = (srfTriangles_t*)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
+	srfTriangles_t *tri = (srfTriangles_t *)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
 
 	tri->numIndexes = 6;
 	tri->numVerts = 4;
 
 	int indexSize = tri->numIndexes * sizeof(tri->indexes[0]);
 	int allocatedIndexBytes = ALIGN(indexSize, 16);
-	tri->indexes = (triIndex_t*)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
+	tri->indexes = (triIndex_t *)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
 
 	int vertexSize = tri->numVerts * sizeof(tri->verts[0]);
 	int allocatedVertexBytes = ALIGN(vertexSize, 16);
-	tri->verts = (idDrawVert*)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
+	tri->verts = (idDrawVert *)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
 
-	idDrawVert* verts = tri->verts;
+	idDrawVert *verts = tri->verts;
 
 	triIndex_t tempIndexes[6] = {3, 0, 2, 2, 0, 1};
 	memcpy(tri->indexes, tempIndexes, indexSize);
@@ -1964,7 +1930,6 @@ static srfTriangles_t* R_MakeFullScreenTris()
 		verts[i].SetColor(0xffffffff);
 	}
 
-
 	return tri;
 }
 
@@ -1973,22 +1938,22 @@ static srfTriangles_t* R_MakeFullScreenTris()
 R_MakeZeroOneCubeTris
 =============
 */
-static srfTriangles_t* R_MakeZeroOneCubeTris()
+static srfTriangles_t *R_MakeZeroOneCubeTris()
 {
-	srfTriangles_t* tri = (srfTriangles_t*)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
+	srfTriangles_t *tri = (srfTriangles_t *)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
 
 	tri->numVerts = 8;
 	tri->numIndexes = 36;
 
 	const int indexSize = tri->numIndexes * sizeof(tri->indexes[0]);
 	const int allocatedIndexBytes = ALIGN(indexSize, 16);
-	tri->indexes = (triIndex_t*)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
+	tri->indexes = (triIndex_t *)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
 
 	const int vertexSize = tri->numVerts * sizeof(tri->verts[0]);
 	const int allocatedVertexBytes = ALIGN(vertexSize, 16);
-	tri->verts = (idDrawVert*)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
+	tri->verts = (idDrawVert *)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
 
-	idDrawVert* verts = tri->verts;
+	idDrawVert *verts = tri->verts;
 
 	const float low = 0.0f;
 	const float high = 1.0f;
@@ -2068,25 +2033,25 @@ R_MakeTestImageTriangles
 Initializes the Test Image Triangles
 ================
 */
-srfTriangles_t* R_MakeTestImageTriangles()
+srfTriangles_t *R_MakeTestImageTriangles()
 {
-	srfTriangles_t* tri = (srfTriangles_t*)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
+	srfTriangles_t *tri = (srfTriangles_t *)Mem_ClearedAlloc(sizeof(*tri), TAG_RENDER_TOOLS);
 
 	tri->numIndexes = 6;
 	tri->numVerts = 4;
 
 	int indexSize = tri->numIndexes * sizeof(tri->indexes[0]);
 	int allocatedIndexBytes = ALIGN(indexSize, 16);
-	tri->indexes = (triIndex_t*)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
+	tri->indexes = (triIndex_t *)Mem_Alloc(allocatedIndexBytes, TAG_RENDER_TOOLS);
 
 	int vertexSize = tri->numVerts * sizeof(tri->verts[0]);
 	int allocatedVertexBytes = ALIGN(vertexSize, 16);
-	tri->verts = (idDrawVert*)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
+	tri->verts = (idDrawVert *)Mem_ClearedAlloc(allocatedVertexBytes, TAG_RENDER_TOOLS);
 
 	ALIGNTYPE16 triIndex_t tempIndexes[6] = {3, 0, 2, 2, 0, 1};
 	memcpy(tri->indexes, tempIndexes, indexSize);
 
-	idDrawVert* tempVerts = tri->verts;
+	idDrawVert *tempVerts = tri->verts;
 	tempVerts[0].xyz[0] = 0.0f;
 	tempVerts[0].xyz[1] = 0.0f;
 	tempVerts[0].xyz[2] = 0;
@@ -2139,7 +2104,7 @@ void idRenderSystemLocal::Init()
 
 	R_InitCommands();
 
-	guiModel = new(TAG_RENDER) idGuiModel;
+	guiModel = new (TAG_RENDER) idGuiModel;
 	guiModel->Clear();
 	tr_guiModel = guiModel; // for DeviceContext fast path
 
@@ -2176,7 +2141,7 @@ void idRenderSystemLocal::Init()
 	}
 
 	frontEndJobList = parallelJobManager->AllocJobList(JOBLIST_RENDERER_FRONTEND, JOBLIST_PRIORITY_MEDIUM, 2048, 0,
-	                                                   NULL);
+													   NULL);
 
 	// make sure the command buffers are ready to accept the first screen update
 	SwapCommandBuffers(NULL, NULL, NULL, NULL);
@@ -2234,7 +2199,7 @@ idRenderSystemLocal::ResetGuiModels
 void idRenderSystemLocal::ResetGuiModels()
 {
 	delete guiModel;
-	guiModel = new(TAG_RENDER) idGuiModel;
+	guiModel = new (TAG_RENDER) idGuiModel;
 	guiModel->Clear();
 	guiModel->BeginFrame();
 	tr_guiModel = guiModel; // for DeviceContext fast path
@@ -2269,7 +2234,7 @@ void idRenderSystemLocal::LoadLevelImages()
 idRenderSystemLocal::Preload
 ========================
 */
-void idRenderSystemLocal::Preload(const idPreloadManifest& manifest, const char* mapName)
+void idRenderSystemLocal::Preload(const idPreloadManifest &manifest, const char *mapName)
 {
 	globalImages->Preload(manifest, true);
 	uiManager->Preload(mapName);
@@ -2310,7 +2275,7 @@ void idRenderSystemLocal::EndAutomaticBackgroundSwaps()
 idRenderSystemLocal::AreAutomaticBackgroundSwapsRunning
 ========================
 */
-bool idRenderSystemLocal::AreAutomaticBackgroundSwapsRunning(autoRenderIconType_t* icon) const
+bool idRenderSystemLocal::AreAutomaticBackgroundSwapsRunning(autoRenderIconType_t *icon) const
 {
 	return false;
 }
@@ -2320,7 +2285,7 @@ bool idRenderSystemLocal::AreAutomaticBackgroundSwapsRunning(autoRenderIconType_
 idRenderSystemLocal::RegisterFont
 ============
 */
-idFont* idRenderSystemLocal::RegisterFont(const char* fontName)
+idFont *idRenderSystemLocal::RegisterFont(const char *fontName)
 {
 	idStrStatic<MAX_OSPATH> baseFontName = fontName;
 	baseFontName.Replace("fonts/", "");
@@ -2332,7 +2297,7 @@ idFont* idRenderSystemLocal::RegisterFont(const char* fontName)
 			return fonts[i];
 		}
 	}
-	idFont* newFont = new(TAG_FONT) idFont(baseFontName);
+	idFont *newFont = new (TAG_FONT) idFont(baseFontName);
 	fonts.Append(newFont);
 	return newFont;
 }
@@ -2518,7 +2483,7 @@ This is used to calculate stereoscopic screen offset for a given interocular dis
 ========================
 */
 idCVar r_forceScreenWidthCentimeters("r_forceScreenWidthCentimeters", "0", CVAR_RENDERER | CVAR_ARCHIVE,
-                                     "Override screen width returned by hardware");
+									 "Override screen width returned by hardware");
 
 float idRenderSystemLocal::GetPhysicalScreenWidthInCentimeters() const
 {

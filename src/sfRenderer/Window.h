@@ -9,6 +9,10 @@ extern idCVar r_windowX;
 extern idCVar r_windowY;
 extern idCVar r_windowWidth;
 extern idCVar r_windowHeight;
+extern idCVar r_vidMode; // video mode number
+extern idCVar r_displayRefresh; // optional display refresh rate option for vid mode
+extern idCVar r_fullscreen; // 0 = windowed, 1 = full screen
+extern idCVar r_multiSamples; // number of antialiasing samples
 
 enum eWindowState
 {
