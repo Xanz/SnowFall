@@ -2,9 +2,9 @@
 ===========================================================================
 
 Doom 3 BFG Edition GPL Source Code
-Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company. 
+Copyright (C) 1993-2012 id Software LLC, a ZeniMax Media company.
 
-This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").  
+This file is part of the Doom 3 BFG Edition GPL Source Code ("Doom 3 BFG Edition Source Code").
 
 Doom 3 BFG Edition Source Code is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -53,12 +53,12 @@ which should also be nicely contained.
 #define DEFAULT_NO_SLEEP "0"
 
 idCVar com_deltaTimeClamp("com_deltaTimeClamp", "50", CVAR_INTEGER,
-                          "don't process more than this time in a single frame");
+						  "don't process more than this time in a single frame");
 
 idCVar com_fixedTic("com_fixedTic", DEFAULT_FIXED_TIC, CVAR_BOOL, "run a single game frame per render frame");
 idCVar com_noSleep("com_noSleep", DEFAULT_NO_SLEEP, CVAR_BOOL, "don't sleep if the game is running too fast");
 idCVar com_smp("com_smp", "1", CVAR_BOOL | CVAR_SYSTEM | CVAR_NOCHEAT,
-               "run the game and draw code in a separate thread");
+			   "run the game and draw code in a separate thread");
 idCVar com_aviDemoSamples("com_aviDemoSamples", "16", CVAR_SYSTEM, "");
 idCVar com_aviDemoWidth("com_aviDemoWidth", "256", CVAR_SYSTEM, "");
 idCVar com_aviDemoHeight("com_aviDemoHeight", "256", CVAR_SYSTEM, "");
@@ -67,13 +67,13 @@ idCVar com_skipGameDraw("com_skipGameDraw", "0", CVAR_SYSTEM | CVAR_BOOL, "");
 idCVar com_sleepGame("com_sleepGame", "0", CVAR_SYSTEM | CVAR_INTEGER, "intentionally add a sleep in the game time");
 idCVar com_sleepDraw("com_sleepDraw", "0", CVAR_SYSTEM | CVAR_INTEGER, "intentionally add a sleep in the draw time");
 idCVar com_sleepRender("com_sleepRender", "0", CVAR_SYSTEM | CVAR_INTEGER,
-                       "intentionally add a sleep in the render time");
+					   "intentionally add a sleep in the render time");
 
 idCVar net_drawDebugHud("net_drawDebugHud", "0", CVAR_SYSTEM | CVAR_INTEGER,
-                        "0 = None, 1 = Hud 1, 2 = Hud 2, 3 = Snapshots");
+						"0 = None, 1 = Hud 1, 2 = Hud 2, 3 = Snapshots");
 
 idCVar timescale("timescale", "1", CVAR_SYSTEM | CVAR_FLOAT, "Number of game frames to run per render frame", 0.001f,
-                 100.0f);
+				 100.0f);
 
 extern idCVar in_useJoystick;
 extern idCVar in_joystickRumble;
@@ -96,26 +96,20 @@ int idGameThread::Run()
 		Sys_Sleep(com_sleepGame.GetInteger());
 	}
 
-	if (numGameFrames == 0)
-	{
-		// Ensure there's no stale gameReturn data from a paused game
-		ret = gameReturn_t();
-	}
-
 	if (isClient)
 	{
 		// run the game logic
 		for (int i = 0; i < numGameFrames; i++)
 		{
 			SCOPED_PROFILE_EVENT("Client Prediction");
-			if (userCmdMgr)
-			{
-				game->ClientRunFrame(*userCmdMgr, (i == numGameFrames - 1), ret);
-			}
-			if (ret.syncNextGameFrame || ret.sessionCommand[0] != 0)
-			{
-				break;
-			}
+			// if (userCmdMgr)
+			// {
+			// 	game->ClientRunFrame(*userCmdMgr, (i == numGameFrames - 1), ret);
+			// }
+			// if (ret.syncNextGameFrame || ret.sessionCommand[0] != 0)
+			// {
+			// 	break;
+			// }
 		}
 	}
 	else
@@ -124,24 +118,24 @@ int idGameThread::Run()
 		for (int i = 0; i < numGameFrames; i++)
 		{
 			SCOPED_PROFILE_EVENT("GameTic");
-			if (userCmdMgr)
-			{
-				game->RunFrame(*userCmdMgr, ret);
-			}
-			if (ret.syncNextGameFrame || ret.sessionCommand[0] != 0)
-			{
-				break;
-			}
+			// if (userCmdMgr)
+			// {
+			// 	game->RunFrame(*userCmdMgr, ret);
+			// }
+			// if (ret.syncNextGameFrame || ret.sessionCommand[0] != 0)
+			// {
+			// 	break;
+			// }
 		}
 	}
 
 	// we should have consumed all of our usercmds
 	if (userCmdMgr)
 	{
-		if (userCmdMgr->HasUserCmdForPlayer(game->GetLocalClientNum()) && common->GetCurrentGame() == DOOM3_BFG)
-		{
-			idLib::Printf("idGameThread::Run: didn't consume all usercmds\n");
-		}
+		// if (userCmdMgr->HasUserCmdForPlayer(game->GetLocalClientNum()) && common->GetCurrentGame() == DOOM3_BFG)
+		// {
+		// 	idLib::Printf("idGameThread::Run: didn't consume all usercmds\n");
+		// }
 	}
 
 	commonLocal.frameTiming.finishGameTime = Sys_Microseconds();
@@ -169,8 +163,8 @@ idGameThread::RunGameAndDraw
 
 ===============
 */
-gameReturn_t idGameThread::RunGameAndDraw(int numGameFrames_, idUserCmdMgr& userCmdMgr_, bool isClient_,
-                                          int startGameFrame)
+void idGameThread::RunGameAndDraw(int numGameFrames_, idUserCmdMgr &userCmdMgr_, bool isClient_,
+								  int startGameFrame)
 {
 	// this should always immediately return
 	this->WaitForThread();
@@ -181,7 +175,7 @@ gameReturn_t idGameThread::RunGameAndDraw(int numGameFrames_, idUserCmdMgr& user
 	isClient = isClient_;
 
 	// grab the return value created by the last thread execution
-	gameReturn_t latchedRet = ret;
+	// gameReturn_t latchedRet = ret;
 
 	numGameFrames = numGameFrames_;
 
@@ -197,9 +191,8 @@ gameReturn_t idGameThread::RunGameAndDraw(int numGameFrames_, idUserCmdMgr& user
 	}
 
 	// return the latched result while the thread runs in the background
-	return latchedRet;
+	// return latchedRet;
 }
-
 
 /*
 ===============
@@ -240,48 +233,7 @@ void idCommonLocal::Draw()
 		Sys_Sleep(com_sleepDraw.GetInteger());
 	}
 
-	if (loadGUI != NULL)
-	{
-		loadGUI->Render(renderSystem, Sys_Milliseconds());
-	}
-	else if (currentGame == DOOM_CLASSIC || currentGame == DOOM2_CLASSIC)
-	{
-		const float sysWidth = renderSystem->GetWidth() * renderSystem->GetPixelAspect();
-		const float sysHeight = renderSystem->GetHeight();
-		const float sysAspect = sysWidth / sysHeight;
-		const float doomAspect = 4.0f / 3.0f;
-		const float adjustment = sysAspect / doomAspect;
-		const float barHeight = (adjustment >= 1.0f) ? 0.0f : (1.0f - adjustment) * (float)SCREEN_HEIGHT * 0.25f;
-		const float barWidth = (adjustment <= 1.0f) ? 0.0f : (adjustment - 1.0f) * (float)SCREEN_WIDTH * 0.25f;
-		if (barHeight > 0.0f)
-		{
-			renderSystem->SetColor(colorBlack);
-			renderSystem->DrawStretchPic(0, 0, SCREEN_WIDTH, barHeight, 0, 0, 1, 1, whiteMaterial);
-			renderSystem->DrawStretchPic(0, SCREEN_HEIGHT - barHeight, SCREEN_WIDTH, barHeight, 0, 0, 1, 1,
-			                             whiteMaterial);
-		}
-		if (barWidth > 0.0f)
-		{
-			renderSystem->SetColor(colorBlack);
-			renderSystem->DrawStretchPic(0, 0, barWidth, SCREEN_HEIGHT, 0, 0, 1, 1, whiteMaterial);
-			renderSystem->DrawStretchPic(SCREEN_WIDTH - barWidth, 0, barWidth, SCREEN_HEIGHT, 0, 0, 1, 1,
-			                             whiteMaterial);
-		}
-		renderSystem->SetColor4(1, 1, 1, 1);
-		renderSystem->DrawStretchPic(barWidth, barHeight, SCREEN_WIDTH - barWidth * 2.0f,
-		                             SCREEN_HEIGHT - barHeight * 2.0f, 0, 0, 1, 1, doomClassicMaterial);
-	}
-	else if (game && game->Shell_IsActive())
-	{
-		bool gameDraw = game->Draw(game->GetLocalClientNum());
-		if (!gameDraw)
-		{
-			renderSystem->SetColor(colorBlack);
-			renderSystem->DrawStretchPic(0, 0, SCREEN_WIDTH, SCREEN_HEIGHT, 0, 0, 1, 1, whiteMaterial);
-		}
-		game->Shell_Render();
-	}
-	else if (readDemo)
+	if (readDemo)
 	{
 		renderWorld->RenderScene(&currentDemoRenderView);
 		renderSystem->DrawDemoPics();
@@ -290,14 +242,14 @@ void idCommonLocal::Draw()
 	{
 		bool gameDraw = false;
 		// normal drawing for both single and multi player
-		if (!com_skipGameDraw.GetBool() && Game()->GetLocalClientNum() >= 0)
+		if (!com_skipGameDraw.GetBool())
 		{
 			// draw the game view
 			int start = Sys_Milliseconds();
-			if (game)
-			{
-				gameDraw = game->Draw(Game()->GetLocalClientNum());
-			}
+			// if (game)
+			// {
+			// 	gameDraw = game->Draw(Game()->GetLocalClientNum());
+			// }
 			int end = Sys_Milliseconds();
 			time_gameDraw += (end - start); // note time used for com_speeds
 		}
@@ -324,8 +276,6 @@ void idCommonLocal::Draw()
 
 		// draw the wipe material on top of this if it hasn't completed yet
 		DrawWipeModel();
-
-		Dialog().Render(loadGUI != NULL);
 
 		// draw the half console / notify console on top of everything
 		console->Draw(false);
@@ -362,8 +312,8 @@ void idCommonLocal::UpdateScreen(bool captureToImage)
 	}
 
 	// this should exit right after vsync, with the GPU idle and ready to draw
-	const emptyCommand_t* cmd = renderSystem->SwapCommandBuffers(&time_frontend, &time_backend, &time_shadows,
-	                                                             &time_gpu);
+	const emptyCommand_t *cmd = renderSystem->SwapCommandBuffers(&time_frontend, &time_backend, &time_shadows,
+																 &time_gpu);
 
 	// get the GPU busy with new commands
 	renderSystem->RenderCommandBuffers(cmd);
@@ -376,58 +326,58 @@ void idCommonLocal::UpdateScreen(bool captureToImage)
 idCommonLocal::ProcessGameReturn
 ================
 */
-void idCommonLocal::ProcessGameReturn(const gameReturn_t& ret)
-{
-	// set joystick rumble
-	if (in_useJoystick.GetBool() && in_joystickRumble.GetBool() && !game->Shell_IsActive() && session->
-		GetSignInManager().GetMasterInputDevice() >= 0)
-	{
-		Sys_SetRumble(session->GetSignInManager().GetMasterInputDevice(), ret.vibrationLow, ret.vibrationHigh);
-		// Only set the rumble on the active controller
-	}
-	else
-	{
-		for (int i = 0; i < MAX_INPUT_DEVICES; i++)
-		{
-			Sys_SetRumble(i, 0, 0);
-		}
-	}
+// void idCommonLocal::ProcessGameReturn(const gameReturn_t& ret)
+// {
+// set joystick rumble
+// if (in_useJoystick.GetBool() && in_joystickRumble.GetBool() && !game->Shell_IsActive() && session->
+// 	GetSignInManager().GetMasterInputDevice() >= 0)
+// {
+// 	Sys_SetRumble(session->GetSignInManager().GetMasterInputDevice(), ret.vibrationLow, ret.vibrationHigh);
+// 	// Only set the rumble on the active controller
+// }
+// else
+// {
+// 	for (int i = 0; i < MAX_INPUT_DEVICES; i++)
+// 	{
+// 		Sys_SetRumble(i, 0, 0);
+// 	}
+// }
 
-	syncNextGameFrame = ret.syncNextGameFrame;
+// syncNextGameFrame = ret.syncNextGameFrame;
 
-	if (ret.sessionCommand[0])
-	{
-		idCmdArgs args;
+// if (ret.sessionCommand[0])
+// {
+// 	idCmdArgs args;
 
-		args.TokenizeString(ret.sessionCommand, false);
+// 	// args.TokenizeString(ret.sessionCommand, false);
 
-		if (!idStr::Icmp(args.Argv(0), "map"))
-		{
-			MoveToNewMap(args.Argv(1), false);
-		}
-		else if (!idStr::Icmp(args.Argv(0), "devmap"))
-		{
-			MoveToNewMap(args.Argv(1), true);
-		}
-		else if (!idStr::Icmp(args.Argv(0), "died"))
-		{
-			if (!IsMultiplayer())
-			{
-				game->Shell_Show(true);
-			}
-		}
-		else if (!idStr::Icmp(args.Argv(0), "disconnect"))
-		{
-			cmdSystem->BufferCommandText(CMD_EXEC_INSERT, "stoprecording ; disconnect");
-		}
-		else if (!idStr::Icmp(args.Argv(0), "endOfDemo"))
-		{
-			cmdSystem->BufferCommandText(CMD_EXEC_NOW, "endOfDemo");
-		}
-	}
-}
+// 	if (!idStr::Icmp(args.Argv(0), "map"))
+// 	{
+// 		MoveToNewMap(args.Argv(1), false);
+// 	}
+// 	else if (!idStr::Icmp(args.Argv(0), "devmap"))
+// 	{
+// 		MoveToNewMap(args.Argv(1), true);
+// 	}
+// 	else if (!idStr::Icmp(args.Argv(0), "died"))
+// 	{
+// 		// if (!IsMultiplayer())
+// 		// {
+// 		// 	game->Shell_Show(true);
+// 		// }
+// 	}
+// 	else if (!idStr::Icmp(args.Argv(0), "disconnect"))
+// 	{
+// 		cmdSystem->BufferCommandText(CMD_EXEC_INSERT, "stoprecording ; disconnect");
+// 	}
+// 	else if (!idStr::Icmp(args.Argv(0), "endOfDemo"))
+// 	{
+// 		cmdSystem->BufferCommandText(CMD_EXEC_NOW, "endOfDemo");
+// 	}
+// }
+// }
 
-extern idCVar com_forceGenericSIMD;
+// extern idCVar com_forceGenericSIMD;
 
 /*
 =================
@@ -444,15 +394,14 @@ void idCommonLocal::Frame()
 		idLib::frameNumber++;
 
 		// allow changing SIMD usage on the fly
-		if (com_forceGenericSIMD.IsModified())
-		{
-			idSIMD::InitProcessor("doom", com_forceGenericSIMD.GetBool());
-			com_forceGenericSIMD.ClearModified();
-		}
+		// if (com_forceGenericSIMD.IsModified())
+		// {
+		// 	idSIMD::InitProcessor("doom", com_forceGenericSIMD.GetBool());
+		// 	com_forceGenericSIMD.ClearModified();
+		// }
 
 		// Do the actual switch between Doom 3 and the classics here so
 		// that things don't get confused in the middle of the frame.
-		PerformGameSwitch();
 
 		// pump all the events
 		Sys_GenerateEvents();
@@ -463,16 +412,15 @@ void idCommonLocal::Frame()
 		eventLoop->RunEventLoop();
 
 		// Activate the shell if it's been requested
-		if (showShellRequested && game)
-		{
-			game->Shell_Show(true);
-			showShellRequested = false;
-		}
+		// if (showShellRequested && game)
+		// {
+		// 	game->Shell_Show(true);
+		// 	showShellRequested = false;
+		// }
 
 		// if the console or another gui is down, we don't need to hold the mouse cursor
 		bool chatting = false;
-		if (console->Active() || Dialog().IsDialogActive() || session->IsSystemUIShowing() || (game && game->
-			InhibitControls() && !IsPlayingDoomClassic()))
+		if (console->Active() || session->IsSystemUIShowing())
 		{
 			Sys_GrabMouseCursor(false);
 			usercmdGen->InhibitUsercmd(INHIBIT_SESSION, true);
@@ -484,23 +432,22 @@ void idCommonLocal::Frame()
 			usercmdGen->InhibitUsercmd(INHIBIT_SESSION, false);
 		}
 
-		const bool pauseGame = (!mapSpawned || (!IsMultiplayer() && (Dialog().IsDialogPausing() || session->
-			IsSystemUIShowing() || (game && game->Shell_IsActive())))) && !IsPlayingDoomClassic();
+		const bool pauseGame = !mapSpawned || session->IsSystemUIShowing();
 
 		// save the screenshot and audio from the last draw if needed
 		if (aviCaptureMode)
 		{
 			idStr name = va("demos/%s/%s_%05i.tga", aviDemoShortName.c_str(), aviDemoShortName.c_str(),
-			                aviDemoFrameCount++);
+							aviDemoFrameCount++);
 			renderSystem->TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name,
-			                             com_aviDemoSamples.GetInteger(), NULL);
+										 com_aviDemoSamples.GetInteger(), NULL);
 
 			// remove any printed lines at the top before taking the screenshot
 			console->ClearNotifyLines();
 
 			// this will call Draw, possibly multiple times if com_aviDemoSamples is > 1
 			renderSystem->TakeScreenshot(com_aviDemoWidth.GetInteger(), com_aviDemoHeight.GetInteger(), name,
-			                             com_aviDemoSamples.GetInteger(), NULL);
+										 com_aviDemoSamples.GetInteger(), NULL);
 		}
 
 		//--------------------------------------------
@@ -513,7 +460,7 @@ void idCommonLocal::Frame()
 		// this should exit right after vsync, with the GPU idle and ready to draw
 		// This may block if the GPU isn't finished renderng the previous frame.
 		frameTiming.startSyncTime = Sys_Microseconds();
-		const emptyCommand_t* renderCommands = NULL;
+		const emptyCommand_t *renderCommands = NULL;
 		if (com_smp.GetBool())
 		{
 			renderCommands = renderSystem->SwapCommandBuffers(&time_frontend, &time_backend, &time_shadows, &time_gpu);
@@ -700,16 +647,16 @@ void idCommonLocal::Frame()
 		usercmd_t newCmd = usercmdGen->GetCurrentUsercmd();
 
 		// Store server game time - don't let time go past last SS time in case we are extrapolating
-		if (IsClient())
-		{
-			newCmd.serverGameMilliseconds = std::min(Game()->GetServerGameTimeMs(), Game()->GetSSEndTime());
-		}
-		else
-		{
-			newCmd.serverGameMilliseconds = Game()->GetServerGameTimeMs();
-		}
+		// if (IsClient())
+		// {
+		// 	newCmd.serverGameMilliseconds = std::min(Game()->GetServerGameTimeMs(), Game()->GetSSEndTime());
+		// }
+		// else
+		// {
+		// 	newCmd.serverGameMilliseconds = Game()->GetServerGameTimeMs();
+		// }
 
-		userCmdMgr.MakeReadPtrCurrentForPlayer(Game()->GetLocalClientNum());
+		// userCmdMgr.MakeReadPtrCurrentForPlayer(Game()->GetLocalClientNum());
 
 		// Stuff a copy of this userCmd for each game frame we are going to run.
 		// Ideally, the usercmds would be built in another thread so you could
@@ -717,18 +664,11 @@ void idCommonLocal::Frame()
 		for (int i = 0; i < numGameFrames; i++)
 		{
 			newCmd.clientGameMilliseconds = FRAME_TO_MSEC(gameFrame - numGameFrames + i + 1);
-			userCmdMgr.PutUserCmdForPlayer(game->GetLocalClientNum(), newCmd);
-		}
-
-		// If we're in Doom or Doom 2, run tics and upload the new texture.
-		if ((GetCurrentGame() == DOOM_CLASSIC || GetCurrentGame() == DOOM2_CLASSIC) && !(Dialog().IsDialogPausing() ||
-			session->IsSystemUIShowing()))
-		{
-			RunDoomClassicFrame();
+			// userCmdMgr.PutUserCmdForPlayer(game->GetLocalClientNum(), newCmd);
 		}
 
 		// start the game / draw command generation thread going in the background
-		gameReturn_t ret = gameThread.RunGameAndDraw(numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames);
+		// gameReturn_t ret = gameThread.RunGameAndDraw(numGameFrames, userCmdMgr, IsClient(), gameFrame - numGameFrames);
 
 		if (!com_smp.GetBool())
 		{
@@ -756,7 +696,7 @@ void idCommonLocal::Frame()
 
 		// Send local usermds to the server.
 		// This happens after the game frame has run so that prediction data is up to date.
-		SendUsercmds(Game()->GetLocalClientNum());
+		// SendUsercmds(Game()->GetLocalClientNum());
 
 		// Now that we have an updated game frame, we can send out new snapshots to our clients
 		session->Pump(); // Pump to get updated usercmds to relay
@@ -776,9 +716,9 @@ void idCommonLocal::Frame()
 		soundSystem->Render();
 
 		// process the game return for map changes, etc
-		ProcessGameReturn(ret);
+		// ProcessGameReturn(ret);
 
-		idLobbyBase& lobby = session->GetActivePlatformLobbyBase();
+		idLobbyBase &lobby = session->GetActivePlatformLobbyBase();
 		if (lobby.HasActivePeers())
 		{
 			if (net_drawDebugHud.GetInteger() == 1)
@@ -800,7 +740,7 @@ void idCommonLocal::Frame()
 			int com_frameMsec = nowTime - lastTime;
 			lastTime = nowTime;
 			Printf("frame:%d all:%3d gfr:%3d rf:%3lld bk:%3lld\n", idLib::frameNumber, com_frameMsec, time_gameFrame,
-			       time_frontend / 1000, time_backend / 1000);
+				   time_frontend / 1000, time_backend / 1000);
 			time_gameFrame = 0;
 			time_gameDraw = 0;
 		}
@@ -816,18 +756,8 @@ void idCommonLocal::Frame()
 
 		session->GetSaveGameManager().Pump();
 	}
-	catch (idException&)
+	catch (idException &)
 	{
 		return; // an ERP_DROP was thrown
 	}
-}
-
-/*
-=================
-idCommonLocal::RunDoomClassicFrame
-=================
-*/
-void idCommonLocal::RunDoomClassicFrame()
-{
-	// Not needed.
 }

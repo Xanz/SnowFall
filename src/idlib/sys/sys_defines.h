@@ -90,7 +90,7 @@ If you have questions concerning this license or the applicable additional terms
 
 #ifdef ID_PC_WIN
 
-#define	CPUSTRING						"x86"
+#define	CPUSTRING						"x64"
 
 #define	BUILD_STRING					"win-" CPUSTRING
 #define BUILD_OS_ID						0
@@ -117,10 +117,6 @@ If you have questions concerning this license or the applicable additional terms
 #define ID_FORCE_INLINE_EXTERN			extern __forceinline
 #endif
 
-// we should never rely on this define in our code. this is here so dodgy external libraries don't get confused
-#ifndef WIN32
-	#define WIN32
-#endif
 
 #endif
 
@@ -165,68 +161,6 @@ bulk of the codebase, so it is the best place for analyze pragmas.
 
 #if defined( ID_WIN32 )
 
-// disable some /analyze warnings here
-#pragma warning( disable: 6255 )	// warning C6255: _alloca indicates failure by raising a stack overflow exception. Consider using _malloca instead. (Note: _malloca requires _freea.)
-
-
-
-#pragma warning( disable: 6262 )	// warning C6262: Function uses '36924' bytes of stack: exceeds /analyze:stacksize'32768'. Consider moving some data to heap
-
-
-
-#pragma warning( disable: 6326 )	// warning C6326: Potential comparison of a constant with another constant
-
-#pragma warning( disable: 6031 )	//  warning C6031: Return value ignored
-// this warning fires whenever you have two calls to new in a function, but we assume new never fails, so it is not relevant for us
-#pragma warning( disable: 6211 )	// warning C6211: Leaking memory 'staticModel' due to an exception. Consider using a local catch block to clean up memory
-
-
-
-// we want to fix all these at some point...
-#pragma warning( disable: 6246 )	// warning C6246: Local declaration of 'es' hides declaration of the same name in outer scope. For additional information, see previous declaration at line '969' of 'w:\tech5\rage\game\ai\fsm\fsm_combat.cpp': Lines: 969
-
-
-
-#pragma warning( disable: 6244 )	// warning C6244: Local declaration of 'viewList' hides previous declaration at line '67' of 'w:\tech5\engine\renderer\rendertools.cpp'
-
-
-
-// win32 needs this, but 360 doesn't
-#pragma warning( disable: 6540 )	// warning C6540: The use of attribute annotations on this function will invalidate all of its existing __declspec annotations [D:\tech5\engine\engine-10.vcxproj]
-
-
-
-#pragma warning( disable: 4458 )
-
-#pragma warning( disable: 4595 )
-
-#pragma warning( disable: 4499 )
-
-#pragma warning( disable: 4459 )
-
-#pragma warning( disable: 4456 )
-
-#pragma warning( disable: 5205 )
-
-#pragma warning( disable: 4244 )
-
-#pragma warning( disable: 4457 )
-
-#pragma warning( disable: 4840 )
-
-#pragma warning( disable: 5208 )
-
-#pragma warning( disable: 4644 )
-
-#pragma warning( disable: 5054 )
-
-#pragma warning( disable: 5055 )
-
-#pragma warning( disable: 6011 )
-
-#pragma warning( disable: 5056 )
-
-#pragma warning( disable: 4189)
 // We need to inform the compiler that Error() and FatalError() will
 // never return, so any conditions that leeds to them being called are
 // guaranteed to be false in the following code

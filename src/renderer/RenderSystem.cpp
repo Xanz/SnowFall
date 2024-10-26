@@ -30,6 +30,7 @@ If you have questions concerning this license or the applicable additional terms
 #include "../idlib/precompiled.h"
 
 #include "tr_local.h"
+#include <sfRenderer/Window.h>
 
 idRenderSystemLocal	tr;
 idRenderSystem * renderSystem = &tr;

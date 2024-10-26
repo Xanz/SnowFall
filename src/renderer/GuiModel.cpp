@@ -216,19 +216,19 @@ void idGuiModel::EmitFullScreen() {
 	tr.GetCroppedViewport( &viewDef->viewport );
 
 	bool stereoEnabled = ( renderSystem->GetStereo3DMode() != STEREO3D_OFF );
-	if ( stereoEnabled ) {
-		float	GetScreenSeparationForGuis();
-		const float screenSeparation = GetScreenSeparationForGuis();
+	// if ( stereoEnabled ) {
+	// 	float	GetScreenSeparationForGuis();
+	// 	const float screenSeparation = GetScreenSeparationForGuis();
 
-		// this will be negated on the alternate eyes, both rendered each frame
-		viewDef->renderView.stereoScreenSeparation = screenSeparation;
+	// 	// this will be negated on the alternate eyes, both rendered each frame
+	// 	viewDef->renderView.stereoScreenSeparation = screenSeparation;
 
-		extern idCVar stereoRender_swapEyes;
-		viewDef->renderView.viewEyeBuffer = 0;	// render to both buffers
-		if ( stereoRender_swapEyes.GetBool() ) {
-			viewDef->renderView.stereoScreenSeparation = -screenSeparation;
-		}
-	}
+	// 	extern idCVar stereoRender_swapEyes;
+	// 	viewDef->renderView.viewEyeBuffer = 0;	// render to both buffers
+	// 	if ( stereoRender_swapEyes.GetBool() ) {
+	// 		viewDef->renderView.stereoScreenSeparation = -screenSeparation;
+	// 	}
+	// }
 
 	viewDef->scissor.x1 = 0;
 	viewDef->scissor.y1 = 0;

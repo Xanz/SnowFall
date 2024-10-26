@@ -35,8 +35,6 @@ If you have questions concerning this license or the applicable additional terms
 
 #include "win_local.h"
 
-#define DINPUT_BUFFERSIZE           256
-
 std::vector<mousePoll_t> s_MousePolls;
 std::vector<keyboardPoll_t> s_KeyboardPolls;
 
@@ -155,7 +153,6 @@ Sys_ShutdownInput
 */
 void Sys_ShutdownInput()
 {
-	// memset(buttonStates, 0, sizeof(buttonStates));
 }
 
 /*
@@ -165,7 +162,6 @@ Sys_InitInput
 */
 void Sys_InitInput()
 {
-	common->Printf("------------------------------------\n");
 }
 
 

@@ -13,6 +13,13 @@ idCVar r_windowX("r_windowX", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, 
 idCVar r_windowY("r_windowY", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
 idCVar r_windowWidth("r_windowWidth", "1280", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
 idCVar r_windowHeight("r_windowHeight", "720", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER, "Non-fullscreen parameter");
+idCVar r_multiSamples("r_multiSamples", "0", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
+                      "number of antialiasing samples");
+idCVar r_vidMode("r_vidMode", "0", CVAR_ARCHIVE | CVAR_RENDERER | CVAR_INTEGER, "fullscreen video mode number", 0, 1);
+idCVar r_displayRefresh("r_displayRefresh", "0", CVAR_RENDERER | CVAR_INTEGER | CVAR_NOCHEAT,
+                        "optional display refresh rate option for vid mode", 0.0f, 240.0f);
+idCVar r_fullscreen("r_fullscreen", "1", CVAR_RENDERER | CVAR_ARCHIVE | CVAR_INTEGER,
+                    "0 = windowed, 1 = full screen on monitor 1, 2 = full screen on monitor 2, etc");
 
 Window::Window()
 {
@@ -41,6 +48,14 @@ bool Window::Create()
 
     windowParms_t parms = SetupParms();
 
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+    // Disable resizing.
+    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
+
+    // MSAA samples :)
+    glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
+
     switch (parms.fullScreen)
     {
         const GLFWvidmode* mode;
@@ -63,6 +78,7 @@ bool Window::Create()
         break;
     }
 
+
     if (!m_Window)
     {
         glfwTerminate();
@@ -70,17 +86,7 @@ bool Window::Create()
         return false;
     }
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    // Disable resizing.
-    glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
-
-    // MSAA samples :)
-    glfwWindowHint(GLFW_SAMPLES, r_multiSamples.GetInteger());
     glfwMakeContextCurrent(m_Window);
-
 
     glfwSetInputMode(m_Window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     // Raw mouse input
@@ -135,8 +141,8 @@ void Window::MouseKey_Callback(GLFWwindow* window, int button, int action, int m
         int state = action == GLFW_PRESS ? 1 : 0;
 
         // UI seems to use K_MOUSE1 instead of M_ACTION1
-        if (game->Shell_IsActive())
-        {
+        // if (game->Shell_IsActive())
+        // {
             switch (button)
             {
             case GLFW_MOUSE_BUTTON_LEFT:
@@ -155,28 +161,28 @@ void Window::MouseKey_Callback(GLFWwindow* window, int button, int action, int m
                 key = K_MOUSE5;
                 break;
             }
-        }
-        else
-        {
-            switch (button)
-            {
-            case GLFW_MOUSE_BUTTON_LEFT:
-                key = M_ACTION1;
-                break;
-            case GLFW_MOUSE_BUTTON_RIGHT:
-                key = M_ACTION2;
-                break;
-            case GLFW_MOUSE_BUTTON_MIDDLE:
-                key = M_ACTION3;
-                break;
-            case GLFW_MOUSE_BUTTON_4:
-                key = M_ACTION4;
-                break;
-            case GLFW_MOUSE_BUTTON_5:
-                key = M_ACTION5;
-                break;
-            }
-        }
+        // }
+        // else
+        // {
+            // switch (button)
+            // {
+            // case GLFW_MOUSE_BUTTON_LEFT:
+            //     key = M_ACTION1;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_RIGHT:
+            //     key = M_ACTION2;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_MIDDLE:
+            //     key = M_ACTION3;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_4:
+            //     key = M_ACTION4;
+            //     break;
+            // case GLFW_MOUSE_BUTTON_5:
+            //     key = M_ACTION5;
+            //     break;
+            // }
+        // }
 
         s_MousePolls.emplace_back(mousePoll_t(key, state));
         Sys_QueEvent(SE_KEY, key, state, 0, NULL, 0);

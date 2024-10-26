@@ -1205,7 +1205,7 @@ idAASFileLocal::MemorySize
 ================
 */
 int idAASFileLocal::MemorySize() const {
-	int size;
+	size_t size;
 
 	size = planeList.Size();
 	size += vertices.Size();
@@ -1220,7 +1220,7 @@ int idAASFileLocal::MemorySize() const {
 	size += clusters.Size();
 	size += sizeof( idReachability_Walk ) * NumReachabilities();
 
-	return size;
+	return static_cast<int>(size);
 }
 
 /*
