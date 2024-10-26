@@ -7,10 +7,8 @@ file(GLOB_RECURSE FRAMEWORK src/framework/*.cpp src/framework/*.h)
 file(GLOB_RECURSE IDLIB src/idlib/*.cpp src/idlib/*.h)
 file(GLOB_RECURSE RENDERER src/renderer/*.cpp src/renderer/*.h src/renderer/*.c)
 file(GLOB_RECURSE SOUND src/sound/*.cpp src/sound/*.h)
-file(GLOB_RECURSE SWF src/swf/*.cpp src/swf/*.h)
 file(GLOB SYS src/sys/*.cpp src/sys/*.h)
 file(GLOB SYSWIN src/sys/win32/*.cpp src/sys/win32/*.h)
-file(GLOB_RECURSE UI src/ui/*.cpp src/ui/*.h)
 file(GLOB_RECURSE SFRenderer src/sfRenderer/*.cpp src/sfRenderer/*.h)
 
 set(D3Source
@@ -20,10 +18,8 @@ set(D3Source
         ${CM}
         ${RENDERER}
         ${SOUND}
-        ${SWF}
         ${SYS}
         ${SYSWIN}
-        ${UI}
         ${SFRenderer}
 )
 
@@ -46,7 +42,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src ${CMAKE_SOURCE_DIR}/src/idlib PUBLIC
 
 link_directories(external/openal/build/Release external/jpeg-6/build/Release external/zlib/build/Release external/glew/lib external/glfw/build/src/Release)
 
-set(LIBS xinput dbghelp dinput8 dxguid glu32 iphlpapi odbc32 odbccp32 opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32s glfw3 Vulkan::Vulkan)
+set(LIBS xinput dbghelp opengl32 winmm ws2_32 zlibstatic libjpeg OpenAL32 glew32s glfw3 Vulkan::Vulkan)
 
 add_executable(${PROJECT_NAME} ${D3Source})
 
